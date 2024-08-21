@@ -1,0 +1,12 @@
+{
+  "id": "lynxhub_module_offline_container",
+  "title": "Lynx WebUI Container",
+  "description": "A comprehensive collection of WebUI modules featuring full support for arguments and configurations.",
+  "publishDate": "2024-08-21",
+  "requireAppBuild": 5,
+  "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
+  "version": "1.0.0",
+  "updateDate": "2024-08-21 13:30",
+  "changeLog": "!",
+  "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4"
+}

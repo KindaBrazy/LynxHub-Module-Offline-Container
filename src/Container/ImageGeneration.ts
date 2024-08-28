@@ -1,4 +1,4 @@
-import {AUTOMATIC1111_ID, ComfyUI_ID, LSHQQYTIGER_ID, STABILITYAI_ID, VLADMANDIC_ID} from '../Constants';
+import {AUTOMATIC1111_ID, ComfyUI_ID, LLLYASVIEL_ID, LSHQQYTIGER_ID, STABILITYAI_ID, VLADMANDIC_ID} from '../Constants';
 import {PagesData} from '../types';
 import automatic1111Arguments from './Automatic1111 & Forks/Automatic1111Arguments';
 import lshqqytigerArguments from './Automatic1111 & Forks/LshqqytigerArguments';
@@ -53,6 +53,22 @@ const imagePage: PagesData = {
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3eaf306e-9edc-46bd-89d0-7f7398068e01/' +
         'width=832,quality=90/00002-1900763417.jpeg',
       arguments: lshqqytigerArguments,
+      methods: a1RendererMethods,
+    },
+    {
+      id: LLLYASVIEL_ID,
+      title: 'Stable Diffusion WebUI Forge',
+      description:
+        'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
+        ' to make development easier, optimize resource management, speed up inference, and study experimental features.\n' +
+        'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
+      repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
+      extensionsDir: '/extensions',
+      type: 'image',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/' +
+        'original=true,quality=90/00004-3953235735.jpeg',
+      arguments: automatic1111Arguments,
       methods: a1RendererMethods,
     },
     {

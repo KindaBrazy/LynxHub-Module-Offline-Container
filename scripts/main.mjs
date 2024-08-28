@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, i as parseArgsToString$4, j as parseStringToArgs$4, k as parseArgsToString$5, l as parseStringToArgs$5, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, V as VLADMANDIC_ID, S as STABILITYAI_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID } from './RendererMethods_4wMqpH.mjs';
+import { c as commonjsGlobal, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, i as parseArgsToString$4, j as parseStringToArgs$4, k as parseArgsToString$5, l as parseStringToArgs$5, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, m as LLLYASVIEL_ID, V as VLADMANDIC_ID, S as STABILITYAI_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID } from './RendererMethods_CqN3pL.mjs';
 import os from 'node:os';
 import path from 'node:path';
 import require$$0$2 from 'fs';
@@ -1070,6 +1070,7 @@ const mainModules = [
     { id: ComfyUI_ID, methods: comfyMainMethods },
     { id: AUTOMATIC1111_ID, methods: a1MainMethods },
     { id: LSHQQYTIGER_ID, methods: a1MainMethods },
+    { id: LLLYASVIEL_ID, methods: a1MainMethods },
     { id: VLADMANDIC_ID, methods: vladMainMethods },
     { id: STABILITYAI_ID, methods: stabilityMainMethods },
     { id: OOBABOOGA_ID, methods: oobaMainMethods },

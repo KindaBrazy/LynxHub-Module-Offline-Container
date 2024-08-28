@@ -3,6 +3,7 @@ const AUTOMATIC1111_ID = 'Automatic1111_SD';
 const ComfyUI_ID = 'ComfyUI_SD';
 const VLADMANDIC_ID = 'VLADMANDIC_SD';
 const STABILITYAI_ID = 'StabilityAI_SD';
+const LLLYASVIEL_ID = 'Lllyasviel_SD';
 const OOBABOOGA_ID = 'Oobabooga_TG';
 const RSXDALV_ID = 'Rsxdalv_AG';
 const GITMYLO_ID = 'Gitmylo_AG';
@@ -18081,7 +18082,7 @@ const automatic1111Arguments = [
     },
 ];
 
-const lshqqytigerArguments = automatic1111Arguments;
+const lshqqytigerArguments = lodashExports.cloneDeep(automatic1111Arguments);
 const lsSpecifArgs = [
     {
         description: 'Skip installation of onnxruntime; ONNX and Olive will be unavailable',
@@ -19903,4 +19904,4 @@ function parseStringToArgs(args) {
 }
 const vladRendererMethods = { catchAddress, parseArgsToString, parseStringToArgs };
 
-export { AUTOMATIC1111_ID as A, oobaRendererMethods as B, ComfyUI_ID as C, GITMYLO_ID as G, LSHQQYTIGER_ID as L, OOBABOOGA_ID as O, RSXDALV_ID as R, STABILITYAI_ID as S, VLADMANDIC_ID as V, parseStringToArgs$5 as a, parseArgsToString$4 as b, commonjsGlobal as c, parseStringToArgs$4 as d, parseArgsToString$3 as e, parseStringToArgs$3 as f, parseArgsToString$2 as g, parseStringToArgs$2 as h, parseArgsToString$1 as i, parseStringToArgs$1 as j, parseArgsToString as k, parseStringToArgs as l, catchAddress as m, gitmyloArguments as n, gitmyloRendererMethods as o, parseArgsToString$5 as p, comfyArguments as q, comfyRendererMethods as r, automatic1111Arguments as s, a1RendererMethods as t, lshqqytigerArguments as u, vladmandicArguments as v, vladRendererMethods as w, stabilityaiArguments as x, stabilityRendererMethods as y, oobaboogaArguments as z };
+export { AUTOMATIC1111_ID as A, oobaboogaArguments as B, ComfyUI_ID as C, oobaRendererMethods as D, GITMYLO_ID as G, LSHQQYTIGER_ID as L, OOBABOOGA_ID as O, RSXDALV_ID as R, STABILITYAI_ID as S, VLADMANDIC_ID as V, parseStringToArgs$5 as a, parseArgsToString$4 as b, commonjsGlobal as c, parseStringToArgs$4 as d, parseArgsToString$3 as e, parseStringToArgs$3 as f, parseArgsToString$2 as g, parseStringToArgs$2 as h, parseArgsToString$1 as i, parseStringToArgs$1 as j, parseArgsToString as k, parseStringToArgs as l, LLLYASVIEL_ID as m, catchAddress as n, gitmyloArguments as o, parseArgsToString$5 as p, gitmyloRendererMethods as q, comfyArguments as r, comfyRendererMethods as s, automatic1111Arguments as t, a1RendererMethods as u, lshqqytigerArguments as v, vladmandicArguments as w, vladRendererMethods as x, stabilityaiArguments as y, stabilityRendererMethods as z };

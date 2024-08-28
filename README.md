@@ -18,6 +18,7 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 |---------------------------------------------------------------------------------------------------|-------------------------------------|----------------------------------------------------------------------|
 | <img height='20' src="https://avatars.githubusercontent.com/u/20920490?s=20&v=4"> Automatic1111   | Stable Diffusion web UI             | [Link](https://github.com/AUTOMATIC1111/stable-diffusion-webui)      |
 | <img height='20' src="https://avatars.githubusercontent.com/u/39524005?s=20&v=4"> Lshqqytiger     | Stable Diffusion web UI for AMDGPUs | [Link](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu) |
+| <img height='20' src="https://avatars.githubusercontent.com/u/19834515?v=4"> Lllyasviel           | Stable Diffusion WebUI Forge        | [Link](https://github.com/lllyasviel/stable-diffusion-webui-forge)   |
 | <img height='20' src="https://avatars.githubusercontent.com/u/121283862?s=20&v=4"> ComfyAnonymous | ComfyUI                             | [Link](https://github.com/comfyanonymous/ComfyUI)                    |
 | <img height='20' src="https://avatars.githubusercontent.com/u/57876960?s=20&v=4"> Vladmandic      | SD.Next                             | [Link](https://github.com/vladmandic/automatic)                      |
 | <img height='20' src="https://avatars.githubusercontent.com/u/100950301?s=20&v=4"> Stability-AI   | Stable Swarm UI                     | [Link](https://github.com/Stability-AI/StableSwarmUI)                |
@@ -43,8 +44,8 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 
 | Category         | Number of Modules |
 |------------------|-------------------|
-| **Overall**      | **8**             |
-| Image Generation | 5                 |
+| **Overall**      | **9**             |
+| Image Generation | 6                 |
 | Text Generation  | 1                 |
 | Audio Generation | 2                 |
 

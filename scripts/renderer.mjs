@@ -1,4 +1,4 @@
-import { R as RSXDALV_ID, m as catchAddress, G as GITMYLO_ID, n as gitmyloArguments, o as gitmyloRendererMethods, C as ComfyUI_ID, q as comfyArguments, r as comfyRendererMethods, A as AUTOMATIC1111_ID, s as automatic1111Arguments, t as a1RendererMethods, L as LSHQQYTIGER_ID, u as lshqqytigerArguments, V as VLADMANDIC_ID, v as vladmandicArguments, w as vladRendererMethods, S as STABILITYAI_ID, x as stabilityaiArguments, y as stabilityRendererMethods, O as OOBABOOGA_ID, z as oobaboogaArguments, B as oobaRendererMethods } from './RendererMethods_4wMqpH.mjs';
+import { R as RSXDALV_ID, n as catchAddress, G as GITMYLO_ID, o as gitmyloArguments, q as gitmyloRendererMethods, C as ComfyUI_ID, r as comfyArguments, s as comfyRendererMethods, A as AUTOMATIC1111_ID, t as automatic1111Arguments, u as a1RendererMethods, L as LSHQQYTIGER_ID, v as lshqqytigerArguments, m as LLLYASVIEL_ID, V as VLADMANDIC_ID, w as vladmandicArguments, x as vladRendererMethods, S as STABILITYAI_ID, y as stabilityaiArguments, z as stabilityRendererMethods, O as OOBABOOGA_ID, B as oobaboogaArguments, D as oobaRendererMethods } from './RendererMethods_CqN3pL.mjs';
 
 const audioPage = {
     routePath: '/audioGenerationPage',
@@ -68,6 +68,20 @@ const imagePage = {
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3eaf306e-9edc-46bd-89d0-7f7398068e01/' +
                 'width=832,quality=90/00002-1900763417.jpeg',
             arguments: lshqqytigerArguments,
+            methods: a1RendererMethods,
+        },
+        {
+            id: LLLYASVIEL_ID,
+            title: 'Stable Diffusion WebUI Forge',
+            description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
+                ' to make development easier, optimize resource management, speed up inference, and study experimental features.\n' +
+                'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
+            repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
+            extensionsDir: '/extensions',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/' +
+                'original=true,quality=90/00004-3953235735.jpeg',
+            arguments: automatic1111Arguments,
             methods: a1RendererMethods,
         },
         {

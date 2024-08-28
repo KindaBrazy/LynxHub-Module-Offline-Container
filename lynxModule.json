@@ -5,8 +5,8 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 5,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "1.0.0",
-  "updateDate": "2024-08-21 13:30",
-  "changeLog": "!",
+  "version": "1.1.0",
+  "updateDate": "2024-08-28 15:15",
+  "changeLog": "V1.1.0:\n\n  New WebUI: Stable Diffusion WebUI Forge",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4"
 }

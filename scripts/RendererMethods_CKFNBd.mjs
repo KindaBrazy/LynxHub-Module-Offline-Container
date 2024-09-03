@@ -2,8 +2,9 @@ const LSHQQYTIGER_ID = 'LSHQQYTIGER_SD';
 const AUTOMATIC1111_ID = 'Automatic1111_SD';
 const ComfyUI_ID = 'ComfyUI_SD';
 const VLADMANDIC_ID = 'VLADMANDIC_SD';
-const STABILITYAI_ID = 'StabilityAI_SD';
+const MCMONKEYPROJECTS_ID = 'McMonkeyProjects_SD';
 const LLLYASVIEL_ID = 'Lllyasviel_SD';
+const BMALTAIS_ID = 'Bmaltais_SD';
 const OOBABOOGA_ID = 'Oobabooga_TG';
 const RSXDALV_ID = 'Rsxdalv_AG';
 const GITMYLO_ID = 'Gitmylo_AG';
@@ -13,6 +14,19 @@ var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof win
 function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
+
+async function isWinOS() {
+    let isWin = true;
+    if (typeof window !== 'undefined' && window.osPlatform) {
+        isWin = window.osPlatform === 'win32';
+    }
+    else if (typeof process !== 'undefined') {
+        const result = await import('os');
+        isWin = result.platform() === 'win32';
+    }
+    return isWin;
+}
+const isWin = await isWinOS();
 
 var lodash = {exports: {}};
 
@@ -17283,87 +17297,6 @@ function removeEscapes(str) {
 
 const automatic1111Arguments = [
     {
-        category: 'Environment Variables',
-        items: [
-            {
-                description: 'Sets a custom path for Python executable.',
-                name: 'PYTHON',
-                type: 'Directory',
-            },
-            {
-                description: 'Specifies the path for the virtual environment. Default is venv.' +
-                    ' Special value - runs the script without creating virtual environment.',
-                name: 'VENV_DIR',
-                type: 'Directory',
-            },
-            {
-                description: 'Additional commandline arguments for the main program.',
-                name: 'COMMANDLINE_ARGS',
-                type: 'CheckBox',
-            },
-            {
-                description: 'Set to anything to make the program not exit with an error' +
-                    ' if an unexpected commandline argument is encountered.',
-                name: 'IGNORE_CMD_ARGS_ERRORS',
-                type: 'CheckBox',
-            },
-            {
-                description: 'Name of requirements.txt file with dependencies that will be' +
-                    ' installed when launch.py is run. Defaults to requirements_versions.txt.',
-                name: 'REQS_FILE',
-                type: 'Input',
-            },
-            {
-                description: 'Command for installing PyTorch.',
-                name: 'TORCH_COMMAND',
-                type: 'Input',
-            },
-            {
-                description: '`--index-url` parameter for pip.',
-                name: 'INDEX_URL',
-                type: 'Input',
-            },
-            {
-                description: 'Path to where transformers library will download and keep its files related to the CLIP model.',
-                name: 'TRANSFORMERS_CACHE',
-                type: 'Directory',
-            },
-            {
-                description: 'Select GPU to use for your instance on a system with multiple GPUs. For example, if you' +
-                    ' want to use secondary GPU, put "1".\n(add a new line to webui-user.bat not in' +
-                    ' COMMANDLINE_ARGS): `set CUDA_VISIBLE_DEVICES=0`\nAlternatively, just use `--device-id`' +
-                    ' flag in `COMMANDLINE_ARGS`.',
-                name: 'CUDA_VISIBLE_DEVICES',
-                type: 'Input',
-            },
-            {
-                description: "Log verbosity. Supports any valid logging level supported by Python's built-in" +
-                    ' `logging` module. Defaults to `INFO` if not set.',
-                name: 'SD_WEBUI_LOG_LEVEL',
-                type: 'Input',
-            },
-            {
-                description: 'Cache file path. Defaults to `cache.json` in the root directory if not set.',
-                name: 'SD_WEBUI_CACHE_FILE',
-                type: 'File',
-            },
-            {
-                description: 'A value set by `launcher script` (like webui.bat webui.sh) informing Webui that' +
-                    ' restart function is available',
-                name: 'SD_WEBUI_RESTAR',
-                type: 'CheckBox',
-            },
-            {
-                description: 'A internal value signifying if webui is currently restarting or reloading, used for disabling' +
-                    ' certain actions asuch as auto launching browser.\nset to `1` disables auto launching browser\n' +
-                    'set to `0` enables auto launch even when restarting\nCertain extensions might use this value' +
-                    ' for similar purpose.',
-                name: 'SD_WEBUI_RESTARTING',
-                type: 'CheckBox',
-            },
-        ],
-    },
-    {
         category: 'Command Line Arguments',
         condition: 'COMMANDLINE_ARGS',
         sections: [
@@ -18081,6 +18014,192 @@ const automatic1111Arguments = [
         ],
     },
 ];
+const winEV = {
+    category: 'Environment Variables',
+    items: [
+        {
+            description: 'Sets a custom path for Python executable.',
+            name: 'PYTHON',
+            type: 'Directory',
+        },
+        {
+            description: 'Specifies the path for the virtual environment. Default is venv.' +
+                ' Special value - runs the script without creating virtual environment.',
+            name: 'VENV_DIR',
+            type: 'Directory',
+        },
+        {
+            description: 'Additional commandline arguments for the main program.',
+            name: 'COMMANDLINE_ARGS',
+            type: 'CheckBox',
+        },
+        {
+            description: 'Set to anything to make the program not exit with an error' +
+                ' if an unexpected commandline argument is encountered.',
+            name: 'IGNORE_CMD_ARGS_ERRORS',
+            type: 'CheckBox',
+        },
+        {
+            description: 'Name of requirements.txt file with dependencies that will be' +
+                ' installed when launch.py is run. Defaults to requirements_versions.txt.',
+            name: 'REQS_FILE',
+            type: 'Input',
+        },
+        {
+            description: 'Command for installing PyTorch.',
+            name: 'TORCH_COMMAND',
+            type: 'Input',
+        },
+        {
+            description: '`--index-url` parameter for pip.',
+            name: 'INDEX_URL',
+            type: 'Input',
+        },
+        {
+            description: 'Path to where transformers library will download and keep its files related to the CLIP model.',
+            name: 'TRANSFORMERS_CACHE',
+            type: 'Directory',
+        },
+        {
+            description: 'Select GPU to use for your instance on a system with multiple GPUs. For example, if you' +
+                ' want to use secondary GPU, put "1".\n(add a new line to webui-user.bat not in' +
+                ' COMMANDLINE_ARGS): `set CUDA_VISIBLE_DEVICES=0`\nAlternatively, just use `--device-id`' +
+                ' flag in `COMMANDLINE_ARGS`.',
+            name: 'CUDA_VISIBLE_DEVICES',
+            type: 'Input',
+        },
+        {
+            description: "Log verbosity. Supports any valid logging level supported by Python's built-in" +
+                ' `logging` module. Defaults to `INFO` if not set.',
+            name: 'SD_WEBUI_LOG_LEVEL',
+            type: 'Input',
+        },
+        {
+            description: 'Cache file path. Defaults to `cache.json` in the root directory if not set.',
+            name: 'SD_WEBUI_CACHE_FILE',
+            type: 'File',
+        },
+        {
+            description: 'A value set by `launcher script` (like webui.bat webui.sh) informing Webui that' +
+                ' restart function is available',
+            name: 'SD_WEBUI_RESTAR',
+            type: 'CheckBox',
+        },
+        {
+            description: 'A internal value signifying if webui is currently restarting or reloading, used for disabling' +
+                ' certain actions asuch as auto launching browser.\nset to `1` disables auto launching browser\n' +
+                'set to `0` enables auto launch even when restarting\nCertain extensions might use this value' +
+                ' for similar purpose.',
+            name: 'SD_WEBUI_RESTARTING',
+            type: 'CheckBox',
+        },
+    ],
+};
+const linEV = {
+    category: 'Environment',
+    sections: [
+        {
+            section: 'Variables',
+            items: [
+                {
+                    description: 'Install directory without trailing slash',
+                    name: 'install_dir',
+                    type: 'Input',
+                    defaultValue: '/home/$(whoami)',
+                },
+                {
+                    description: 'Name of the subdirectory',
+                    name: 'clone_dir',
+                    type: 'Input',
+                    defaultValue: 'stable-diffusion-webui',
+                },
+                {
+                    description: 'python3 executable',
+                    name: 'python_cmd',
+                    type: 'Input',
+                    defaultValue: 'python3',
+                },
+                {
+                    description: 'python3 venv without trailing slash (defaults to ${install_dir}/${clone_dir}/venv)',
+                    name: 'venv_dir',
+                    type: 'Input',
+                    defaultValue: 'venv',
+                },
+            ],
+        },
+        {
+            section: 'Arguments',
+            items: [
+                {
+                    description: 'Commandline arguments for webui.py',
+                    name: 'COMMANDLINE_ARGS',
+                    type: 'CheckBox',
+                },
+                {
+                    description: 'Script to launch to start the app',
+                    name: 'LAUNCH_SCRIPT',
+                    type: 'Input',
+                    defaultValue: 'launch.py',
+                },
+                {
+                    description: 'Install command for torch',
+                    name: 'TORCH_COMMAND',
+                    type: 'Input',
+                    defaultValue: 'pip install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113',
+                },
+                {
+                    description: 'Requirements file to use for stable-diffusion-webui',
+                    name: 'REQS_FILE',
+                    type: 'Input',
+                    defaultValue: 'requirements_versions.txt',
+                },
+                {
+                    description: 'Fixed git repo for K_DIFFUSION_PACKAGE',
+                    name: 'K_DIFFUSION_PACKAGE',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git repo for GFPGAN_PACKAGE',
+                    name: 'GFPGAN_PACKAGE',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git commit for Stable Diffusion',
+                    name: 'STABLE_DIFFUSION_COMMIT_HASH',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git commit for CodeFormer',
+                    name: 'CODEFORMER_COMMIT_HASH',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git commit for BLIP',
+                    name: 'BLIP_COMMIT_HASH',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Enable accelerated launch',
+                    name: 'ACCELERATE',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    description: 'Disable TCMalloc',
+                    name: 'NO_TCMALLOC',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+    ],
+};
+automatic1111Arguments.unshift(isWin ? winEV : linEV);
 
 const lshqqytigerArguments = lodashExports.cloneDeep(automatic1111Arguments);
 const lsSpecifArgs = [
@@ -18123,6 +18242,7 @@ function getTypeByCategoryName(category) {
     switch (category) {
         case 'Command Line Arguments':
             return 'cl';
+        case 'Environment':
         case 'Environment Variables':
             return 'env';
         default:
@@ -18136,6 +18256,8 @@ function getCategoryType(name) {
         if ('sections' in argument) {
             for (const section of argument.sections) {
                 if (section.items.some(item => item.name === name)) {
+                    if (section.section === 'Variables')
+                        return 'envVar';
                     return getTypeByCategoryName(argument.category);
                 }
             }
@@ -18148,14 +18270,16 @@ function getCategoryType(name) {
     }
     return undefined;
 }
-function parseArgsToString$5(args) {
-    let result = '@echo off\n\n';
+function parseArgsToString$6(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
         const cat = getCategoryType(arg.name);
-        if (cat === 'env') {
+        if (cat !== 'cl') {
+            const eWinResult = `set ${arg.name}=${arg.value}\n`;
+            const eResult = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
             if (arg.name !== 'COMMANDLINE_ARGS')
-                result += `set ${arg.name}=${arg.value}\n`;
+                result += isWin ? eWinResult : eResult;
         }
         else if (cat === 'cl') {
             const argType = getArgumentType(arg.name, lshqqytigerArguments);
@@ -18163,7 +18287,7 @@ function parseArgsToString$5(args) {
                 clResult += `${arg.name} `;
             }
             else if (argType === 'File' || argType === 'Directory') {
-                clResult += `${arg.name} "${arg.value}" `;
+                clResult += isWin ? `${arg.name} "${arg.value}" ` : `${arg.name} ${arg.value} `;
             }
             else {
                 clResult += `${arg.name} ${arg.value} `;
@@ -18171,15 +18295,35 @@ function parseArgsToString$5(args) {
         }
     });
     if (!lodashExports.isEmpty(clResult))
-        result += `set COMMANDLINE_ARGS=${clResult}\n`;
-    result += `\ncall webui.bat`;
+        result += isWin ? `set COMMANDLINE_ARGS=${clResult}\n` : `export COMMANDLINE_ARGS=${clResult}\n`;
+    result += isWin ? `\ncall webui.bat` : ``;
     return result;
 }
-function parseStringToArgs$5(args) {
+function checkLinuxArgLine(line) {
+    if (isWin && line.startsWith('set '))
+        return 'set';
+    if (line.startsWith('export '))
+        return 'export';
+    for (let arg of lshqqytigerArguments) {
+        if (arg.category === 'Environment') {
+            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
+                return 'var';
+            }
+            else {
+                return undefined;
+            }
+        }
+    }
+    return undefined;
+}
+function parseStringToArgs$6(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (line.startsWith('set COMMANDLINE_ARGS=')) {
+        if (line.startsWith('#')) {
+            return;
+        }
+        else if (line.startsWith(`${isWin ? 'set' : 'export'} COMMANDLINE_ARGS=`)) {
             argResult.push({ name: 'COMMANDLINE_ARGS', value: '' });
             // Extract the command line arguments and clear falsy values
             const clArgs = line.split('=')[1];
@@ -18207,19 +18351,30 @@ function parseStringToArgs$5(args) {
                 }
             });
         }
-        else if (line.startsWith('set ')) {
-            // If line starts with 'set ', extract the environment variable id and value
-            let [name, value] = line.replace('set ', '').split('=');
-            name = removeEscapes(name.trim());
-            value = removeEscapes(value.trim());
-            if (isValidArg(name, lshqqytigerArguments)) {
-                argResult.push({ name, value });
+        else {
+            const lineType = checkLinuxArgLine(line);
+            if (lineType === 'export' || lineType === 'set') {
+                // If line starts with 'set ' or 'export ', extract the environment variable id and value
+                let [name, value] = line.replace(`${lineType} `, '').split('=');
+                name = removeEscapes(name.trim());
+                value = removeEscapes(value.trim());
+                if (isValidArg(name, lshqqytigerArguments)) {
+                    argResult.push({ name, value });
+                }
+            }
+            else if (checkLinuxArgLine(line) === 'var') {
+                let [name, value] = line.split('=');
+                name = removeEscapes(name.trim());
+                value = removeEscapes(value.trim());
+                if (isValidArg(name, lshqqytigerArguments)) {
+                    argResult.push({ name, value });
+                }
             }
         }
     });
     return argResult;
 }
-const a1RendererMethods = { catchAddress, parseArgsToString: parseArgsToString$5, parseStringToArgs: parseStringToArgs$5 };
+const a1RendererMethods = { catchAddress, parseArgsToString: parseArgsToString$6, parseStringToArgs: parseStringToArgs$6 };
 
 const comfyArguments = [
     {
@@ -18555,8 +18710,8 @@ const comfyArguments = [
     },
 ];
 
-function parseArgsToString$4(args) {
-    let result = '@echo off\n\n';
+function parseArgsToString$5(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
         const argType = getArgumentType(arg.name, comfyArguments);
@@ -18573,7 +18728,7 @@ function parseArgsToString$4(args) {
     result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
     return result;
 }
-function parseStringToArgs$4(args) {
+function parseStringToArgs$5(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18607,7 +18762,7 @@ function parseStringToArgs$4(args) {
     });
     return argResult;
 }
-const comfyRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$4, parseStringToArgs: parseStringToArgs$4 };
+const comfyRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$5, parseStringToArgs: parseStringToArgs$5 };
 
 const gitmyloArguments = [
     {
@@ -18666,8 +18821,7 @@ const gitmyloArguments = [
                     {
                         name: '--listen',
                         description: 'Listen on 0.0.0.0',
-                        type: 'Input',
-                        defaultValue: '0.0.0.0',
+                        type: 'CheckBox',
                     },
                     {
                         name: '--port',
@@ -18685,8 +18839,9 @@ const gitmyloArguments = [
     },
 ];
 
-function parseArgsToString$3(args) {
-    let result = '@echo off\n\n';
+const shellCommand$4 = isWin ? 'call run.bat' : 'bash ./run.sh';
+function parseArgsToString$4(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
         const argType = getArgumentType(arg.name, gitmyloArguments);
@@ -18700,17 +18855,17 @@ function parseArgsToString$3(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? 'call run.bat' : `call run.bat ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
     return result;
 }
-function parseStringToArgs$3(args) {
+function parseStringToArgs$4(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith('call run.bat'))
+        if (!line.startsWith(shellCommand$4))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split('call run.bat ')[1];
+        const clArgs = line.split(`${shellCommand$4} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -18737,7 +18892,7 @@ function parseStringToArgs$3(args) {
     });
     return argResult;
 }
-const gitmyloRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$3, parseStringToArgs: parseStringToArgs$3 };
+const gitmyloRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$4, parseStringToArgs: parseStringToArgs$4 };
 
 const oobaboogaArguments = [
     {
@@ -19288,8 +19443,9 @@ const oobaboogaArguments = [
     },
 ];
 
-function parseArgsToString$2(args) {
-    let result = '@echo off\n\n';
+const shellCommand$3 = isWin ? 'call start_windows.bat' : 'bash ./start_linux.sh';
+function parseArgsToString$3(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
         const argType = getArgumentType(arg.name, oobaboogaArguments);
@@ -19303,17 +19459,17 @@ function parseArgsToString$2(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? 'call start_windows.bat' : `call start_windows.bat ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
     return result;
 }
-function parseStringToArgs$2(args) {
+function parseStringToArgs$3(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith('call start_windows.bat'))
+        if (!line.startsWith(shellCommand$3))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split('call start_windows.bat ')[1];
+        const clArgs = line.split(`${shellCommand$3} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -19340,9 +19496,9 @@ function parseStringToArgs$2(args) {
     });
     return argResult;
 }
-const oobaRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$2, parseStringToArgs: parseStringToArgs$2 };
+const oobaRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$3, parseStringToArgs: parseStringToArgs$3 };
 
-const stabilityaiArguments = [
+const mcMonkeyArguments = [
     {
         category: 'Command Line Arguments',
         items: [
@@ -19411,7 +19567,6 @@ const stabilityaiArguments = [
                 description: 'If enabled, blocks in-UI editing of server settings by admins. Settings cannot be modified ' +
                     'in this mode without editing the settings file and restarting the server.',
                 type: 'CheckBox',
-                defaultValue: false,
             },
             {
                 name: '--ngrok-path',
@@ -19441,15 +19596,21 @@ const stabilityaiArguments = [
                 type: 'Input',
                 defaultValue: 'none',
             },
+            {
+                name: '--help',
+                description: "Displays an in-CLI shortlist of CLI args and some usage hints.",
+                type: 'CheckBox',
+            },
         ],
     },
 ];
 
-function parseArgsToString$1(args) {
-    let result = '@echo off\n\n';
+const shellCommand$2 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
+function parseArgsToString$2(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
-        const argType = getArgumentType(arg.name, stabilityaiArguments);
+        const argType = getArgumentType(arg.name, mcMonkeyArguments);
         if (argType === 'CheckBox') {
             argResult += `${arg.name} `;
         }
@@ -19460,17 +19621,17 @@ function parseArgsToString$1(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? 'call launch-windows.bat' : `call launch-windows.bat ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
     return result;
 }
-function parseStringToArgs$1(args) {
+function parseStringToArgs$2(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith('call launch-windows.bat'))
+        if (!line.startsWith(shellCommand$2))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split('call launch-windows.bat ')[1];
+        const clArgs = line.split(`${shellCommand$2} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -19485,8 +19646,8 @@ function parseStringToArgs$1(args) {
         // Process each argument
         result.forEach((value) => {
             // Check if the argument exists or valid
-            if (isValidArg(value.name, stabilityaiArguments)) {
-                if (getArgumentType(value.name, stabilityaiArguments) === 'CheckBox') {
+            if (isValidArg(value.name, mcMonkeyArguments)) {
+                if (getArgumentType(value.name, mcMonkeyArguments) === 'CheckBox') {
                     argResult.push({ name: value.name, value: '' });
                 }
                 else {
@@ -19497,7 +19658,7 @@ function parseStringToArgs$1(args) {
     });
     return argResult;
 }
-const stabilityRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$1, parseStringToArgs: parseStringToArgs$1 };
+const mcMonkeyRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$2, parseStringToArgs: parseStringToArgs$2 };
 
 const vladmandicArguments = [
     {
@@ -19850,8 +20011,9 @@ const vladmandicArguments = [
     },
 ];
 
-function parseArgsToString(args) {
-    let result = '@echo off\n\n';
+const shellCommand$1 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
+function parseArgsToString$1(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
         const argType = getArgumentType(arg.name, vladmandicArguments);
@@ -19865,17 +20027,17 @@ function parseArgsToString(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? 'call webui.bat' : `call webui.bat ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$1 : `${shellCommand$1} ${argResult}`;
     return result;
 }
-function parseStringToArgs(args) {
+function parseStringToArgs$1(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith('call webui.bat'))
+        if (!line.startsWith(shellCommand$1))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split('call webui.bat ')[1];
+        const clArgs = line.split(`${shellCommand$1} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -19902,6 +20064,104 @@ function parseStringToArgs(args) {
     });
     return argResult;
 }
-const vladRendererMethods = { catchAddress, parseArgsToString, parseStringToArgs };
+const vladRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$1, parseStringToArgs: parseStringToArgs$1 };
 
-export { AUTOMATIC1111_ID as A, oobaboogaArguments as B, ComfyUI_ID as C, oobaRendererMethods as D, GITMYLO_ID as G, LSHQQYTIGER_ID as L, OOBABOOGA_ID as O, RSXDALV_ID as R, STABILITYAI_ID as S, VLADMANDIC_ID as V, parseStringToArgs$5 as a, parseArgsToString$4 as b, commonjsGlobal as c, parseStringToArgs$4 as d, parseArgsToString$3 as e, parseStringToArgs$3 as f, parseArgsToString$2 as g, parseStringToArgs$2 as h, parseArgsToString$1 as i, parseStringToArgs$1 as j, parseArgsToString as k, parseStringToArgs as l, LLLYASVIEL_ID as m, catchAddress as n, gitmyloArguments as o, parseArgsToString$5 as p, gitmyloRendererMethods as q, comfyArguments as r, comfyRendererMethods as s, automatic1111Arguments as t, a1RendererMethods as u, lshqqytigerArguments as v, vladmandicArguments as w, vladRendererMethods as x, stabilityaiArguments as y, stabilityRendererMethods as z };
+const bmaltaisArguments = [
+    {
+        category: 'Command Line Arguments',
+        items: [
+            {
+                name: '--listen',
+                description: 'Specify the IP address to listen on for connections to Gradio.',
+                type: 'Input',
+            },
+            {
+                name: '--username',
+                description: 'Set a username for authentication.',
+                type: 'Input',
+            },
+            {
+                name: '--password',
+                description: 'Set a password for authentication.',
+                type: 'Input',
+            },
+            {
+                name: '--server_port',
+                description: 'Define the port to run the server listener on.',
+                type: 'Input',
+            },
+            {
+                name: '--inbrowser',
+                description: 'Open the Gradio UI in a web browser.',
+                type: 'Input',
+            },
+            {
+                name: '--share',
+                description: 'Share the Gradio UI.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--language',
+                description: 'Set custom language',
+                type: 'Input',
+            },
+        ],
+    },
+];
+
+const shellCommand = isWin ? 'call gui.bat' : 'bash ./gui.sh';
+function parseArgsToString(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, bmaltaisArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand : `${shellCommand} ${argResult}`;
+    return result;
+}
+function parseStringToArgs(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, bmaltaisArguments)) {
+                if (getArgumentType(value.name, bmaltaisArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+const bmaltaisRendererMethods = { catchAddress, parseArgsToString, parseStringToArgs };
+
+export { AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, vladRendererMethods as D, mcMonkeyArguments as E, mcMonkeyRendererMethods as F, GITMYLO_ID as G, bmaltaisArguments as H, bmaltaisRendererMethods as I, oobaboogaArguments as J, oobaRendererMethods as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, OOBABOOGA_ID as O, RSXDALV_ID as R, VLADMANDIC_ID as V, parseStringToArgs$6 as a, parseArgsToString$5 as b, commonjsGlobal as c, parseStringToArgs$5 as d, parseArgsToString$4 as e, parseStringToArgs$4 as f, parseArgsToString$3 as g, parseStringToArgs$3 as h, isWin as i, parseArgsToString$2 as j, parseStringToArgs$2 as k, parseArgsToString$1 as l, parseStringToArgs$1 as m, parseArgsToString as n, parseStringToArgs as o, parseArgsToString$6 as p, LLLYASVIEL_ID as q, catchAddress as r, gitmyloArguments as s, gitmyloRendererMethods as t, comfyArguments as u, comfyRendererMethods as v, automatic1111Arguments as w, a1RendererMethods as x, lshqqytigerArguments as y, vladmandicArguments as z };

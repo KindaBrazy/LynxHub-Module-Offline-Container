@@ -5,8 +5,8 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 5,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "1.1.0",
-  "updateDate": "2024-08-28 15:15",
-  "changeLog": "V1.1.0:\n\n  New WebUI: Stable Diffusion WebUI Forge",
+  "version": "2.0.0",
+  "updateDate": "2024-09-03 08:33",
+  "changeLog": "V2.0.0:\n・Linux Support\n・New WebUI: Kohya's\n・Changed Stable Swarm UI(Stability-AI) -> SwarmUI(McMonkeyProjects)\n・Reduced background image size\n\nV1.1.0:\n・New WebUI: Stable Diffusion WebUI Forge",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4"
 }

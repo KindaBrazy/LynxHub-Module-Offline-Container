@@ -14,8 +14,7 @@ const textPage: PagesData = {
       type: 'text',
       extensionsDir: '/extensions',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/71c60a56-df44-4185-8227-c285e58a3cf1/' +
-        'width=832,quality=90/00000-3546450635.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/71c60a56-df44-4185-8227-c285e58a3cf1/width=300/00000-3546450635.jpeg',
       arguments: oobaboogaArguments,
       methods: oobaRendererMethods,
     },

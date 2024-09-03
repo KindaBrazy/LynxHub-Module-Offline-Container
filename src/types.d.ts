@@ -109,7 +109,7 @@ export type DataItem = {
 export type ArgumentsData = (DataItem | DataSection)[];
 
 export type ArgType = {name: string; value: string};
-export type Category = 'env' | 'cl' | undefined;
+export type Category = 'env' | 'envVar' | 'cl' | undefined;
 
 export type MainModules = {
   /** The ID of the card that using these methods */

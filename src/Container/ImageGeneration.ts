@@ -1,14 +1,24 @@
-import {AUTOMATIC1111_ID, ComfyUI_ID, LLLYASVIEL_ID, LSHQQYTIGER_ID, STABILITYAI_ID, VLADMANDIC_ID} from '../Constants';
+import {
+  AUTOMATIC1111_ID,
+  BMALTAIS_ID,
+  ComfyUI_ID,
+  LLLYASVIEL_ID,
+  LSHQQYTIGER_ID,
+  MCMONKEYPROJECTS_ID,
+  VLADMANDIC_ID,
+} from '../Constants';
 import {PagesData} from '../types';
 import automatic1111Arguments from './Automatic1111 & Forks/Automatic1111Arguments';
 import lshqqytigerArguments from './Automatic1111 & Forks/LshqqytigerArguments';
 import a1RendererMethods from './Automatic1111 & Forks/RendererMethods';
 import comfyArguments from './ComfyUI/Arguments';
 import comfyRendererMethods from './ComfyUI/RendererMethods';
-import stabilityaiArguments from './StabilityAI/Arguments';
-import stabilityRendererMethods from './StabilityAI/RendererMethods';
+import mcMonkeyArguments from './McMonkeyProjects/Arguments';
+import mcMonkeyRendererMethods from './McMonkeyProjects/RendererMethods';
 import vladmandicArguments from './Vladmandic/Arguments';
 import vladRendererMethods from './Vladmandic/RendererMethods';
+import bmaltaisArguments from './Bmaltais/Arguments';
+import bmaltaisRendererMethods from './Bmaltais/RendererMethods';
 
 const imagePage: PagesData = {
   routePath: '/imageGenerationPage',
@@ -23,8 +33,7 @@ const imagePage: PagesData = {
       extensionsDir: '/custom_nodes',
       type: 'image',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e7be14a2-5e23-41df-b653-4ba5b45ad065/' +
-        'width=832,quality=90/00008-2000176836.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e7be14a2-5e23-41df-b653-4ba5b45ad065/width=300/00008-2000176836.jpeg',
       arguments: comfyArguments,
       methods: comfyRendererMethods,
     },
@@ -36,8 +45,7 @@ const imagePage: PagesData = {
       extensionsDir: '/extensions',
       type: 'image',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9608d0fa-6010-4ff8-b149-86e440ff9254/' +
-        'width=832,quality=90/00000-3587005815.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9608d0fa-6010-4ff8-b149-86e440ff9254/width=300/00000-3587005815.jpeg',
 
       arguments: automatic1111Arguments,
       methods: a1RendererMethods,
@@ -50,8 +58,7 @@ const imagePage: PagesData = {
       extensionsDir: '/extensions',
       type: 'image',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3eaf306e-9edc-46bd-89d0-7f7398068e01/' +
-        'width=832,quality=90/00002-1900763417.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3eaf306e-9edc-46bd-89d0-7f7398068e01/width=300/00002-1900763417.jpeg',
       arguments: lshqqytigerArguments,
       methods: a1RendererMethods,
     },
@@ -66,8 +73,7 @@ const imagePage: PagesData = {
       extensionsDir: '/extensions',
       type: 'image',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/' +
-        'original=true,quality=90/00004-3953235735.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/width=300/00004-3953235735.jpeg',
       arguments: automatic1111Arguments,
       methods: a1RendererMethods,
     },
@@ -79,24 +85,37 @@ const imagePage: PagesData = {
       extensionsDir: '/extensions',
       type: 'image',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e396ff35-0cf7-4121-8e69-4dd80b2429fa/' +
-        'width=832,quality=90/00002-1070114876.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e396ff35-0cf7-4121-8e69-4dd80b2429fa/width=300/00002-1070114876.jpeg',
       arguments: vladmandicArguments,
       methods: vladRendererMethods,
     },
     {
-      id: STABILITYAI_ID,
-      title: 'Stable Swarm UI',
+      id: MCMONKEYPROJECTS_ID,
+      title: 'SwarmUI',
       description:
-        'A Modular Stable Diffusion Web-User-Interface, with an emphasis on making powertools' +
-        ' easily accessible, high performance, and extensibility.',
-      repoUrl: 'https://github.com/Stability-AI/StableSwarmUI',
+        'A Modular AI Image Generation Web-User-Interface, with an emphasis on making powertools ' +
+        'easily accessible, high performance, and extensibility. Supports Stable Diffusion, Flux, ' +
+        'etc. AI image models, with plans to support AI video, audio, and more in the future.',
+      repoUrl: 'https://github.com/mcmonkeyprojects/SwarmUI',
+      type: 'image',
+      extensionsDir: '/src/Extensions',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9dac48c1-20fd-4fb0-b84b-f5f533c5cdc5/width=300/00014-3815479772.jpeg',
+      arguments: mcMonkeyArguments,
+      methods: mcMonkeyRendererMethods,
+    },
+    {
+      id: BMALTAIS_ID,
+      title: "Kohya's GUI",
+      description:
+        "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
+        'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
+      repoUrl: 'https://github.com/bmaltais/kohya_ss',
       type: 'image',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9dac48c1-20fd-4fb0-b84b-f5f533c5cdc5/' +
-        'width=832,quality=90/00014-3815479772.jpeg',
-      arguments: stabilityaiArguments,
-      methods: stabilityRendererMethods,
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/db3575cb-162a-4436-b5d0-f9fbf9ed1140/width=300/00002-4073703889.jpeg',
+      arguments: bmaltaisArguments,
+      methods: bmaltaisRendererMethods,
     },
   ],
 };

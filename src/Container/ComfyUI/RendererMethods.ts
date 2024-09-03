@@ -3,9 +3,10 @@ import {isEmpty} from 'lodash';
 import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import comfyArguments from './Arguments';
+import {isWin} from '../../Utils/CrossUtils';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
-  let result: string = '@echo off\n\n';
+  let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
   let argResult: string = '';
 
   args.forEach(arg => {

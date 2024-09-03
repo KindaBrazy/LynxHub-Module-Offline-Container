@@ -17,8 +17,7 @@ const audioPage: PagesData = {
       type: 'audio',
       extensionsDir: '/extensions',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/' +
-        'width=832,quality=90/00000-4072148758.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
       methods: {catchAddress},
     },
     {
@@ -30,8 +29,7 @@ const audioPage: PagesData = {
       arguments: gitmyloArguments,
       extensionsDir: '/extensions',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/a7473108-d6fb-4c9d-97a6-b58ca82bcdfb/' +
-        'width=832,quality=90/00002-1953665041.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/a7473108-d6fb-4c9d-97a6-b58ca82bcdfb/width=300/00002-1953665041.jpeg',
       methods: gitmyloRendererMethods,
     },
   ],

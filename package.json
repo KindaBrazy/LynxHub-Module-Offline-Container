@@ -4,7 +4,6 @@
   "rendererEntryFile": "./src/renderer.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf scripts && rollup --config",
     "build:move": "npm run build && node index.js"
   },
@@ -13,24 +12,24 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.0",
+    "@eslint/js": "^9.9.1",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/graceful-fs": "^4.1.9",
     "@types/lodash": "^4.17.7",
-    "@types/node": "^22.4.2",
-    "eslint": "^9.9.0",
+    "@types/node": "^22.5.2",
+    "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-perfectionist": "^3.2.0",
+    "eslint-plugin-perfectionist": "^3.3.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
-    "rollup": "^4.21.0",
-    "tslib": "^2.6.3",
+    "rollup": "^4.21.2",
+    "tslib": "^2.7.0",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.2.0"
+    "typescript-eslint": "^8.4.0"
   }
 }

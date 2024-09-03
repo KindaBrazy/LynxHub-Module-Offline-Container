@@ -1,94 +1,7 @@
-import {ArgumentsData} from '../../types';
+import {ArgumentsData, DataItem, DataSection} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 
 const automatic1111Arguments: ArgumentsData = [
-  {
-    category: 'Environment Variables',
-    items: [
-      {
-        description: 'Sets a custom path for Python executable.',
-        name: 'PYTHON',
-        type: 'Directory',
-      },
-      {
-        description:
-          'Specifies the path for the virtual environment. Default is venv.' +
-          ' Special value - runs the script without creating virtual environment.',
-        name: 'VENV_DIR',
-        type: 'Directory',
-      },
-      {
-        description: 'Additional commandline arguments for the main program.',
-        name: 'COMMANDLINE_ARGS',
-        type: 'CheckBox',
-      },
-      {
-        description:
-          'Set to anything to make the program not exit with an error' +
-          ' if an unexpected commandline argument is encountered.',
-        name: 'IGNORE_CMD_ARGS_ERRORS',
-        type: 'CheckBox',
-      },
-      {
-        description:
-          'Name of requirements.txt file with dependencies that will be' +
-          ' installed when launch.py is run. Defaults to requirements_versions.txt.',
-        name: 'REQS_FILE',
-        type: 'Input',
-      },
-      {
-        description: 'Command for installing PyTorch.',
-        name: 'TORCH_COMMAND',
-        type: 'Input',
-      },
-      {
-        description: '`--index-url` parameter for pip.',
-        name: 'INDEX_URL',
-        type: 'Input',
-      },
-      {
-        description: 'Path to where transformers library will download and keep its files related to the CLIP model.',
-        name: 'TRANSFORMERS_CACHE',
-        type: 'Directory',
-      },
-      {
-        description:
-          'Select GPU to use for your instance on a system with multiple GPUs. For example, if you' +
-          ' want to use secondary GPU, put "1".\n(add a new line to webui-user.bat not in' +
-          ' COMMANDLINE_ARGS): `set CUDA_VISIBLE_DEVICES=0`\nAlternatively, just use `--device-id`' +
-          ' flag in `COMMANDLINE_ARGS`.',
-        name: 'CUDA_VISIBLE_DEVICES',
-        type: 'Input',
-      },
-      {
-        description:
-          "Log verbosity. Supports any valid logging level supported by Python's built-in" +
-          ' `logging` module. Defaults to `INFO` if not set.',
-        name: 'SD_WEBUI_LOG_LEVEL',
-        type: 'Input',
-      },
-      {
-        description: 'Cache file path. Defaults to `cache.json` in the root directory if not set.',
-        name: 'SD_WEBUI_CACHE_FILE',
-        type: 'File',
-      },
-      {
-        description:
-          'A value set by `launcher script` (like webui.bat webui.sh) informing Webui that' +
-          ' restart function is available',
-        name: 'SD_WEBUI_RESTAR',
-        type: 'CheckBox',
-      },
-      {
-        description:
-          'A internal value signifying if webui is currently restarting or reloading, used for disabling' +
-          ' certain actions asuch as auto launching browser.\nset to `1` disables auto launching browser\n' +
-          'set to `0` enables auto launch even when restarting\nCertain extensions might use this value' +
-          ' for similar purpose.',
-        name: 'SD_WEBUI_RESTARTING',
-        type: 'CheckBox',
-      },
-    ],
-  },
   {
     category: 'Command Line Arguments',
     condition: 'COMMANDLINE_ARGS',
@@ -836,5 +749,201 @@ const automatic1111Arguments: ArgumentsData = [
     ],
   },
 ];
+
+const winEV: DataItem = {
+  category: 'Environment Variables',
+  items: [
+    {
+      description: 'Sets a custom path for Python executable.',
+      name: 'PYTHON',
+      type: 'Directory',
+    },
+    {
+      description:
+        'Specifies the path for the virtual environment. Default is venv.' +
+        ' Special value - runs the script without creating virtual environment.',
+      name: 'VENV_DIR',
+      type: 'Directory',
+    },
+    {
+      description: 'Additional commandline arguments for the main program.',
+      name: 'COMMANDLINE_ARGS',
+      type: 'CheckBox',
+    },
+    {
+      description:
+        'Set to anything to make the program not exit with an error' +
+        ' if an unexpected commandline argument is encountered.',
+      name: 'IGNORE_CMD_ARGS_ERRORS',
+      type: 'CheckBox',
+    },
+    {
+      description:
+        'Name of requirements.txt file with dependencies that will be' +
+        ' installed when launch.py is run. Defaults to requirements_versions.txt.',
+      name: 'REQS_FILE',
+      type: 'Input',
+    },
+    {
+      description: 'Command for installing PyTorch.',
+      name: 'TORCH_COMMAND',
+      type: 'Input',
+    },
+    {
+      description: '`--index-url` parameter for pip.',
+      name: 'INDEX_URL',
+      type: 'Input',
+    },
+    {
+      description: 'Path to where transformers library will download and keep its files related to the CLIP model.',
+      name: 'TRANSFORMERS_CACHE',
+      type: 'Directory',
+    },
+    {
+      description:
+        'Select GPU to use for your instance on a system with multiple GPUs. For example, if you' +
+        ' want to use secondary GPU, put "1".\n(add a new line to webui-user.bat not in' +
+        ' COMMANDLINE_ARGS): `set CUDA_VISIBLE_DEVICES=0`\nAlternatively, just use `--device-id`' +
+        ' flag in `COMMANDLINE_ARGS`.',
+      name: 'CUDA_VISIBLE_DEVICES',
+      type: 'Input',
+    },
+    {
+      description:
+        "Log verbosity. Supports any valid logging level supported by Python's built-in" +
+        ' `logging` module. Defaults to `INFO` if not set.',
+      name: 'SD_WEBUI_LOG_LEVEL',
+      type: 'Input',
+    },
+    {
+      description: 'Cache file path. Defaults to `cache.json` in the root directory if not set.',
+      name: 'SD_WEBUI_CACHE_FILE',
+      type: 'File',
+    },
+    {
+      description:
+        'A value set by `launcher script` (like webui.bat webui.sh) informing Webui that' +
+        ' restart function is available',
+      name: 'SD_WEBUI_RESTAR',
+      type: 'CheckBox',
+    },
+    {
+      description:
+        'A internal value signifying if webui is currently restarting or reloading, used for disabling' +
+        ' certain actions asuch as auto launching browser.\nset to `1` disables auto launching browser\n' +
+        'set to `0` enables auto launch even when restarting\nCertain extensions might use this value' +
+        ' for similar purpose.',
+      name: 'SD_WEBUI_RESTARTING',
+      type: 'CheckBox',
+    },
+  ],
+};
+
+const linEV: DataSection = {
+  category: 'Environment',
+  sections: [
+    {
+      section: 'Variables',
+      items: [
+        {
+          description: 'Install directory without trailing slash',
+          name: 'install_dir',
+          type: 'Input',
+          defaultValue: '/home/$(whoami)',
+        },
+        {
+          description: 'Name of the subdirectory',
+          name: 'clone_dir',
+          type: 'Input',
+          defaultValue: 'stable-diffusion-webui',
+        },
+        {
+          description: 'python3 executable',
+          name: 'python_cmd',
+          type: 'Input',
+          defaultValue: 'python3',
+        },
+        {
+          description: 'python3 venv without trailing slash (defaults to ${install_dir}/${clone_dir}/venv)',
+          name: 'venv_dir',
+          type: 'Input',
+          defaultValue: 'venv',
+        },
+      ],
+    },
+    {
+      section: 'Arguments',
+      items: [
+        {
+          description: 'Commandline arguments for webui.py',
+          name: 'COMMANDLINE_ARGS',
+          type: 'CheckBox',
+        },
+        {
+          description: 'Script to launch to start the app',
+          name: 'LAUNCH_SCRIPT',
+          type: 'Input',
+          defaultValue: 'launch.py',
+        },
+        {
+          description: 'Install command for torch',
+          name: 'TORCH_COMMAND',
+          type: 'Input',
+          defaultValue: 'pip install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113',
+        },
+        {
+          description: 'Requirements file to use for stable-diffusion-webui',
+          name: 'REQS_FILE',
+          type: 'Input',
+          defaultValue: 'requirements_versions.txt',
+        },
+        {
+          description: 'Fixed git repo for K_DIFFUSION_PACKAGE',
+          name: 'K_DIFFUSION_PACKAGE',
+          type: 'Input',
+          defaultValue: '',
+        },
+        {
+          description: 'Fixed git repo for GFPGAN_PACKAGE',
+          name: 'GFPGAN_PACKAGE',
+          type: 'Input',
+          defaultValue: '',
+        },
+        {
+          description: 'Fixed git commit for Stable Diffusion',
+          name: 'STABLE_DIFFUSION_COMMIT_HASH',
+          type: 'Input',
+          defaultValue: '',
+        },
+        {
+          description: 'Fixed git commit for CodeFormer',
+          name: 'CODEFORMER_COMMIT_HASH',
+          type: 'Input',
+          defaultValue: '',
+        },
+        {
+          description: 'Fixed git commit for BLIP',
+          name: 'BLIP_COMMIT_HASH',
+          type: 'Input',
+          defaultValue: '',
+        },
+        {
+          description: 'Enable accelerated launch',
+          name: 'ACCELERATE',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          description: 'Disable TCMalloc',
+          name: 'NO_TCMALLOC',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+      ],
+    },
+  ],
+};
+
+automatic1111Arguments.unshift(isWin ? winEV : linEV);
 
 export default automatic1111Arguments;

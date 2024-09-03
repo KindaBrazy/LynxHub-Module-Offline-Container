@@ -57,8 +57,7 @@ const gitmyloArguments: ArgumentsData = [
           {
             name: '--listen',
             description: 'Listen on 0.0.0.0',
-            type: 'Input',
-            defaultValue: '0.0.0.0',
+            type: 'CheckBox',
           },
           {
             name: '--port',

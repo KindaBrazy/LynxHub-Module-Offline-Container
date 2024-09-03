@@ -1,9 +1,10 @@
 import {CardMainMethods, ChosenArgument} from '../../types';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
+import {isWin} from '../../Utils/CrossUtils';
 
-const BAT_FILE_NAME = 'lynx-user.bat';
-const DEFAULT_BATCH_DATA: string = '@echo off\n\npython main.py';
+const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
 
 export async function getRunCommands(dir: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);

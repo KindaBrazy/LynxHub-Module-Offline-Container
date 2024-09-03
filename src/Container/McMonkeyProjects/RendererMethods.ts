@@ -2,17 +2,17 @@ import {isEmpty} from 'lodash';
 
 import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
-import stabilityArguments from './Arguments';
+import mcMonkeyArguments from './Arguments';
 import {isWin} from '../../Utils/CrossUtils';
 
-const shellCommand = isWin ? 'call run.bat' : 'bash ./run.sh';
+const shellCommand = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
   let argResult: string = '';
 
   args.forEach(arg => {
-    const argType = getArgumentType(arg.name, stabilityArguments);
+    const argType = getArgumentType(arg.name, mcMonkeyArguments);
     if (argType === 'CheckBox') {
       argResult += `${arg.name} `;
     } else if (argType === 'File' || argType === 'Directory') {
@@ -53,8 +53,8 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
     // Process each argument
     result.forEach((value: ArgType): void => {
       // Check if the argument exists or valid
-      if (isValidArg(value.name, stabilityArguments)) {
-        if (getArgumentType(value.name, stabilityArguments) === 'CheckBox') {
+      if (isValidArg(value.name, mcMonkeyArguments)) {
+        if (getArgumentType(value.name, mcMonkeyArguments) === 'CheckBox') {
           argResult.push({name: value.name, value: ''});
         } else {
           argResult.push({name: value.name, value: value.value});
@@ -66,6 +66,6 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   return argResult;
 }
 
-const gitmyloRendererMethods: CardRendererMethods = {catchAddress, parseArgsToString, parseStringToArgs};
+const mcMonkeyRendererMethods: CardRendererMethods = {catchAddress, parseArgsToString, parseStringToArgs};
 
-export default gitmyloRendererMethods;
+export default mcMonkeyRendererMethods;

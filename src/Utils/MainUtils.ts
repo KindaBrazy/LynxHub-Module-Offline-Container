@@ -1,9 +1,9 @@
-import os from 'node:os';
 import path from 'node:path';
-
 import {promises} from 'graceful-fs';
-
 import {ChosenArgument} from '../types';
+import {isWin} from './CrossUtils';
+
+export const LINE_ENDING = isWin ? '\r' : '\n';
 
 export async function initBatchFile(path: string, data: string) {
   try {
@@ -14,8 +14,6 @@ export async function initBatchFile(path: string, data: string) {
   }
 }
 
-export const LINE_ENDING = os.platform() === 'win32' ? '\r' : '\n';
-
 export async function utilRunCommands(
   batFileName: string,
   dir?: string,
@@ -23,7 +21,7 @@ export async function utilRunCommands(
 ): Promise<string | string[]> {
   if (dir && defaultData) await initBatchFile(path.join(dir, batFileName), defaultData);
 
-  return `./${batFileName}${LINE_ENDING}`;
+  return `${isWin ? './' : 'bash ./'}${batFileName}${LINE_ENDING}`;
 }
 
 export async function utilSaveArgs(

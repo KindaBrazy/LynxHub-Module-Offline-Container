@@ -1,6 +1,6 @@
 import {isEmpty} from 'lodash';
 
-import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
+import {ArgType, CardRendererMethods, ChosenArgument, ExtensionData} from '../../types';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import comfyArguments from './Arguments';
 import {isWin} from '../../Utils/CrossUtils';
@@ -64,6 +64,29 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   return argResult;
 }
 
-const comfyRendererMethods: CardRendererMethods = {catchAddress, parseArgsToString, parseStringToArgs};
+
+async function fetchExtensionList(): Promise<ExtensionData[]> {
+  try {
+    const response = await fetch(
+      'https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json',
+    );
+    const extensions = await response.json();
+    return extensions.custom_nodes.map((extension: any) => ({
+      title: extension.title,
+      description: extension.description,
+      url: extension.reference,
+    }));
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+const comfyRendererMethods: CardRendererMethods = {
+  catchAddress,
+  fetchExtensionList,
+  parseArgsToString,
+  parseStringToArgs,
+};
 
 export default comfyRendererMethods;

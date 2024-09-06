@@ -1,5 +1,12 @@
 export type AvailablePages = '/imageGenerationPage' | '/textGenerationPage' | '/audioGenerationPage';
 
+export type ExtensionData = {
+  title: string;
+  description: string;
+  url: string;
+  stars?: number;
+};
+
 /** These methods will be called in the main process */
 export type CardMainMethods = {
   /** Return commands based on installed directory to be executed with terminal */
@@ -18,6 +25,9 @@ export type CardRendererMethods = {
    * @return URL of running AI to be showing in browser of the user and
    * @return undefined if URL is not in that line */
   catchAddress: (line: string) => string | undefined;
+
+  /** Fetching and return array of available extensions in type of `ExtensionData` */
+  fetchExtensionList?: () => Promise<ExtensionData[]>;
 
   /** Parse the given argument to string */
   parseArgsToString?: (args: ChosenArgument[]) => string;

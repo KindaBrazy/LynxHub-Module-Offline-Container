@@ -4,6 +4,7 @@ import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import vladmandicArguments from './Arguments';
 import {isWin} from '../../Utils/CrossUtils';
+import {fetchExtensionList} from '../Automatic1111 & Forks/RendererMethods';
 
 const shellCommand = isWin ? 'call webui.bat' : 'bash ./webui.sh';
 
@@ -66,6 +67,11 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   return argResult;
 }
 
-const vladRendererMethods: CardRendererMethods = {catchAddress, parseArgsToString, parseStringToArgs};
+const vladRendererMethods: CardRendererMethods = {
+  catchAddress,
+  fetchExtensionList,
+  parseArgsToString,
+  parseStringToArgs,
+};
 
 export default vladRendererMethods;

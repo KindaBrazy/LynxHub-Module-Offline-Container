@@ -1,6 +1,6 @@
 import {isEmpty} from 'lodash';
 
-import {ArgType, CardRendererMethods, Category, ChosenArgument, DataSection} from '../../types';
+import {ArgType, CardRendererMethods, Category, ChosenArgument, DataSection, ExtensionData} from '../../types';
 import {catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../Utils/RendererUtils';
 import lshqqytigerArguments from './LshqqytigerArguments';
 import {isWin} from '../../Utils/CrossUtils';
@@ -146,6 +146,24 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   return argResult;
 }
 
-const a1RendererMethods: CardRendererMethods = {catchAddress, parseArgsToString, parseStringToArgs};
+export async function fetchExtensionList(): Promise<ExtensionData[]> {
+  try {
+    const response = await fetch(
+      'https://raw.githubusercontent.com/AUTOMATIC1111/stable-diffusion-webui-extensions/master/index.json',
+    );
+    const extensions = await response.json();
+    return extensions.extensions.map((extension: any) => ({
+      title: extension.name,
+      description: extension.description,
+      url: extension.url,
+      stars: extension.stars,
+    }));
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+const a1RendererMethods: CardRendererMethods = {catchAddress, fetchExtensionList, parseArgsToString, parseStringToArgs};
 
 export default a1RendererMethods;

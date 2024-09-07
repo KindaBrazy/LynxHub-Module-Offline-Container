@@ -1,7 +1,7 @@
 import {CardMainMethods, ChosenArgument} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
-import {isWin} from '../../Utils/CrossUtils';
 
 const CONFIG_FILE = isWin ? 'webui-user.bat' : 'webui-user.sh';
 const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';

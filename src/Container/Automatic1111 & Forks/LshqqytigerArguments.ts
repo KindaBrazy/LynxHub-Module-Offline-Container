@@ -1,6 +1,7 @@
+import {cloneDeep} from 'lodash';
+
 import {ArgumentItem, ArgumentSection, DataSection} from '../../types';
 import automatic1111Arguments from './Automatic1111Arguments';
-import {cloneDeep} from 'lodash';
 
 const lshqqytigerArguments = cloneDeep(automatic1111Arguments);
 

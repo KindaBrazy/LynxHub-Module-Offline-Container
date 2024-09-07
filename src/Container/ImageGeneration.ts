@@ -11,14 +11,14 @@ import {PagesData} from '../types';
 import automatic1111Arguments from './Automatic1111 & Forks/Automatic1111Arguments';
 import lshqqytigerArguments from './Automatic1111 & Forks/LshqqytigerArguments';
 import a1RendererMethods from './Automatic1111 & Forks/RendererMethods';
+import bmaltaisArguments from './Bmaltais/Arguments';
+import bmaltaisRendererMethods from './Bmaltais/RendererMethods';
 import comfyArguments from './ComfyUI/Arguments';
 import comfyRendererMethods from './ComfyUI/RendererMethods';
 import mcMonkeyArguments from './McMonkeyProjects/Arguments';
 import mcMonkeyRendererMethods from './McMonkeyProjects/RendererMethods';
 import vladmandicArguments from './Vladmandic/Arguments';
 import vladRendererMethods from './Vladmandic/RendererMethods';
-import bmaltaisArguments from './Bmaltais/Arguments';
-import bmaltaisRendererMethods from './Bmaltais/RendererMethods';
 
 const imagePage: PagesData = {
   routePath: '/imageGenerationPage',

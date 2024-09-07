@@ -1,9 +1,9 @@
 import {isEmpty} from 'lodash';
 
 import {ArgType, CardRendererMethods, ChosenArgument, ExtensionData} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import mcMonkeyArguments from './Arguments';
-import {isWin} from '../../Utils/CrossUtils';
 
 const shellCommand = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
 
@@ -85,7 +85,8 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
       url: 'https://github.com/kalebbroo/SwarmUI-MagicPromptExtension',
       title: 'SwarmUI MagicPrompt Extension',
       description:
-        'The MagicPrompt Extension provides a simple and intuitive way directly in SwarmUI to generate text prompts for Stable Diffusion images. This uses your local Ollama LLMs.',
+        'The MagicPrompt Extension provides a simple and intuitive way directly in SwarmUI to generate text' +
+        ' prompts for Stable Diffusion images. This uses your local Ollama LLMs.',
       stars: 7,
     },
     {

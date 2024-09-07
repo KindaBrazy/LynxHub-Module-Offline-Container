@@ -2,9 +2,10 @@ import eslint from '@eslint/js';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
-const MAX_LINE_LENGTH = 120;
+const MAX_LINE_LENGTH = 130;
 
 export default [
   eslint.configs.recommended,
@@ -15,6 +16,13 @@ export default [
     plugins: {
       perfectionist,
       'simple-import-sort': simpleImportSort,
+    },
+
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
 
     rules: {
@@ -41,7 +49,6 @@ export default [
         {
           proseWrap: 'always',
           singleQuote: true,
-          printWidth: MAX_LINE_LENGTH,
           bracketSpacing: false,
           bracketSameLine: true,
           arrowParens: 'avoid',

@@ -109,7 +109,7 @@ const mcMonkeyArguments: ArgumentsData = [
       },
       {
         name: '--help',
-        description: "Displays an in-CLI shortlist of CLI args and some usage hints.",
+        description: 'Displays an in-CLI shortlist of CLI args and some usage hints.',
         type: 'CheckBox',
       },
     ],

@@ -12,7 +12,7 @@ export default {
     dir: 'scripts',
     format: 'es',
     entryFileNames: '[name].mjs',
-    chunkFileNames: '[name]_[hash:6].mjs'
+    chunkFileNames: '[name]_[hash:6].mjs',
   },
-  plugins: [json(), typescript(), nodeResolve(), commonjs()]
+  plugins: [json(), typescript(), nodeResolve(), commonjs()],
 };

@@ -1,9 +1,9 @@
 import {isEmpty} from 'lodash';
 
 import {ArgType, CardRendererMethods, ChosenArgument, ExtensionData} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import comfyArguments from './Arguments';
-import {isWin} from '../../Utils/CrossUtils';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
@@ -63,7 +63,6 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 
   return argResult;
 }
-
 
 async function fetchExtensionList(): Promise<ExtensionData[]> {
   try {

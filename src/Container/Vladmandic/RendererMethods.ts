@@ -1,10 +1,10 @@
 import {isEmpty} from 'lodash';
 
 import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
-import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
-import vladmandicArguments from './Arguments';
 import {isWin} from '../../Utils/CrossUtils';
+import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import {fetchExtensionList} from '../Automatic1111 & Forks/RendererMethods';
+import vladmandicArguments from './Arguments';
 
 const shellCommand = isWin ? 'call webui.bat' : 'bash ./webui.sh';
 

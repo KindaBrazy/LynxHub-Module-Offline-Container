@@ -1,9 +1,9 @@
 import {isEmpty} from 'lodash';
 
-import {ArgType, CardRendererMethods, ChosenArgument, ExtensionData} from '../../types';
+import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import oobaboogaArguments from './Arguments';
-import {isWin} from '../../Utils/CrossUtils';
 import {fetchExtensionList} from './ExtensionsList';
 
 const shellCommand = isWin ? 'call start_windows.bat' : 'bash ./start_linux.sh';
@@ -66,7 +66,6 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 
   return argResult;
 }
-
 
 const oobaRendererMethods: CardRendererMethods = {
   catchAddress,

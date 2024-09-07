@@ -1,24 +1,24 @@
 import {
   AUTOMATIC1111_ID,
+  BMALTAIS_ID,
   ComfyUI_ID,
   GITMYLO_ID,
   LLLYASVIEL_ID,
   LSHQQYTIGER_ID,
+  MCMONKEYPROJECTS_ID,
   OOBABOOGA_ID,
   RSXDALV_ID,
-  MCMONKEYPROJECTS_ID,
   VLADMANDIC_ID,
-  BMALTAIS_ID,
 } from './Constants';
 import a1MainMethods from './Container/Automatic1111 & Forks/MainMethods';
+import bmaltaisMainMethods from './Container/Bmaltais/MainMethods';
 import comfyMainMethods from './Container/ComfyUI/MainMethods';
 import gitmyloMainMethods from './Container/Gitmylo/MainMethods';
+import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
 import oobaMainMethods from './Container/Oobabooga/MainMethods';
 import rsxMainMethods from './Container/Rsxdalv/MainMethods';
-import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
 import vladMainMethods from './Container/Vladmandic/MainMethods';
 import {MainModules} from './types';
-import bmaltaisMainMethods from './Container/Bmaltais/MainMethods';
 
 const mainModules: MainModules[] = [
   {id: ComfyUI_ID, methods: comfyMainMethods},

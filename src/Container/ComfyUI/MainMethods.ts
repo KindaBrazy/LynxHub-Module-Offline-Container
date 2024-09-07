@@ -1,7 +1,7 @@
 import {CardMainMethods, ChosenArgument} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
-import {isWin} from '../../Utils/CrossUtils';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';

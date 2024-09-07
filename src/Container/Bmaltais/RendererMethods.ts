@@ -1,9 +1,9 @@
 import {isEmpty} from 'lodash';
 
 import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import bmaltaisArguments from './Arguments';
-import {isWin} from '../../Utils/CrossUtils';
 
 const shellCommand = isWin ? 'call gui.bat' : 'bash ./gui.sh';
 

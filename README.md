@@ -14,15 +14,16 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 
 ### 🖼️ Image Generation
 
-| Developer                                                                                          | Description                         | GitHub                                                               |
-|----------------------------------------------------------------------------------------------------|-------------------------------------|----------------------------------------------------------------------|
-| <img height='20' src="https://avatars.githubusercontent.com/u/121283862?s=20&v=4"> ComfyAnonymous  | ComfyUI                             | [Link](https://github.com/comfyanonymous/ComfyUI)                    |
-| <img height='20' src="https://avatars.githubusercontent.com/u/20920490?s=20&v=4"> Automatic1111    | Stable Diffusion web UI             | [Link](https://github.com/AUTOMATIC1111/stable-diffusion-webui)      |
-| <img height='20' src="https://avatars.githubusercontent.com/u/39524005?s=20&v=4"> Lshqqytiger      | Stable Diffusion web UI for AMDGPUs | [Link](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu) |
-| <img height='20' src="https://avatars.githubusercontent.com/u/19834515?s=20v=4"> Lllyasviel        | Stable Diffusion WebUI Forge        | [Link](https://github.com/lllyasviel/stable-diffusion-webui-forge)   |
-| <img height='20' src="https://avatars.githubusercontent.com/u/57876960?s=20&v=4"> Vladmandic       | SD.Next                             | [Link](https://github.com/vladmandic/automatic)                      |
-| <img height='20' src="https://avatars.githubusercontent.com/u/43497670?s=20&v=4"> McMonkeyProjects | SwarmUI                             | [Link](https://github.com/mcmonkeyprojects/SwarmUI)                  |
-| <img height='20' src="https://avatars.githubusercontent.com/u/7474674?s=20&v=4"> Bmaltais          | Kohya's GUI                         | [Link](https://github.com/bmaltais/kohya_ss)                         |
+| Developer                                                                                          | Description                         | GitHub                                                                     |
+|----------------------------------------------------------------------------------------------------|-------------------------------------|----------------------------------------------------------------------------|
+| <img height='20' src="https://avatars.githubusercontent.com/u/121283862?s=20&v=4"> ComfyAnonymous  | ComfyUI                             | [Link](https://github.com/comfyanonymous/ComfyUI)                          |
+| <img height='20' src="https://avatars.githubusercontent.com/u/20920490?s=20&v=4"> Automatic1111    | Stable Diffusion web UI             | [Link](https://github.com/AUTOMATIC1111/stable-diffusion-webui)            |
+| <img height='20' src="https://avatars.githubusercontent.com/u/39524005?s=20&v=4"> Lshqqytiger      | Stable Diffusion web UI for AMDGPUs | [Link](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu)       |
+| <img height='20' src="https://avatars.githubusercontent.com/u/39524005?s=20&v=4"> Lshqqytiger      | Stable Diffusion WebUI AMDGPU Forge | [Link](https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge) |
+| <img height='20' src="https://avatars.githubusercontent.com/u/19834515?s=20v=4"> Lllyasviel        | Stable Diffusion WebUI Forge        | [Link](https://github.com/lllyasviel/stable-diffusion-webui-forge)         |
+| <img height='20' src="https://avatars.githubusercontent.com/u/57876960?s=20&v=4"> Vladmandic       | SD.Next                             | [Link](https://github.com/vladmandic/automatic)                            |
+| <img height='20' src="https://avatars.githubusercontent.com/u/43497670?s=20&v=4"> McMonkeyProjects | SwarmUI                             | [Link](https://github.com/mcmonkeyprojects/SwarmUI)                        |
+| <img height='20' src="https://avatars.githubusercontent.com/u/7474674?s=20&v=4"> Bmaltais          | Kohya's GUI                         | [Link](https://github.com/bmaltais/kohya_ss)                               |
 
 ### 📝 Text Generation
 
@@ -45,8 +46,8 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 
 | Category         | Number of Modules |
 |------------------|-------------------|
-| **Overall**      | **10**            |
-| Image Generation | 7                 |
+| **Overall**      | **11**            |
+| Image Generation | 8                 |
 | Text Generation  | 1                 |
 | Audio Generation | 2                 |
 

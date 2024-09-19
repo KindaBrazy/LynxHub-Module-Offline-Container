@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, q as LLLYASVIEL_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID } from './RendererMethods_Bw2r-n.mjs';
+import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, q as LLLYASVIEL_ID, r as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID } from './RendererMethods_BVgz_b.mjs';
 import path from 'node:path';
 import require$$0$2 from 'fs';
 import require$$0 from 'constants';
@@ -996,7 +996,7 @@ async function readArgs$6(cardDir) {
 const a1MainMethods = { getRunCommands: getRunCommands$7, readArgs: readArgs$6, saveArgs: saveArgs$6 };
 
 const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
 async function getRunCommands$6(dir) {
     return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$5);
 }
@@ -1006,10 +1006,10 @@ async function saveArgs$5(cardDir, args) {
 async function readArgs$5(cardDir) {
     return await utilReadArgs(cardDir, BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$5, parseStringToArgs$1);
 }
-const comfyMainMethods = { getRunCommands: getRunCommands$6, readArgs: readArgs$5, saveArgs: saveArgs$5 };
+const bmaltaisMainMethods = { getRunCommands: getRunCommands$6, readArgs: readArgs$5, saveArgs: saveArgs$5 };
 
 const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
+const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
 async function getRunCommands$5(dir) {
     return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$4);
 }
@@ -1019,12 +1019,10 @@ async function saveArgs$4(cardDir, args) {
 async function readArgs$4(cardDir) {
     return await utilReadArgs(cardDir, BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$4, parseStringToArgs$2);
 }
-const gitmyloMainMethods = { getRunCommands: getRunCommands$5, readArgs: readArgs$4, saveArgs: saveArgs$4 };
+const comfyMainMethods = { getRunCommands: getRunCommands$5, readArgs: readArgs$4, saveArgs: saveArgs$4 };
 
 const BAT_FILE_NAME$4 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$3 = isWin
-    ? '@echo off\n\ncall start_windows.bat'
-    : '#!/bin/bash\n\nbash ./start_linux.sh';
+const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
 async function getRunCommands$4(dir) {
     return await utilRunCommands(BAT_FILE_NAME$4, dir, DEFAULT_BATCH_DATA$3);
 }
@@ -1034,44 +1032,46 @@ async function saveArgs$3(cardDir, args) {
 async function readArgs$3(cardDir) {
     return await utilReadArgs(cardDir, BAT_FILE_NAME$4, DEFAULT_BATCH_DATA$3, parseStringToArgs$3);
 }
-const oobaMainMethods = { getRunCommands: getRunCommands$4, readArgs: readArgs$3, saveArgs: saveArgs$3 };
+const gitmyloMainMethods = { getRunCommands: getRunCommands$4, readArgs: readArgs$3, saveArgs: saveArgs$3 };
 
-const BAT_FILE_NAME$3 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
-async function getRunCommands$3(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$3, dir);
-}
-const rsxMainMethods = { getRunCommands: getRunCommands$3 };
-
-const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$2 = isWin
     ? '@echo off\n\ncall launch-windows.bat'
     : '#!/bin/bash\n\nbash ./launch-linux.sh';
-async function getRunCommands$2(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$2);
+async function getRunCommands$3(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$2);
 }
 async function saveArgs$2(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$2, parseArgsToString$4);
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$3, parseArgsToString$4);
 }
 async function readArgs$2(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$2, parseStringToArgs$4);
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$2, parseStringToArgs$4);
 }
-const mcMonkeyMainMethods = { getRunCommands: getRunCommands$2, readArgs: readArgs$2, saveArgs: saveArgs$2 };
+const mcMonkeyMainMethods = { getRunCommands: getRunCommands$3, readArgs: readArgs$2, saveArgs: saveArgs$2 };
 
-const BAT_FILE_NAME$1 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$1 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
-async function getRunCommands$1(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$1, dir, DEFAULT_BATCH_DATA$1);
+const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$1 = isWin
+    ? '@echo off\n\ncall start_windows.bat'
+    : '#!/bin/bash\n\nbash ./start_linux.sh';
+async function getRunCommands$2(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$1);
 }
 async function saveArgs$1(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$1, parseArgsToString$5);
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$2, parseArgsToString$5);
 }
 async function readArgs$1(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$5);
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$1, parseStringToArgs$5);
 }
-const vladMainMethods = { getRunCommands: getRunCommands$1, readArgs: readArgs$1, saveArgs: saveArgs$1 };
+const oobaMainMethods = { getRunCommands: getRunCommands$2, readArgs: readArgs$1, saveArgs: saveArgs$1 };
+
+const BAT_FILE_NAME$1 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
+async function getRunCommands$1(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$1, dir);
+}
+const rsxMainMethods = { getRunCommands: getRunCommands$1 };
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
+const DEFAULT_BATCH_DATA = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
 async function getRunCommands(dir) {
     return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
@@ -1081,13 +1081,14 @@ async function saveArgs(cardDir, args) {
 async function readArgs(cardDir) {
     return await utilReadArgs(cardDir, BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs$6);
 }
-const bmaltaisMainMethods = { getRunCommands, readArgs, saveArgs };
+const vladMainMethods = { getRunCommands, readArgs, saveArgs };
 
 const mainModules = [
     { id: ComfyUI_ID, methods: comfyMainMethods },
     { id: AUTOMATIC1111_ID, methods: a1MainMethods },
     { id: LSHQQYTIGER_ID, methods: a1MainMethods },
     { id: LLLYASVIEL_ID, methods: a1MainMethods },
+    { id: LSHQQYTIGER_FORGE_ID, methods: a1MainMethods },
     { id: VLADMANDIC_ID, methods: vladMainMethods },
     { id: MCMONKEYPROJECTS_ID, methods: mcMonkeyMainMethods },
     { id: BMALTAIS_ID, methods: bmaltaisMainMethods },

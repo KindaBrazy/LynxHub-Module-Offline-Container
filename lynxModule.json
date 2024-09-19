@@ -6,7 +6,7 @@
   "requireAppBuild": 9,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
   "version": "3.0.0",
-  "updateDate": "2024-09-06 13:48",
-  "changeLog": "V3.0.0\n・Add extension's list for Automatic1111 and AMDGPUs, ComfyUI, Forge, SD.Next, SwarmUI, Oobabooga Text generation\nAvailable in LynxHub V1.1.0 and above\n\nV2.0.0:\n・Linux Support\n・New WebUI: Kohya's\n・Changed Stable Swarm UI(Stability-AI) -> SwarmUI(McMonkeyProjects)\n・Reduced background image size\n\nV1.1.0:\n・New WebUI: Stable Diffusion WebUI Forge",
+  "updateDate": "2024-09-19 10:37",
+  "changeLog": "V4.0.0\n・New WebUI: Stable Diffusion WebUI AMDGPU Forge",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4"
 }

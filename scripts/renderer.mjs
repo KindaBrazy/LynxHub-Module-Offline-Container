@@ -1,4 +1,4 @@
-import { R as RSXDALV_ID, r as catchAddress, G as GITMYLO_ID, s as gitmyloArguments, t as gitmyloRendererMethods, C as ComfyUI_ID, u as comfyArguments, v as comfyRendererMethods, A as AUTOMATIC1111_ID, w as automatic1111Arguments, x as a1RendererMethods, L as LSHQQYTIGER_ID, y as lshqqytigerArguments, q as LLLYASVIEL_ID, V as VLADMANDIC_ID, z as vladmandicArguments, D as vladRendererMethods, M as MCMONKEYPROJECTS_ID, E as mcMonkeyArguments, F as mcMonkeyRendererMethods, B as BMALTAIS_ID, H as bmaltaisArguments, I as bmaltaisRendererMethods, O as OOBABOOGA_ID, J as oobaboogaArguments, K as oobaRendererMethods } from './RendererMethods_Bw2r-n.mjs';
+import { R as RSXDALV_ID, s as catchAddress, G as GITMYLO_ID, t as gitmyloArguments, u as gitmyloRendererMethods, v as lodashExports, w as automatic1111Arguments, C as ComfyUI_ID, x as comfyArguments, y as comfyRendererMethods, A as AUTOMATIC1111_ID, z as a1RendererMethods, L as LSHQQYTIGER_ID, D as lshqqytigerArguments, q as LLLYASVIEL_ID, r as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, E as vladmandicArguments, F as vladRendererMethods, M as MCMONKEYPROJECTS_ID, H as mcMonkeyArguments, I as mcMonkeyRendererMethods, B as BMALTAIS_ID, J as bmaltaisArguments, K as bmaltaisRendererMethods, O as OOBABOOGA_ID, N as oobaboogaArguments, P as oobaRendererMethods } from './RendererMethods_BVgz_b.mjs';
 
 const audioPage = {
     routePath: '/audioGenerationPage',
@@ -27,6 +27,38 @@ const audioPage = {
         },
     ],
 };
+
+const lshqqytigerForgeArguments = lodashExports.cloneDeep(automatic1111Arguments);
+const lsSpecifArgs = [
+    {
+        description: 'Skip installation of onnxruntime; ONNX and Olive will be unavailable',
+        name: '--skip-ort',
+        type: 'CheckBox',
+    },
+    {
+        description: 'use torch built with cpu',
+        name: '--use-cpu-torch',
+        type: 'CheckBox',
+    },
+    {
+        description: 'use ZLUDA device as torch device',
+        name: '--use-zluda',
+        type: 'CheckBox',
+    },
+    {
+        description: 'override torch version',
+        name: '--override-torch',
+        type: 'Input',
+    },
+];
+const newSection = {
+    section: 'AmdGPU',
+    items: lsSpecifArgs,
+};
+const commandLineArgsIndex = lshqqytigerForgeArguments.findIndex(arg => arg.category === 'Command Line Arguments');
+if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsIndex].sections) {
+    lshqqytigerForgeArguments[commandLineArgsIndex].sections.unshift(newSection);
+}
 
 const imagePage = {
     routePath: '/imageGenerationPage',
@@ -69,13 +101,26 @@ const imagePage = {
             id: LLLYASVIEL_ID,
             title: 'Stable Diffusion WebUI Forge',
             description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
-                ' to make development easier, optimize resource management, speed up inference, and study experimental features.\n' +
+                ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
                 'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
             repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
             extensionsDir: '/extensions',
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/width=300/00004-3953235735.jpeg',
             arguments: automatic1111Arguments,
+            methods: a1RendererMethods,
+        },
+        {
+            id: LSHQQYTIGER_FORGE_ID,
+            title: 'Stable Diffusion WebUI AMDGPU Forge',
+            description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
+                ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
+                'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
+            repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge',
+            extensionsDir: '/extensions',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/87d247f0-af0f-46cc-8297-67dd1595636b/width=300/00015-1911485974.jpeg',
+            arguments: lshqqytigerForgeArguments,
             methods: a1RendererMethods,
         },
         {

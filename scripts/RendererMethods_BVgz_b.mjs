@@ -1,4 +1,5 @@
 const LSHQQYTIGER_ID = 'LSHQQYTIGER_SD';
+const LSHQQYTIGER_FORGE_ID = 'LSHQQYTIGER_Forge_SD';
 const AUTOMATIC1111_ID = 'Automatic1111_SD';
 const ComfyUI_ID = 'ComfyUI_SD';
 const VLADMANDIC_ID = 'VLADMANDIC_SD';
@@ -8,12 +9,6 @@ const BMALTAIS_ID = 'Bmaltais_SD';
 const OOBABOOGA_ID = 'Oobabooga_TG';
 const RSXDALV_ID = 'Rsxdalv_AG';
 const GITMYLO_ID = 'Gitmylo_AG';
-
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
 
 async function isWinOS() {
     let isWin = true;
@@ -27,6 +22,12 @@ async function isWinOS() {
     return isWin;
 }
 const isWin = await isWinOS();
+
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
 
 var lodash = {exports: {}};
 
@@ -18392,6 +18393,104 @@ async function fetchExtensionList$3() {
 }
 const a1RendererMethods = { catchAddress, fetchExtensionList: fetchExtensionList$3, parseArgsToString: parseArgsToString$6, parseStringToArgs: parseStringToArgs$6 };
 
+const bmaltaisArguments = [
+    {
+        category: 'Command Line Arguments',
+        items: [
+            {
+                name: '--listen',
+                description: 'Specify the IP address to listen on for connections to Gradio.',
+                type: 'Input',
+            },
+            {
+                name: '--username',
+                description: 'Set a username for authentication.',
+                type: 'Input',
+            },
+            {
+                name: '--password',
+                description: 'Set a password for authentication.',
+                type: 'Input',
+            },
+            {
+                name: '--server_port',
+                description: 'Define the port to run the server listener on.',
+                type: 'Input',
+            },
+            {
+                name: '--inbrowser',
+                description: 'Open the Gradio UI in a web browser.',
+                type: 'Input',
+            },
+            {
+                name: '--share',
+                description: 'Share the Gradio UI.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--language',
+                description: 'Set custom language',
+                type: 'Input',
+            },
+        ],
+    },
+];
+
+const shellCommand$4 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
+function parseArgsToString$5(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, bmaltaisArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$5(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand$4))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand$4} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, bmaltaisArguments)) {
+                if (getArgumentType(value.name, bmaltaisArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+const bmaltaisRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$5, parseStringToArgs: parseStringToArgs$5 };
+
 const comfyArguments = [
     {
         category: 'Command Line Arguments',
@@ -18726,7 +18825,7 @@ const comfyArguments = [
     },
 ];
 
-function parseArgsToString$5(args) {
+function parseArgsToString$4(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18744,7 +18843,7 @@ function parseArgsToString$5(args) {
     result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
     return result;
 }
-function parseStringToArgs$5(args) {
+function parseStringToArgs$4(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18796,8 +18895,8 @@ async function fetchExtensionList$2() {
 const comfyRendererMethods = {
     catchAddress,
     fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$5,
-    parseStringToArgs: parseStringToArgs$5,
+    parseArgsToString: parseArgsToString$4,
+    parseStringToArgs: parseStringToArgs$4,
 };
 
 const gitmyloArguments = [
@@ -18875,8 +18974,8 @@ const gitmyloArguments = [
     },
 ];
 
-const shellCommand$4 = isWin ? 'call run.bat' : 'bash ./run.sh';
-function parseArgsToString$4(args) {
+const shellCommand$3 = isWin ? 'call run.bat' : 'bash ./run.sh';
+function parseArgsToString$3(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18891,17 +18990,17 @@ function parseArgsToString$4(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
     return result;
 }
-function parseStringToArgs$4(args) {
+function parseStringToArgs$3(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$4))
+        if (!line.startsWith(shellCommand$3))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$4} `)[1];
+        const clArgs = line.split(`${shellCommand$3} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -18928,7 +19027,203 @@ function parseStringToArgs$4(args) {
     });
     return argResult;
 }
-const gitmyloRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$4, parseStringToArgs: parseStringToArgs$4 };
+const gitmyloRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$3, parseStringToArgs: parseStringToArgs$3 };
+
+const mcMonkeyArguments = [
+    {
+        category: 'Command Line Arguments',
+        items: [
+            {
+                name: '--data_dir',
+                description: 'Override the default data directory.',
+                type: 'Directory',
+                defaultValue: 'Data',
+            },
+            {
+                name: '--settings_file',
+                description: 'If your settings file is anywhere other than the default, you must specify as a command line arg.',
+                type: 'File',
+                defaultValue: 'Data/Settings.fds',
+            },
+            {
+                name: '--backends_file',
+                description: 'If your backends file is anywhere other than the default, you must specify as a command line arg.',
+                type: 'File',
+                defaultValue: 'Data/Backends.fds',
+            },
+            {
+                name: '--environment',
+                description: 'Can be `development` or `production` to set what ASP.NET Web Environment to use. `Development`' +
+                    ' gives detailed debug logs and errors, while `Production` is optimized for normal usage.',
+                type: 'DropDown',
+                defaultValue: 'Production',
+                values: ['development', 'production'],
+            },
+            {
+                name: '--host',
+                description: "Can be used to override the 'Network.Host' server setting.",
+                type: 'Input',
+                defaultValue: 'localhost',
+            },
+            {
+                name: '--port',
+                description: "Can be used to override the 'Network.Port' server setting.",
+                type: 'Input',
+                defaultValue: '7801',
+            },
+            {
+                name: '--asp_loglevel',
+                description: 'Sets the minimum log level for ASP.NET web logger, as any of: `Trace`, `Debug`, `Information`,' +
+                    " `Warning`, `Error`, `Critical`, `None`. Note 'information' here spams debug output.",
+                type: 'DropDown',
+                defaultValue: 'warning',
+                values: ['Trace', 'Debug', 'Information', 'Warning', 'Error', 'Critical', 'None'],
+            },
+            {
+                name: '--loglevel',
+                description: 'Minimum StableSwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
+                    " `None`. 'Info' here is the normal usage data.",
+                type: 'DropDown',
+                defaultValue: 'Info',
+                values: ['Debug', 'Info', 'Init', 'Warning', 'Error', 'None'],
+            },
+            {
+                name: '--user_id',
+                description: "Set the local user's default UserID (for running in single-user mode, not useful in shared mode).",
+                type: 'Input',
+                defaultValue: 'local',
+            },
+            {
+                name: '--lock_settings',
+                description: 'If enabled, blocks in-UI editing of server settings by admins. Settings cannot be modified ' +
+                    'in this mode without editing the settings file and restarting the server.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--ngrok-path',
+                description: 'If specified, will be used as the path to an `ngrok` executable, and will automatically ' +
+                    'load and configure ngrok when launching, to share your UI instance on a publicly accessible URL.',
+                type: 'File',
+            },
+            {
+                name: '--cloudflared-path',
+                description: 'If specified, will be used as the path to an `cloudflared` executable, and will automatically' +
+                    ' load and configure TryCloudflare when launching, to share your UI instance on a publicly accessible URL.',
+                type: 'File',
+            },
+            {
+                name: '--proxy-region',
+                description: 'If specified, sets the proxy (ngrok/cloudflared) region. If unspecified, defaults to closest.',
+                type: 'Input',
+            },
+            {
+                name: '--ngrok-basic-auth',
+                description: 'If specified, sets an ngrok basic-auth requirement to access.',
+                type: 'Input',
+            },
+            {
+                name: '--launch_mode',
+                description: "Can be used to override the 'LaunchMode' server setting.",
+                type: 'Input',
+                defaultValue: 'none',
+            },
+            {
+                name: '--help',
+                description: 'Displays an in-CLI shortlist of CLI args and some usage hints.',
+                type: 'CheckBox',
+            },
+        ],
+    },
+];
+
+const shellCommand$2 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
+function parseArgsToString$2(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, mcMonkeyArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$2(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand$2))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand$2} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, mcMonkeyArguments)) {
+                if (getArgumentType(value.name, mcMonkeyArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+async function fetchExtensionList$1() {
+    return [
+        {
+            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
+            title: 'SwarmUI-FaceTools',
+            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
+            stars: 8,
+        },
+        {
+            url: 'https://github.com/mcmonkey4eva/SwarmComfyDeployBackendExt',
+            title: 'Swarm ComfyDeploy Backend Extension',
+            description: 'An extension for SwarmUI to use ComfyDeploy as a backend.',
+            stars: 1,
+        },
+        {
+            url: 'https://github.com/kalebbroo/SwarmUI-MagicPromptExtension',
+            title: 'SwarmUI MagicPrompt Extension',
+            description: 'The MagicPrompt Extension provides a simple and intuitive way directly in SwarmUI to generate text' +
+                ' prompts for Stable Diffusion images. This uses your local Ollama LLMs.',
+            stars: 7,
+        },
+        {
+            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
+            title: 'SwarmUI-FaceTools',
+            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
+            stars: 8,
+        },
+    ];
+}
+const mcMonkeyRendererMethods = {
+    catchAddress,
+    fetchExtensionList: fetchExtensionList$1,
+    parseArgsToString: parseArgsToString$2,
+    parseStringToArgs: parseStringToArgs$2,
+};
 
 const oobaboogaArguments = [
     {
@@ -19479,7 +19774,7 @@ const oobaboogaArguments = [
     },
 ];
 
-async function fetchExtensionList$1() {
+async function fetchExtensionList() {
     return [
         {
             url: 'https://github.com/mamei16/LLM_Web_search',
@@ -19796,8 +20091,8 @@ async function fetchExtensionList$1() {
     ];
 }
 
-const shellCommand$3 = isWin ? 'call start_windows.bat' : 'bash ./start_linux.sh';
-function parseArgsToString$3(args) {
+const shellCommand$1 = isWin ? 'call start_windows.bat' : 'bash ./start_linux.sh';
+function parseArgsToString$1(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -19812,17 +20107,17 @@ function parseArgsToString$3(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$1 : `${shellCommand$1} ${argResult}`;
     return result;
 }
-function parseStringToArgs$3(args) {
+function parseStringToArgs$1(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$3))
+        if (!line.startsWith(shellCommand$1))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$3} `)[1];
+        const clArgs = line.split(`${shellCommand$1} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -19851,204 +20146,9 @@ function parseStringToArgs$3(args) {
 }
 const oobaRendererMethods = {
     catchAddress,
-    fetchExtensionList: fetchExtensionList$1,
-    parseArgsToString: parseArgsToString$3,
-    parseStringToArgs: parseStringToArgs$3,
-};
-
-const mcMonkeyArguments = [
-    {
-        category: 'Command Line Arguments',
-        items: [
-            {
-                name: '--data_dir',
-                description: 'Override the default data directory.',
-                type: 'Directory',
-                defaultValue: 'Data',
-            },
-            {
-                name: '--settings_file',
-                description: 'If your settings file is anywhere other than the default, you must specify as a command line arg.',
-                type: 'File',
-                defaultValue: 'Data/Settings.fds',
-            },
-            {
-                name: '--backends_file',
-                description: 'If your backends file is anywhere other than the default, you must specify as a command line arg.',
-                type: 'File',
-                defaultValue: 'Data/Backends.fds',
-            },
-            {
-                name: '--environment',
-                description: 'Can be `development` or `production` to set what ASP.NET Web Environment to use. `Development`' +
-                    ' gives detailed debug logs and errors, while `Production` is optimized for normal usage.',
-                type: 'DropDown',
-                defaultValue: 'Production',
-                values: ['development', 'production'],
-            },
-            {
-                name: '--host',
-                description: "Can be used to override the 'Network.Host' server setting.",
-                type: 'Input',
-                defaultValue: 'localhost',
-            },
-            {
-                name: '--port',
-                description: "Can be used to override the 'Network.Port' server setting.",
-                type: 'Input',
-                defaultValue: '7801',
-            },
-            {
-                name: '--asp_loglevel',
-                description: 'Sets the minimum log level for ASP.NET web logger, as any of: `Trace`, `Debug`, `Information`,' +
-                    " `Warning`, `Error`, `Critical`, `None`. Note 'information' here spams debug output.",
-                type: 'DropDown',
-                defaultValue: 'warning',
-                values: ['Trace', 'Debug', 'Information', 'Warning', 'Error', 'Critical', 'None'],
-            },
-            {
-                name: '--loglevel',
-                description: 'Minimum StableSwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
-                    " `None`. 'Info' here is the normal usage data.",
-                type: 'DropDown',
-                defaultValue: 'Info',
-                values: ['Debug', 'Info', 'Init', 'Warning', 'Error', 'None'],
-            },
-            {
-                name: '--user_id',
-                description: "Set the local user's default UserID (for running in single-user mode, not useful in shared mode).",
-                type: 'Input',
-                defaultValue: 'local',
-            },
-            {
-                name: '--lock_settings',
-                description: 'If enabled, blocks in-UI editing of server settings by admins. Settings cannot be modified ' +
-                    'in this mode without editing the settings file and restarting the server.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--ngrok-path',
-                description: 'If specified, will be used as the path to an `ngrok` executable, and will automatically ' +
-                    'load and configure ngrok when launching, to share your UI instance on a publicly accessible URL.',
-                type: 'File',
-            },
-            {
-                name: '--cloudflared-path',
-                description: 'If specified, will be used as the path to an `cloudflared` executable, and will automatically' +
-                    ' load and configure TryCloudflare when launching, to share your UI instance on a publicly accessible URL.',
-                type: 'File',
-            },
-            {
-                name: '--proxy-region',
-                description: 'If specified, sets the proxy (ngrok/cloudflared) region. If unspecified, defaults to closest.',
-                type: 'Input',
-            },
-            {
-                name: '--ngrok-basic-auth',
-                description: 'If specified, sets an ngrok basic-auth requirement to access.',
-                type: 'Input',
-            },
-            {
-                name: '--launch_mode',
-                description: "Can be used to override the 'LaunchMode' server setting.",
-                type: 'Input',
-                defaultValue: 'none',
-            },
-            {
-                name: '--help',
-                description: "Displays an in-CLI shortlist of CLI args and some usage hints.",
-                type: 'CheckBox',
-            },
-        ],
-    },
-];
-
-const shellCommand$2 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
-function parseArgsToString$2(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, mcMonkeyArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$2(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$2))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$2} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, mcMonkeyArguments)) {
-                if (getArgumentType(value.name, mcMonkeyArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-async function fetchExtensionList() {
-    return [
-        {
-            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
-            title: 'SwarmUI-FaceTools',
-            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
-            stars: 8,
-        },
-        {
-            url: 'https://github.com/mcmonkey4eva/SwarmComfyDeployBackendExt',
-            title: 'Swarm ComfyDeploy Backend Extension',
-            description: 'An extension for SwarmUI to use ComfyDeploy as a backend.',
-            stars: 1,
-        },
-        {
-            url: 'https://github.com/kalebbroo/SwarmUI-MagicPromptExtension',
-            title: 'SwarmUI MagicPrompt Extension',
-            description: 'The MagicPrompt Extension provides a simple and intuitive way directly in SwarmUI to generate text prompts for Stable Diffusion images. This uses your local Ollama LLMs.',
-            stars: 7,
-        },
-        {
-            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
-            title: 'SwarmUI-FaceTools',
-            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
-            stars: 8,
-        },
-    ];
-}
-const mcMonkeyRendererMethods = {
-    catchAddress,
     fetchExtensionList,
-    parseArgsToString: parseArgsToString$2,
-    parseStringToArgs: parseStringToArgs$2,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
 };
 
 const vladmandicArguments = [
@@ -20402,115 +20502,12 @@ const vladmandicArguments = [
     },
 ];
 
-const shellCommand$1 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
-function parseArgsToString$1(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, vladmandicArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$1 : `${shellCommand$1} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$1(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$1))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$1} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, vladmandicArguments)) {
-                if (getArgumentType(value.name, vladmandicArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-const vladRendererMethods = {
-    catchAddress,
-    fetchExtensionList: fetchExtensionList$3,
-    parseArgsToString: parseArgsToString$1,
-    parseStringToArgs: parseStringToArgs$1,
-};
-
-const bmaltaisArguments = [
-    {
-        category: 'Command Line Arguments',
-        items: [
-            {
-                name: '--listen',
-                description: 'Specify the IP address to listen on for connections to Gradio.',
-                type: 'Input',
-            },
-            {
-                name: '--username',
-                description: 'Set a username for authentication.',
-                type: 'Input',
-            },
-            {
-                name: '--password',
-                description: 'Set a password for authentication.',
-                type: 'Input',
-            },
-            {
-                name: '--server_port',
-                description: 'Define the port to run the server listener on.',
-                type: 'Input',
-            },
-            {
-                name: '--inbrowser',
-                description: 'Open the Gradio UI in a web browser.',
-                type: 'Input',
-            },
-            {
-                name: '--share',
-                description: 'Share the Gradio UI.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--language',
-                description: 'Set custom language',
-                type: 'Input',
-            },
-        ],
-    },
-];
-
-const shellCommand = isWin ? 'call gui.bat' : 'bash ./gui.sh';
+const shellCommand = isWin ? 'call webui.bat' : 'bash ./webui.sh';
 function parseArgsToString(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
-        const argType = getArgumentType(arg.name, bmaltaisArguments);
+        const argType = getArgumentType(arg.name, vladmandicArguments);
         if (argType === 'CheckBox') {
             argResult += `${arg.name} `;
         }
@@ -20546,8 +20543,8 @@ function parseStringToArgs(args) {
         // Process each argument
         result.forEach((value) => {
             // Check if the argument exists or valid
-            if (isValidArg(value.name, bmaltaisArguments)) {
-                if (getArgumentType(value.name, bmaltaisArguments) === 'CheckBox') {
+            if (isValidArg(value.name, vladmandicArguments)) {
+                if (getArgumentType(value.name, vladmandicArguments) === 'CheckBox') {
                     argResult.push({ name: value.name, value: '' });
                 }
                 else {
@@ -20558,6 +20555,11 @@ function parseStringToArgs(args) {
     });
     return argResult;
 }
-const bmaltaisRendererMethods = { catchAddress, parseArgsToString, parseStringToArgs };
+const vladRendererMethods = {
+    catchAddress,
+    fetchExtensionList: fetchExtensionList$3,
+    parseArgsToString,
+    parseStringToArgs,
+};
 
-export { AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, vladRendererMethods as D, mcMonkeyArguments as E, mcMonkeyRendererMethods as F, GITMYLO_ID as G, bmaltaisArguments as H, bmaltaisRendererMethods as I, oobaboogaArguments as J, oobaRendererMethods as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, OOBABOOGA_ID as O, RSXDALV_ID as R, VLADMANDIC_ID as V, parseStringToArgs$6 as a, parseArgsToString$5 as b, commonjsGlobal as c, parseStringToArgs$5 as d, parseArgsToString$4 as e, parseStringToArgs$4 as f, parseArgsToString$3 as g, parseStringToArgs$3 as h, isWin as i, parseArgsToString$2 as j, parseStringToArgs$2 as k, parseArgsToString$1 as l, parseStringToArgs$1 as m, parseArgsToString as n, parseStringToArgs as o, parseArgsToString$6 as p, LLLYASVIEL_ID as q, catchAddress as r, gitmyloArguments as s, gitmyloRendererMethods as t, comfyArguments as u, comfyRendererMethods as v, automatic1111Arguments as w, a1RendererMethods as x, lshqqytigerArguments as y, vladmandicArguments as z };
+export { AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, lshqqytigerArguments as D, vladmandicArguments as E, vladRendererMethods as F, GITMYLO_ID as G, mcMonkeyArguments as H, mcMonkeyRendererMethods as I, bmaltaisArguments as J, bmaltaisRendererMethods as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, oobaboogaArguments as N, OOBABOOGA_ID as O, oobaRendererMethods as P, RSXDALV_ID as R, VLADMANDIC_ID as V, parseStringToArgs$6 as a, parseArgsToString$5 as b, commonjsGlobal as c, parseStringToArgs$5 as d, parseArgsToString$4 as e, parseStringToArgs$4 as f, parseArgsToString$3 as g, parseStringToArgs$3 as h, isWin as i, parseArgsToString$2 as j, parseStringToArgs$2 as k, parseArgsToString$1 as l, parseStringToArgs$1 as m, parseArgsToString as n, parseStringToArgs as o, parseArgsToString$6 as p, LLLYASVIEL_ID as q, LSHQQYTIGER_FORGE_ID as r, catchAddress as s, gitmyloArguments as t, gitmyloRendererMethods as u, lodashExports as v, automatic1111Arguments as w, comfyArguments as x, comfyRendererMethods as y, a1RendererMethods as z };

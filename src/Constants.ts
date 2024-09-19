@@ -1,4 +1,5 @@
 export const LSHQQYTIGER_ID = 'LSHQQYTIGER_SD';
+export const LSHQQYTIGER_FORGE_ID = 'LSHQQYTIGER_Forge_SD';
 export const AUTOMATIC1111_ID = 'Automatic1111_SD';
 export const ComfyUI_ID = 'ComfyUI_SD';
 export const VLADMANDIC_ID = 'VLADMANDIC_SD';

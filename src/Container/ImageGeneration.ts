@@ -3,6 +3,7 @@ import {
   BMALTAIS_ID,
   ComfyUI_ID,
   LLLYASVIEL_ID,
+  LSHQQYTIGER_FORGE_ID,
   LSHQQYTIGER_ID,
   MCMONKEYPROJECTS_ID,
   VLADMANDIC_ID,
@@ -10,6 +11,7 @@ import {
 import {PagesData} from '../types';
 import automatic1111Arguments from './Automatic1111 & Forks/Automatic1111Arguments';
 import lshqqytigerArguments from './Automatic1111 & Forks/LshqqytigerArguments';
+import lshqqytigerForgeArguments from './Automatic1111 & Forks/LshqqytigerForgeArguments';
 import a1RendererMethods from './Automatic1111 & Forks/RendererMethods';
 import bmaltaisArguments from './Bmaltais/Arguments';
 import bmaltaisRendererMethods from './Bmaltais/RendererMethods';
@@ -67,7 +69,7 @@ const imagePage: PagesData = {
       title: 'Stable Diffusion WebUI Forge',
       description:
         'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
-        ' to make development easier, optimize resource management, speed up inference, and study experimental features.\n' +
+        ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
         'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
       repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
       extensionsDir: '/extensions',
@@ -75,6 +77,21 @@ const imagePage: PagesData = {
       bgUrl:
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/width=300/00004-3953235735.jpeg',
       arguments: automatic1111Arguments,
+      methods: a1RendererMethods,
+    },
+    {
+      id: LSHQQYTIGER_FORGE_ID,
+      title: 'Stable Diffusion WebUI AMDGPU Forge',
+      description:
+        'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
+        ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
+        'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
+      repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge',
+      extensionsDir: '/extensions',
+      type: 'image',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/87d247f0-af0f-46cc-8297-67dd1595636b/width=300/00015-1911485974.jpeg',
+      arguments: lshqqytigerForgeArguments,
       methods: a1RendererMethods,
     },
     {

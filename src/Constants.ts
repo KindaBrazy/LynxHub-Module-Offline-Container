@@ -6,6 +6,7 @@ export const VLADMANDIC_ID = 'VLADMANDIC_SD';
 export const MCMONKEYPROJECTS_ID = 'McMonkeyProjects_SD';
 export const LLLYASVIEL_ID = 'Lllyasviel_SD';
 export const BMALTAIS_ID = 'Bmaltais_SD';
+export const NEROGAR_ID = 'Nerogar_SD';
 
 export const OOBABOOGA_ID = 'Oobabooga_TG';
 

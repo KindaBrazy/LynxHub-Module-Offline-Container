@@ -7,6 +7,7 @@ import {
   LSHQQYTIGER_FORGE_ID,
   LSHQQYTIGER_ID,
   MCMONKEYPROJECTS_ID,
+  NEROGAR_ID,
   OOBABOOGA_ID,
   RSXDALV_ID,
   VLADMANDIC_ID,
@@ -16,6 +17,7 @@ import bmaltaisMainMethods from './Container/Bmaltais/MainMethods';
 import comfyMainMethods from './Container/ComfyUI/MainMethods';
 import gitmyloMainMethods from './Container/Gitmylo/MainMethods';
 import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
+import nerogarMethods from './Container/Nerogar/MainMethods';
 import oobaMainMethods from './Container/Oobabooga/MainMethods';
 import rsxMainMethods from './Container/Rsxdalv/MainMethods';
 import vladMainMethods from './Container/Vladmandic/MainMethods';
@@ -34,5 +36,11 @@ const mainModules: MainModules[] = [
   {id: RSXDALV_ID, methods: rsxMainMethods},
   {id: GITMYLO_ID, methods: gitmyloMainMethods},
 ];
+
+export function setCurrentBuild(build: number) {
+  if (build > 10) {
+    mainModules.push({id: NEROGAR_ID, methods: nerogarMethods});
+  }
+}
 
 export default mainModules;

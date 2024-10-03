@@ -1,9 +1,9 @@
 import {isEmpty} from 'lodash';
 
 import {ArgType, CardRendererMethods, Category, ChosenArgument, DataSection, ExtensionData} from '../../types';
+import {isWin} from '../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../Utils/RendererUtils';
 import lshqqytigerArguments from './LshqqytigerArguments';
-import {isWin} from '../../Utils/CrossUtils';
 
 function getTypeByCategoryName(category: string): Category {
   switch (category) {
@@ -73,7 +73,7 @@ function checkLinuxArgLine(line: string): 'set' | 'export' | 'var' | undefined {
 
   if (line.startsWith('export ')) return 'export';
 
-  for (let arg of lshqqytigerArguments) {
+  for (const arg of lshqqytigerArguments) {
     if (arg.category === 'Environment') {
       if ((arg as DataSection).sections[0].items.find(item => item.name === line.split('=')[0])) {
         return 'var';
@@ -164,6 +164,11 @@ export async function fetchExtensionList(): Promise<ExtensionData[]> {
   }
 }
 
-const a1RendererMethods: CardRendererMethods = {catchAddress, fetchExtensionList, parseArgsToString, parseStringToArgs};
+const a1RendererMethods: CardRendererMethods = {
+  catchAddress,
+  fetchExtensionList,
+  parseArgsToString,
+  parseStringToArgs,
+};
 
 export default a1RendererMethods;

@@ -19,16 +19,152 @@ export type CardMainMethods = {
   saveArgs?: (cardDir: string, args: ChosenArgument[]) => Promise<void>;
 };
 
-export type InstallSteps = {title: string; description?: string};
-export type InstallCloneResult = {dir: string; locatedPreInstall: boolean};
-export type InstallStepperType = {
-  initialSteps: (steps: InstallSteps[]) => void;
+export type InstallationMethod = {chosen: 'install' | 'locate'; targetDirectory?: string};
+export type UserInputFieldType = 'checkbox' | 'text-input' | 'select' | 'directory' | 'file';
+export type UserInputField = {id: string; label: string; type: UserInputFieldType; selectOptions?: string[]};
+export type UserInputResult = {id: string; result: string | boolean};
+export type InstallationStepper = {
+  /** Initialize the installation process by setting up the required steps.
+   * @param stepTitles An array of step titles representing the installation workflow.
+   */
+  initialSteps: (stepTitles: string[]) => void;
+
+  /** Advance to the next step in the installation process. */
   nextStep: () => void;
-  clone: (url: string) => Promise<InstallCloneResult>;
-  execTerminalFile: (dir: string, file: string) => Promise<void>;
-  execTerminalCommands: (commands: string | string[], dir?: string) => Promise<void>;
+
+  /** Normally the first step (Contain locating or start installation)
+   * @return A promise resolving to the user's choice of installation method.
+   */
+  starterStep: () => Promise<InstallationMethod>;
+
+  /** Clone a Git repository to a user-selected directory.
+   * @param repositoryUrl The URL of the Git repository to clone.
+   * @returns A promise resolving to the path of the cloned repository.
+   */
+  cloneRepository: (url: string) => Promise<string>;
+
+  /** Execute a terminal script file.
+   * @param workingDirectory The directory in which to execute the script.
+   * @param scriptFileName The name of the script file to execute.
+   * @returns A promise that resolves when execution is complete and the user proceeds.
+   */
+  runTerminalScript: (workingDirectory: string, scriptFileName: string) => Promise<void>;
+
+  /** Execute one or more terminal commands.
+   * @param commands A single command or an array of commands to execute.
+   * @param workingDirectory Optional directory in which to execute the commands.
+   * @returns A promise that resolves when execution is complete and the user proceeds.
+   */
+  executeTerminalCommands: (commands: string | string[], workingDirectory?: string) => Promise<void>;
+
+  /** Download a file from a given URL.
+   * @param fileUrl The URL of the file to download.
+   * @returns A promise resolving to the path of the downloaded file.
+   */
+  downloadFileFromUrl: (fileUrl: string) => Promise<string>;
+
+  /** Call this when installation is done to set the card installed
+   * @param dir The directory to save
+   */
   setInstalled: (dir: string) => void;
-  done: (title: string, description?: string) => void;
+
+  /** Collect user input for various configuration options.
+   * @param inputFields An array of input fields to present to the user.
+   * @returns A promise resolving to an array of user input results.
+   */
+  collectUserInput: (inputFields: UserInputField[]) => Promise<UserInputResult[]>;
+
+  /** Display the final step of the installation process with a result message.
+   * @param resultType The type of result: 'success' or 'error'.
+   * @param resultTitle A title summarizing the result.
+   * @param resultDescription An optional detailed description of the result.
+   */
+  showFinalStep: (resultType: 'success' | 'error', resultTitle: string, resultDescription?: string) => void;
+
+  /** Use these operations after the `setInstalled` function */
+  postInstall: {
+    /**
+     * Installs a list of extensions for the user
+     * @param extensionURLs An array of Git repository URLs to clone
+     * @param extensionsDir The target directory where the extensions will be cloned
+     * @returns A Promise that resolves when all extensions are installed
+     */
+    installExtensions: (extensionURLs: string[], extensionsDir: string) => Promise<void>;
+
+    /**
+     * Configures the WebUI with the provided settings
+     * @param configs An object containing configuration options
+     */
+    config: (configs: {
+      /** If true, automatically updates all extensions when launching WebUI */
+      autoUpdateExtensions?: boolean;
+
+      /** If true, automatically updates the WebUI itself */
+      autoUpdateCard?: boolean;
+
+      /** Pre-defined arguments to pass to the WebUI */
+      customArguments?: {
+        /** Name of the preset configuration */
+        presetName: string;
+        /** Array of custom arguments */
+        customArguments: {
+          /** Name of the argument like --use-cpu */
+          name: string;
+          /** Value of the argument
+           * - Set empty string '', if it's Boolean or CheckBox
+           */
+          value: string;
+        }[];
+      };
+
+      /** Custom commands to execute instead of the actual command to launch WebUI */
+      customCommands?: string[];
+
+      /** Defines the behavior of the browser and terminal when launching */
+      launchBehavior?: {
+        /** Specifies how to open the browser */
+        browser: 'appBrowser' | 'defaultBrowser' | 'doNothing';
+        /** Specifies how to handle the terminal */
+        terminal: 'runScript' | 'empty';
+      };
+
+      /** Actions to perform before launching WebUI */
+      preLaunch?: {
+        /** Commands to execute before launch */
+        preCommands: string[];
+        /** Paths to open before launch */
+        openPath: {path: string; type: 'folder' | 'file'}[];
+      };
+    }) => void;
+  };
+
+  /** Utility functions that don't involve UI interaction */
+  utils: {
+    /** Decompress a file.
+     * @param compressedFilePath The path to the compressed file.
+     * @returns A promise resolving to the path of the decompressed data.
+     */
+    decompressFile: (compressedFilePath: string) => Promise<string>;
+
+    /** Validate if a local directory matches a given Git repository URL.
+     * @param localDirectory The local directory to validate.
+     * @param repositoryUrl The Git repository URL to compare against.
+     * @returns A promise resolving to true if the directory matches the repository, false otherwise.
+     */
+    validateGitRepository: (localDirectory: string, repositoryUrl: string) => Promise<boolean>;
+
+    /** Check for the existence of specified files or folders in a directory.
+     * @param directory The directory to search in.
+     * @param itemNames An array of file or folder names to check for.
+     * @returns A promise resolving to true if all items exist, false otherwise.
+     */
+    verifyFilesExist: (directory: string, itemNames: string[]) => Promise<boolean>;
+
+    /** Open a file or folder using the system's default manner.
+     * @param path Absolute path to open
+     */
+    openFileOrFolder: (itemPath: string) => void;
+  };
 };
 
 /** These methods will be called in the renderer process */
@@ -47,8 +183,13 @@ export type CardRendererMethods = {
   /** Parse given string to the arguments */
   parseStringToArgs?: (args: string) => ChosenArgument[];
 
-  installUI?: {
-    startInstall: (stepper: InstallStepperType) => void;
+  manager?: {
+    startInstall: (stepper: InstallationStepper) => void;
+    updater: {
+      updateType: 'git' | 'stepper';
+      startUpdate?: (stepper: InstallationStepper, dir: string) => void;
+      updateAvailable?: () => boolean;
+    };
   };
 };
 

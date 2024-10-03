@@ -1,35 +1,62 @@
-import {CardRendererMethods, InstallStepperType} from '../../types';
+import {CardRendererMethods, InstallationStepper} from '../../types';
 import {isWin} from '../../Utils/CrossUtils';
 
-export function startInstall(stepper: InstallStepperType) {
-  stepper.initialSteps([
-    {title: 'Clone Git', description: 'Cloning the main repository'},
-    {title: 'Test Commands', description: 'Running some commands for test'},
-    {title: 'Install UI', description: 'Installing OneTrainer'},
-    {title: 'Done', description: 'Finishing installation'},
-  ]);
+const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
 
-  stepper.clone('https://github.com/Nerogar/OneTrainer').then(result => {
-    const {locatedPreInstall, dir} = result;
-    if (locatedPreInstall) {
-      stepper.setInstalled(dir);
-      stepper.done(
-        'OneTrainer located successfully!',
-        'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.',
-      );
-    } else {
+export function startInstall(stepper: InstallationStepper) {
+  stepper.initialSteps(['One Trainer', 'Clone', 'Install', 'Done']);
+
+  stepper.starterStep().then(({targetDirectory, chosen}) => {
+    if (chosen === 'install') {
       stepper.nextStep();
-      stepper.execTerminalFile(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
-        stepper.setInstalled(dir);
-        stepper.done(
-          'OneTrainer installation complete!',
-          'All installation steps completed successfully. Your OneTrainer environment is now ready for use.',
-        );
+      stepper.cloneRepository(ONETRAINER_URL).then(dir => {
+        stepper.nextStep();
+        stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
+          stepper.setInstalled(dir);
+          stepper.showFinalStep(
+            'success',
+            'OneTrainer installation complete!',
+            'All installation steps completed successfully. Your OneTrainer environment is now ready for use.',
+          );
+        });
+      });
+    } else if (targetDirectory) {
+      stepper.utils.validateGitRepository(targetDirectory, ONETRAINER_URL).then(isValid => {
+        if (isValid) {
+          stepper.setInstalled(targetDirectory);
+          stepper.showFinalStep(
+            'success',
+            'OneTrainer located successfully!',
+            'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.',
+          );
+        } else {
+          stepper.showFinalStep(
+            'error',
+            'Unable to locate OneTrainer!',
+            'Please ensure you have selected the correct folder containing the OneTrainer repository clone.',
+          );
+        }
       });
     }
   });
 }
 
-const nerogarRendererMethods: CardRendererMethods = {installUI: {startInstall}};
+function startUpdate(stepper: InstallationStepper, dir: string) {
+  stepper.initialSteps(['Update', 'Finish']);
+  stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+    stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+  });
+}
+
+function updateAvailable() {
+  return false;
+}
+
+const nerogarRendererMethods: CardRendererMethods = {
+  manager: {
+    startInstall,
+    updater: {updateType: 'stepper', startUpdate, updateAvailable},
+  },
+};
 
 export default nerogarRendererMethods;

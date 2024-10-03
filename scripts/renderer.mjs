@@ -1,4 +1,4 @@
-import { R as RSXDALV_ID, s as catchAddress, G as GITMYLO_ID, t as gitmyloArguments, u as gitmyloRendererMethods, v as lodashExports, w as automatic1111Arguments, C as ComfyUI_ID, x as comfyArguments, y as comfyRendererMethods, A as AUTOMATIC1111_ID, z as a1RendererMethods, L as LSHQQYTIGER_ID, D as lshqqytigerArguments, q as LLLYASVIEL_ID, r as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, E as vladmandicArguments, F as vladRendererMethods, M as MCMONKEYPROJECTS_ID, H as mcMonkeyArguments, I as mcMonkeyRendererMethods, B as BMALTAIS_ID, J as bmaltaisArguments, K as bmaltaisRendererMethods, O as OOBABOOGA_ID, N as oobaboogaArguments, P as oobaRendererMethods } from './RendererMethods_BVgz_b.mjs';
+import { R as RSXDALV_ID, v as catchAddress, G as GITMYLO_ID, w as gitmyloArguments, x as gitmyloRendererMethods, y as lodashExports, z as automatic1111Arguments, C as ComfyUI_ID, D as comfyArguments, E as comfyRendererMethods, A as AUTOMATIC1111_ID, F as a1RendererMethods, L as LSHQQYTIGER_ID, H as lshqqytigerArguments, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, I as vladmandicArguments, J as vladRendererMethods, M as MCMONKEYPROJECTS_ID, K as mcMonkeyArguments, P as mcMonkeyRendererMethods, B as BMALTAIS_ID, Q as bmaltaisArguments, T as bmaltaisRendererMethods, u as ANAPNOE_ID, i as isWin, O as OOBABOOGA_ID, U as oobaboogaArguments, W as oobaRendererMethods, S as SILLYTAVERN_ID, X as sillyArguments, Y as sillyRendererMethods, N as NEROGAR_ID } from './RendererMethods_CxV-tR.mjs';
 
 const audioPage = {
     routePath: '/audioGenerationPage',
@@ -119,7 +119,7 @@ const imagePage = {
             repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge',
             extensionsDir: '/extensions',
             type: 'image',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/87d247f0-af0f-46cc-8297-67dd1595636b/width=300/00015-1911485974.jpeg',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/61a9d607-08ce-409a-8d5e-e9df25c72d39/width=300/00017-2936809481.jpeg',
             arguments: lshqqytigerForgeArguments,
             methods: a1RendererMethods,
         },
@@ -158,7 +158,63 @@ const imagePage = {
             arguments: bmaltaisArguments,
             methods: bmaltaisRendererMethods,
         },
+        {
+            id: ANAPNOE_ID,
+            title: 'Stable Diffusion web UI-UX',
+            description: 'A bespoke, highly adaptable user interface for the Stable Diffusion, utilizing the powerful Gradio library.' +
+                ' This cutting-edge browser interface offer an unparalleled level of customization and optimization for users,' +
+                ' setting it apart from other web interfaces.',
+            repoUrl: 'https://github.com/anapnoe/stable-diffusion-webui-ux',
+            type: 'image',
+            extensionsDir: '/extensions',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/026dfc41-f150-4b5c-9bbd-b959b833f059/width=300/00004-1682382699.jpeg',
+            arguments: automatic1111Arguments,
+            methods: a1RendererMethods,
+        },
     ],
+};
+
+const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
+function startInstall(stepper) {
+    stepper.initialSteps(['One Trainer', 'Clone', 'Install', 'Done']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.cloneRepository(ONETRAINER_URL).then(dir => {
+                stepper.nextStep();
+                stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, ONETRAINER_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository clone.');
+                }
+            });
+        }
+    });
+}
+function startUpdate(stepper, dir) {
+    stepper.initialSteps(['Update', 'Finish']);
+    stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+        stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+    });
+}
+function updateAvailable() {
+    return false;
+}
+const nerogarRendererMethods = {
+    manager: {
+        startInstall,
+        updater: { updateType: 'stepper', startUpdate, updateAvailable },
+    },
 };
 
 const textPage = {
@@ -175,9 +231,40 @@ const textPage = {
             arguments: oobaboogaArguments,
             methods: oobaRendererMethods,
         },
+        {
+            id: SILLYTAVERN_ID,
+            title: 'SillyTavern',
+            description: 'SillyTavern provides a single unified interface for many LLM APIs (KoboldAI/CPP, Horde, NovelAI, Ooba, Tabby, OpenAI,' +
+                ' OpenRouter, Claude, Mistral and more), a mobile-friendly layout, Visual Novel Mode, Automatic1111 & ComfyUI API image' +
+                " generation integration, TTS, WorldInfo (lorebooks), customizable UI, auto-translate, more prompt options than you'd" +
+                ' ever want or need, and endless growth potential via third-party extensions.',
+            repoUrl: 'https://github.com/SillyTavern/SillyTavern',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
+            arguments: sillyArguments,
+            methods: sillyRendererMethods,
+        },
     ],
 };
 
 const rendererModules = [imagePage, textPage, audioPage];
+function setCurrentBuild(build) {
+    if (build > 10) {
+        rendererModules.forEach(page => {
+            if (page.routePath === '/imageGenerationPage') {
+                page.cards.push({
+                    id: NEROGAR_ID,
+                    title: 'OneTrainer',
+                    description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
+                    repoUrl: 'https://github.com/Nerogar/OneTrainer',
+                    type: 'image',
+                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
+                        '/width=300/00005-1318253062.jpeg',
+                    methods: nerogarRendererMethods,
+                });
+            }
+        });
+    }
+}
 
-export { rendererModules as default };
+export { rendererModules as default, setCurrentBuild };

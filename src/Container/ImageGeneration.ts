@@ -1,4 +1,5 @@
 import {
+  ANAPNOE_ID,
   AUTOMATIC1111_ID,
   BMALTAIS_ID,
   ComfyUI_ID,
@@ -133,6 +134,21 @@ const imagePage: PagesData = {
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/db3575cb-162a-4436-b5d0-f9fbf9ed1140/width=300/00002-4073703889.jpeg',
       arguments: bmaltaisArguments,
       methods: bmaltaisRendererMethods,
+    },
+    {
+      id: ANAPNOE_ID,
+      title: 'Stable Diffusion web UI-UX',
+      description:
+        'A bespoke, highly adaptable user interface for the Stable Diffusion, utilizing the powerful Gradio library.' +
+        ' This cutting-edge browser interface offer an unparalleled level of customization and optimization for users,' +
+        ' setting it apart from other web interfaces.',
+      repoUrl: 'https://github.com/anapnoe/stable-diffusion-webui-ux',
+      type: 'image',
+      extensionsDir: '/extensions',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/026dfc41-f150-4b5c-9bbd-b959b833f059/width=300/00004-1682382699.jpeg',
+      arguments: automatic1111Arguments,
+      methods: a1RendererMethods,
     },
   ],
 };

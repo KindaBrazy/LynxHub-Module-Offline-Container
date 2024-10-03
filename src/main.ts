@@ -1,4 +1,5 @@
 import {
+  ANAPNOE_ID,
   AUTOMATIC1111_ID,
   BMALTAIS_ID,
   ComfyUI_ID,
@@ -38,6 +39,7 @@ const mainModules: MainModules[] = [
   {id: RSXDALV_ID, methods: rsxMainMethods},
   {id: GITMYLO_ID, methods: gitmyloMainMethods},
   {id: SILLYTAVERN_ID, methods: sillyMainMethods},
+  {id: ANAPNOE_ID, methods: a1MainMethods},
 ];
 
 export function setCurrentBuild(build: number) {

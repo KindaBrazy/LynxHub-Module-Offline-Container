@@ -9,6 +9,7 @@ export const BMALTAIS_ID = 'Bmaltais_SD';
 export const NEROGAR_ID = 'Nerogar_SD';
 
 export const OOBABOOGA_ID = 'Oobabooga_TG';
+export const SILLYTAVERN_ID = 'SillyTavern_TG';
 
 export const RSXDALV_ID = 'Rsxdalv_AG';
 export const GITMYLO_ID = 'Gitmylo_AG';

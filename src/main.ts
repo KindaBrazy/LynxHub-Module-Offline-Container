@@ -10,6 +10,7 @@ import {
   NEROGAR_ID,
   OOBABOOGA_ID,
   RSXDALV_ID,
+  SILLYTAVERN_ID,
   VLADMANDIC_ID,
 } from './Constants';
 import a1MainMethods from './Container/Automatic1111 & Forks/MainMethods';
@@ -20,6 +21,7 @@ import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
 import nerogarMethods from './Container/Nerogar/MainMethods';
 import oobaMainMethods from './Container/Oobabooga/MainMethods';
 import rsxMainMethods from './Container/Rsxdalv/MainMethods';
+import sillyMainMethods from './Container/SillyTavern/MainMethods';
 import vladMainMethods from './Container/Vladmandic/MainMethods';
 import {MainModules} from './types';
 
@@ -35,6 +37,7 @@ const mainModules: MainModules[] = [
   {id: OOBABOOGA_ID, methods: oobaMainMethods},
   {id: RSXDALV_ID, methods: rsxMainMethods},
   {id: GITMYLO_ID, methods: gitmyloMainMethods},
+  {id: SILLYTAVERN_ID, methods: sillyMainMethods},
 ];
 
 export function setCurrentBuild(build: number) {

@@ -91,7 +91,7 @@ const imagePage: PagesData = {
       extensionsDir: '/extensions',
       type: 'image',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/87d247f0-af0f-46cc-8297-67dd1595636b/width=300/00015-1911485974.jpeg',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/61a9d607-08ce-409a-8d5e-e9df25c72d39/width=300/00017-2936809481.jpeg',
       arguments: lshqqytigerForgeArguments,
       methods: a1RendererMethods,
     },

@@ -43,7 +43,7 @@ const mainModules: MainModules[] = [
 ];
 
 export function setCurrentBuild(build: number) {
-  if (build > 10) {
+  if (build > 11) {
     mainModules.push({id: NEROGAR_ID, methods: nerogarMethods});
   }
 }

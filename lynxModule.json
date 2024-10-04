@@ -8,5 +8,6 @@
   "version": "5.0.0",
   "updateDate": "2024-10-03 15:30",
   "changeLog": "V5.0.0\n・New WebUI: OneTrainer(Available in LynxHub V1.3.0 and above), SillyTavern, Stable Diffusion web UI-UX",
-  "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4"
+  "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
+  "owner": false
 }

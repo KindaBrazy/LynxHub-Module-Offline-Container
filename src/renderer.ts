@@ -8,7 +8,7 @@ import {CardModules} from './types';
 const rendererModules: CardModules = [imagePage, textPage, audioPage];
 
 export function setCurrentBuild(build: number) {
-  if (build > 10) {
+  if (build > 11) {
     rendererModules.forEach(page => {
       if (page.routePath === '/imageGenerationPage') {
         page.cards.push({

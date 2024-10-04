@@ -1153,7 +1153,7 @@ const mainModules = [
     { id: ANAPNOE_ID, methods: a1MainMethods },
 ];
 function setCurrentBuild(build) {
-    if (build > 10) {
+    if (build > 11) {
         mainModules.push({ id: NEROGAR_ID, methods: nerogarMethods });
     }
 }

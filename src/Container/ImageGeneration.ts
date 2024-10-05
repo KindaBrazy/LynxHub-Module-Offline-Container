@@ -42,7 +42,7 @@ const imagePage: PagesData = {
     },
     {
       id: AUTOMATIC1111_ID,
-      title: 'Stable Diffusion web UI',
+      title: 'Stable Diffusion',
       description: 'A web interface for Stable Diffusion, implemented using Gradio library.',
       repoUrl: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
       extensionsDir: '/extensions',
@@ -55,7 +55,7 @@ const imagePage: PagesData = {
     },
     {
       id: LSHQQYTIGER_ID,
-      title: 'Stable Diffusion web UI for AMDGPUs',
+      title: 'Stable Diffusion AMDGPU',
       description: 'A web interface for Stable Diffusion, implemented using Gradio library.',
       repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu',
       extensionsDir: '/extensions',
@@ -67,7 +67,7 @@ const imagePage: PagesData = {
     },
     {
       id: LLLYASVIEL_ID,
-      title: 'Stable Diffusion WebUI Forge',
+      title: 'SD Forge',
       description:
         'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
         ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
@@ -82,7 +82,7 @@ const imagePage: PagesData = {
     },
     {
       id: LSHQQYTIGER_FORGE_ID,
-      title: 'Stable Diffusion WebUI AMDGPU Forge',
+      title: 'SD Forge AMDGPU',
       description:
         'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
         ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
@@ -97,7 +97,7 @@ const imagePage: PagesData = {
     },
     {
       id: VLADMANDIC_ID,
-      title: 'SD.Next',
+      title: 'SD Next',
       description: 'Advanced Implementation of Stable Diffusion and other Diffusion-based generative image models',
       repoUrl: 'https://github.com/vladmandic/automatic',
       extensionsDir: '/extensions',
@@ -137,7 +137,7 @@ const imagePage: PagesData = {
     },
     {
       id: ANAPNOE_ID,
-      title: 'Stable Diffusion web UI-UX',
+      title: 'SD UI-UX',
       description:
         'A bespoke, highly adaptable user interface for the Stable Diffusion, utilizing the powerful Gradio library.' +
         ' This cutting-edge browser interface offer an unparalleled level of customization and optimization for users,' +

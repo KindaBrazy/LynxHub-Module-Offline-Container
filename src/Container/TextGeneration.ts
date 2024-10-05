@@ -10,7 +10,7 @@ const textPage: PagesData = {
   cards: [
     {
       id: OOBABOOGA_ID,
-      title: 'Text generation web UI',
+      title: 'Text Generation',
       description: 'A Gradio web UI for Large Language Models.',
       repoUrl: 'https://github.com/oobabooga/text-generation-webui',
       type: 'text',

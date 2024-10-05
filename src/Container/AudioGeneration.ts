@@ -9,7 +9,7 @@ const audioPage: PagesData = {
   cards: [
     {
       id: RSXDALV_ID,
-      title: 'TTS Generation WebUI',
+      title: 'Text to Speech',
       description:
         'TTS Generation Web UI (Bark, MusicGen + AudioGen, Tortoise, RVC, Vocos,' +
         ' Demucs, SeamlessM4T, MAGNet, StyleTTS2, MMS)',
@@ -22,7 +22,7 @@ const audioPage: PagesData = {
     },
     {
       id: GITMYLO_ID,
-      title: 'Audio Webui',
+      title: 'Audio Generation',
       description: 'A webui for different audio related Neural Networks',
       repoUrl: 'https://github.com/gitmylo/audio-webui',
       type: 'audio',

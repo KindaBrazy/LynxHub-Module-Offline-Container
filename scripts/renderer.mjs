@@ -5,7 +5,7 @@ const audioPage = {
     cards: [
         {
             id: RSXDALV_ID,
-            title: 'TTS Generation WebUI',
+            title: 'Text to Speech',
             description: 'TTS Generation Web UI (Bark, MusicGen + AudioGen, Tortoise, RVC, Vocos,' +
                 ' Demucs, SeamlessM4T, MAGNet, StyleTTS2, MMS)',
             repoUrl: 'https://github.com/rsxdalv/tts-generation-webui',
@@ -16,7 +16,7 @@ const audioPage = {
         },
         {
             id: GITMYLO_ID,
-            title: 'Audio Webui',
+            title: 'Audio Generation',
             description: 'A webui for different audio related Neural Networks',
             repoUrl: 'https://github.com/gitmylo/audio-webui',
             type: 'audio',
@@ -77,7 +77,7 @@ const imagePage = {
         },
         {
             id: AUTOMATIC1111_ID,
-            title: 'Stable Diffusion web UI',
+            title: 'Stable Diffusion',
             description: 'A web interface for Stable Diffusion, implemented using Gradio library.',
             repoUrl: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
             extensionsDir: '/extensions',
@@ -88,7 +88,7 @@ const imagePage = {
         },
         {
             id: LSHQQYTIGER_ID,
-            title: 'Stable Diffusion web UI for AMDGPUs',
+            title: 'Stable Diffusion AMDGPU',
             description: 'A web interface for Stable Diffusion, implemented using Gradio library.',
             repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu',
             extensionsDir: '/extensions',
@@ -99,7 +99,7 @@ const imagePage = {
         },
         {
             id: LLLYASVIEL_ID,
-            title: 'Stable Diffusion WebUI Forge',
+            title: 'SD Forge',
             description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
                 ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
                 'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
@@ -112,7 +112,7 @@ const imagePage = {
         },
         {
             id: LSHQQYTIGER_FORGE_ID,
-            title: 'Stable Diffusion WebUI AMDGPU Forge',
+            title: 'SD Forge AMDGPU',
             description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
                 ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
                 'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
@@ -125,7 +125,7 @@ const imagePage = {
         },
         {
             id: VLADMANDIC_ID,
-            title: 'SD.Next',
+            title: 'SD Next',
             description: 'Advanced Implementation of Stable Diffusion and other Diffusion-based generative image models',
             repoUrl: 'https://github.com/vladmandic/automatic',
             extensionsDir: '/extensions',
@@ -160,7 +160,7 @@ const imagePage = {
         },
         {
             id: ANAPNOE_ID,
-            title: 'Stable Diffusion web UI-UX',
+            title: 'SD UI-UX',
             description: 'A bespoke, highly adaptable user interface for the Stable Diffusion, utilizing the powerful Gradio library.' +
                 ' This cutting-edge browser interface offer an unparalleled level of customization and optimization for users,' +
                 ' setting it apart from other web interfaces.',
@@ -222,7 +222,7 @@ const textPage = {
     cards: [
         {
             id: OOBABOOGA_ID,
-            title: 'Text generation web UI',
+            title: 'Text Generation',
             description: 'A Gradio web UI for Large Language Models.',
             repoUrl: 'https://github.com/oobabooga/text-generation-webui',
             type: 'text',

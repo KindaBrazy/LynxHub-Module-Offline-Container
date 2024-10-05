@@ -5,9 +5,9 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 9,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "5.0.0",
-  "updateDate": "2024-10-03 15:30",
-  "changeLog": "V5.0.0\n・New WebUI: OneTrainer(Available in LynxHub V1.3.0 and above), SillyTavern, Stable Diffusion web UI-UX",
+  "version": "5.1.0",
+  "updateDate": "2024-10-05 13:53",
+  "changeLog": "V5.1.0\n・update project names for better readability\n\nV5.0.0\n・New WebUI: OneTrainer(Available in LynxHub V1.3.0 and above), SillyTavern, Stable Diffusion web UI-UX",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

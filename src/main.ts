@@ -19,7 +19,7 @@ import bmaltaisMainMethods from './Container/Bmaltais/MainMethods';
 import comfyMainMethods from './Container/ComfyUI/MainMethods';
 import gitmyloMainMethods from './Container/Gitmylo/MainMethods';
 import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
-import nerogarMethods from './Container/Nerogar/MainMethods';
+import nerogarMainMethods from './Container/Nerogar/MainMethods';
 import oobaMainMethods from './Container/Oobabooga/MainMethods';
 import rsxMainMethods from './Container/Rsxdalv/MainMethods';
 import sillyMainMethods from './Container/SillyTavern/MainMethods';
@@ -44,7 +44,7 @@ const mainModules: MainModules[] = [
 
 export function setCurrentBuild(build: number) {
   if (build > 11) {
-    mainModules.push({id: NEROGAR_ID, methods: nerogarMethods});
+    mainModules.push({id: NEROGAR_ID, methods: nerogarMainMethods});
   }
 }
 

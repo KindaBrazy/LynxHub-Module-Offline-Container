@@ -3,6 +3,7 @@ import {
   AUTOMATIC1111_ID,
   BMALTAIS_ID,
   ComfyUI_ID,
+  EREW123_ID,
   GITMYLO_ID,
   INVOKEAI_ID,
   LLLYASVIEL_ID,
@@ -18,6 +19,7 @@ import {
 import a1MainMethods from './Container/Automatic1111 & Forks/MainMethods';
 import bmaltaisMainMethods from './Container/Bmaltais/MainMethods';
 import comfyMainMethods from './Container/ComfyUI/MainMethods';
+import erew123MainMethods from './Container/Erew123/MainMethods';
 import gitmyloMainMethods from './Container/Gitmylo/MainMethods';
 import invokeMainMethods from './Container/InvokeAI/MainMethods';
 import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
@@ -46,7 +48,14 @@ const mainModules: MainModules[] = [
 
 export function setCurrentBuild(build: number) {
   if (build > 11) {
-    mainModules.push({id: NEROGAR_ID, methods: nerogarMainMethods}, {id: INVOKEAI_ID, methods: invokeMainMethods});
+    mainModules.push(
+      {id: NEROGAR_ID, methods: nerogarMainMethods},
+      {id: INVOKEAI_ID, methods: invokeMainMethods},
+      {
+        id: EREW123_ID,
+        methods: erew123MainMethods,
+      },
+    );
   }
 }
 

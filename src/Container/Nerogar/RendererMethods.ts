@@ -33,7 +33,7 @@ export function startInstall(stepper: InstallationStepper) {
           stepper.showFinalStep(
             'error',
             'Unable to locate OneTrainer!',
-            'Please ensure you have selected the correct folder containing the OneTrainer repository clone.',
+            'Please ensure you have selected the correct folder containing the OneTrainer repository.',
           );
         }
       });

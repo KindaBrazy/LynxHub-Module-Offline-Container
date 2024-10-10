@@ -410,6 +410,7 @@ const automatic1111Arguments: ArgumentsData = [
             description: 'log level; one of: CRITICAL, ERROR, WARNING, INFO, DEBUG',
             name: '--loglevel',
             type: 'DropDown',
+            values: ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
           },
           {
             defaultValue: false,

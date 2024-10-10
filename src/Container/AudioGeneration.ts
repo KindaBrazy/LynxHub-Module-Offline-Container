@@ -1,8 +1,8 @@
 import {GITMYLO_ID, RSXDALV_ID} from '../Constants';
 import {PagesData} from '../types';
-import {catchAddress} from '../Utils/RendererUtils';
 import gitmyloArguments from './Gitmylo/Arguments';
 import gitmyloRendererMethods from './Gitmylo/RendererMethods';
+import rsxdalvRendererMethods from './Rsxdalv/RendererMethods';
 
 const audioPage: PagesData = {
   routePath: '/audioGenerationPage',
@@ -18,7 +18,7 @@ const audioPage: PagesData = {
       extensionsDir: '/extensions',
       bgUrl:
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
-      methods: {catchAddress},
+      methods: rsxdalvRendererMethods,
     },
     {
       id: GITMYLO_ID,

@@ -1,4 +1,14 @@
-import { R as RSXDALV_ID, v as catchAddress, G as GITMYLO_ID, w as gitmyloArguments, x as gitmyloRendererMethods, y as lodashExports, z as automatic1111Arguments, C as ComfyUI_ID, D as comfyArguments, E as comfyRendererMethods, A as AUTOMATIC1111_ID, F as a1RendererMethods, L as LSHQQYTIGER_ID, H as lshqqytigerArguments, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, I as vladmandicArguments, J as vladRendererMethods, M as MCMONKEYPROJECTS_ID, K as mcMonkeyArguments, P as mcMonkeyRendererMethods, B as BMALTAIS_ID, Q as bmaltaisArguments, T as bmaltaisRendererMethods, u as ANAPNOE_ID, i as isWin, O as OOBABOOGA_ID, U as oobaboogaArguments, W as oobaRendererMethods, S as SILLYTAVERN_ID, X as sillyArguments, Y as sillyRendererMethods, N as NEROGAR_ID } from './RendererMethods_CxV-tR.mjs';
+import { R as RSXDALV_ID, G as GITMYLO_ID, v as gitmyloArguments, w as gitmyloRendererMethods, x as lodashExports, y as automatic1111Arguments, C as ComfyUI_ID, z as comfyArguments, D as comfyRendererMethods, A as AUTOMATIC1111_ID, E as a1RendererMethods, L as LSHQQYTIGER_ID, F as lshqqytigerArguments, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, H as vladmandicArguments, I as vladRendererMethods, M as MCMONKEYPROJECTS_ID, J as mcMonkeyArguments, K as mcMonkeyRendererMethods, B as BMALTAIS_ID, P as bmaltaisArguments, Q as bmaltaisRendererMethods, u as ANAPNOE_ID, i as isWin, O as OOBABOOGA_ID, T as oobaboogaArguments, U as oobaRendererMethods, S as SILLYTAVERN_ID, W as sillyArguments, X as sillyRendererMethods, N as NEROGAR_ID } from './RendererMethods_B0yEfL.mjs';
+
+function catchAddress(input) {
+    if (input.toLowerCase().includes('Installed Packages tab loaded'.toLowerCase())) {
+        return 'http://127.0.0.1:7770';
+    }
+    else {
+        return undefined;
+    }
+}
+const rsxdalvRendererMethods = { catchAddress };
 
 const audioPage = {
     routePath: '/audioGenerationPage',
@@ -12,7 +22,7 @@ const audioPage = {
             type: 'audio',
             extensionsDir: '/extensions',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
-            methods: { catchAddress },
+            methods: rsxdalvRendererMethods,
         },
         {
             id: GITMYLO_ID,

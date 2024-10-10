@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, q as parseArgsToString$7, r as parseStringToArgs$7, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID, S as SILLYTAVERN_ID, u as ANAPNOE_ID, N as NEROGAR_ID } from './RendererMethods_CxV-tR.mjs';
+import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, q as parseArgsToString$7, r as parseStringToArgs$7, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID, S as SILLYTAVERN_ID, u as ANAPNOE_ID, N as NEROGAR_ID } from './RendererMethods_B0yEfL.mjs';
 import path from 'node:path';
 import require$$0$2 from 'fs';
 import require$$0 from 'constants';
@@ -1088,7 +1088,7 @@ const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
 async function getRunCommands$4(dir) {
     return await utilRunCommands(BAT_FILE_NAME$4, dir);
 }
-const nerogarMethods = { getRunCommands: getRunCommands$4 };
+const nerogarMainMethods = { getRunCommands: getRunCommands$4 };
 
 const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$2 = isWin
@@ -1154,7 +1154,7 @@ const mainModules = [
 ];
 function setCurrentBuild(build) {
     if (build > 11) {
-        mainModules.push({ id: NEROGAR_ID, methods: nerogarMethods });
+        mainModules.push({ id: NEROGAR_ID, methods: nerogarMainMethods });
     }
 }
 

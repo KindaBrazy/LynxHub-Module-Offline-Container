@@ -4,7 +4,7 @@ import {isWin} from '../../Utils/CrossUtils';
 const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
 
 export function startInstall(stepper: InstallationStepper) {
-  stepper.initialSteps(['One Trainer', 'Clone', 'Install', 'Done']);
+  stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
 
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {

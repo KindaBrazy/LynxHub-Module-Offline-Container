@@ -5,9 +5,9 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 9,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "5.1.1",
-  "updateDate": "2024-10-10 08:01",
-  "changeLog": "V5.1.1\n・Fix TTS Generation address detection\n・Add '--loglevel' values for A1111 and forks",
+  "version": "6.0.0",
+  "updateDate": "2024-10-10 16:06",
+  "changeLog": "V6.0.0\n・Two new WebUI:InvokeAI and AllTalk TTS (Available: LynxHub V1.3.0 and above)",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

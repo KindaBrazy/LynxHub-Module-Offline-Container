@@ -8,6 +8,8 @@ const LLLYASVIEL_ID = 'Lllyasviel_SD';
 const BMALTAIS_ID = 'Bmaltais_SD';
 const NEROGAR_ID = 'Nerogar_SD';
 const ANAPNOE_ID = 'Anapnoe_SD';
+const INVOKEAI_ID = 'InvokeAI_SD';
+const EREW123_ID = 'Erew123_SD';
 const OOBABOOGA_ID = 'Oobabooga_TG';
 const SILLYTAVERN_ID = 'SillyTavern_TG';
 const RSXDALV_ID = 'Rsxdalv_AG';
@@ -20746,4 +20748,4 @@ const vladRendererMethods = {
     parseStringToArgs,
 };
 
-export { AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, comfyRendererMethods as D, a1RendererMethods as E, lshqqytigerArguments as F, GITMYLO_ID as G, vladmandicArguments as H, vladRendererMethods as I, mcMonkeyArguments as J, mcMonkeyRendererMethods as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, NEROGAR_ID as N, OOBABOOGA_ID as O, bmaltaisArguments as P, bmaltaisRendererMethods as Q, RSXDALV_ID as R, SILLYTAVERN_ID as S, oobaboogaArguments as T, oobaRendererMethods as U, VLADMANDIC_ID as V, sillyArguments as W, sillyRendererMethods as X, parseStringToArgs$7 as a, parseArgsToString$6 as b, commonjsGlobal as c, parseStringToArgs$6 as d, parseArgsToString$5 as e, parseStringToArgs$5 as f, parseArgsToString$4 as g, parseStringToArgs$4 as h, isWin as i, parseArgsToString$3 as j, parseStringToArgs$3 as k, parseArgsToString$2 as l, parseStringToArgs$2 as m, parseArgsToString$1 as n, parseStringToArgs$1 as o, parseArgsToString$7 as p, parseArgsToString as q, parseStringToArgs as r, LLLYASVIEL_ID as s, LSHQQYTIGER_FORGE_ID as t, ANAPNOE_ID as u, gitmyloArguments as v, gitmyloRendererMethods as w, lodashExports as x, automatic1111Arguments as y, comfyArguments as z };
+export { sillyArguments as $, AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, gitmyloRendererMethods as D, EREW123_ID as E, automatic1111Arguments as F, GITMYLO_ID as G, comfyArguments as H, INVOKEAI_ID as I, comfyRendererMethods as J, a1RendererMethods as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, NEROGAR_ID as N, OOBABOOGA_ID as O, lshqqytigerArguments as P, vladmandicArguments as Q, RSXDALV_ID as R, SILLYTAVERN_ID as S, vladRendererMethods as T, mcMonkeyArguments as U, VLADMANDIC_ID as V, mcMonkeyRendererMethods as W, bmaltaisArguments as X, bmaltaisRendererMethods as Y, oobaboogaArguments as Z, oobaRendererMethods as _, parseStringToArgs$7 as a, sillyRendererMethods as a0, parseArgsToString$6 as b, commonjsGlobal as c, parseStringToArgs$6 as d, parseArgsToString$5 as e, parseStringToArgs$5 as f, parseArgsToString$4 as g, parseStringToArgs$4 as h, isWin as i, parseArgsToString$3 as j, parseStringToArgs$3 as k, parseArgsToString$2 as l, parseStringToArgs$2 as m, parseArgsToString$1 as n, parseStringToArgs$1 as o, parseArgsToString$7 as p, parseArgsToString as q, parseStringToArgs as r, LLLYASVIEL_ID as s, LSHQQYTIGER_FORGE_ID as t, ANAPNOE_ID as u, catchAddress as v, getArgumentType as w, lodashExports as x, isValidArg as y, gitmyloArguments as z };

@@ -1,4 +1,442 @@
-import { R as RSXDALV_ID, G as GITMYLO_ID, v as gitmyloArguments, w as gitmyloRendererMethods, x as lodashExports, y as automatic1111Arguments, C as ComfyUI_ID, z as comfyArguments, D as comfyRendererMethods, A as AUTOMATIC1111_ID, E as a1RendererMethods, L as LSHQQYTIGER_ID, F as lshqqytigerArguments, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, H as vladmandicArguments, I as vladRendererMethods, M as MCMONKEYPROJECTS_ID, J as mcMonkeyArguments, K as mcMonkeyRendererMethods, B as BMALTAIS_ID, P as bmaltaisArguments, Q as bmaltaisRendererMethods, u as ANAPNOE_ID, i as isWin, O as OOBABOOGA_ID, T as oobaboogaArguments, U as oobaRendererMethods, S as SILLYTAVERN_ID, W as sillyArguments, X as sillyRendererMethods, N as NEROGAR_ID } from './RendererMethods_B0yEfL.mjs';
+import { i as isWin, v as catchAddress$1, w as getArgumentType, x as lodashExports, y as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, z as gitmyloArguments, D as gitmyloRendererMethods, F as automatic1111Arguments, C as ComfyUI_ID, H as comfyArguments, J as comfyRendererMethods, A as AUTOMATIC1111_ID, K as a1RendererMethods, L as LSHQQYTIGER_ID, P as lshqqytigerArguments, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, Q as vladmandicArguments, T as vladRendererMethods, M as MCMONKEYPROJECTS_ID, U as mcMonkeyArguments, W as mcMonkeyRendererMethods, B as BMALTAIS_ID, X as bmaltaisArguments, Y as bmaltaisRendererMethods, u as ANAPNOE_ID, O as OOBABOOGA_ID, Z as oobaboogaArguments, _ as oobaRendererMethods, S as SILLYTAVERN_ID, $ as sillyArguments, a0 as sillyRendererMethods, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_C-Z7eM.mjs';
+
+const invokeArguments = [
+    {
+        category: 'Subset Settings',
+        items: [
+            {
+                name: '--root',
+                description: 'Specify the root directory',
+                type: 'Directory',
+            },
+            {
+                name: '--config',
+                description: 'Override the default "invokeai.yaml" file location',
+                type: 'File',
+            },
+        ],
+    },
+    {
+        category: 'Command Line Arguments',
+        items: [
+            {
+                name: 'host',
+                description: 'IP address to bind to. Use 0.0.0.0 to serve to your local network.',
+                type: 'Input',
+            },
+            {
+                name: 'port',
+                description: 'Port to bind to.',
+                type: 'Input',
+            },
+            {
+                name: 'allow_origins',
+                description: 'Allowed CORS origins.',
+                type: 'Input',
+            },
+            {
+                name: 'allow_credentials',
+                description: 'Allow CORS credentials.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'allow_methods',
+                description: 'Methods allowed for CORS.',
+                type: 'Input',
+            },
+            {
+                name: 'allow_headers',
+                description: 'Headers allowed for CORS.',
+                type: 'Input',
+            },
+            {
+                name: 'ssl_certfile',
+                description: 'SSL certificate file for HTTPS. See https://www.uvicorn.org/settings/#https.',
+                type: 'File',
+            },
+            {
+                name: 'ssl_keyfile',
+                description: 'SSL key file for HTTPS. See https://www.uvicorn.org/settings/#https.',
+                type: 'File',
+            },
+            {
+                name: 'log_tokenization',
+                description: 'Enable logging of parsed prompt tokens.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'patchmatch',
+                description: 'Enable patchmatch inpaint code.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'models_dir',
+                description: 'Path to the models directory.',
+                type: 'Directory',
+            },
+            {
+                name: 'convert_cache_dir',
+                description: 'Path to the converted models cache directory (DEPRECATED, but do not delete because it is' +
+                    ' needed for migration from previous versions).',
+                type: 'Directory',
+            },
+            {
+                name: 'download_cache_dir',
+                description: 'Path to the directory that contains dynamically downloaded models.',
+                type: 'Directory',
+            },
+            {
+                name: 'legacy_conf_dir',
+                description: 'Path to directory of legacy checkpoint config files.',
+                type: 'Directory',
+            },
+            {
+                name: 'db_dir',
+                description: 'Path to InvokeAI databases directory.',
+                type: 'Directory',
+            },
+            {
+                name: 'outputs_dir',
+                description: 'Path to directory for outputs.',
+                type: 'Directory',
+            },
+            {
+                name: 'custom_nodes_dir',
+                description: 'Path to directory for custom nodes.',
+                type: 'Directory',
+            },
+            {
+                name: 'style_presets_dir',
+                description: 'Path to directory for style presets.',
+                type: 'Directory',
+            },
+            {
+                name: 'log_handlers',
+                description: 'Log handler. Valid options are "console", "file=", "syslog=path|address:host:port", "http=".',
+                type: 'Input',
+            },
+            {
+                name: 'log_format',
+                description: 'Log format. Use "plain" for text-only, "color" for colorized output, "legacy" for 2.3-style' +
+                    ' logging and "syslog" for syslog-style.',
+                type: 'DropDown',
+                values: ['plain', 'color', 'syslog', 'legacy'],
+            },
+            {
+                name: 'log_level',
+                description: 'Emit logging messages at this level or higher.',
+                type: 'DropDown',
+                values: ['debug', 'info', 'warning', 'error', 'critical'],
+            },
+            {
+                name: 'log_sql',
+                description: 'Log SQL queries. log_level must be debug for this to do anything. Extremely verbose.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'use_memory_db',
+                description: 'Use in-memory database. Useful for development.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'dev_reload',
+                description: 'Automatically reload when Python sources are changed. Does not reload node definitions.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'profile_graphs',
+                description: 'Enable graph profiling using cProfile.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'profile_prefix',
+                description: 'An optional prefix for profile output files.',
+                type: 'Input',
+            },
+            {
+                name: 'profiles_dir',
+                description: 'Path to profiles output directory.',
+                type: 'Directory',
+            },
+            {
+                name: 'ram',
+                description: 'Maximum memory amount used by memory model cache for rapid switching (GB).',
+                type: 'Input',
+            },
+            {
+                name: 'vram',
+                description: 'Amount of VRAM reserved for model storage (GB).',
+                type: 'Input',
+            },
+            {
+                name: 'lazy_offload',
+                description: 'Keep models in VRAM until their space is needed.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'log_memory_usage',
+                description: 'If True, a memory snapshot will be captured before and after every model cache operation,' +
+                    ' and the result will be logged (at debug level). There is a time cost to capturing the' +
+                    ' memory snapshots, so it is recommended to only enable this feature if you are actively' +
+                    " inspecting the model cache's behaviour.",
+                type: 'CheckBox',
+            },
+            {
+                name: 'device',
+                description: 'Preferred execution device. auto will choose the device depending on the hardware platform' +
+                    ' and the installed torch capabilities.',
+                type: 'DropDown',
+                values: ['auto', 'cpu', 'cuda', 'cuda:1', 'mps'],
+            },
+            {
+                name: 'precision',
+                description: 'Floating point precision. float16 will consume half the memory of float32 but produce slightly' +
+                    ' lower-quality images. The auto setting will guess the proper precision based on your video' +
+                    ' card and operating system.',
+                type: 'DropDown',
+                values: ['auto', 'float16', 'bfloat16', 'float32'],
+            },
+            {
+                name: 'sequential_guidance',
+                description: 'Whether to calculate guidance in serial instead of in parallel, lowering memory requirements.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'attention_type',
+                description: 'Attention type.',
+                type: 'DropDown',
+                values: ['auto', 'normal', 'xformers', 'sliced', 'torch-sdp'],
+            },
+            {
+                name: 'attention_slice_size',
+                description: 'Slice size, valid when attention_type=="sliced".',
+                type: 'DropDown',
+                values: ['auto', 'balanced', 'max', '1', '2', '3', '4', '5', '6', '7', '8'],
+            },
+            {
+                name: 'force_tiled_decode',
+                description: 'Whether to enable tiled VAE decode (reduces memory consumption with some performance penalty).',
+                type: 'CheckBox',
+            },
+            {
+                name: 'pil_compress_level',
+                description: 'The compress_level setting of PIL.Image.save(), used for PNG encoding. All settings are lossless.' +
+                    ' 0 = no compression, 1 = fastest with slightly larger filesize, 9 = slowest with smallest filesize.' +
+                    ' 1 is typically the best setting.',
+                type: 'Input',
+            },
+            {
+                name: 'max_queue_size',
+                description: 'Maximum number of items in the session queue.',
+                type: 'Input',
+            },
+            {
+                name: 'clear_queue_on_startup',
+                description: 'Empties session queue on startup.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'allow_nodes',
+                description: 'List of nodes to allow. Omit to allow all.',
+                type: 'Input',
+            },
+            {
+                name: 'deny_nodes',
+                description: 'List of nodes to deny. Omit to deny none.',
+                type: 'Input',
+            },
+            {
+                name: 'node_cache_size',
+                description: 'How many cached nodes to keep in memory.',
+                type: 'Input',
+            },
+            {
+                name: 'hashing_algorithm',
+                description: 'Model hashing algorithm for model installs.',
+                type: 'DropDown',
+                values: [
+                    'blake3_multi',
+                    'blake3_single',
+                    'random',
+                    'md5',
+                    'sha1',
+                    'sha224',
+                    'sha256',
+                    'sha384',
+                    'sha512',
+                    'blake2b',
+                    'blake2s',
+                    'sha3_224',
+                    'sha3_256',
+                    'sha3_384',
+                    'sha3_512',
+                    'shake_128',
+                    'shake_256',
+                ],
+            },
+            {
+                name: 'remote_api_tokens',
+                description: 'List of regular expression and token pairs used when downloading models from URLs.' +
+                    ' The download URL is tested against the regex, and if it matches, the token is provided in as a Bearer token.',
+                type: 'Input',
+            },
+            {
+                name: 'scan_models_on_startup',
+                description: 'Scan the models directory on startup, registering orphaned models. This is typically only used' +
+                    ' in conjunction with use_memory_db for testing purposes.',
+                type: 'CheckBox',
+            },
+        ],
+    },
+];
+
+const DOWNLOAD_URL = 'https://github.com/invoke-ai/InvokeAI/releases/download/v5.1.1/InvokeAI-installer-v5.1.1.zip';
+const VERSION_NAME = '5.1.1';
+const STORAGE_KEY = 'InvokeAI-Installed';
+const INPUT_ID = 'install_dir';
+const CURRENT_VERSION = '1';
+function startInstall$2(stepper) {
+    stepper.initialSteps(['InvokeAI', 'Download', 'Install', 'Directory', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
+                stepper.utils.decompressFile(path).then(folderPath => {
+                    stepper.nextStep();
+                    stepper
+                        .runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh')
+                        .then(() => {
+                        stepper.nextStep();
+                        stepper
+                            .collectUserInput([
+                            {
+                                id: INPUT_ID,
+                                type: 'directory',
+                                label: 'Select the directory you chose during the terminal installation step',
+                            },
+                        ])
+                            .then(result => {
+                            const selectedDir = result.find(item => item.id === INPUT_ID);
+                            if (selectedDir) {
+                                const finalDir = selectedDir.result;
+                                stepper.utils.verifyFilesExist(finalDir, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
+                                    if (exist) {
+                                        stepper.setInstalled(finalDir);
+                                        window.localStorage.setItem(STORAGE_KEY, CURRENT_VERSION);
+                                        stepper.showFinalStep('success', 'InvokeAI Installation Complete', 'All installation steps have been completed successfully.' +
+                                            ' Your InvokeAI environment is now ready for use.');
+                                    }
+                                    else {
+                                        stepper.showFinalStep('error', 'InvokeAI Installation Failed', 'Unable to validate the installation directory containing InvokeAI. ' +
+                                            'Please close this window, reopen it, and click "Locate" to select the correct folder.');
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.verifyFilesExist(targetDirectory, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
+                if (exist) {
+                    stepper.setInstalled(targetDirectory);
+                    window.localStorage.setItem(STORAGE_KEY, CURRENT_VERSION);
+                    stepper.showFinalStep('success', 'InvokeAI Located Successfully', 'Pre-installed InvokeAI detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to Locate InvokeAI', `Please ensure you have selected the correct folder containing ` +
+                        `InvokeAI with the ${isWin ? 'invoke.bat' : 'invoke.sh'} file.`);
+                }
+            });
+        }
+    });
+}
+function updateAvailable$1() {
+    const lastVersion = Number(window.localStorage.getItem(STORAGE_KEY));
+    return lastVersion < Number(CURRENT_VERSION);
+}
+function startUpdate$2(stepper) {
+    if (updateAvailable$1()) {
+        stepper.initialSteps([`Download V${VERSION_NAME}`, 'Install', 'Finish']);
+        stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
+            stepper.utils.decompressFile(path).then(folderPath => {
+                stepper.nextStep();
+                stepper.runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh').then(() => {
+                    window.localStorage.setItem(STORAGE_KEY, CURRENT_VERSION);
+                    stepper.showFinalStep('success', 'InvokeAI Updated Successfully', `Version ${VERSION_NAME} has been installed successfully.`);
+                });
+            });
+        });
+    }
+    else {
+        stepper.initialSteps(['Checking for Updates', 'Already Up to Date']);
+        stepper.showFinalStep('success', `You already have the latest version (v${VERSION_NAME}) of InvokeAI installed.`);
+    }
+}
+
+const shellCommand = isWin ? 'call invoke.bat' : 'bash ./invoke.sh';
+function parseArgsToString(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, invokeArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand : `${shellCommand} ${argResult}`;
+    return result;
+}
+function parseStringToArgs(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, invokeArguments)) {
+                if (getArgumentType(value.name, invokeArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+const invokeRendererMethods = {
+    catchAddress: catchAddress$1,
+    parseArgsToString,
+    parseStringToArgs,
+    manager: {
+        startInstall: startInstall$2,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$2, updateAvailable: updateAvailable$1 },
+    },
+};
 
 function catchAddress(input) {
     if (input.toLowerCase().includes('Installed Packages tab loaded'.toLowerCase())) {
@@ -36,6 +474,49 @@ const audioPage = {
             methods: gitmyloRendererMethods,
         },
     ],
+};
+
+const AllTalk_URL = 'https://github.com/erew123/alltalk_tts';
+function startInstall$1(stepper) {
+    stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.cloneRepository(AllTalk_URL).then(dir => {
+                stepper.nextStep();
+                stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', 'AllTalk TTS installation complete!', 'All installation steps completed successfully. Your AllTalk TTS environment is now ready for use.');
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, AllTalk_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'AllTalk TTS located successfully!', 'Pre-installed AllTalk TTS detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate AllTalk TTS!', 'Please ensure you have selected the correct folder containing the AllTalk TTS repository.');
+                }
+            });
+        }
+    });
+}
+function startUpdate$1(stepper, dir) {
+    stepper.initialSteps(['Pull Changes', 'Update', 'Finish']);
+    stepper.executeTerminalCommands('git pull', dir).then(() => {
+        stepper.nextStep();
+        stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+            stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+        });
+    });
+}
+const erew123RendererMethods = {
+    manager: {
+        startInstall: startInstall$1,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+    },
 };
 
 const lshqqytigerForgeArguments = lodashExports.cloneDeep(automatic1111Arguments);
@@ -186,7 +667,7 @@ const imagePage = {
 
 const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
 function startInstall(stepper) {
-    stepper.initialSteps(['One Trainer', 'Clone', 'Install', 'Done']);
+    stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
             stepper.nextStep();
@@ -205,7 +686,7 @@ function startInstall(stepper) {
                     stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
                 }
                 else {
-                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository clone.');
+                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository.');
                 }
             });
         }
@@ -271,6 +752,33 @@ function setCurrentBuild(build) {
                     bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
                         '/width=300/00005-1318253062.jpeg',
                     methods: nerogarRendererMethods,
+                }, {
+                    id: INVOKEAI_ID,
+                    title: 'Invoke AI',
+                    description: 'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
+                        ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
+                        ' and serves as the foundation for multiple commercial products.',
+                    repoUrl: 'https://github.com/invoke-ai/InvokeAI',
+                    type: 'image',
+                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
+                        '/width=300/00002-3715244638.jpeg',
+                    arguments: invokeArguments,
+                    methods: invokeRendererMethods,
+                });
+            }
+            else if (page.routePath === '/audioGenerationPage') {
+                page.cards.push({
+                    id: EREW123_ID,
+                    title: 'AllTalk TTS',
+                    description: 'AllTalk is based on the Coqui TTS engine, similar to the Coqui_tts extension for Text generation webUI, ' +
+                        'however supports a variety of advanced features, such as a settings page, low VRAM support, DeepSpeed, ' +
+                        'narrator, model finetuning, custom models, wav file maintenance. It can also be used with 3rd Party ' +
+                        'software via JSON calls.',
+                    repoUrl: 'https://github.com/erew123/alltalk_tts',
+                    type: 'audio',
+                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/d0f56692-50fc-4e8e-ac8b-02d8ec070417' +
+                        '/width=300/00006-951269360.jpeg',
+                    methods: erew123RendererMethods,
                 });
             }
         });

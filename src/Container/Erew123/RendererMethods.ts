@@ -46,7 +46,7 @@ function startUpdate(stepper: InstallationStepper, dir: string) {
   stepper.executeTerminalCommands('git pull', dir).then(() => {
     stepper.nextStep();
     stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
-      stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+      stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
     });
   });
 }

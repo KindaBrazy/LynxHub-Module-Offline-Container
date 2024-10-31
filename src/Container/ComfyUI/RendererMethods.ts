@@ -1,6 +1,6 @@
 import {isEmpty} from 'lodash';
 
-import {ArgType, CardRendererMethods, ChosenArgument, ExtensionData} from '../../types';
+import {ArgType, CardRendererMethods, ChosenArgument, ExtensionData, InstallationStepper} from '../../types';
 import {isWin} from '../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import comfyArguments from './Arguments';
@@ -81,11 +81,52 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
   }
 }
 
+const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
+
+function startInstall(stepper: InstallationStepper) {
+  stepper.initialSteps(['ComfyUI', 'Clone', 'Install Dependencies', 'Finish']);
+
+  stepper.starterStep().then(({targetDirectory, chosen}) => {
+    if (chosen === 'install') {
+      stepper.nextStep();
+      stepper.cloneRepository(COMFYUI_URL).then(dir => {
+        stepper.nextStep();
+        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+          stepper.setInstalled(dir);
+          stepper.showFinalStep(
+            'success',
+            'ComfyUI installation complete!',
+            'All installation steps completed successfully. Your ComfyUI environment is now ready for use.',
+          );
+        });
+      });
+    } else if (targetDirectory) {
+      stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {
+        if (isValid) {
+          stepper.setInstalled(targetDirectory);
+          stepper.showFinalStep(
+            'success',
+            'ComfyUI located successfully!',
+            'Pre-installed ComfyUI detected. Installation skipped as your existing setup is ready to use.',
+          );
+        } else {
+          stepper.showFinalStep(
+            'error',
+            'Unable to locate ComfyUI!',
+            'Please ensure you have selected the correct folder containing the ComfyUI repository.',
+          );
+        }
+      });
+    }
+  });
+}
+
 const comfyRendererMethods: CardRendererMethods = {
   catchAddress,
   fetchExtensionList,
   parseArgsToString,
   parseStringToArgs,
+  manager: {startInstall, updater: {updateType: 'git'}},
 };
 
 export default comfyRendererMethods;

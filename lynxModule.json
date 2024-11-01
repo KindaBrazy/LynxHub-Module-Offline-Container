@@ -5,9 +5,9 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 9,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "6.0.0",
-  "updateDate": "2024-10-10 16:06",
-  "changeLog": "V6.0.0\n・Two new WebUI:InvokeAI and AllTalk TTS (Available: LynxHub V1.3.0 and above)",
+  "version": "7.0.0",
+  "updateDate": "2024-11-01 09:00",
+  "changeLog": "V7.0.0\n・New ComfyUI Installer\n・New WebUI: ComfyUI Zluda by Patientx",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

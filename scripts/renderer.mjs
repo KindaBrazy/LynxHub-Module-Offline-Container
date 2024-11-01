@@ -1,4 +1,4 @@
-import { i as isWin, v as catchAddress$1, w as getArgumentType, x as lodashExports, y as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, z as gitmyloArguments, D as gitmyloRendererMethods, F as automatic1111Arguments, C as ComfyUI_ID, H as comfyArguments, J as comfyRendererMethods, A as AUTOMATIC1111_ID, K as a1RendererMethods, L as LSHQQYTIGER_ID, P as lshqqytigerArguments, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, Q as vladmandicArguments, T as vladRendererMethods, M as MCMONKEYPROJECTS_ID, U as mcMonkeyArguments, W as mcMonkeyRendererMethods, B as BMALTAIS_ID, X as bmaltaisArguments, Y as bmaltaisRendererMethods, u as ANAPNOE_ID, O as OOBABOOGA_ID, Z as oobaboogaArguments, _ as oobaRendererMethods, S as SILLYTAVERN_ID, $ as sillyArguments, a0 as sillyRendererMethods, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_C-Z7eM.mjs';
+import { i as isWin, y as catchAddress$1, z as getArgumentType, D as lodashExports, F as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, H as gitmyloArguments, J as gitmyloRendererMethods, K as automatic1111Arguments, C as ComfyUI_ID, P as comfyArguments, Q as comfyRendererMethods, A as AUTOMATIC1111_ID, T as a1RendererMethods, L as LSHQQYTIGER_ID, U as lshqqytigerArguments, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, W as vladmandicArguments, X as vladRendererMethods, M as MCMONKEYPROJECTS_ID, Y as mcMonkeyArguments, Z as mcMonkeyRendererMethods, B as BMALTAIS_ID, _ as bmaltaisArguments, $ as bmaltaisRendererMethods, w as ANAPNOE_ID, O as OOBABOOGA_ID, a0 as oobaboogaArguments, a1 as oobaRendererMethods, S as SILLYTAVERN_ID, a2 as sillyArguments, a3 as sillyRendererMethods, x as ComfyUI_Zluda_ID, a4 as comfyZludaArguments, a5 as comfyZludaRendererMethods, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_CUoAsK.mjs';
 
 const invokeArguments = [
     {
@@ -508,7 +508,7 @@ function startUpdate$1(stepper, dir) {
     stepper.executeTerminalCommands('git pull', dir).then(() => {
         stepper.nextStep();
         stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
-            stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+            stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
         });
     });
 }
@@ -743,6 +743,19 @@ function setCurrentBuild(build) {
     if (build > 11) {
         rendererModules.forEach(page => {
             if (page.routePath === '/imageGenerationPage') {
+                page.cards.splice(1, 0, {
+                    id: ComfyUI_Zluda_ID,
+                    title: 'ComfyUI Zluda',
+                    description: 'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
+                        ' Now ZLUDA enhanced  for better AMD GPU performance.',
+                    repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
+                    extensionsDir: '/custom_nodes',
+                    type: 'image',
+                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
+                        '/width=300/00023-3290977700.jpeg',
+                    arguments: comfyZludaArguments,
+                    methods: comfyZludaRendererMethods,
+                });
                 page.cards.push({
                     id: NEROGAR_ID,
                     title: 'OneTrainer',

@@ -2,6 +2,7 @@ const LSHQQYTIGER_ID = 'LSHQQYTIGER_SD';
 const LSHQQYTIGER_FORGE_ID = 'LSHQQYTIGER_Forge_SD';
 const AUTOMATIC1111_ID = 'Automatic1111_SD';
 const ComfyUI_ID = 'ComfyUI_SD';
+const ComfyUI_Zluda_ID = 'ComfyUI_Zluda_ID';
 const VLADMANDIC_ID = 'VLADMANDIC_SD';
 const MCMONKEYPROJECTS_ID = 'McMonkeyProjects_SD';
 const LLLYASVIEL_ID = 'Lllyasviel_SD';
@@ -18284,7 +18285,7 @@ function getCategoryType(name) {
     }
     return undefined;
 }
-function parseArgsToString$7(args) {
+function parseArgsToString$8(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
@@ -18330,7 +18331,7 @@ function checkLinuxArgLine(line) {
     }
     return undefined;
 }
-function parseStringToArgs$7(args) {
+function parseStringToArgs$8(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18388,7 +18389,7 @@ function parseStringToArgs$7(args) {
     });
     return argResult;
 }
-async function fetchExtensionList$3() {
+async function fetchExtensionList$4() {
     try {
         const response = await fetch('https://raw.githubusercontent.com/AUTOMATIC1111/stable-diffusion-webui-extensions/master/index.json');
         const extensions = await response.json();
@@ -18406,9 +18407,9 @@ async function fetchExtensionList$3() {
 }
 const a1RendererMethods = {
     catchAddress,
-    fetchExtensionList: fetchExtensionList$3,
-    parseArgsToString: parseArgsToString$7,
-    parseStringToArgs: parseStringToArgs$7,
+    fetchExtensionList: fetchExtensionList$4,
+    parseArgsToString: parseArgsToString$8,
+    parseStringToArgs: parseStringToArgs$8,
 };
 
 const bmaltaisArguments = [
@@ -18455,7 +18456,7 @@ const bmaltaisArguments = [
 ];
 
 const shellCommand$5 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
-function parseArgsToString$6(args) {
+function parseArgsToString$7(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18473,7 +18474,7 @@ function parseArgsToString$6(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$5 : `${shellCommand$5} ${argResult}`;
     return result;
 }
-function parseStringToArgs$6(args) {
+function parseStringToArgs$7(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18507,7 +18508,7 @@ function parseStringToArgs$6(args) {
     });
     return argResult;
 }
-const bmaltaisRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$6, parseStringToArgs: parseStringToArgs$6 };
+const bmaltaisRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$7, parseStringToArgs: parseStringToArgs$7 };
 
 const comfyArguments = [
     {
@@ -18843,7 +18844,7 @@ const comfyArguments = [
     },
 ];
 
-function parseArgsToString$5(args) {
+function parseArgsToString$6(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18861,7 +18862,7 @@ function parseArgsToString$5(args) {
     result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
     return result;
 }
-function parseStringToArgs$5(args) {
+function parseStringToArgs$6(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18895,7 +18896,7 @@ function parseStringToArgs$5(args) {
     });
     return argResult;
 }
-async function fetchExtensionList$2() {
+async function fetchExtensionList$3() {
     try {
         const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
         const extensions = await response.json();
@@ -18910,11 +18911,39 @@ async function fetchExtensionList$2() {
         return [];
     }
 }
+const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
+function startInstall$1(stepper) {
+    stepper.initialSteps(['ComfyUI', 'Clone', 'Install Dependencies', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.cloneRepository(COMFYUI_URL).then(dir => {
+                stepper.nextStep();
+                stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. Your ComfyUI environment is now ready for use.');
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'ComfyUI located successfully!', 'Pre-installed ComfyUI detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate ComfyUI!', 'Please ensure you have selected the correct folder containing the ComfyUI repository.');
+                }
+            });
+        }
+    });
+}
 const comfyRendererMethods = {
     catchAddress,
-    fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$5,
-    parseStringToArgs: parseStringToArgs$5,
+    fetchExtensionList: fetchExtensionList$3,
+    parseArgsToString: parseArgsToString$6,
+    parseStringToArgs: parseStringToArgs$6,
+    manager: { startInstall: startInstall$1, updater: { updateType: 'git' } },
 };
 
 const gitmyloArguments = [
@@ -18993,7 +19022,7 @@ const gitmyloArguments = [
 ];
 
 const shellCommand$4 = isWin ? 'call run.bat' : 'bash ./run.sh';
-function parseArgsToString$4(args) {
+function parseArgsToString$5(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -19011,7 +19040,7 @@ function parseArgsToString$4(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
     return result;
 }
-function parseStringToArgs$4(args) {
+function parseStringToArgs$5(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -19045,7 +19074,7 @@ function parseStringToArgs$4(args) {
     });
     return argResult;
 }
-const gitmyloRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$4, parseStringToArgs: parseStringToArgs$4 };
+const gitmyloRendererMethods = { catchAddress, parseArgsToString: parseArgsToString$5, parseStringToArgs: parseStringToArgs$5 };
 
 const mcMonkeyArguments = [
     {
@@ -19155,7 +19184,7 @@ const mcMonkeyArguments = [
 ];
 
 const shellCommand$3 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
-function parseArgsToString$3(args) {
+function parseArgsToString$4(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -19173,7 +19202,7 @@ function parseArgsToString$3(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
     return result;
 }
-function parseStringToArgs$3(args) {
+function parseStringToArgs$4(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -19207,7 +19236,7 @@ function parseStringToArgs$3(args) {
     });
     return argResult;
 }
-async function fetchExtensionList$1() {
+async function fetchExtensionList$2() {
     return [
         {
             url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
@@ -19238,9 +19267,9 @@ async function fetchExtensionList$1() {
 }
 const mcMonkeyRendererMethods = {
     catchAddress,
-    fetchExtensionList: fetchExtensionList$1,
-    parseArgsToString: parseArgsToString$3,
-    parseStringToArgs: parseStringToArgs$3,
+    fetchExtensionList: fetchExtensionList$2,
+    parseArgsToString: parseArgsToString$4,
+    parseStringToArgs: parseStringToArgs$4,
 };
 
 const oobaboogaArguments = [
@@ -19792,7 +19821,7 @@ const oobaboogaArguments = [
     },
 ];
 
-async function fetchExtensionList() {
+async function fetchExtensionList$1() {
     return [
         {
             url: 'https://github.com/mamei16/LLM_Web_search',
@@ -20110,7 +20139,7 @@ async function fetchExtensionList() {
 }
 
 const shellCommand$2 = isWin ? 'call start_windows.bat' : 'bash ./start_linux.sh';
-function parseArgsToString$2(args) {
+function parseArgsToString$3(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -20128,7 +20157,7 @@ function parseArgsToString$2(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
     return result;
 }
-function parseStringToArgs$2(args) {
+function parseStringToArgs$3(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -20164,9 +20193,465 @@ function parseStringToArgs$2(args) {
 }
 const oobaRendererMethods = {
     catchAddress,
+    fetchExtensionList: fetchExtensionList$1,
+    parseArgsToString: parseArgsToString$3,
+    parseStringToArgs: parseStringToArgs$3,
+};
+
+const comfyZludaArguments = [
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Network',
+                items: [
+                    {
+                        name: '--listen',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1). If --listen is provided' +
+                            ' without an argument, it defaults to 0.0.0.0. (listens on all)',
+                        type: 'Input',
+                        defaultValue: '127.0.0.1',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Set the listen port.',
+                        type: 'Input',
+                        defaultValue: 8188,
+                    },
+                    {
+                        name: '--tls-keyfile',
+                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
+                            ' requires --tls-certfile to function',
+                        type: 'File',
+                    },
+                    {
+                        name: '--tls-certfile',
+                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
+                            ' requires --tls-keyfile to function',
+                        type: 'File',
+                    },
+                    {
+                        name: '--enable-cors-header',
+                        description: "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
+                        type: 'Input',
+                    },
+                    {
+                        name: '--max-upload-size',
+                        description: 'Set the maximum upload size in MB.',
+                        type: 'Input',
+                        defaultValue: 100,
+                    },
+                ],
+            },
+            {
+                section: 'Paths',
+                items: [
+                    {
+                        name: '--extra-model-paths-config',
+                        description: 'Load one or more extra_model_paths.yaml files.',
+                        type: 'File',
+                    },
+                    {
+                        name: '--output-directory',
+                        description: 'Set the ComfyUI output directory.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--temp-directory',
+                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory).',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--input-directory',
+                        description: 'Set the ComfyUI input directory.',
+                        type: 'Directory',
+                    },
+                ],
+            },
+            {
+                section: 'Execution',
+                items: [
+                    {
+                        name: '--auto-launch',
+                        description: 'Automatically launch ComfyUI in the default browser.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-auto-launch',
+                        description: 'Disable auto launching the browser.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cuda-device',
+                        description: 'Set the id of the cuda device this instance will use.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--cuda-malloc',
+                        description: 'Enable cudaMallocAsync (enabled by default for torch 2.0 and up).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-cuda-malloc',
+                        description: 'Disable cudaMallocAsync.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Precision',
+                items: [
+                    {
+                        name: '--force-fp32',
+                        description: 'Force fp32 (If this makes your GPU work better please report it).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-fp16',
+                        description: 'Force fp16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-unet',
+                        description: 'Run the UNET in bf16. This should only be used for testing stuff.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-unet',
+                        description: 'Store unet weights in fp16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e4m3fn-unet',
+                        description: 'Store unet weights in fp8_e4m3fn.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e5m2-unet',
+                        description: 'Store unet weights in fp8_e5m2.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-vae',
+                        description: 'Run the VAE in fp16, might cause black images.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-vae',
+                        description: 'Run the VAE in full precision fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-vae',
+                        description: 'Run the VAE in bf16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cpu-vae',
+                        description: 'Run the VAE on the CPU.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e4m3fn-text-enc',
+                        description: 'Store text encoder weights in fp8 (e4m3fn variant).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e5m2-text-enc',
+                        description: 'Store text encoder weights in fp8 (e5m2 variant).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-text-enc',
+                        description: 'Store text encoder weights in fp16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-text-enc',
+                        description: 'Store text encoder weights in fp32.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Optimizations',
+                items: [
+                    {
+                        name: '--force-channels-last',
+                        description: 'Force channels last format when inferencing the models.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--directml',
+                        description: 'Use torch-directml.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-ipex-optimize',
+                        description: 'Disables ipex.optimize when loading models with Intel GPUs.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--preview-method',
+                        description: 'Default preview method for sampler nodes.',
+                        type: 'Input',
+                        defaultValue: 'NoPreviews',
+                    },
+                    {
+                        name: '--use-split-cross-attention',
+                        description: 'Use the split cross attention optimization. Ignored when xformers is used.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-quad-cross-attention',
+                        description: 'Use the sub-quadratic cross attention optimization . Ignored when xformers is used.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-pytorch-cross-attention',
+                        description: 'Use the new pytorch 2.0 cross attention function.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-xformers',
+                        description: 'Disable xformers.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Memory Management',
+                items: [
+                    {
+                        name: '--gpu-only',
+                        description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--highvram',
+                        description: 'By default models will be unloaded to CPU memory after being used.' +
+                            ' This option keeps them in GPU memory.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--normalvram',
+                        description: 'Used to force normal vram use if lowvram gets automatically enabled.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--lowvram',
+                        description: 'Split the unet in parts to use less vram.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--novram',
+                        description: "When lowvram isn't enough.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cpu',
+                        description: 'To use the CPU for everything (slow).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-smart-memory',
+                        description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Miscellaneous',
+                items: [
+                    {
+                        name: '--default-hashing-function',
+                        description: 'Allows you to choose the hash function to use for duplicate filename /' +
+                            ' contents comparison. Default is sha256.',
+                        type: 'DropDown',
+                        values: ['md5', 'sha1', 'sha256', 'sha512'],
+                        defaultValue: 'sha256',
+                    },
+                    {
+                        name: '--deterministic',
+                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this' +
+                            ' might not make images deterministic in all cases.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--dont-print-server',
+                        description: "Don't print server output.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--quick-test-for-ci',
+                        description: 'Quick test for CI.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--windows-standalone-build',
+                        description: 'Windows standalone build: Enable convenient things that most people using the' +
+                            ' standalone windows build will probably enjoy (like auto opening the page on startup).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-metadata',
+                        description: 'Disable saving prompt metadata in files.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-all-custom-nodes',
+                        description: 'Disable loading all custom nodes.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--multi-user',
+                        description: 'Enables per-user storage.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--verbose',
+                        description: 'Enables more debug prints.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--front-end-version',
+                        description: 'Specifies the version of the frontend to be used. This command needs internet connectivity' +
+                            ' to query and download available frontend implementations from GitHub releases.',
+                        type: 'Input',
+                        defaultValue: 'DEFAULT_VERSION_STRING',
+                    },
+                    {
+                        name: '--front-end-root',
+                        description: 'The local filesystem path to the directory where the frontend is' +
+                            ' located. Overrides --front-end-version.',
+                        type: 'Directory',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+function parseArgsToString$2(args) {
+    let result = '@echo off\n' +
+        '\n' +
+        'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
+        'set VENV_DIR=./venv\n' +
+        '\n' +
+        'set ZLUDA_COMGR_LOG_LEVEL=1\n' +
+        '\n' +
+        '.\\zluda\\zluda.exe -- ';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, comfyZludaArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
+    result += '\npause';
+    return result;
+}
+function parseStringToArgs$2(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.includes('%PYTHON% main.py'))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split('%PYTHON% main.py ')[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, comfyZludaArguments)) {
+                if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+async function fetchExtensionList() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
+        const extensions = await response.json();
+        return extensions.custom_nodes.map((extension) => ({
+            title: extension.title,
+            description: extension.description,
+            url: extension.reference,
+        }));
+    }
+    catch (e) {
+        console.error(e);
+        return [];
+    }
+}
+const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
+function startInstall(stepper) {
+    stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
+                stepper.nextStep();
+                stepper.runTerminalScript(dir, 'install.bat').then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.postInstall.config({
+                        customArguments: {
+                            presetName: 'Zluda Config',
+                            customArguments: [{ name: '--use-quad-cross-attention', value: '' }],
+                        },
+                    });
+                    stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_ZLUDA_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.postInstall.config({
+                        customArguments: {
+                            presetName: 'Zluda Config',
+                            customArguments: [{ name: '--use-quad-cross-attention', value: '' }],
+                        },
+                    });
+                    stepper.showFinalStep('success', 'ComfyUI-Zluda located successfully!', 'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate ComfyUI-Zluda!', 'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.');
+                }
+            });
+        }
+    });
+}
+const comfyZludaRendererMethods = {
+    catchAddress,
     fetchExtensionList,
     parseArgsToString: parseArgsToString$2,
     parseStringToArgs: parseStringToArgs$2,
+    manager: { startInstall, updater: { updateType: 'git' } },
 };
 
 const sillyArguments = [
@@ -20743,9 +21228,9 @@ function parseStringToArgs(args) {
 }
 const vladRendererMethods = {
     catchAddress,
-    fetchExtensionList: fetchExtensionList$3,
+    fetchExtensionList: fetchExtensionList$4,
     parseArgsToString,
     parseStringToArgs,
 };
 
-export { sillyArguments as $, AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, gitmyloRendererMethods as D, EREW123_ID as E, automatic1111Arguments as F, GITMYLO_ID as G, comfyArguments as H, INVOKEAI_ID as I, comfyRendererMethods as J, a1RendererMethods as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, NEROGAR_ID as N, OOBABOOGA_ID as O, lshqqytigerArguments as P, vladmandicArguments as Q, RSXDALV_ID as R, SILLYTAVERN_ID as S, vladRendererMethods as T, mcMonkeyArguments as U, VLADMANDIC_ID as V, mcMonkeyRendererMethods as W, bmaltaisArguments as X, bmaltaisRendererMethods as Y, oobaboogaArguments as Z, oobaRendererMethods as _, parseStringToArgs$7 as a, sillyRendererMethods as a0, parseArgsToString$6 as b, commonjsGlobal as c, parseStringToArgs$6 as d, parseArgsToString$5 as e, parseStringToArgs$5 as f, parseArgsToString$4 as g, parseStringToArgs$4 as h, isWin as i, parseArgsToString$3 as j, parseStringToArgs$3 as k, parseArgsToString$2 as l, parseStringToArgs$2 as m, parseArgsToString$1 as n, parseStringToArgs$1 as o, parseArgsToString$7 as p, parseArgsToString as q, parseStringToArgs as r, LLLYASVIEL_ID as s, LSHQQYTIGER_FORGE_ID as t, ANAPNOE_ID as u, catchAddress as v, getArgumentType as w, lodashExports as x, isValidArg as y, gitmyloArguments as z };
+export { bmaltaisRendererMethods as $, AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, lodashExports as D, EREW123_ID as E, isValidArg as F, GITMYLO_ID as G, gitmyloArguments as H, INVOKEAI_ID as I, gitmyloRendererMethods as J, automatic1111Arguments as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, NEROGAR_ID as N, OOBABOOGA_ID as O, comfyArguments as P, comfyRendererMethods as Q, RSXDALV_ID as R, SILLYTAVERN_ID as S, a1RendererMethods as T, lshqqytigerArguments as U, VLADMANDIC_ID as V, vladmandicArguments as W, vladRendererMethods as X, mcMonkeyArguments as Y, mcMonkeyRendererMethods as Z, bmaltaisArguments as _, parseStringToArgs$8 as a, oobaboogaArguments as a0, oobaRendererMethods as a1, sillyArguments as a2, sillyRendererMethods as a3, comfyZludaArguments as a4, comfyZludaRendererMethods as a5, parseArgsToString$7 as b, commonjsGlobal as c, parseStringToArgs$7 as d, parseArgsToString$6 as e, parseStringToArgs$6 as f, parseArgsToString$5 as g, parseStringToArgs$5 as h, isWin as i, parseArgsToString$4 as j, parseStringToArgs$4 as k, parseArgsToString$3 as l, parseStringToArgs$3 as m, parseArgsToString$2 as n, parseStringToArgs$2 as o, parseArgsToString$8 as p, parseArgsToString$1 as q, parseStringToArgs$1 as r, parseArgsToString as s, parseStringToArgs as t, LLLYASVIEL_ID as u, LSHQQYTIGER_FORGE_ID as v, ANAPNOE_ID as w, ComfyUI_Zluda_ID as x, catchAddress as y, getArgumentType as z };

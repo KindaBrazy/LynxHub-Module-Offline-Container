@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, q as parseArgsToString$7, r as parseStringToArgs$7, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, s as LLLYASVIEL_ID, t as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID, S as SILLYTAVERN_ID, u as ANAPNOE_ID, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_C-Z7eM.mjs';
+import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, q as parseArgsToString$7, r as parseStringToArgs$7, s as parseArgsToString$8, t as parseStringToArgs$8, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID, S as SILLYTAVERN_ID, w as ANAPNOE_ID, x as ComfyUI_Zluda_ID, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_CUoAsK.mjs';
 import path from 'node:path';
 import require$$0$2 from 'fs';
 import require$$0 from 'constants';
@@ -1018,106 +1018,127 @@ async function utilReadArgs(cardDir, batFileName, defaultData, parser) {
 
 const CONFIG_FILE = isWin ? 'webui-user.bat' : 'webui-user.sh';
 const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
-const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$b(dir) {
-    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$9);
+const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$c(dir) {
+    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$a);
 }
-async function saveArgs$7(cardDir, args) {
+async function saveArgs$8(cardDir, args) {
     return await utilSaveArgs(cardDir, args, CONFIG_FILE, parseArgsToString);
 }
-async function readArgs$7(cardDir) {
-    return await utilReadArgs(cardDir, CONFIG_FILE, DEFAULT_BATCH_DATA$9, parseStringToArgs);
+async function readArgs$8(cardDir) {
+    return await utilReadArgs(cardDir, CONFIG_FILE, DEFAULT_BATCH_DATA$a, parseStringToArgs);
 }
-const a1MainMethods = { getRunCommands: getRunCommands$b, readArgs: readArgs$7, saveArgs: saveArgs$7 };
+const a1MainMethods = { getRunCommands: getRunCommands$c, readArgs: readArgs$8, saveArgs: saveArgs$8 };
+
+const BAT_FILE_NAME$b = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
+async function getRunCommands$b(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$b, dir, DEFAULT_BATCH_DATA$9);
+}
+async function saveArgs$7(cardDir, args) {
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$b, parseArgsToString$1);
+}
+async function readArgs$7(cardDir) {
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$b, DEFAULT_BATCH_DATA$9, parseStringToArgs$1);
+}
+const bmaltaisMainMethods = { getRunCommands: getRunCommands$b, readArgs: readArgs$7, saveArgs: saveArgs$7 };
 
 const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
+const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
 async function getRunCommands$a(dir) {
     return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$8);
 }
 async function saveArgs$6(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$a, parseArgsToString$1);
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$a, parseArgsToString$2);
 }
 async function readArgs$6(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$8, parseStringToArgs$1);
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$8, parseStringToArgs$2);
 }
-const bmaltaisMainMethods = { getRunCommands: getRunCommands$a, readArgs: readArgs$6, saveArgs: saveArgs$6 };
+const comfyMainMethods = { getRunCommands: getRunCommands$a, readArgs: readArgs$6, saveArgs: saveArgs$6 };
 
 const BAT_FILE_NAME$9 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
 async function getRunCommands$9(dir) {
     return await utilRunCommands(BAT_FILE_NAME$9, dir, DEFAULT_BATCH_DATA$7);
 }
-async function saveArgs$5(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$9, parseArgsToString$2);
-}
-async function readArgs$5(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$9, DEFAULT_BATCH_DATA$7, parseStringToArgs$2);
-}
-const comfyMainMethods = { getRunCommands: getRunCommands$9, readArgs: readArgs$5, saveArgs: saveArgs$5 };
+const erew123MainMethods = { getRunCommands: getRunCommands$9 };
 
 const BAT_FILE_NAME$8 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
+const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
 async function getRunCommands$8(dir) {
     return await utilRunCommands(BAT_FILE_NAME$8, dir, DEFAULT_BATCH_DATA$6);
 }
-const erew123MainMethods = { getRunCommands: getRunCommands$8 };
+async function saveArgs$5(cardDir, args) {
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$8, parseArgsToString$3);
+}
+async function readArgs$5(cardDir) {
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$8, DEFAULT_BATCH_DATA$6, parseStringToArgs$3);
+}
+const gitmyloMainMethods = { getRunCommands: getRunCommands$8, readArgs: readArgs$5, saveArgs: saveArgs$5 };
 
 const BAT_FILE_NAME$7 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
+const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
 async function getRunCommands$7(dir) {
     return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$5);
 }
-async function saveArgs$4(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$7, parseArgsToString$3);
-}
-async function readArgs$4(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$5, parseStringToArgs$3);
-}
-const gitmyloMainMethods = { getRunCommands: getRunCommands$7, readArgs: readArgs$4, saveArgs: saveArgs$4 };
+const invokeMainMethods = { getRunCommands: getRunCommands$7 };
 
 const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
+const DEFAULT_BATCH_DATA$4 = isWin
+    ? '@echo off\n\ncall launch-windows.bat'
+    : '#!/bin/bash\n\nbash ./launch-linux.sh';
 async function getRunCommands$6(dir) {
     return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$4);
 }
-const invokeMainMethods = { getRunCommands: getRunCommands$6 };
+async function saveArgs$4(cardDir, args) {
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$6, parseArgsToString$4);
+}
+async function readArgs$4(cardDir) {
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$4, parseStringToArgs$4);
+}
+const mcMonkeyMainMethods = { getRunCommands: getRunCommands$6, readArgs: readArgs$4, saveArgs: saveArgs$4 };
 
-const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$3 = isWin
-    ? '@echo off\n\ncall launch-windows.bat'
-    : '#!/bin/bash\n\nbash ./launch-linux.sh';
+const BAT_FILE_NAME$5 = isWin ? 'start-ui.bat' : 'start-ui.sh';
 async function getRunCommands$5(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$3);
+    return await utilRunCommands(BAT_FILE_NAME$5, dir);
 }
-async function saveArgs$3(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$5, parseArgsToString$4);
-}
-async function readArgs$3(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$3, parseStringToArgs$4);
-}
-const mcMonkeyMainMethods = { getRunCommands: getRunCommands$5, readArgs: readArgs$3, saveArgs: saveArgs$3 };
+const nerogarMainMethods = { getRunCommands: getRunCommands$5 };
 
-const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
-async function getRunCommands$4(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$4, dir);
-}
-const nerogarMainMethods = { getRunCommands: getRunCommands$4 };
-
-const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$2 = isWin
+const BAT_FILE_NAME$4 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$3 = isWin
     ? '@echo off\n\ncall start_windows.bat'
     : '#!/bin/bash\n\nbash ./start_linux.sh';
+async function getRunCommands$4(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$4, dir, DEFAULT_BATCH_DATA$3);
+}
+async function saveArgs$3(cardDir, args) {
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$4, parseArgsToString$5);
+}
+async function readArgs$3(cardDir) {
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$4, DEFAULT_BATCH_DATA$3, parseStringToArgs$5);
+}
+const oobaMainMethods = { getRunCommands: getRunCommands$4, readArgs: readArgs$3, saveArgs: saveArgs$3 };
+
+const BAT_FILE_NAME$3 = 'lynx-user.bat';
+const DEFAULT_BATCH_DATA$2 = '@echo off\n' +
+    '\n' +
+    'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
+    'set VENV_DIR=./venv\n' +
+    '\n' +
+    'set ZLUDA_COMGR_LOG_LEVEL=1\n' +
+    '\n' +
+    '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
+    '\npause';
 async function getRunCommands$3(dir) {
     return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$2);
 }
 async function saveArgs$2(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$3, parseArgsToString$5);
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$3, parseArgsToString$6);
 }
 async function readArgs$2(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$2, parseStringToArgs$5);
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$2, parseStringToArgs$6);
 }
-const oobaMainMethods = { getRunCommands: getRunCommands$3, readArgs: readArgs$2, saveArgs: saveArgs$2 };
+const comfyZludaMainMethods = { getRunCommands: getRunCommands$3, readArgs: readArgs$2, saveArgs: saveArgs$2 };
 
 const BAT_FILE_NAME$2 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
 async function getRunCommands$2(dir) {
@@ -1131,10 +1152,10 @@ async function getRunCommands$1(dir) {
     return await utilRunCommands(BAT_FILE_NAME$1, dir, DEFAULT_BATCH_DATA$1);
 }
 async function saveArgs$1(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$1, parseArgsToString$6);
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$1, parseArgsToString$7);
 }
 async function readArgs$1(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$6);
+    return await utilReadArgs(cardDir, BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$7);
 }
 const sillyMainMethods = { getRunCommands: getRunCommands$1, readArgs: readArgs$1, saveArgs: saveArgs$1 };
 
@@ -1144,10 +1165,10 @@ async function getRunCommands(dir) {
     return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 async function saveArgs(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME, parseArgsToString$7);
+    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME, parseArgsToString$8);
 }
 async function readArgs(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs$7);
+    return await utilReadArgs(cardDir, BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs$8);
 }
 const vladMainMethods = { getRunCommands, readArgs, saveArgs };
 
@@ -1168,7 +1189,7 @@ const mainModules = [
 ];
 function setCurrentBuild(build) {
     if (build > 11) {
-        mainModules.push({ id: NEROGAR_ID, methods: nerogarMainMethods }, { id: INVOKEAI_ID, methods: invokeMainMethods }, {
+        mainModules.push({ id: ComfyUI_Zluda_ID, methods: comfyZludaMainMethods }, { id: NEROGAR_ID, methods: nerogarMainMethods }, { id: INVOKEAI_ID, methods: invokeMainMethods }, {
             id: EREW123_ID,
             methods: erew123MainMethods,
         });

@@ -1,0 +1,153 @@
+import {isEmpty} from 'lodash';
+
+import {ArgType, CardRendererMethods, ChosenArgument, ExtensionData, InstallationStepper} from '../../types';
+import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
+import comfyZludaArguments from './Arguments';
+
+export function parseArgsToString(args: ChosenArgument[]): string {
+  let result: string =
+    '@echo off\n' +
+    '\n' +
+    'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
+    'set VENV_DIR=./venv\n' +
+    '\n' +
+    'set ZLUDA_COMGR_LOG_LEVEL=1\n' +
+    '\n' +
+    '.\\zluda\\zluda.exe -- ';
+  let argResult: string = '';
+
+  args.forEach(arg => {
+    const argType = getArgumentType(arg.name, comfyZludaArguments);
+    if (argType === 'CheckBox') {
+      argResult += `${arg.name} `;
+    } else if (argType === 'File' || argType === 'Directory') {
+      argResult += `${arg.name} "${arg.value}" `;
+    } else {
+      argResult += `${arg.name} ${arg.value} `;
+    }
+  });
+
+  result += isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
+
+  result += '\npause';
+
+  return result;
+}
+
+export function parseStringToArgs(args: string): ChosenArgument[] {
+  const argResult: ChosenArgument[] = [];
+  const lines: string[] = args.split('\n');
+
+  lines.forEach((line: string): void => {
+    if (!line.includes('%PYTHON% main.py')) return;
+
+    // Extract the command line arguments and clear falsy values
+    const clArgs: string = line.split('%PYTHON% main.py ')[1];
+
+    if (!clArgs) return;
+
+    const args: string[] = clArgs.split('--').filter(Boolean);
+
+    // Map each argument to an object with id and value
+    const result: ArgType[] = args.map((arg: string): ArgType => {
+      const [id, ...value] = arg.trim().split(' ');
+      return {
+        name: `--${id}`,
+        value: value.join(' ').replace(/"/g, ''),
+      };
+    });
+
+    // Process each argument
+    result.forEach((value: ArgType): void => {
+      // Check if the argument exists or valid
+      if (isValidArg(value.name, comfyZludaArguments)) {
+        if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
+          argResult.push({name: value.name, value: ''});
+        } else {
+          argResult.push({name: value.name, value: value.value});
+        }
+      }
+    });
+  });
+
+  return argResult;
+}
+
+async function fetchExtensionList(): Promise<ExtensionData[]> {
+  try {
+    const response = await fetch(
+      'https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json',
+    );
+    const extensions = await response.json();
+    return extensions.custom_nodes.map((extension: any) => ({
+      title: extension.title,
+      description: extension.description,
+      url: extension.reference,
+    }));
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
+
+function startInstall(stepper: InstallationStepper) {
+  stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
+
+  stepper.starterStep().then(({targetDirectory, chosen}) => {
+    if (chosen === 'install') {
+      stepper.nextStep();
+      stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
+        stepper.nextStep();
+        stepper.runTerminalScript(dir, 'install.bat').then(() => {
+          stepper.setInstalled(dir);
+          stepper.postInstall.config({
+            customArguments: {
+              presetName: 'Zluda Config',
+              customArguments: [{name: '--use-quad-cross-attention', value: ''}],
+            },
+          });
+          stepper.showFinalStep(
+            'success',
+            'ComfyUI-Zluda installation complete!',
+            'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.',
+          );
+        });
+      });
+    } else if (targetDirectory) {
+      stepper.utils.validateGitRepository(targetDirectory, COMFYUI_ZLUDA_URL).then(isValid => {
+        if (isValid) {
+          stepper.setInstalled(targetDirectory);
+          stepper.postInstall.config({
+            customArguments: {
+              presetName: 'Zluda Config',
+              customArguments: [{name: '--use-quad-cross-attention', value: ''}],
+            },
+          });
+          stepper.showFinalStep(
+            'success',
+            'ComfyUI-Zluda located successfully!',
+            'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.',
+          );
+        } else {
+          stepper.showFinalStep(
+            'error',
+            'Unable to locate ComfyUI-Zluda!',
+            'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.',
+          );
+        }
+      });
+    }
+  });
+}
+
+const comfyZludaRendererMethods: CardRendererMethods = {
+  catchAddress,
+  fetchExtensionList,
+  parseArgsToString,
+  parseStringToArgs,
+  manager: {startInstall, updater: {updateType: 'git'}},
+};
+
+export default comfyZludaRendererMethods;

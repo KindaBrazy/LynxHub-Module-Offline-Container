@@ -1,10 +1,12 @@
-import {EREW123_ID, INVOKEAI_ID, NEROGAR_ID} from './Constants';
+import {ComfyUI_Zluda_ID, EREW123_ID, INVOKEAI_ID, NEROGAR_ID} from './Constants';
 import audioPage from './Container/AudioGeneration';
 import erew123RendererMethods from './Container/Erew123/RendererMethods';
 import imagePage from './Container/ImageGeneration';
 import invokeArguments from './Container/InvokeAI/Arguments';
 import invokeRendererMethods from './Container/InvokeAI/RendererMethods';
 import nerogarRendererMethods from './Container/Nerogar/RendererMethods';
+import comfyZludaArguments from './Container/Patientx/Arguments';
+import comfyZludaRendererMethods from './Container/Patientx/RendererMethods';
 import textPage from './Container/TextGeneration';
 import {CardModules} from './types';
 
@@ -14,6 +16,21 @@ export function setCurrentBuild(build: number) {
   if (build > 11) {
     rendererModules.forEach(page => {
       if (page.routePath === '/imageGenerationPage') {
+        page.cards.splice(1, 0, {
+          id: ComfyUI_Zluda_ID,
+          title: 'ComfyUI Zluda',
+          description:
+            'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
+            ' Now ZLUDA enhanced  for better AMD GPU performance.',
+          repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
+          extensionsDir: '/custom_nodes',
+          type: 'image',
+          bgUrl:
+            'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
+            '/width=300/00023-3290977700.jpeg',
+          arguments: comfyZludaArguments,
+          methods: comfyZludaRendererMethods,
+        });
         page.cards.push(
           {
             id: NEROGAR_ID,

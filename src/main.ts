@@ -3,6 +3,7 @@ import {
   AUTOMATIC1111_ID,
   BMALTAIS_ID,
   ComfyUI_ID,
+  ComfyUI_Zluda_ID,
   EREW123_ID,
   GITMYLO_ID,
   INVOKEAI_ID,
@@ -25,6 +26,7 @@ import invokeMainMethods from './Container/InvokeAI/MainMethods';
 import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
 import nerogarMainMethods from './Container/Nerogar/MainMethods';
 import oobaMainMethods from './Container/Oobabooga/MainMethods';
+import comfyZludaMainMethods from './Container/Patientx/MainMethods';
 import rsxMainMethods from './Container/Rsxdalv/MainMethods';
 import sillyMainMethods from './Container/SillyTavern/MainMethods';
 import vladMainMethods from './Container/Vladmandic/MainMethods';
@@ -49,6 +51,7 @@ const mainModules: MainModules[] = [
 export function setCurrentBuild(build: number) {
   if (build > 11) {
     mainModules.push(
+      {id: ComfyUI_Zluda_ID, methods: comfyZludaMainMethods},
       {id: NEROGAR_ID, methods: nerogarMainMethods},
       {id: INVOKEAI_ID, methods: invokeMainMethods},
       {

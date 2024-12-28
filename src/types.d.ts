@@ -7,10 +7,13 @@ export type ExtensionData = {
   stars?: number;
 };
 
+export type LynxApiUpdate = {isPullAvailable: Promise<boolean>};
+
 export type MainIpcTypes = {
   handle(channel: string, listener: (event: any, ...args: any[]) => any): void;
   on(channel: string, listener: (event: any, ...args: any[]) => void): void;
   send: (channel: string, ...args: any[]) => void;
+  updateAvailable?: (lynxApi: LynxApiUpdate) => Promise<boolean>;
 };
 
 /** These methods will be called in the main process */
@@ -207,8 +210,6 @@ export type InstallationStepper = {
   };
 };
 
-export type LynxApiUpdate = {isPullAvailable: Promise<boolean>};
-
 /** These methods will be called in the renderer process */
 export type CardRendererMethods = {
   /** This method will be called with terminal output line parameter
@@ -230,7 +231,6 @@ export type CardRendererMethods = {
     updater: {
       updateType: 'git' | 'stepper';
       startUpdate?: (stepper: InstallationStepper, dir: string) => void;
-      updateAvailable?: (lynxApi: LynxApiUpdate) => Promise<boolean>;
     };
   };
 };

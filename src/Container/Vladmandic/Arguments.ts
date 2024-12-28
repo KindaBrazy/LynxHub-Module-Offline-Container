@@ -25,14 +25,34 @@ const vladmandicArguments: ArgumentsData = [
         section: 'General',
         items: [
           {
-            name: '-h, --help',
+            name: '-h',
             description: 'Show this help message and exit',
+            type: 'CheckBox',
+          },
+          {
+            name: '--version',
+            description: 'Print version information',
+            type: 'CheckBox',
+          },
+          {
+            name: '--test',
+            description: 'Run test only and exit',
+            type: 'CheckBox',
+          },
+          {
+            name: '--debug',
+            description: 'Run installer with debug logging',
+            type: 'CheckBox',
+          },
+          {
+            name: '--profile',
+            description: 'Run profiler',
             type: 'CheckBox',
           },
         ],
       },
       {
-        section: 'Server',
+        section: 'Server Configuration',
         items: [
           {
             name: '--config',
@@ -45,6 +65,27 @@ const vladmandicArguments: ArgumentsData = [
             type: 'File',
           },
           {
+            name: '--freeze',
+            description: 'Disable editing settings',
+            type: 'CheckBox',
+          },
+          {
+            name: '--backend',
+            description: 'Force model pipeline type',
+            type: 'DropDown',
+            values: ['original', 'diffusers'],
+          },
+          {
+            name: '--subpath',
+            description: 'Customize the URL subpath for usage with reverse proxy',
+            type: 'Input',
+          },
+        ],
+      },
+      {
+        section: 'Performance & VRAM',
+        items: [
+          {
             name: '--medvram',
             description: 'Split model stages and keep only active part in VRAM',
             type: 'CheckBox',
@@ -54,6 +95,21 @@ const vladmandicArguments: ArgumentsData = [
             description: 'Split model components and keep only active part in VRAM',
             type: 'CheckBox',
           },
+          {
+            name: '--use-xformers',
+            description: 'Force use xFormers cross-optimization',
+            type: 'CheckBox',
+          },
+          {
+            name: '--disable-queue',
+            description: 'Disable queues',
+            type: 'CheckBox',
+          },
+        ],
+      },
+      {
+        section: 'Model Loading',
+        items: [
           {
             name: '--ckpt',
             description: 'Path to model checkpoint to load immediately',
@@ -65,6 +121,21 @@ const vladmandicArguments: ArgumentsData = [
             type: 'File',
           },
           {
+            name: '--no-hashing',
+            description: 'Disable hashing of checkpoints',
+            type: 'CheckBox',
+          },
+          {
+            name: '--no-metadata',
+            description: 'Disable reading of metadata from models',
+            type: 'CheckBox',
+          },
+        ],
+      },
+      {
+        section: 'Paths & Directories',
+        items: [
+          {
             name: '--data-dir',
             description: 'Base path where all user data is stored',
             type: 'Directory',
@@ -75,13 +146,18 @@ const vladmandicArguments: ArgumentsData = [
             type: 'Directory',
           },
           {
+            name: '--allowed-paths',
+            description: 'Add additional paths to paths allowed for web access',
+            type: 'Input',
+          },
+        ],
+      },
+      {
+        section: 'Security & Access',
+        items: [
+          {
             name: '--allow-code',
             description: 'Allow custom script execution',
-            type: 'CheckBox',
-          },
-          {
-            name: '--share',
-            description: 'Enable UI accessible through Gradio site',
             type: 'CheckBox',
           },
           {
@@ -90,25 +166,8 @@ const vladmandicArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--use-cpu',
-            description: 'Force use CPU for specified modules',
-            type: 'Input',
-            defaultValue: '[]',
-          },
-          {
-            name: '--listen',
-            description: 'Launch web server using public IP address',
-            type: 'CheckBox',
-          },
-          {
-            name: '--port',
-            description: 'Launch web server with given server port',
-            type: 'Input',
-            defaultValue: 7860,
-          },
-          {
-            name: '--freeze',
-            description: 'Disable editing settings',
+            name: '--safe',
+            description: 'Run in safe mode with no user extensions',
             type: 'CheckBox',
           },
           {
@@ -121,6 +180,27 @@ const vladmandicArguments: ArgumentsData = [
             description: 'Set access authentication using file',
             type: 'File',
           },
+        ],
+      },
+      {
+        section: 'Network & API',
+        items: [
+          {
+            name: '--listen',
+            description: 'Launch web server using public IP address',
+            type: 'CheckBox',
+          },
+          {
+            name: '--port',
+            description: 'Launch web server with given server port',
+            type: 'Input',
+            defaultValue: 7860,
+          },
+          {
+            name: '--share',
+            description: 'Enable UI accessible through Gradio site',
+            type: 'CheckBox',
+          },
           {
             name: '--autolaunch',
             description: "Open the UI URL in the system's default browser upon launch",
@@ -132,9 +212,14 @@ const vladmandicArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--device-id',
-            description: 'Select the default CUDA device to use',
-            type: 'Input',
+            name: '--docs',
+            description: 'Mount API docs',
+            type: 'CheckBox',
+          },
+          {
+            name: '--api-log',
+            description: 'Enable logging of all API requests',
+            type: 'CheckBox',
           },
           {
             name: '--cors-origins',
@@ -146,6 +231,16 @@ const vladmandicArguments: ArgumentsData = [
             description: 'Allowed CORS origins as regular expression',
             type: 'Input',
           },
+          {
+            name: '--server-name',
+            description: 'Sets hostname of server',
+            type: 'Input',
+          },
+        ],
+      },
+      {
+        section: 'TLS & Certificates',
+        items: [
           {
             name: '--tls-keyfile',
             description: 'Enable TLS and specify key file',
@@ -161,51 +256,10 @@ const vladmandicArguments: ArgumentsData = [
             description: 'Enable TLS with self-signed certificates',
             type: 'CheckBox',
           },
-          {
-            name: '--server-name',
-            description: 'Sets hostname of server',
-            type: 'Input',
-          },
-          {
-            name: '--no-hashing',
-            description: 'Disable hashing of checkpoints',
-            type: 'CheckBox',
-          },
-          {
-            name: '--no-metadata',
-            description: 'Disable reading of metadata from models',
-            type: 'CheckBox',
-          },
-          {
-            name: '--disable-queue',
-            description: 'Disable queues',
-            type: 'CheckBox',
-          },
-          {
-            name: '--subpath',
-            description: 'Customize the URL subpath for usage with reverse proxy',
-            type: 'Input',
-          },
-          {
-            name: '--backend',
-            description: 'Force model pipeline type',
-            type: 'DropDown',
-            values: ['original', 'diffusers'],
-          },
-          {
-            name: '--theme',
-            description: 'Override UI theme',
-            type: 'Input',
-          },
-          {
-            name: '--allowed-paths',
-            description: 'Add additional paths to paths allowed for web access',
-            type: 'Input',
-          },
         ],
       },
       {
-        section: 'Setup',
+        section: 'Compute Backend',
         items: [
           {
             name: '--use-directml',
@@ -238,17 +292,28 @@ const vladmandicArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--use-xformers',
-            description: 'Force use xFormers cross-optimization',
-            type: 'CheckBox',
+            name: '--use-cpu',
+            description: 'Force use CPU for specified modules',
+            type: 'Input',
+            defaultValue: '[]',
           },
+          {
+            name: '--device-id',
+            description: 'Select the default CUDA device to use',
+            type: 'Input',
+          },
+        ],
+      },
+      {
+        section: 'Installation & Updates',
+        items: [
           {
             name: '--reset',
             description: 'Reset main repository to latest version',
             type: 'CheckBox',
           },
           {
-            name: '--upgrade, --update',
+            name: '--upgrade',
             description: 'Upgrade main repository to latest version',
             type: 'CheckBox',
           },
@@ -257,6 +322,26 @@ const vladmandicArguments: ArgumentsData = [
             description: 'Force re-check of requirements',
             type: 'CheckBox',
           },
+          {
+            name: '--reinstall',
+            description: 'Force reinstallation of all requirements',
+            type: 'CheckBox',
+          },
+          {
+            name: '--reinstall-zluda',
+            description: 'Force reinstallation of ZLUDA',
+            type: 'CheckBox',
+          },
+          {
+            name: '--uv',
+            description: 'Use uv instead of pip to install the packages',
+            type: 'CheckBox',
+          },
+        ],
+      },
+      {
+        section: 'Installation Options',
+        items: [
           {
             name: '--quick',
             description: 'Bypass version checks',
@@ -298,39 +383,19 @@ const vladmandicArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--reinstall',
-            description: 'Force reinstallation of all requirements',
-            type: 'CheckBox',
-          },
-          {
-            name: '--reinstall-zluda',
-            description: 'Force reinstallation of ZLUDA',
-            type: 'CheckBox',
-          },
-          {
-            name: '--test',
-            description: 'Run test only and exit',
-            type: 'CheckBox',
-          },
-          {
-            name: '--version',
-            description: 'Print version information',
-            type: 'CheckBox',
-          },
-          {
             name: '--ignore',
             description: 'Ignore any errors and attempt to continue',
             type: 'CheckBox',
           },
+        ],
+      },
+      {
+        section: 'UI Customization',
+        items: [
           {
-            name: '--safe',
-            description: 'Run in safe mode with no user extensions',
-            type: 'CheckBox',
-          },
-          {
-            name: '--uv',
-            description: 'Use uv instead of pip to install the packages',
-            type: 'CheckBox',
+            name: '--theme',
+            description: 'Override UI theme',
+            type: 'Input',
           },
         ],
       },
@@ -338,29 +403,9 @@ const vladmandicArguments: ArgumentsData = [
         section: 'Logging',
         items: [
           {
-            name: '--docs',
-            description: 'Mount API docs',
-            type: 'CheckBox',
-          },
-          {
-            name: '--debug',
-            description: 'Run installer with debug logging',
-            type: 'CheckBox',
-          },
-          {
-            name: '--profile',
-            description: 'Run profiler',
-            type: 'CheckBox',
-          },
-          {
             name: '--log',
             description: 'Set log file',
             type: 'File',
-          },
-          {
-            name: '--api-log',
-            description: 'Enable logging of all API requests',
-            type: 'CheckBox',
           },
         ],
       },

@@ -4,7 +4,7 @@ import {ArgType, CardRendererMethods, ChosenArgument} from '../../types';
 import {isWin} from '../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUtils';
 import invokeArguments from './Arguments';
-import {startInstall, startUpdate, updateAvailable} from './Install_Update';
+import {startInstall, startUpdate} from './Install_Update';
 
 const shellCommand = isWin ? 'call invoke.bat' : 'bash ./invoke.sh';
 
@@ -73,8 +73,7 @@ const invokeRendererMethods: CardRendererMethods = {
   parseStringToArgs,
   manager: {
     startInstall,
-    // @ts-ignore
-    updater: {updateType: 'stepper', startUpdate, updateAvailable},
+    updater: {updateType: 'stepper', startUpdate},
   },
 };
 

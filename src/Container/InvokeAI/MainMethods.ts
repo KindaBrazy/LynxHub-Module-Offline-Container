@@ -18,6 +18,7 @@ export async function readArgs(cardDir: string) {
   return await utilReadArgs(cardDir, BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs);
 }
 
+// TODO: Implement update available
 const invokeMainMethods: CardMainMethods = {getRunCommands};
 
 export default invokeMainMethods;

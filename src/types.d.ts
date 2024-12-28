@@ -13,7 +13,6 @@ export type MainIpcTypes = {
   handle(channel: string, listener: (event: any, ...args: any[]) => any): void;
   on(channel: string, listener: (event: any, ...args: any[]) => void): void;
   send: (channel: string, ...args: any[]) => void;
-  updateAvailable?: (lynxApi: LynxApiUpdate) => Promise<boolean>;
 };
 
 /** These methods will be called in the main process */
@@ -32,6 +31,7 @@ export type CardMainMethods = {
    * Use this to send/receive data or messages between the main process and the renderer process.
    */
   mainIpc?: (ipc: MainIpcTypes) => void;
+  updateAvailable?: (lynxApi: LynxApiUpdate) => Promise<boolean>;
 };
 
 export type InstallationMethod = {chosen: 'install' | 'locate'; targetDirectory?: string};

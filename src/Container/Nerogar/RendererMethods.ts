@@ -48,6 +48,7 @@ function startUpdate(stepper: InstallationStepper, dir: string) {
   });
 }
 
+// TODO: move to main
 async function updateAvailable(lynxApi: LynxApiUpdate) {
   return false;
 
@@ -58,7 +59,7 @@ async function updateAvailable(lynxApi: LynxApiUpdate) {
 const nerogarRendererMethods: CardRendererMethods = {
   manager: {
     startInstall,
-    updater: {updateType: 'stepper', startUpdate, updateAvailable},
+    updater: {updateType: 'stepper', startUpdate},
   },
 };
 

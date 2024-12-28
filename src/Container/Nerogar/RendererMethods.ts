@@ -1,4 +1,4 @@
-import {CardRendererMethods, InstallationStepper, LynxApiUpdate} from '../../types';
+import {CardRendererMethods, InstallationStepper} from '../../types';
 import {isWin} from '../../Utils/CrossUtils';
 
 const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
@@ -46,14 +46,6 @@ function startUpdate(stepper: InstallationStepper, dir: string) {
   stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
     stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
   });
-}
-
-// TODO: move to main
-async function updateAvailable(lynxApi: LynxApiUpdate) {
-  return false;
-
-  // Will be added after LynxHub V2.0
-  return await lynxApi.isPullAvailable;
 }
 
 const nerogarRendererMethods: CardRendererMethods = {

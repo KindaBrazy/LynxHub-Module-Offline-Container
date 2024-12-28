@@ -3,11 +3,11 @@
   "title": "Lynx WebUI Container",
   "description": "A comprehensive collection of WebUI modules featuring full support for extensions, arguments and configurations.",
   "publishDate": "2024-08-21",
-  "requireAppBuild": 9,
+  "requireAppBuild": 12,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "7.0.0",
-  "updateDate": "2024-11-01 09:00",
-  "changeLog": "V7.0.0\n・New ComfyUI Installer\n・New WebUI: ComfyUI Zluda by Patientx",
+  "version": "8.0.0",
+  "updateDate": "2024-12-28 09:17",
+  "changeLog": "V8.0.0\n・Update InvokeAI to version 5.5.0\n・Implement update availability check for OneTrainer\n・Update Arguments:ComfyUI, ComfyUIZluda, SD.Next, Kohya's GUI, Invoke AI, Text Generation\n・Drop support for LynxHub Below V1.3.0",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

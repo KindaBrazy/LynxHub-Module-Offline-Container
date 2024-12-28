@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, q as parseArgsToString$7, r as parseStringToArgs$7, s as parseArgsToString$8, t as parseStringToArgs$8, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID, S as SILLYTAVERN_ID, w as ANAPNOE_ID, x as ComfyUI_Zluda_ID, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_CUoAsK.mjs';
+import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, q as parseArgsToString$7, r as parseStringToArgs$7, s as parseArgsToString$8, t as parseStringToArgs$8, C as ComfyUI_ID, A as AUTOMATIC1111_ID, L as LSHQQYTIGER_ID, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, M as MCMONKEYPROJECTS_ID, B as BMALTAIS_ID, O as OOBABOOGA_ID, R as RSXDALV_ID, G as GITMYLO_ID, S as SILLYTAVERN_ID, w as ANAPNOE_ID, x as ComfyUI_Zluda_ID, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_DJT97a.mjs';
 import path from 'node:path';
 import require$$0$2 from 'fs';
 import require$$0 from 'constants';
@@ -1081,6 +1081,7 @@ const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/ba
 async function getRunCommands$7(dir) {
     return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$5);
 }
+// TODO: Implement update available
 const invokeMainMethods = { getRunCommands: getRunCommands$7 };
 
 const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -1102,7 +1103,10 @@ const BAT_FILE_NAME$5 = isWin ? 'start-ui.bat' : 'start-ui.sh';
 async function getRunCommands$5(dir) {
     return await utilRunCommands(BAT_FILE_NAME$5, dir);
 }
-const nerogarMainMethods = { getRunCommands: getRunCommands$5 };
+async function updateAvailable(lynxApi) {
+    return await lynxApi.isPullAvailable;
+}
+const nerogarMainMethods = { getRunCommands: getRunCommands$5, updateAvailable };
 
 const BAT_FILE_NAME$4 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$3 = isWin

@@ -1,4 +1,4 @@
-import { i as isWin, y as catchAddress$1, z as getArgumentType, D as lodashExports, F as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, H as gitmyloArguments, J as gitmyloRendererMethods, K as automatic1111Arguments, C as ComfyUI_ID, P as comfyArguments, Q as comfyRendererMethods, A as AUTOMATIC1111_ID, T as a1RendererMethods, L as LSHQQYTIGER_ID, U as lshqqytigerArguments, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, W as vladmandicArguments, X as vladRendererMethods, M as MCMONKEYPROJECTS_ID, Y as mcMonkeyArguments, Z as mcMonkeyRendererMethods, B as BMALTAIS_ID, _ as bmaltaisArguments, $ as bmaltaisRendererMethods, w as ANAPNOE_ID, O as OOBABOOGA_ID, a0 as oobaboogaArguments, a1 as oobaRendererMethods, S as SILLYTAVERN_ID, a2 as sillyArguments, a3 as sillyRendererMethods, x as ComfyUI_Zluda_ID, a4 as comfyZludaArguments, a5 as comfyZludaRendererMethods, N as NEROGAR_ID, I as INVOKEAI_ID, E as EREW123_ID } from './RendererMethods_CUoAsK.mjs';
+import { i as isWin, y as catchAddress$1, z as getArgumentType, D as lodashExports, F as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, H as gitmyloArguments, J as gitmyloRendererMethods, E as EREW123_ID, K as automatic1111Arguments, C as ComfyUI_ID, P as comfyArguments, Q as comfyRendererMethods, x as ComfyUI_Zluda_ID, T as comfyZludaArguments, U as comfyZludaRendererMethods, A as AUTOMATIC1111_ID, W as a1RendererMethods, L as LSHQQYTIGER_ID, X as lshqqytigerArguments, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, Y as vladmandicArguments, Z as vladRendererMethods, M as MCMONKEYPROJECTS_ID, _ as mcMonkeyArguments, $ as mcMonkeyRendererMethods, B as BMALTAIS_ID, a0 as bmaltaisArguments, a1 as bmaltaisRendererMethods, w as ANAPNOE_ID, N as NEROGAR_ID, I as INVOKEAI_ID, O as OOBABOOGA_ID, a2 as oobaboogaArguments, a3 as oobaRendererMethods, S as SILLYTAVERN_ID, a4 as sillyArguments, a5 as sillyRendererMethods } from './RendererMethods_DJT97a.mjs';
 
 const invokeArguments = [
     {
@@ -23,11 +23,13 @@ const invokeArguments = [
                 name: 'host',
                 description: 'IP address to bind to. Use 0.0.0.0 to serve to your local network.',
                 type: 'Input',
+                defaultValue: '127.0.0.1',
             },
             {
                 name: 'port',
                 description: 'Port to bind to.',
                 type: 'Input',
+                defaultValue: '9090',
             },
             {
                 name: 'allow_origins',
@@ -43,11 +45,13 @@ const invokeArguments = [
                 name: 'allow_methods',
                 description: 'Methods allowed for CORS.',
                 type: 'Input',
+                defaultValue: "['*']",
             },
             {
                 name: 'allow_headers',
                 description: 'Headers allowed for CORS.',
                 type: 'Input',
+                defaultValue: "['*']",
             },
             {
                 name: 'ssl_certfile',
@@ -73,59 +77,77 @@ const invokeArguments = [
                 name: 'models_dir',
                 description: 'Path to the models directory.',
                 type: 'Directory',
+                defaultValue: 'models',
             },
             {
                 name: 'convert_cache_dir',
                 description: 'Path to the converted models cache directory (DEPRECATED, but do not delete because it is' +
                     ' needed for migration from previous versions).',
                 type: 'Directory',
+                defaultValue: 'models/.convert_cache',
             },
             {
                 name: 'download_cache_dir',
                 description: 'Path to the directory that contains dynamically downloaded models.',
                 type: 'Directory',
+                defaultValue: 'models/.download_cache',
             },
             {
                 name: 'legacy_conf_dir',
                 description: 'Path to directory of legacy checkpoint config files.',
                 type: 'Directory',
+                defaultValue: 'configs',
             },
             {
                 name: 'db_dir',
                 description: 'Path to InvokeAI databases directory.',
                 type: 'Directory',
+                defaultValue: 'databases',
             },
             {
                 name: 'outputs_dir',
                 description: 'Path to directory for outputs.',
                 type: 'Directory',
+                defaultValue: 'outputs',
             },
             {
                 name: 'custom_nodes_dir',
                 description: 'Path to directory for custom nodes.',
                 type: 'Directory',
+                defaultValue: 'nodes',
             },
             {
                 name: 'style_presets_dir',
                 description: 'Path to directory for style presets.',
                 type: 'Directory',
+                defaultValue: 'style_presets',
             },
             {
                 name: 'log_handlers',
                 description: 'Log handler. Valid options are "console", "file=", "syslog=path|address:host:port", "http=".',
                 type: 'Input',
+                defaultValue: "['console']",
             },
             {
                 name: 'log_format',
                 description: 'Log format. Use "plain" for text-only, "color" for colorized output, "legacy" for 2.3-style' +
                     ' logging and "syslog" for syslog-style.',
                 type: 'DropDown',
+                defaultValue: 'color',
                 values: ['plain', 'color', 'syslog', 'legacy'],
             },
             {
                 name: 'log_level',
                 description: 'Emit logging messages at this level or higher.',
                 type: 'DropDown',
+                defaultValue: 'info',
+                values: ['debug', 'info', 'warning', 'error', 'critical'],
+            },
+            {
+                name: 'log_level_network',
+                description: "Log level for network-related messages. 'info' and 'debug' are very verbose.",
+                type: 'DropDown',
+                defaultValue: 'warning',
                 values: ['debug', 'info', 'warning', 'error', 'critical'],
             },
             {
@@ -157,6 +179,7 @@ const invokeArguments = [
                 name: 'profiles_dir',
                 description: 'Path to profiles output directory.',
                 type: 'Directory',
+                defaultValue: 'profiles',
             },
             {
                 name: 'ram',
@@ -167,6 +190,7 @@ const invokeArguments = [
                 name: 'vram',
                 description: 'Amount of VRAM reserved for model storage (GB).',
                 type: 'Input',
+                defaultValue: '0',
             },
             {
                 name: 'lazy_offload',
@@ -186,6 +210,7 @@ const invokeArguments = [
                 description: 'Preferred execution device. auto will choose the device depending on the hardware platform' +
                     ' and the installed torch capabilities.',
                 type: 'DropDown',
+                defaultValue: 'auto',
                 values: ['auto', 'cpu', 'cuda', 'cuda:1', 'mps'],
             },
             {
@@ -194,6 +219,7 @@ const invokeArguments = [
                     ' lower-quality images. The auto setting will guess the proper precision based on your video' +
                     ' card and operating system.',
                 type: 'DropDown',
+                defaultValue: 'auto',
                 values: ['auto', 'float16', 'bfloat16', 'float32'],
             },
             {
@@ -205,12 +231,14 @@ const invokeArguments = [
                 name: 'attention_type',
                 description: 'Attention type.',
                 type: 'DropDown',
+                defaultValue: 'auto',
                 values: ['auto', 'normal', 'xformers', 'sliced', 'torch-sdp'],
             },
             {
                 name: 'attention_slice_size',
                 description: 'Slice size, valid when attention_type=="sliced".',
                 type: 'DropDown',
+                defaultValue: 'auto',
                 values: ['auto', 'balanced', 'max', '1', '2', '3', '4', '5', '6', '7', '8'],
             },
             {
@@ -224,11 +252,13 @@ const invokeArguments = [
                     ' 0 = no compression, 1 = fastest with slightly larger filesize, 9 = slowest with smallest filesize.' +
                     ' 1 is typically the best setting.',
                 type: 'Input',
+                defaultValue: '1',
             },
             {
                 name: 'max_queue_size',
                 description: 'Maximum number of items in the session queue.',
                 type: 'Input',
+                defaultValue: '10000',
             },
             {
                 name: 'clear_queue_on_startup',
@@ -249,11 +279,17 @@ const invokeArguments = [
                 name: 'node_cache_size',
                 description: 'How many cached nodes to keep in memory.',
                 type: 'Input',
+                defaultValue: '512',
             },
             {
                 name: 'hashing_algorithm',
-                description: 'Model hashing algorithm for model installs.',
+                description: "Model hashing algorithm for model installs. 'blake3_multi' is best for SSDs. 'blake3_single'" +
+                    " is best for spinning disk HDDs. 'random' disables hashing, instead assigning a UUID to models." +
+                    " Useful when using a memory db to reduce model installation time, or if you don't care about " +
+                    'storing stable hashes for models. Alternatively, any other hashlib algorithm is accepted, ' +
+                    'though these are not nearly as performant as blake3.',
                 type: 'DropDown',
+                defaultValue: 'blake3_single',
                 values: [
                     'blake3_multi',
                     'blake3_single',
@@ -290,11 +326,9 @@ const invokeArguments = [
     },
 ];
 
-const DOWNLOAD_URL = 'https://github.com/invoke-ai/InvokeAI/releases/download/v5.1.1/InvokeAI-installer-v5.1.1.zip';
-const VERSION_NAME = '5.1.1';
-const STORAGE_KEY = 'InvokeAI-Installed';
+const DOWNLOAD_URL = 'https://github.com/invoke-ai/InvokeAI/releases/download/v5.5.0/InvokeAI-installer-v5.5.0.zip';
+const VERSION_NAME = '5.5.0';
 const INPUT_ID = 'install_dir';
-const CURRENT_VERSION = '1';
 function startInstall$2(stepper) {
     stepper.initialSteps(['InvokeAI', 'Download', 'Install', 'Directory', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
@@ -322,7 +356,6 @@ function startInstall$2(stepper) {
                                 stepper.utils.verifyFilesExist(finalDir, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
                                     if (exist) {
                                         stepper.setInstalled(finalDir);
-                                        window.localStorage.setItem(STORAGE_KEY, CURRENT_VERSION);
                                         stepper.showFinalStep('success', 'InvokeAI Installation Complete', 'All installation steps have been completed successfully.' +
                                             ' Your InvokeAI environment is now ready for use.');
                                     }
@@ -341,7 +374,6 @@ function startInstall$2(stepper) {
             stepper.utils.verifyFilesExist(targetDirectory, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
                 if (exist) {
                     stepper.setInstalled(targetDirectory);
-                    window.localStorage.setItem(STORAGE_KEY, CURRENT_VERSION);
                     stepper.showFinalStep('success', 'InvokeAI Located Successfully', 'Pre-installed InvokeAI detected. Installation skipped as your existing setup is ready to use.');
                 }
                 else {
@@ -352,27 +384,16 @@ function startInstall$2(stepper) {
         }
     });
 }
-function updateAvailable$1() {
-    const lastVersion = Number(window.localStorage.getItem(STORAGE_KEY));
-    return lastVersion < Number(CURRENT_VERSION);
-}
 function startUpdate$2(stepper) {
-    if (updateAvailable$1()) {
-        stepper.initialSteps([`Download V${VERSION_NAME}`, 'Install', 'Finish']);
-        stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
-            stepper.utils.decompressFile(path).then(folderPath => {
-                stepper.nextStep();
-                stepper.runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh').then(() => {
-                    window.localStorage.setItem(STORAGE_KEY, CURRENT_VERSION);
-                    stepper.showFinalStep('success', 'InvokeAI Updated Successfully', `Version ${VERSION_NAME} has been installed successfully.`);
-                });
+    stepper.initialSteps([`Download V${VERSION_NAME}`, 'Install', 'Finish']);
+    stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
+        stepper.utils.decompressFile(path).then(folderPath => {
+            stepper.nextStep();
+            stepper.runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh').then(() => {
+                stepper.showFinalStep('success', 'InvokeAI Updated Successfully', `Version ${VERSION_NAME} has been installed successfully.`);
             });
         });
-    }
-    else {
-        stepper.initialSteps(['Checking for Updates', 'Already Up to Date']);
-        stepper.showFinalStep('success', `You already have the latest version (v${VERSION_NAME}) of InvokeAI installed.`);
-    }
+    });
 }
 
 const shellCommand = isWin ? 'call invoke.bat' : 'bash ./invoke.sh';
@@ -434,46 +455,8 @@ const invokeRendererMethods = {
     parseStringToArgs,
     manager: {
         startInstall: startInstall$2,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$2, updateAvailable: updateAvailable$1 },
+        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
     },
-};
-
-function catchAddress(input) {
-    if (input.toLowerCase().includes('Installed Packages tab loaded'.toLowerCase())) {
-        return 'http://127.0.0.1:7770';
-    }
-    else {
-        return undefined;
-    }
-}
-const rsxdalvRendererMethods = { catchAddress };
-
-const audioPage = {
-    routePath: '/audioGenerationPage',
-    cards: [
-        {
-            id: RSXDALV_ID,
-            title: 'Text to Speech',
-            description: 'TTS Generation Web UI (Bark, MusicGen + AudioGen, Tortoise, RVC, Vocos,' +
-                ' Demucs, SeamlessM4T, MAGNet, StyleTTS2, MMS)',
-            repoUrl: 'https://github.com/rsxdalv/tts-generation-webui',
-            type: 'audio',
-            extensionsDir: '/extensions',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
-            methods: rsxdalvRendererMethods,
-        },
-        {
-            id: GITMYLO_ID,
-            title: 'Audio Generation',
-            description: 'A webui for different audio related Neural Networks',
-            repoUrl: 'https://github.com/gitmylo/audio-webui',
-            type: 'audio',
-            arguments: gitmyloArguments,
-            extensionsDir: '/extensions',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/a7473108-d6fb-4c9d-97a6-b58ca82bcdfb/width=300/00002-1953665041.jpeg',
-            methods: gitmyloRendererMethods,
-        },
-    ],
 };
 
 const AllTalk_URL = 'https://github.com/erew123/alltalk_tts';
@@ -519,6 +502,57 @@ const erew123RendererMethods = {
     },
 };
 
+function catchAddress(input) {
+    if (input.toLowerCase().includes('Installed Packages tab loaded'.toLowerCase())) {
+        return 'http://127.0.0.1:7770';
+    }
+    else {
+        return undefined;
+    }
+}
+const rsxdalvRendererMethods = { catchAddress };
+
+const audioPage = {
+    routePath: '/audioGenerationPage',
+    cards: [
+        {
+            id: RSXDALV_ID,
+            title: 'Text to Speech',
+            description: 'TTS Generation Web UI (Bark, MusicGen + AudioGen, Tortoise, RVC, Vocos,' +
+                ' Demucs, SeamlessM4T, MAGNet, StyleTTS2, MMS)',
+            repoUrl: 'https://github.com/rsxdalv/tts-generation-webui',
+            type: 'audio',
+            extensionsDir: '/extensions',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
+            methods: rsxdalvRendererMethods,
+        },
+        {
+            id: GITMYLO_ID,
+            title: 'Audio Generation',
+            description: 'A webui for different audio related Neural Networks',
+            repoUrl: 'https://github.com/gitmylo/audio-webui',
+            type: 'audio',
+            arguments: gitmyloArguments,
+            extensionsDir: '/extensions',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/a7473108-d6fb-4c9d-97a6-b58ca82bcdfb/width=300/00002-1953665041.jpeg',
+            methods: gitmyloRendererMethods,
+        },
+        {
+            id: EREW123_ID,
+            title: 'AllTalk TTS',
+            description: 'AllTalk is based on the Coqui TTS engine, similar to the Coqui_tts extension for Text generation webUI, ' +
+                'however supports a variety of advanced features, such as a settings page, low VRAM support, DeepSpeed, ' +
+                'narrator, model finetuning, custom models, wav file maintenance. It can also be used with 3rd Party ' +
+                'software via JSON calls.',
+            repoUrl: 'https://github.com/erew123/alltalk_tts',
+            type: 'audio',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/d0f56692-50fc-4e8e-ac8b-02d8ec070417' +
+                '/width=300/00006-951269360.jpeg',
+            methods: erew123RendererMethods,
+        },
+    ],
+};
+
 const lshqqytigerForgeArguments = lodashExports.cloneDeep(automatic1111Arguments);
 const lsSpecifArgs = [
     {
@@ -551,6 +585,46 @@ if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsInde
     lshqqytigerForgeArguments[commandLineArgsIndex].sections.unshift(newSection);
 }
 
+const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
+function startInstall(stepper) {
+    stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.cloneRepository(ONETRAINER_URL).then(dir => {
+                stepper.nextStep();
+                stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, ONETRAINER_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository.');
+                }
+            });
+        }
+    });
+}
+function startUpdate(stepper, dir) {
+    stepper.initialSteps(['Update', 'Finish']);
+    stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+        stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+    });
+}
+const nerogarRendererMethods = {
+    manager: {
+        startInstall,
+        updater: { updateType: 'stepper', startUpdate },
+    },
+};
+
 const imagePage = {
     routePath: '/imageGenerationPage',
     cards: [
@@ -565,6 +639,19 @@ const imagePage = {
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e7be14a2-5e23-41df-b653-4ba5b45ad065/width=300/00008-2000176836.jpeg',
             arguments: comfyArguments,
             methods: comfyRendererMethods,
+        },
+        {
+            id: ComfyUI_Zluda_ID,
+            title: 'ComfyUI Zluda',
+            description: 'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
+                ' Now ZLUDA enhanced  for better AMD GPU performance.',
+            repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
+            extensionsDir: '/custom_nodes',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
+                '/width=300/00023-3290977700.jpeg',
+            arguments: comfyZludaArguments,
+            methods: comfyZludaRendererMethods,
         },
         {
             id: AUTOMATIC1111_ID,
@@ -662,50 +749,30 @@ const imagePage = {
             arguments: automatic1111Arguments,
             methods: a1RendererMethods,
         },
+        {
+            id: NEROGAR_ID,
+            title: 'OneTrainer',
+            description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
+            repoUrl: 'https://github.com/Nerogar/OneTrainer',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
+                '/width=300/00005-1318253062.jpeg',
+            methods: nerogarRendererMethods,
+        },
+        {
+            id: INVOKEAI_ID,
+            title: 'Invoke AI',
+            description: 'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
+                ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
+                ' and serves as the foundation for multiple commercial products.',
+            repoUrl: 'https://github.com/invoke-ai/InvokeAI',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
+                '/width=300/00002-3715244638.jpeg',
+            arguments: invokeArguments,
+            methods: invokeRendererMethods,
+        },
     ],
-};
-
-const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
-function startInstall(stepper) {
-    stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(ONETRAINER_URL).then(dir => {
-                stepper.nextStep();
-                stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
-                    stepper.setInstalled(dir);
-                    stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
-                });
-            });
-        }
-        else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, ONETRAINER_URL).then(isValid => {
-                if (isValid) {
-                    stepper.setInstalled(targetDirectory);
-                    stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository.');
-                }
-            });
-        }
-    });
-}
-function startUpdate(stepper, dir) {
-    stepper.initialSteps(['Update', 'Finish']);
-    stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
-        stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
-    });
-}
-function updateAvailable() {
-    return false;
-}
-const nerogarRendererMethods = {
-    manager: {
-        startInstall,
-        updater: { updateType: 'stepper', startUpdate, updateAvailable },
-    },
 };
 
 const textPage = {
@@ -740,62 +807,7 @@ const textPage = {
 
 const rendererModules = [imagePage, textPage, audioPage];
 function setCurrentBuild(build) {
-    if (build > 11) {
-        rendererModules.forEach(page => {
-            if (page.routePath === '/imageGenerationPage') {
-                page.cards.splice(1, 0, {
-                    id: ComfyUI_Zluda_ID,
-                    title: 'ComfyUI Zluda',
-                    description: 'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
-                        ' Now ZLUDA enhanced  for better AMD GPU performance.',
-                    repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
-                    extensionsDir: '/custom_nodes',
-                    type: 'image',
-                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
-                        '/width=300/00023-3290977700.jpeg',
-                    arguments: comfyZludaArguments,
-                    methods: comfyZludaRendererMethods,
-                });
-                page.cards.push({
-                    id: NEROGAR_ID,
-                    title: 'OneTrainer',
-                    description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
-                    repoUrl: 'https://github.com/Nerogar/OneTrainer',
-                    type: 'image',
-                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
-                        '/width=300/00005-1318253062.jpeg',
-                    methods: nerogarRendererMethods,
-                }, {
-                    id: INVOKEAI_ID,
-                    title: 'Invoke AI',
-                    description: 'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
-                        ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
-                        ' and serves as the foundation for multiple commercial products.',
-                    repoUrl: 'https://github.com/invoke-ai/InvokeAI',
-                    type: 'image',
-                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
-                        '/width=300/00002-3715244638.jpeg',
-                    arguments: invokeArguments,
-                    methods: invokeRendererMethods,
-                });
-            }
-            else if (page.routePath === '/audioGenerationPage') {
-                page.cards.push({
-                    id: EREW123_ID,
-                    title: 'AllTalk TTS',
-                    description: 'AllTalk is based on the Coqui TTS engine, similar to the Coqui_tts extension for Text generation webUI, ' +
-                        'however supports a variety of advanced features, such as a settings page, low VRAM support, DeepSpeed, ' +
-                        'narrator, model finetuning, custom models, wav file maintenance. It can also be used with 3rd Party ' +
-                        'software via JSON calls.',
-                    repoUrl: 'https://github.com/erew123/alltalk_tts',
-                    type: 'audio',
-                    bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/d0f56692-50fc-4e8e-ac8b-02d8ec070417' +
-                        '/width=300/00006-951269360.jpeg',
-                    methods: erew123RendererMethods,
-                });
-            }
-        });
-    }
+    console.log(build);
 }
 
 export { rendererModules as default, setCurrentBuild };

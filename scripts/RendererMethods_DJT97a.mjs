@@ -18035,7 +18035,7 @@ const winEV = {
         {
             description: 'Sets a custom path for Python executable.',
             name: 'PYTHON',
-            type: 'Directory',
+            type: 'File',
         },
         {
             description: 'Specifies the path for the virtual environment. Default is venv.' +
@@ -18417,29 +18417,44 @@ const bmaltaisArguments = [
         category: 'Command Line Arguments',
         items: [
             {
+                name: '--config',
+                description: 'Path to the toml config file for interface defaults',
+                type: 'File',
+                defaultValue: './config.toml',
+            },
+            {
+                name: '--debug',
+                description: 'Enable debug mode.',
+                type: 'CheckBox',
+            },
+            {
                 name: '--listen',
                 description: 'Specify the IP address to listen on for connections to Gradio.',
                 type: 'Input',
+                defaultValue: '127.0.0.1',
             },
             {
                 name: '--username',
                 description: 'Set a username for authentication.',
                 type: 'Input',
+                defaultValue: '',
             },
             {
                 name: '--password',
                 description: 'Set a password for authentication.',
                 type: 'Input',
+                defaultValue: '',
             },
             {
                 name: '--server_port',
                 description: 'Define the port to run the server listener on.',
                 type: 'Input',
+                defaultValue: '0',
             },
             {
                 name: '--inbrowser',
                 description: 'Open the Gradio UI in a web browser.',
-                type: 'Input',
+                type: 'CheckBox',
             },
             {
                 name: '--share',
@@ -18447,8 +18462,38 @@ const bmaltaisArguments = [
                 type: 'CheckBox',
             },
             {
+                name: '--headless',
+                description: 'Indicates whether the server is headless.',
+                type: 'CheckBox',
+            },
+            {
                 name: '--language',
                 description: 'Set custom language',
+                type: 'Input',
+            },
+            {
+                name: '--use-ipex',
+                description: 'Use IPEX environment.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--use-rocm',
+                description: 'Use ROCm environment.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--do_not_use_shell',
+                description: 'Enforce not to use shell=True when running external commands.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--do_not_share',
+                description: 'Do not share the Gradio UI.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--root_path',
+                description: '`root_path` for Gradio to enable reverse proxy support. e.g. /kohya_ss',
                 type: 'Input',
             },
         ],
@@ -18519,8 +18564,9 @@ const comfyArguments = [
                 items: [
                     {
                         name: '--listen',
-                        description: 'Specify the IP address to listen on (default: 127.0.0.1). If --listen is provided' +
-                            ' without an argument, it defaults to 0.0.0.0. (listens on all)',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
+                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
+                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
                         type: 'Input',
                         defaultValue: '127.0.0.1',
                     },
@@ -18578,6 +18624,11 @@ const comfyArguments = [
                         description: 'Set the ComfyUI input directory.',
                         type: 'Directory',
                     },
+                    {
+                        name: '--user-directory',
+                        description: 'Set the ComfyUI user directory with an absolute path.',
+                        type: 'Directory',
+                    },
                 ],
             },
             {
@@ -18625,12 +18676,22 @@ const comfyArguments = [
                     },
                     {
                         name: '--bf16-unet',
-                        description: 'Run the UNET in bf16. This should only be used for testing stuff.',
+                        description: 'Run the diffusion model in bf16.',
                         type: 'CheckBox',
                     },
                     {
                         name: '--fp16-unet',
-                        description: 'Store unet weights in fp16.',
+                        description: 'Run the diffusion model in fp16',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-unet',
+                        description: 'Run the diffusion model in fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp64-unet',
+                        description: 'Run the diffusion model in fp64.',
                         type: 'CheckBox',
                     },
                     {
@@ -18699,15 +18760,38 @@ const comfyArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--oneapi-device-selector',
+                        description: 'Sets the oneAPI device(s) this instance will use.',
+                        type: 'Input',
+                    },
+                    {
                         name: '--disable-ipex-optimize',
-                        description: 'Disables ipex.optimize when loading models with Intel GPUs.',
+                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
                         type: 'CheckBox',
                     },
                     {
                         name: '--preview-method',
                         description: 'Default preview method for sampler nodes.',
+                        type: 'DropDown',
+                        values: ['none', 'auto', 'latent2rgb', 'taesd'],
+                        defaultValue: 'none',
+                    },
+                    {
+                        name: '--preview-size',
+                        description: 'Sets the maximum preview size for sampler nodes.',
                         type: 'Input',
-                        defaultValue: 'NoPreviews',
+                        defaultValue: 512,
+                    },
+                    {
+                        name: '--cache-classic',
+                        description: 'Use the old style (aggressive) caching.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cache-lru',
+                        description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
+                        type: 'Input',
+                        defaultValue: 0,
                     },
                     {
                         name: '--use-split-cross-attention',
@@ -18725,8 +18809,23 @@ const comfyArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--use-sage-attention',
+                        description: 'Use sage attention.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--disable-xformers',
                         description: 'Disable xformers.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-upcast-attention',
+                        description: 'Force enable attention upcasting, please report if it fixes black images.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--dont-upcast-attention',
+                        description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
                         type: 'CheckBox',
                     },
                 ],
@@ -18769,6 +18868,12 @@ const comfyArguments = [
                         name: '--disable-smart-memory',
                         description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: '--reserve-vram',
+                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
+                            ' amount is reserved depending on your OS.',
+                        type: 'Input',
                     },
                 ],
             },
@@ -18822,7 +18927,14 @@ const comfyArguments = [
                     },
                     {
                         name: '--verbose',
-                        description: 'Enables more debug prints.',
+                        description: 'Set the logging level',
+                        type: 'DropDown',
+                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        defaultValue: 'INFO',
+                    },
+                    {
+                        name: '--log-stdout',
+                        description: 'Send normal process output to stdout instead of stderr (default).',
                         type: 'CheckBox',
                     },
                     {
@@ -18837,6 +18949,11 @@ const comfyArguments = [
                         description: 'The local filesystem path to the directory where the frontend is' +
                             ' located. Overrides --front-end-version.',
                         type: 'Directory',
+                    },
+                    {
+                        name: '--fast',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations.',
+                        type: 'CheckBox',
                     },
                 ],
             },
@@ -19304,11 +19421,13 @@ const oobaboogaArguments = [
                         name: '--model-dir',
                         description: 'Path to directory with all the models.',
                         type: 'Directory',
+                        defaultValue: 'models/',
                     },
                     {
                         name: '--lora-dir',
                         description: 'Path to directory with all the loras.',
                         type: 'Directory',
+                        defaultValue: 'loras/',
                     },
                     {
                         name: '--model-menu',
@@ -19334,15 +19453,11 @@ const oobaboogaArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--chat-buttons',
-                        description: 'Show buttons on the chat tab instead of a hover menu.',
-                        type: 'CheckBox',
-                    },
-                    {
                         name: '--idle-timeout',
                         description: 'Unload model after this many minutes of inactivity. It will be automatically' +
                             ' reloaded when you try to use it again.',
                         type: 'Input',
+                        defaultValue: '0',
                     },
                 ],
             },
@@ -19430,6 +19545,11 @@ const oobaboogaArguments = [
                         description: 'Set use_flash_attention_2=True while loading the model.',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--use_eager_attention',
+                        description: 'Set attn_implementation= eager while loading the model.',
+                        type: 'CheckBox',
+                    },
                 ],
             },
             {
@@ -19450,12 +19570,14 @@ const oobaboogaArguments = [
                         description: 'compute dtype for 4-bit. Valid options: bfloat16, float16, float32.',
                         type: 'DropDown',
                         values: ['bfloat16', 'float16', 'float32'],
+                        defaultValue: 'float16',
                     },
                     {
                         name: '--quant_type',
                         description: 'quant_type for 4-bit. Valid options: nf4, fp4.',
                         type: 'DropDown',
                         values: ['nf4', 'fp4'],
+                        defaultValue: 'nf4',
                     },
                 ],
             },
@@ -19469,24 +19591,27 @@ const oobaboogaArguments = [
                     },
                     {
                         name: '--tensorcores',
-                        description: 'Use llama-cpp-python compiled with tensor cores support. This increases performance' +
-                            ' on RTX cards. NVIDIA only.',
+                        description: 'NVIDIA only: use llama-cpp-python compiled with tensor cores support.' +
+                            ' This may increase performance on newer cards.',
                         type: 'CheckBox',
                     },
                     {
                         name: '--n_ctx',
                         description: 'Size of the prompt context.',
                         type: 'Input',
+                        defaultValue: '2048',
                     },
                     {
                         name: '--threads',
                         description: 'Number of threads to use.',
                         type: 'Input',
+                        defaultValue: '0',
                     },
                     {
                         name: '--threads-batch',
                         description: 'Number of threads to use for batches/prompt processing.',
                         type: 'Input',
+                        defaultValue: '0',
                     },
                     {
                         name: '--no_mul_mat_q',
@@ -19497,6 +19622,7 @@ const oobaboogaArguments = [
                         name: '--n_batch',
                         description: 'Maximum number of prompt tokens to batch together when calling llama_eval.',
                         type: 'Input',
+                        defaultValue: '512',
                     },
                     {
                         name: '--no-mmap',
@@ -19512,10 +19638,11 @@ const oobaboogaArguments = [
                         name: '--n-gpu-layers',
                         description: 'Number of layers to offload to the GPU.',
                         type: 'Input',
+                        defaultValue: '0',
                     },
                     {
                         name: '--tensor_split',
-                        description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 18,17.',
+                        description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 60,40.',
                         type: 'Input',
                     },
                     {
@@ -19555,6 +19682,12 @@ const oobaboogaArguments = [
                         description: 'StreamingLLM: number of sink tokens. Only used if the trimmed prompt does not share' +
                             ' a prefix with the old prompt.',
                         type: 'Input',
+                        defaultValue: '5',
+                    },
+                    {
+                        name: '--tokenizer-dir',
+                        description: 'Load the tokenizer from this folder. Meant to be used with llamacpp_HF through the command-line.',
+                        type: 'Directory',
                     },
                 ],
             },
@@ -19575,6 +19708,7 @@ const oobaboogaArguments = [
                         name: '--max_seq_len',
                         description: 'Maximum sequence length.',
                         type: 'Input',
+                        defaultValue: '2048',
                     },
                     {
                         name: '--cfg-cache',
@@ -19588,19 +19722,25 @@ const oobaboogaArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--cache_8bit',
-                        description: 'Use 8-bit cache to save VRAM.',
+                        name: '--no_xformers',
+                        description: 'Force xformers to not be used.',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--cache_4bit',
-                        description: 'Use Q4 cache to save VRAM.',
+                        name: '--no_sdpa',
+                        description: 'Force Torch SDPA to not be used.',
                         type: 'CheckBox',
                     },
                     {
                         name: '--num_experts_per_token',
                         description: 'Number of experts to use for generation. Applies to MoE models like Mixtral.',
                         type: 'Input',
+                        defaultValue: '2',
+                    },
+                    {
+                        name: '--enable_tp',
+                        description: 'Enable Tensor Parallelism (TP) in ExLlamaV2.',
+                        type: 'CheckBox',
                     },
                 ],
             },
@@ -19643,21 +19783,13 @@ const oobaboogaArguments = [
                         name: '--wbits',
                         description: 'Load a pre-quantized model with specified precision in bits. 2, 3, 4 and 8 are supported.',
                         type: 'Input',
+                        defaultValue: '0',
                     },
                     {
                         name: '--groupsize',
                         description: 'Group size.',
                         type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'AutoAWQ',
-                items: [
-                    {
-                        name: '--no_inject_fused_attention',
-                        description: 'Disable the use of fused attention, which will use less VRAM at the cost of slower inference.',
-                        type: 'CheckBox',
+                        defaultValue: '-1',
                     },
                 ],
             },
@@ -19669,6 +19801,28 @@ const oobaboogaArguments = [
                         description: 'Backend for the HQQ loader. Valid options: PYTORCH, PYTORCH_COMPILE, ATEN.',
                         type: 'DropDown',
                         values: ['PYTORCH', 'PYTORCH_COMPILE', 'ATEN'],
+                        defaultValue: 'PYTORCH_COMPILE',
+                    },
+                ],
+            },
+            {
+                section: 'TensorRT-LLM',
+                items: [
+                    {
+                        name: '--cpp-runner',
+                        description: "Use the ModelRunnerCpp runner, which is faster than the default ModelRunner but doesn't support streaming yet.",
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Cache',
+                items: [
+                    {
+                        name: '--cache_type',
+                        description: 'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4.',
+                        type: 'Input',
+                        defaultValue: 'fp16',
                     },
                 ],
             },
@@ -19689,6 +19843,7 @@ const oobaboogaArguments = [
                         name: '--local_rank',
                         description: 'DeepSpeed: Optional argument for distributed setups.',
                         type: 'Input',
+                        defaultValue: '0',
                     },
                 ],
             },
@@ -19699,18 +19854,21 @@ const oobaboogaArguments = [
                         name: '--alpha_value',
                         description: 'Positional embeddings alpha factor for NTK RoPE scaling. Use either this or compress_pos_emb, not both.',
                         type: 'Input',
+                        defaultValue: '1',
                     },
                     {
                         name: '--rope_freq_base',
                         description: 'If greater than 0, will be used instead of alpha_value. Those two are related by' +
                             ' rope_freq_base = 10000 * alpha_value ^ (64 / 63).',
                         type: 'Input',
+                        defaultValue: '0',
                     },
                     {
                         name: '--compress_pos_emb',
                         description: 'Positional embeddings compression factor. Should be set to (context length) / ' +
                             "(model's original context length). Equal to 1/rope_freq_scale.",
                         type: 'Input',
+                        defaultValue: '1',
                     },
                 ],
             },
@@ -19764,6 +19922,16 @@ const oobaboogaArguments = [
                         description: 'The path to the SSL certificate cert file.',
                         type: 'File',
                     },
+                    {
+                        name: '--subpath',
+                        description: 'Customize the subpath for gradio, use with reverse proxy',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--old-colors',
+                        description: 'Use the legacy Gradio colors, before the December/2024 update.',
+                        type: 'CheckBox',
+                    },
                 ],
             },
             {
@@ -19788,6 +19956,7 @@ const oobaboogaArguments = [
                         name: '--api-port',
                         description: 'The listening port for the API.',
                         type: 'Input',
+                        defaultValue: '5000',
                     },
                     {
                         name: '--api-key',
@@ -20207,8 +20376,9 @@ const comfyZludaArguments = [
                 items: [
                     {
                         name: '--listen',
-                        description: 'Specify the IP address to listen on (default: 127.0.0.1). If --listen is provided' +
-                            ' without an argument, it defaults to 0.0.0.0. (listens on all)',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
+                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
+                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
                         type: 'Input',
                         defaultValue: '127.0.0.1',
                     },
@@ -20266,6 +20436,11 @@ const comfyZludaArguments = [
                         description: 'Set the ComfyUI input directory.',
                         type: 'Directory',
                     },
+                    {
+                        name: '--user-directory',
+                        description: 'Set the ComfyUI user directory with an absolute path.',
+                        type: 'Directory',
+                    },
                 ],
             },
             {
@@ -20313,12 +20488,22 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--bf16-unet',
-                        description: 'Run the UNET in bf16. This should only be used for testing stuff.',
+                        description: 'Run the diffusion model in bf16.',
                         type: 'CheckBox',
                     },
                     {
                         name: '--fp16-unet',
-                        description: 'Store unet weights in fp16.',
+                        description: 'Run the diffusion model in fp16',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-unet',
+                        description: 'Run the diffusion model in fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp64-unet',
+                        description: 'Run the diffusion model in fp64.',
                         type: 'CheckBox',
                     },
                     {
@@ -20387,15 +20572,38 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--oneapi-device-selector',
+                        description: 'Sets the oneAPI device(s) this instance will use.',
+                        type: 'Input',
+                    },
+                    {
                         name: '--disable-ipex-optimize',
-                        description: 'Disables ipex.optimize when loading models with Intel GPUs.',
+                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
                         type: 'CheckBox',
                     },
                     {
                         name: '--preview-method',
                         description: 'Default preview method for sampler nodes.',
+                        type: 'DropDown',
+                        values: ['none', 'auto', 'latent2rgb', 'taesd'],
+                        defaultValue: 'none',
+                    },
+                    {
+                        name: '--preview-size',
+                        description: 'Sets the maximum preview size for sampler nodes.',
                         type: 'Input',
-                        defaultValue: 'NoPreviews',
+                        defaultValue: 512,
+                    },
+                    {
+                        name: '--cache-classic',
+                        description: 'Use the old style (aggressive) caching.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cache-lru',
+                        description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
+                        type: 'Input',
+                        defaultValue: 0,
                     },
                     {
                         name: '--use-split-cross-attention',
@@ -20413,8 +20621,23 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--use-sage-attention',
+                        description: 'Use sage attention.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--disable-xformers',
                         description: 'Disable xformers.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-upcast-attention',
+                        description: 'Force enable attention upcasting, please report if it fixes black images.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--dont-upcast-attention',
+                        description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
                         type: 'CheckBox',
                     },
                 ],
@@ -20457,6 +20680,12 @@ const comfyZludaArguments = [
                         name: '--disable-smart-memory',
                         description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: '--reserve-vram',
+                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
+                            ' amount is reserved depending on your OS.',
+                        type: 'Input',
                     },
                 ],
             },
@@ -20510,7 +20739,14 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--verbose',
-                        description: 'Enables more debug prints.',
+                        description: 'Set the logging level',
+                        type: 'DropDown',
+                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        defaultValue: 'INFO',
+                    },
+                    {
+                        name: '--log-stdout',
+                        description: 'Send normal process output to stdout instead of stderr (default).',
                         type: 'CheckBox',
                     },
                     {
@@ -20525,6 +20761,11 @@ const comfyZludaArguments = [
                         description: 'The local filesystem path to the directory where the frontend is' +
                             ' located. Overrides --front-end-version.',
                         type: 'Directory',
+                    },
+                    {
+                        name: '--fast',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations.',
+                        type: 'CheckBox',
                     },
                 ],
             },
@@ -20824,20 +21065,56 @@ const sillyRendererMethods = {
 
 const vladmandicArguments = [
     {
+        category: 'Environment Variables',
+        items: [
+            {
+                description: 'Sets a custom path for Python executable.',
+                name: 'PYTHON',
+                type: 'File',
+            },
+            {
+                description: 'Specifies the path for the virtual environment. Default is venv.' +
+                    ' Special value - runs the script without creating virtual environment.',
+                name: 'VENV_DIR',
+                type: 'Directory',
+            },
+        ],
+    },
+    {
         category: 'Command Line Arguments',
         sections: [
             {
                 section: 'General',
                 items: [
                     {
-                        name: '-h, --help',
+                        name: '-h',
                         description: 'Show this help message and exit',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--version',
+                        description: 'Print version information',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--test',
+                        description: 'Run test only and exit',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--debug',
+                        description: 'Run installer with debug logging',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--profile',
+                        description: 'Run profiler',
                         type: 'CheckBox',
                     },
                 ],
             },
             {
-                section: 'Server',
+                section: 'Server Configuration',
                 items: [
                     {
                         name: '--config',
@@ -20850,6 +21127,27 @@ const vladmandicArguments = [
                         type: 'File',
                     },
                     {
+                        name: '--freeze',
+                        description: 'Disable editing settings',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--backend',
+                        description: 'Force model pipeline type',
+                        type: 'DropDown',
+                        values: ['original', 'diffusers'],
+                    },
+                    {
+                        name: '--subpath',
+                        description: 'Customize the URL subpath for usage with reverse proxy',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Performance & VRAM',
+                items: [
+                    {
                         name: '--medvram',
                         description: 'Split model stages and keep only active part in VRAM',
                         type: 'CheckBox',
@@ -20859,6 +21157,21 @@ const vladmandicArguments = [
                         description: 'Split model components and keep only active part in VRAM',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--use-xformers',
+                        description: 'Force use xFormers cross-optimization',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-queue',
+                        description: 'Disable queues',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Model Loading',
+                items: [
                     {
                         name: '--ckpt',
                         description: 'Path to model checkpoint to load immediately',
@@ -20870,6 +21183,21 @@ const vladmandicArguments = [
                         type: 'File',
                     },
                     {
+                        name: '--no-hashing',
+                        description: 'Disable hashing of checkpoints',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--no-metadata',
+                        description: 'Disable reading of metadata from models',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Paths & Directories',
+                items: [
+                    {
                         name: '--data-dir',
                         description: 'Base path where all user data is stored',
                         type: 'Directory',
@@ -20880,13 +21208,18 @@ const vladmandicArguments = [
                         type: 'Directory',
                     },
                     {
+                        name: '--allowed-paths',
+                        description: 'Add additional paths to paths allowed for web access',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Security & Access',
+                items: [
+                    {
                         name: '--allow-code',
                         description: 'Allow custom script execution',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--share',
-                        description: 'Enable UI accessible through Gradio site',
                         type: 'CheckBox',
                     },
                     {
@@ -20895,25 +21228,8 @@ const vladmandicArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--use-cpu',
-                        description: 'Force use CPU for specified modules',
-                        type: 'Input',
-                        defaultValue: '[]',
-                    },
-                    {
-                        name: '--listen',
-                        description: 'Launch web server using public IP address',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--port',
-                        description: 'Launch web server with given server port',
-                        type: 'Input',
-                        defaultValue: 7860,
-                    },
-                    {
-                        name: '--freeze',
-                        description: 'Disable editing settings',
+                        name: '--safe',
+                        description: 'Run in safe mode with no user extensions',
                         type: 'CheckBox',
                     },
                     {
@@ -20926,6 +21242,27 @@ const vladmandicArguments = [
                         description: 'Set access authentication using file',
                         type: 'File',
                     },
+                ],
+            },
+            {
+                section: 'Network & API',
+                items: [
+                    {
+                        name: '--listen',
+                        description: 'Launch web server using public IP address',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Launch web server with given server port',
+                        type: 'Input',
+                        defaultValue: 7860,
+                    },
+                    {
+                        name: '--share',
+                        description: 'Enable UI accessible through Gradio site',
+                        type: 'CheckBox',
+                    },
                     {
                         name: '--autolaunch',
                         description: "Open the UI URL in the system's default browser upon launch",
@@ -20937,9 +21274,14 @@ const vladmandicArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--device-id',
-                        description: 'Select the default CUDA device to use',
-                        type: 'Input',
+                        name: '--docs',
+                        description: 'Mount API docs',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--api-log',
+                        description: 'Enable logging of all API requests',
+                        type: 'CheckBox',
                     },
                     {
                         name: '--cors-origins',
@@ -20951,6 +21293,16 @@ const vladmandicArguments = [
                         description: 'Allowed CORS origins as regular expression',
                         type: 'Input',
                     },
+                    {
+                        name: '--server-name',
+                        description: 'Sets hostname of server',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'TLS & Certificates',
+                items: [
                     {
                         name: '--tls-keyfile',
                         description: 'Enable TLS and specify key file',
@@ -20966,51 +21318,10 @@ const vladmandicArguments = [
                         description: 'Enable TLS with self-signed certificates',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--server-name',
-                        description: 'Sets hostname of server',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--no-hashing',
-                        description: 'Disable hashing of checkpoints',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--no-metadata',
-                        description: 'Disable reading of metadata from models',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-queue',
-                        description: 'Disable queues',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--subpath',
-                        description: 'Customize the URL subpath for usage with reverse proxy',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--backend',
-                        description: 'Force model pipeline type',
-                        type: 'DropDown',
-                        values: ['original', 'diffusers'],
-                    },
-                    {
-                        name: '--theme',
-                        description: 'Override UI theme',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--allowed-paths',
-                        description: 'Add additional paths to paths allowed for web access',
-                        type: 'Input',
-                    },
                 ],
             },
             {
-                section: 'Setup',
+                section: 'Compute Backend',
                 items: [
                     {
                         name: '--use-directml',
@@ -21043,17 +21354,28 @@ const vladmandicArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--use-xformers',
-                        description: 'Force use xFormers cross-optimization',
-                        type: 'CheckBox',
+                        name: '--use-cpu',
+                        description: 'Force use CPU for specified modules',
+                        type: 'Input',
+                        defaultValue: '[]',
                     },
+                    {
+                        name: '--device-id',
+                        description: 'Select the default CUDA device to use',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Installation & Updates',
+                items: [
                     {
                         name: '--reset',
                         description: 'Reset main repository to latest version',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--upgrade, --update',
+                        name: '--upgrade',
                         description: 'Upgrade main repository to latest version',
                         type: 'CheckBox',
                     },
@@ -21062,6 +21384,26 @@ const vladmandicArguments = [
                         description: 'Force re-check of requirements',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--reinstall',
+                        description: 'Force reinstallation of all requirements',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--reinstall-zluda',
+                        description: 'Force reinstallation of ZLUDA',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--uv',
+                        description: 'Use uv instead of pip to install the packages',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Installation Options',
+                items: [
                     {
                         name: '--quick',
                         description: 'Bypass version checks',
@@ -21103,39 +21445,19 @@ const vladmandicArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--reinstall',
-                        description: 'Force reinstallation of all requirements',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--reinstall-zluda',
-                        description: 'Force reinstallation of ZLUDA',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--test',
-                        description: 'Run test only and exit',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--version',
-                        description: 'Print version information',
-                        type: 'CheckBox',
-                    },
-                    {
                         name: '--ignore',
                         description: 'Ignore any errors and attempt to continue',
                         type: 'CheckBox',
                     },
+                ],
+            },
+            {
+                section: 'UI Customization',
+                items: [
                     {
-                        name: '--safe',
-                        description: 'Run in safe mode with no user extensions',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--uv',
-                        description: 'Use uv instead of pip to install the packages',
-                        type: 'CheckBox',
+                        name: '--theme',
+                        description: 'Override UI theme',
+                        type: 'Input',
                     },
                 ],
             },
@@ -21143,29 +21465,9 @@ const vladmandicArguments = [
                 section: 'Logging',
                 items: [
                     {
-                        name: '--docs',
-                        description: 'Mount API docs',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--debug',
-                        description: 'Run installer with debug logging',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--profile',
-                        description: 'Run profiler',
-                        type: 'CheckBox',
-                    },
-                    {
                         name: '--log',
                         description: 'Set log file',
                         type: 'File',
-                    },
-                    {
-                        name: '--api-log',
-                        description: 'Enable logging of all API requests',
-                        type: 'CheckBox',
                     },
                 ],
             },
@@ -21233,4 +21535,4 @@ const vladRendererMethods = {
     parseStringToArgs,
 };
 
-export { bmaltaisRendererMethods as $, AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, lodashExports as D, EREW123_ID as E, isValidArg as F, GITMYLO_ID as G, gitmyloArguments as H, INVOKEAI_ID as I, gitmyloRendererMethods as J, automatic1111Arguments as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, NEROGAR_ID as N, OOBABOOGA_ID as O, comfyArguments as P, comfyRendererMethods as Q, RSXDALV_ID as R, SILLYTAVERN_ID as S, a1RendererMethods as T, lshqqytigerArguments as U, VLADMANDIC_ID as V, vladmandicArguments as W, vladRendererMethods as X, mcMonkeyArguments as Y, mcMonkeyRendererMethods as Z, bmaltaisArguments as _, parseStringToArgs$8 as a, oobaboogaArguments as a0, oobaRendererMethods as a1, sillyArguments as a2, sillyRendererMethods as a3, comfyZludaArguments as a4, comfyZludaRendererMethods as a5, parseArgsToString$7 as b, commonjsGlobal as c, parseStringToArgs$7 as d, parseArgsToString$6 as e, parseStringToArgs$6 as f, parseArgsToString$5 as g, parseStringToArgs$5 as h, isWin as i, parseArgsToString$4 as j, parseStringToArgs$4 as k, parseArgsToString$3 as l, parseStringToArgs$3 as m, parseArgsToString$2 as n, parseStringToArgs$2 as o, parseArgsToString$8 as p, parseArgsToString$1 as q, parseStringToArgs$1 as r, parseArgsToString as s, parseStringToArgs as t, LLLYASVIEL_ID as u, LSHQQYTIGER_FORGE_ID as v, ANAPNOE_ID as w, ComfyUI_Zluda_ID as x, catchAddress as y, getArgumentType as z };
+export { mcMonkeyRendererMethods as $, AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, lodashExports as D, EREW123_ID as E, isValidArg as F, GITMYLO_ID as G, gitmyloArguments as H, INVOKEAI_ID as I, gitmyloRendererMethods as J, automatic1111Arguments as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, NEROGAR_ID as N, OOBABOOGA_ID as O, comfyArguments as P, comfyRendererMethods as Q, RSXDALV_ID as R, SILLYTAVERN_ID as S, comfyZludaArguments as T, comfyZludaRendererMethods as U, VLADMANDIC_ID as V, a1RendererMethods as W, lshqqytigerArguments as X, vladmandicArguments as Y, vladRendererMethods as Z, mcMonkeyArguments as _, parseStringToArgs$8 as a, bmaltaisArguments as a0, bmaltaisRendererMethods as a1, oobaboogaArguments as a2, oobaRendererMethods as a3, sillyArguments as a4, sillyRendererMethods as a5, parseArgsToString$7 as b, commonjsGlobal as c, parseStringToArgs$7 as d, parseArgsToString$6 as e, parseStringToArgs$6 as f, parseArgsToString$5 as g, parseStringToArgs$5 as h, isWin as i, parseArgsToString$4 as j, parseStringToArgs$4 as k, parseArgsToString$3 as l, parseStringToArgs$3 as m, parseArgsToString$2 as n, parseStringToArgs$2 as o, parseArgsToString$8 as p, parseArgsToString$1 as q, parseStringToArgs$1 as r, parseArgsToString as s, parseStringToArgs as t, LLLYASVIEL_ID as u, LSHQQYTIGER_FORGE_ID as v, ANAPNOE_ID as w, ComfyUI_Zluda_ID as x, catchAddress as y, getArgumentType as z };

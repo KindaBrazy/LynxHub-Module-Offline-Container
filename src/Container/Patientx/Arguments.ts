@@ -10,8 +10,9 @@ const comfyZludaArguments: ArgumentsData = [
           {
             name: '--listen',
             description:
-              'Specify the IP address to listen on (default: 127.0.0.1). If --listen is provided' +
-              ' without an argument, it defaults to 0.0.0.0. (listens on all)',
+              'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
+              ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
+              ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
             type: 'Input',
             defaultValue: '127.0.0.1',
           },
@@ -72,6 +73,11 @@ const comfyZludaArguments: ArgumentsData = [
             description: 'Set the ComfyUI input directory.',
             type: 'Directory',
           },
+          {
+            name: '--user-directory',
+            description: 'Set the ComfyUI user directory with an absolute path.',
+            type: 'Directory',
+          },
         ],
       },
       {
@@ -119,12 +125,22 @@ const comfyZludaArguments: ArgumentsData = [
           },
           {
             name: '--bf16-unet',
-            description: 'Run the UNET in bf16. This should only be used for testing stuff.',
+            description: 'Run the diffusion model in bf16.',
             type: 'CheckBox',
           },
           {
             name: '--fp16-unet',
-            description: 'Store unet weights in fp16.',
+            description: 'Run the diffusion model in fp16',
+            type: 'CheckBox',
+          },
+          {
+            name: '--fp32-unet',
+            description: 'Run the diffusion model in fp32.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--fp64-unet',
+            description: 'Run the diffusion model in fp64.',
             type: 'CheckBox',
           },
           {
@@ -193,15 +209,38 @@ const comfyZludaArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
+            name: '--oneapi-device-selector',
+            description: 'Sets the oneAPI device(s) this instance will use.',
+            type: 'Input',
+          },
+          {
             name: '--disable-ipex-optimize',
-            description: 'Disables ipex.optimize when loading models with Intel GPUs.',
+            description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
             type: 'CheckBox',
           },
           {
             name: '--preview-method',
             description: 'Default preview method for sampler nodes.',
+            type: 'DropDown',
+            values: ['none', 'auto', 'latent2rgb', 'taesd'],
+            defaultValue: 'none',
+          },
+          {
+            name: '--preview-size',
+            description: 'Sets the maximum preview size for sampler nodes.',
             type: 'Input',
-            defaultValue: 'NoPreviews',
+            defaultValue: 512,
+          },
+          {
+            name: '--cache-classic',
+            description: 'Use the old style (aggressive) caching.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--cache-lru',
+            description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
+            type: 'Input',
+            defaultValue: 0,
           },
           {
             name: '--use-split-cross-attention',
@@ -219,8 +258,23 @@ const comfyZludaArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
+            name: '--use-sage-attention',
+            description: 'Use sage attention.',
+            type: 'CheckBox',
+          },
+          {
             name: '--disable-xformers',
             description: 'Disable xformers.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--force-upcast-attention',
+            description: 'Force enable attention upcasting, please report if it fixes black images.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--dont-upcast-attention',
+            description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
             type: 'CheckBox',
           },
         ],
@@ -265,6 +319,13 @@ const comfyZludaArguments: ArgumentsData = [
             description:
               'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
             type: 'CheckBox',
+          },
+          {
+            name: '--reserve-vram',
+            description:
+              'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
+              ' amount is reserved depending on your OS.',
+            type: 'Input',
           },
         ],
       },
@@ -321,7 +382,14 @@ const comfyZludaArguments: ArgumentsData = [
           },
           {
             name: '--verbose',
-            description: 'Enables more debug prints.',
+            description: 'Set the logging level',
+            type: 'DropDown',
+            values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+            defaultValue: 'INFO',
+          },
+          {
+            name: '--log-stdout',
+            description: 'Send normal process output to stdout instead of stderr (default).',
             type: 'CheckBox',
           },
           {
@@ -338,6 +406,11 @@ const comfyZludaArguments: ArgumentsData = [
               'The local filesystem path to the directory where the frontend is' +
               ' located. Overrides --front-end-version.',
             type: 'Directory',
+          },
+          {
+            name: '--fast',
+            description: 'Enable some untested and potentially quality deteriorating optimizations.',
+            type: 'CheckBox',
           },
         ],
       },

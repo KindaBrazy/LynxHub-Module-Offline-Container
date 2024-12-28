@@ -3,10 +3,13 @@ import {
   AUTOMATIC1111_ID,
   BMALTAIS_ID,
   ComfyUI_ID,
+  ComfyUI_Zluda_ID,
+  INVOKEAI_ID,
   LLLYASVIEL_ID,
   LSHQQYTIGER_FORGE_ID,
   LSHQQYTIGER_ID,
   MCMONKEYPROJECTS_ID,
+  NEROGAR_ID,
   VLADMANDIC_ID,
 } from '../Constants';
 import {PagesData} from '../types';
@@ -18,8 +21,13 @@ import bmaltaisArguments from './Bmaltais/Arguments';
 import bmaltaisRendererMethods from './Bmaltais/RendererMethods';
 import comfyArguments from './ComfyUI/Arguments';
 import comfyRendererMethods from './ComfyUI/RendererMethods';
+import invokeArguments from './InvokeAI/Arguments';
+import invokeRendererMethods from './InvokeAI/RendererMethods';
 import mcMonkeyArguments from './McMonkeyProjects/Arguments';
 import mcMonkeyRendererMethods from './McMonkeyProjects/RendererMethods';
+import nerogarRendererMethods from './Nerogar/RendererMethods';
+import comfyZludaArguments from './Patientx/Arguments';
+import comfyZludaRendererMethods from './Patientx/RendererMethods';
 import vladmandicArguments from './Vladmandic/Arguments';
 import vladRendererMethods from './Vladmandic/RendererMethods';
 
@@ -39,6 +47,21 @@ const imagePage: PagesData = {
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e7be14a2-5e23-41df-b653-4ba5b45ad065/width=300/00008-2000176836.jpeg',
       arguments: comfyArguments,
       methods: comfyRendererMethods,
+    },
+    {
+      id: ComfyUI_Zluda_ID,
+      title: 'ComfyUI Zluda',
+      description:
+        'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
+        ' Now ZLUDA enhanced  for better AMD GPU performance.',
+      repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
+      extensionsDir: '/custom_nodes',
+      type: 'image',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
+        '/width=300/00023-3290977700.jpeg',
+      arguments: comfyZludaArguments,
+      methods: comfyZludaRendererMethods,
     },
     {
       id: AUTOMATIC1111_ID,
@@ -149,6 +172,32 @@ const imagePage: PagesData = {
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/026dfc41-f150-4b5c-9bbd-b959b833f059/width=300/00004-1682382699.jpeg',
       arguments: automatic1111Arguments,
       methods: a1RendererMethods,
+    },
+    {
+      id: NEROGAR_ID,
+      title: 'OneTrainer',
+      description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
+      repoUrl: 'https://github.com/Nerogar/OneTrainer',
+      type: 'image',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
+        '/width=300/00005-1318253062.jpeg',
+      methods: nerogarRendererMethods,
+    },
+    {
+      id: INVOKEAI_ID,
+      title: 'Invoke AI',
+      description:
+        'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
+        ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
+        ' and serves as the foundation for multiple commercial products.',
+      repoUrl: 'https://github.com/invoke-ai/InvokeAI',
+      type: 'image',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
+        '/width=300/00002-3715244638.jpeg',
+      arguments: invokeArguments,
+      methods: invokeRendererMethods,
     },
   ],
 };

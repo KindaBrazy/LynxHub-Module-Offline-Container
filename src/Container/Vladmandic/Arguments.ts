@@ -2,6 +2,23 @@ import {ArgumentsData} from '../../types';
 
 const vladmandicArguments: ArgumentsData = [
   {
+    category: 'Environment Variables',
+    items: [
+      {
+        description: 'Sets a custom path for Python executable.',
+        name: 'PYTHON',
+        type: 'File',
+      },
+      {
+        description:
+          'Specifies the path for the virtual environment. Default is venv.' +
+          ' Special value - runs the script without creating virtual environment.',
+        name: 'VENV_DIR',
+        type: 'Directory',
+      },
+    ],
+  },
+  {
     category: 'Command Line Arguments',
     sections: [
       {

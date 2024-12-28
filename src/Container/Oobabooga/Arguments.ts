@@ -34,11 +34,13 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--model-dir',
             description: 'Path to directory with all the models.',
             type: 'Directory',
+            defaultValue: 'models/',
           },
           {
             name: '--lora-dir',
             description: 'Path to directory with all the loras.',
             type: 'Directory',
+            defaultValue: 'loras/',
           },
           {
             name: '--model-menu',
@@ -66,16 +68,12 @@ const oobaboogaArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--chat-buttons',
-            description: 'Show buttons on the chat tab instead of a hover menu.',
-            type: 'CheckBox',
-          },
-          {
             name: '--idle-timeout',
             description:
               'Unload model after this many minutes of inactivity. It will be automatically' +
               ' reloaded when you try to use it again.',
             type: 'Input',
+            defaultValue: '0',
           },
         ],
       },
@@ -168,6 +166,11 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'Set use_flash_attention_2=True while loading the model.',
             type: 'CheckBox',
           },
+          {
+            name: '--use_eager_attention',
+            description: 'Set attn_implementation= eager while loading the model.',
+            type: 'CheckBox',
+          },
         ],
       },
       {
@@ -188,12 +191,14 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'compute dtype for 4-bit. Valid options: bfloat16, float16, float32.',
             type: 'DropDown',
             values: ['bfloat16', 'float16', 'float32'],
+            defaultValue: 'float16',
           },
           {
             name: '--quant_type',
             description: 'quant_type for 4-bit. Valid options: nf4, fp4.',
             type: 'DropDown',
             values: ['nf4', 'fp4'],
+            defaultValue: 'nf4',
           },
         ],
       },
@@ -208,24 +213,27 @@ const oobaboogaArguments: ArgumentsData = [
           {
             name: '--tensorcores',
             description:
-              'Use llama-cpp-python compiled with tensor cores support. This increases performance' +
-              ' on RTX cards. NVIDIA only.',
+              'NVIDIA only: use llama-cpp-python compiled with tensor cores support.' +
+              ' This may increase performance on newer cards.',
             type: 'CheckBox',
           },
           {
             name: '--n_ctx',
             description: 'Size of the prompt context.',
             type: 'Input',
+            defaultValue: '2048',
           },
           {
             name: '--threads',
             description: 'Number of threads to use.',
             type: 'Input',
+            defaultValue: '0',
           },
           {
             name: '--threads-batch',
             description: 'Number of threads to use for batches/prompt processing.',
             type: 'Input',
+            defaultValue: '0',
           },
           {
             name: '--no_mul_mat_q',
@@ -236,6 +244,7 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--n_batch',
             description: 'Maximum number of prompt tokens to batch together when calling llama_eval.',
             type: 'Input',
+            defaultValue: '512',
           },
           {
             name: '--no-mmap',
@@ -251,10 +260,11 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--n-gpu-layers',
             description: 'Number of layers to offload to the GPU.',
             type: 'Input',
+            defaultValue: '0',
           },
           {
             name: '--tensor_split',
-            description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 18,17.',
+            description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 60,40.',
             type: 'Input',
           },
           {
@@ -298,6 +308,13 @@ const oobaboogaArguments: ArgumentsData = [
               'StreamingLLM: number of sink tokens. Only used if the trimmed prompt does not share' +
               ' a prefix with the old prompt.',
             type: 'Input',
+            defaultValue: '5',
+          },
+          {
+            name: '--tokenizer-dir',
+            description:
+              'Load the tokenizer from this folder. Meant to be used with llamacpp_HF through the command-line.',
+            type: 'Directory',
           },
         ],
       },
@@ -320,6 +337,7 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--max_seq_len',
             description: 'Maximum sequence length.',
             type: 'Input',
+            defaultValue: '2048',
           },
           {
             name: '--cfg-cache',
@@ -334,19 +352,25 @@ const oobaboogaArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--cache_8bit',
-            description: 'Use 8-bit cache to save VRAM.',
+            name: '--no_xformers',
+            description: 'Force xformers to not be used.',
             type: 'CheckBox',
           },
           {
-            name: '--cache_4bit',
-            description: 'Use Q4 cache to save VRAM.',
+            name: '--no_sdpa',
+            description: 'Force Torch SDPA to not be used.',
             type: 'CheckBox',
           },
           {
             name: '--num_experts_per_token',
             description: 'Number of experts to use for generation. Applies to MoE models like Mixtral.',
             type: 'Input',
+            defaultValue: '2',
+          },
+          {
+            name: '--enable_tp',
+            description: 'Enable Tensor Parallelism (TP) in ExLlamaV2.',
+            type: 'CheckBox',
           },
         ],
       },
@@ -391,22 +415,13 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--wbits',
             description: 'Load a pre-quantized model with specified precision in bits. 2, 3, 4 and 8 are supported.',
             type: 'Input',
+            defaultValue: '0',
           },
           {
             name: '--groupsize',
             description: 'Group size.',
             type: 'Input',
-          },
-        ],
-      },
-      {
-        section: 'AutoAWQ',
-        items: [
-          {
-            name: '--no_inject_fused_attention',
-            description:
-              'Disable the use of fused attention, which will use less VRAM at the cost of slower inference.',
-            type: 'CheckBox',
+            defaultValue: '-1',
           },
         ],
       },
@@ -418,6 +433,30 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'Backend for the HQQ loader. Valid options: PYTORCH, PYTORCH_COMPILE, ATEN.',
             type: 'DropDown',
             values: ['PYTORCH', 'PYTORCH_COMPILE', 'ATEN'],
+            defaultValue: 'PYTORCH_COMPILE',
+          },
+        ],
+      },
+      {
+        section: 'TensorRT-LLM',
+        items: [
+          {
+            name: '--cpp-runner',
+            description:
+              "Use the ModelRunnerCpp runner, which is faster than the default ModelRunner but doesn't support streaming yet.",
+            type: 'CheckBox',
+          },
+        ],
+      },
+      {
+        section: 'Cache',
+        items: [
+          {
+            name: '--cache_type',
+            description:
+              'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4.',
+            type: 'Input',
+            defaultValue: 'fp16',
           },
         ],
       },
@@ -438,6 +477,7 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--local_rank',
             description: 'DeepSpeed: Optional argument for distributed setups.',
             type: 'Input',
+            defaultValue: '0',
           },
         ],
       },
@@ -449,6 +489,7 @@ const oobaboogaArguments: ArgumentsData = [
             description:
               'Positional embeddings alpha factor for NTK RoPE scaling. Use either this or compress_pos_emb, not both.',
             type: 'Input',
+            defaultValue: '1',
           },
           {
             name: '--rope_freq_base',
@@ -456,6 +497,7 @@ const oobaboogaArguments: ArgumentsData = [
               'If greater than 0, will be used instead of alpha_value. Those two are related by' +
               ' rope_freq_base = 10000 * alpha_value ^ (64 / 63).',
             type: 'Input',
+            defaultValue: '0',
           },
           {
             name: '--compress_pos_emb',
@@ -463,6 +505,7 @@ const oobaboogaArguments: ArgumentsData = [
               'Positional embeddings compression factor. Should be set to (context length) / ' +
               "(model's original context length). Equal to 1/rope_freq_scale.",
             type: 'Input',
+            defaultValue: '1',
           },
         ],
       },
@@ -518,6 +561,16 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'The path to the SSL certificate cert file.',
             type: 'File',
           },
+          {
+            name: '--subpath',
+            description: 'Customize the subpath for gradio, use with reverse proxy',
+            type: 'Input',
+          },
+          {
+            name: '--old-colors',
+            description: 'Use the legacy Gradio colors, before the December/2024 update.',
+            type: 'CheckBox',
+          },
         ],
       },
       {
@@ -542,6 +595,7 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--api-port',
             description: 'The listening port for the API.',
             type: 'Input',
+            defaultValue: '5000',
           },
           {
             name: '--api-key',

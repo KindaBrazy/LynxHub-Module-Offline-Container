@@ -73,6 +73,7 @@ const invokeRendererMethods: CardRendererMethods = {
   parseStringToArgs,
   manager: {
     startInstall,
+    // @ts-ignore
     updater: {updateType: 'stepper', startUpdate, updateAvailable},
   },
 };

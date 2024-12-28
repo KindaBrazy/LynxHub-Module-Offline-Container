@@ -757,7 +757,7 @@ const winEV: DataItem = {
     {
       description: 'Sets a custom path for Python executable.',
       name: 'PYTHON',
-      type: 'Directory',
+      type: 'File',
     },
     {
       description:

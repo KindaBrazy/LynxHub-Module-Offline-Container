@@ -8,7 +8,7 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 
 <img src="resources/screenshot.png">
 
-</div>+
+</div>
 
 ## 🚀 Available Modules
 

@@ -20369,6 +20369,30 @@ const oobaRendererMethods = {
 
 const comfyZludaArguments = [
     {
+        category: 'Environment Variables',
+        items: [
+            {
+                name: 'PYTHON',
+                description: 'Sets a custom path for Python executable.',
+                type: 'File',
+                defaultValue: '"%~dp0/venv/Scripts/python.exe"',
+            },
+            {
+                name: 'VENV_DIR',
+                description: 'Specifies the path for the virtual environment. Default is venv.' +
+                    ' Special value - runs the script without creating virtual environment.',
+                type: 'Directory',
+                defaultValue: './venv',
+            },
+            {
+                name: 'ZLUDA_COMGR_LOG_LEVEL',
+                description: 'Zluda log level',
+                type: 'Input',
+                defaultValue: '1',
+            },
+        ],
+    },
+    {
         category: 'Command Line Arguments',
         sections: [
             {
@@ -20774,16 +20798,13 @@ const comfyZludaArguments = [
 ];
 
 function parseArgsToString$2(args) {
-    let result = '@echo off\n' +
-        '\n' +
-        'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
-        'set VENV_DIR=./venv\n' +
-        '\n' +
-        'set ZLUDA_COMGR_LOG_LEVEL=1\n' +
-        '\n' +
-        '.\\zluda\\zluda.exe -- ';
+    let result = '@echo off' + '\n\n';
     let argResult = '';
     args.forEach(arg => {
+        if (arg.name === 'PYTHON' || arg.name === 'VENV_DIR' || arg.name === 'ZLUDA_COMGR_LOG_LEVEL') {
+            result += `set ${arg.name}=${arg.value}` + `\n`;
+            return;
+        }
         const argType = getArgumentType(arg.name, comfyZludaArguments);
         if (argType === 'CheckBox') {
             argResult += `${arg.name} `;
@@ -20795,41 +20816,49 @@ function parseArgsToString$2(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
+    result += '\n' + '.\\zluda\\zluda.exe -- ';
     result += lodashExports.isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
-    result += '\npause';
+    result += '\n\n' + 'pause';
     return result;
 }
 function parseStringToArgs$2(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.includes('%PYTHON% main.py'))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split('%PYTHON% main.py ')[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, comfyZludaArguments)) {
-                if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
+        if (line.startsWith('set')) {
+            const argName = line.split('=')[0].split(' ')[1].trim();
+            const argValue = line.split('=')[1].trim();
+            if (argName === 'PYTHON' || argName === 'VENV_DIR' || argName === 'ZLUDA_COMGR_LOG_LEVEL') {
+                argResult.push({ name: argName, value: argValue });
             }
-        });
+        }
+        else if (line.includes('%PYTHON% main.py')) {
+            // Extract the command line arguments and clear falsy values
+            const clArgs = line.split('%PYTHON% main.py ')[1];
+            if (!clArgs)
+                return;
+            const args = clArgs.split('--').filter(Boolean);
+            // Map each argument to an object with id and value
+            const result = args.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return {
+                    name: `--${id}`,
+                    value: value.join(' ').replace(/"/g, ''),
+                };
+            });
+            // Process each argument
+            result.forEach((value) => {
+                // Check if the argument exists or valid
+                if (isValidArg(value.name, comfyZludaArguments)) {
+                    if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
+                        argResult.push({ name: value.name, value: '' });
+                    }
+                    else {
+                        argResult.push({ name: value.name, value: value.value });
+                    }
+                }
+            });
+        }
     });
     return argResult;
 }
@@ -20849,6 +20878,14 @@ async function fetchExtensionList() {
     }
 }
 const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
+const customArguments = [
+    { name: 'PYTHON', value: '"%~dp0/venv/Scripts/python.exe"' },
+    { name: 'VENV_DIR', value: './venv' },
+    {
+        name: '--use-quad-cross-attention',
+        value: '',
+    },
+];
 function startInstall(stepper) {
     stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
@@ -20861,7 +20898,7 @@ function startInstall(stepper) {
                     stepper.postInstall.config({
                         customArguments: {
                             presetName: 'Zluda Config',
-                            customArguments: [{ name: '--use-quad-cross-attention', value: '' }],
+                            customArguments,
                         },
                     });
                     stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
@@ -20875,7 +20912,7 @@ function startInstall(stepper) {
                     stepper.postInstall.config({
                         customArguments: {
                             presetName: 'Zluda Config',
-                            customArguments: [{ name: '--use-quad-cross-attention', value: '' }],
+                            customArguments,
                         },
                     });
                     stepper.showFinalStep('success', 'ComfyUI-Zluda located successfully!', 'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.');

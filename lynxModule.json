@@ -5,9 +5,9 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 12,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "8.0.0",
-  "updateDate": "2024-12-28 09:17",
-  "changeLog": "V8.0.0\n・Update InvokeAI to version 5.5.0\n・Implement update availability check for OneTrainer\n・Update Arguments:ComfyUI, ComfyUIZluda, SD.Next, Kohya's GUI, Invoke AI, Text Generation\n・Drop support for LynxHub Below V1.3.0",
+  "version": "8.1.0",
+  "updateDate": "2024-12-29 09:11",
+  "changeLog": "V8.1.0\n・Add environment variable arguments to ComfyUI Zluda\n\nV8.0.0\n・Update InvokeAI to version 5.5.0\n・Implement update availability check for OneTrainer\n・Update Arguments:ComfyUI, ComfyUIZluda, SD.Next, Kohya's GUI, Invoke AI, Text Generation\n・Drop support for LynxHub Below V1.3.0",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

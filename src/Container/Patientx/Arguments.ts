@@ -2,6 +2,31 @@ import {ArgumentsData} from '../../types';
 
 const comfyZludaArguments: ArgumentsData = [
   {
+    category: 'Environment Variables',
+    items: [
+      {
+        name: 'PYTHON',
+        description: 'Sets a custom path for Python executable.',
+        type: 'File',
+        defaultValue: '"%~dp0/venv/Scripts/python.exe"',
+      },
+      {
+        name: 'VENV_DIR',
+        description:
+          'Specifies the path for the virtual environment. Default is venv.' +
+          ' Special value - runs the script without creating virtual environment.',
+        type: 'Directory',
+        defaultValue: './venv',
+      },
+      {
+        name: 'ZLUDA_COMGR_LOG_LEVEL',
+        description: 'Zluda log level',
+        type: 'Input',
+        defaultValue: '1',
+      },
+    ],
+  },
+  {
     category: 'Command Line Arguments',
     sections: [
       {

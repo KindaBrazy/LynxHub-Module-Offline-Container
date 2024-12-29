@@ -5,18 +5,14 @@ import {catchAddress, getArgumentType, isValidArg} from '../../Utils/RendererUti
 import comfyZludaArguments from './Arguments';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
-  let result: string =
-    '@echo off\n' +
-    '\n' +
-    'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
-    'set VENV_DIR=./venv\n' +
-    '\n' +
-    'set ZLUDA_COMGR_LOG_LEVEL=1\n' +
-    '\n' +
-    '.\\zluda\\zluda.exe -- ';
+  let result: string = '@echo off' + '\n\n';
   let argResult: string = '';
 
   args.forEach(arg => {
+    if (arg.name === 'PYTHON' || arg.name === 'VENV_DIR' || arg.name === 'ZLUDA_COMGR_LOG_LEVEL') {
+      result += `set ${arg.name}=${arg.value}` + `\n`;
+      return;
+    }
     const argType = getArgumentType(arg.name, comfyZludaArguments);
     if (argType === 'CheckBox') {
       argResult += `${arg.name} `;
@@ -27,9 +23,11 @@ export function parseArgsToString(args: ChosenArgument[]): string {
     }
   });
 
+  result += '\n' + '.\\zluda\\zluda.exe -- ';
+
   result += isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
 
-  result += '\npause';
+  result += '\n\n' + 'pause';
 
   return result;
 }
@@ -39,35 +37,41 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   const lines: string[] = args.split('\n');
 
   lines.forEach((line: string): void => {
-    if (!line.includes('%PYTHON% main.py')) return;
-
-    // Extract the command line arguments and clear falsy values
-    const clArgs: string = line.split('%PYTHON% main.py ')[1];
-
-    if (!clArgs) return;
-
-    const args: string[] = clArgs.split('--').filter(Boolean);
-
-    // Map each argument to an object with id and value
-    const result: ArgType[] = args.map((arg: string): ArgType => {
-      const [id, ...value] = arg.trim().split(' ');
-      return {
-        name: `--${id}`,
-        value: value.join(' ').replace(/"/g, ''),
-      };
-    });
-
-    // Process each argument
-    result.forEach((value: ArgType): void => {
-      // Check if the argument exists or valid
-      if (isValidArg(value.name, comfyZludaArguments)) {
-        if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
-          argResult.push({name: value.name, value: ''});
-        } else {
-          argResult.push({name: value.name, value: value.value});
-        }
+    if (line.startsWith('set')) {
+      const argName = line.split('=')[0].split(' ')[1].trim();
+      const argValue = line.split('=')[1].trim();
+      if (argName === 'PYTHON' || argName === 'VENV_DIR' || argName === 'ZLUDA_COMGR_LOG_LEVEL') {
+        argResult.push({name: argName, value: argValue});
       }
-    });
+    } else if (line.includes('%PYTHON% main.py')) {
+      // Extract the command line arguments and clear falsy values
+      const clArgs: string = line.split('%PYTHON% main.py ')[1];
+
+      if (!clArgs) return;
+
+      const args: string[] = clArgs.split('--').filter(Boolean);
+
+      // Map each argument to an object with id and value
+      const result: ArgType[] = args.map((arg: string): ArgType => {
+        const [id, ...value] = arg.trim().split(' ');
+        return {
+          name: `--${id}`,
+          value: value.join(' ').replace(/"/g, ''),
+        };
+      });
+
+      // Process each argument
+      result.forEach((value: ArgType): void => {
+        // Check if the argument exists or valid
+        if (isValidArg(value.name, comfyZludaArguments)) {
+          if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
+            argResult.push({name: value.name, value: ''});
+          } else {
+            argResult.push({name: value.name, value: value.value});
+          }
+        }
+      });
+    }
   });
 
   return argResult;
@@ -91,6 +95,14 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
 }
 
 const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
+const customArguments = [
+  {name: 'PYTHON', value: '"%~dp0/venv/Scripts/python.exe"'},
+  {name: 'VENV_DIR', value: './venv'},
+  {
+    name: '--use-quad-cross-attention',
+    value: '',
+  },
+];
 
 function startInstall(stepper: InstallationStepper) {
   stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
@@ -105,7 +117,7 @@ function startInstall(stepper: InstallationStepper) {
           stepper.postInstall.config({
             customArguments: {
               presetName: 'Zluda Config',
-              customArguments: [{name: '--use-quad-cross-attention', value: ''}],
+              customArguments,
             },
           });
           stepper.showFinalStep(
@@ -122,7 +134,7 @@ function startInstall(stepper: InstallationStepper) {
           stepper.postInstall.config({
             customArguments: {
               presetName: 'Zluda Config',
-              customArguments: [{name: '--use-quad-cross-attention', value: ''}],
+              customArguments,
             },
           });
           stepper.showFinalStep(

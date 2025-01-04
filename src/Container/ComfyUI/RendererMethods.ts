@@ -84,21 +84,62 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
 const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
 
 function startInstall(stepper: InstallationStepper) {
-  stepper.initialSteps(['ComfyUI', 'Clone', 'Install Dependencies', 'Finish']);
+  const selectOptions = ['NVIDIA CU126', 'NVIDIA CU124'];
+  if (window.osPlatform === 'linux') {
+    selectOptions.push('AMD GPUs (Linux only) ROCm 6.2.4');
+    selectOptions.push('AMD GPUs (Linux only) ROCm 6.2');
+  }
+  if (window.osPlatform === 'linux' || window.osPlatform === 'win32') {
+    selectOptions.push('Intel GPUs (Windows and Linux)');
+  }
+
+  const getPyTorchInstallCommand = (selectedOption: string) => {
+    switch (selectedOption) {
+      case 'AMD GPUs (Linux only) ROCm 6.2':
+        return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2';
+      case 'AMD GPUs (Linux only) ROCm 6.2.4':
+        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.2.4';
+      case 'Intel GPUs (Windows and Linux)':
+        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/xpu';
+      case 'NVIDIA CU124':
+        return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
+      case 'NVIDIA CU126':
+        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu126';
+      default:
+        return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
+    }
+  };
+
+  stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
 
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
       stepper.nextStep();
       stepper.cloneRepository(COMFYUI_URL).then(dir => {
         stepper.nextStep();
-        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-          stepper.setInstalled(dir);
-          stepper.showFinalStep(
-            'success',
-            'ComfyUI installation complete!',
-            'All installation steps completed successfully. Your ComfyUI environment is now ready for use.',
-          );
-        });
+        stepper
+          .collectUserInput([
+            {
+              id: 'gpu_type',
+              type: 'select',
+              label: 'Please Select PyTorch Version (Gpu)',
+              selectOptions,
+            },
+          ])
+          .then(result => {
+            stepper.nextStep();
+            stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result as string)).then(() => {
+              stepper.nextStep();
+              stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                stepper.setInstalled(dir);
+                stepper.showFinalStep(
+                  'success',
+                  'ComfyUI installation complete!',
+                  'All installation steps completed successfully. Your ComfyUI environment is now ready for use.',
+                );
+              });
+            });
+          });
       });
     } else if (targetDirectory) {
       stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {

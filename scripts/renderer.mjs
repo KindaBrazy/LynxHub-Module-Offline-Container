@@ -1,4 +1,4 @@
-import { i as isWin, y as catchAddress$1, z as getArgumentType, D as lodashExports, F as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, H as gitmyloArguments, J as gitmyloRendererMethods, E as EREW123_ID, K as automatic1111Arguments, C as ComfyUI_ID, P as comfyArguments, Q as comfyRendererMethods, x as ComfyUI_Zluda_ID, T as comfyZludaArguments, U as comfyZludaRendererMethods, A as AUTOMATIC1111_ID, W as a1RendererMethods, L as LSHQQYTIGER_ID, X as lshqqytigerArguments, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, Y as vladmandicArguments, Z as vladRendererMethods, M as MCMONKEYPROJECTS_ID, _ as mcMonkeyArguments, $ as mcMonkeyRendererMethods, B as BMALTAIS_ID, a0 as bmaltaisArguments, a1 as bmaltaisRendererMethods, w as ANAPNOE_ID, N as NEROGAR_ID, I as INVOKEAI_ID, O as OOBABOOGA_ID, a2 as oobaboogaArguments, a3 as oobaRendererMethods, S as SILLYTAVERN_ID, a4 as sillyArguments, a5 as sillyRendererMethods } from './RendererMethods_Bn24Xk.mjs';
+import { i as isWin, D as catchAddress$1, F as getArgumentType, H as lodashExports, J as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, K as gitmyloArguments, P as gitmyloRendererMethods, E as EREW123_ID, Q as automatic1111Arguments, C as ComfyUI_ID, T as comfyArguments, U as comfyRendererMethods, y as ComfyUI_Zluda_ID, W as comfyZludaArguments, X as comfyZludaRendererMethods, A as AUTOMATIC1111_ID, Y as a1RendererMethods, L as LSHQQYTIGER_ID, Z as lshqqytigerArguments, v as LLLYASVIEL_ID, w as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, _ as vladmandicArguments, $ as vladRendererMethods, M as MCMONKEYPROJECTS_ID, a0 as mcMonkeyArguments, a1 as mcMonkeyRendererMethods, B as BMALTAIS_ID, a2 as bmaltaisArguments, a3 as bmaltaisRendererMethods, x as ANAPNOE_ID, N as NEROGAR_ID, I as INVOKEAI_ID, O as OOBABOOGA_ID, a4 as oobaboogaArguments, a5 as oobaRendererMethods, S as SILLYTAVERN_ID, a6 as sillyArguments, a7 as sillyRendererMethods, z as OPEN_WEBUI_ID } from './RendererMethods_DBvoqT.mjs';
 
 const invokeArguments = [
     {
@@ -329,7 +329,7 @@ const invokeArguments = [
 const DOWNLOAD_URL = 'https://github.com/invoke-ai/InvokeAI/releases/download/v5.5.0/InvokeAI-installer-v5.5.0.zip';
 const VERSION_NAME = '5.5.0';
 const INPUT_ID = 'install_dir';
-function startInstall$2(stepper) {
+function startInstall$3(stepper) {
     stepper.initialSteps(['InvokeAI', 'Download', 'Install', 'Directory', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -384,7 +384,7 @@ function startInstall$2(stepper) {
         }
     });
 }
-function startUpdate$2(stepper) {
+function startUpdate$3(stepper) {
     stepper.initialSteps([`Download V${VERSION_NAME}`, 'Install', 'Finish']);
     stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
         stepper.utils.decompressFile(path).then(folderPath => {
@@ -454,13 +454,13 @@ const invokeRendererMethods = {
     parseArgsToString,
     parseStringToArgs,
     manager: {
-        startInstall: startInstall$2,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
+        startInstall: startInstall$3,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$3 },
     },
 };
 
 const AllTalk_URL = 'https://github.com/erew123/alltalk_tts';
-function startInstall$1(stepper) {
+function startInstall$2(stepper) {
     stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -486,19 +486,24 @@ function startInstall$1(stepper) {
         }
     });
 }
-function startUpdate$1(stepper, dir) {
+function startUpdate$2(stepper, dir) {
     stepper.initialSteps(['Pull Changes', 'Update', 'Finish']);
-    stepper.executeTerminalCommands('git pull', dir).then(() => {
-        stepper.nextStep();
-        stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
-            stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+    if (dir) {
+        stepper.executeTerminalCommands('git pull', dir).then(() => {
+            stepper.nextStep();
+            stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+                stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+            });
         });
-    });
+    }
+    else {
+        stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
+    }
 }
 const erew123RendererMethods = {
     manager: {
-        startInstall: startInstall$1,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+        startInstall: startInstall$2,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
     },
 };
 
@@ -586,7 +591,7 @@ if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsInde
 }
 
 const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
-function startInstall(stepper) {
+function startInstall$1(stepper) {
     stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -612,16 +617,21 @@ function startInstall(stepper) {
         }
     });
 }
-function startUpdate(stepper, dir) {
+function startUpdate$1(stepper, dir) {
     stepper.initialSteps(['Update', 'Finish']);
-    stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
-        stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
-    });
+    if (dir) {
+        stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+            stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+        });
+    }
+    else {
+        stepper.showFinalStep('error', 'Unable to update OneTrainer');
+    }
 }
 const nerogarRendererMethods = {
     manager: {
-        startInstall,
-        updater: { updateType: 'stepper', startUpdate },
+        startInstall: startInstall$1,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
     },
 };
 
@@ -775,6 +785,37 @@ const imagePage = {
     ],
 };
 
+function startInstall(stepper) {
+    stepper.initialSteps(['Getting Started', 'Detect Existing', 'Install Open WebUI', 'All Done!']);
+    stepper.starterStep({ disableSelectDir: true }).then(() => {
+        stepper.nextStep();
+        stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
+        stepper.ipc.invoke('isInstalled').then((isInstalled) => {
+            if (isInstalled) {
+                stepper.setInstalled();
+                stepper.showFinalStep('success', "You're All Set!", "Open WebUI is already installed. You're good to go!");
+            }
+            else {
+                stepper.nextStep();
+                stepper.executeTerminalCommands('pip install open-webui').then(() => {
+                    stepper.setInstalled();
+                    stepper.showFinalStep('success', 'Installation Complete!', 'Your Open WebUI environment is ready. Enjoy!');
+                });
+            }
+        });
+    });
+}
+function startUpdate(stepper) {
+    stepper.initialSteps(['Update Open WebUI', 'Complete Update']);
+    stepper.executeTerminalCommands('pip install --upgrade open-webui').then(() => {
+        stepper.showFinalStep('success', 'Open WebUI Updated Successfully!', `Open WebUI has been updated to the latest version. You can now enjoy the new features and improvements.`);
+    });
+}
+const openWebUIRendererMethods = {
+    catchAddress: catchAddress$1,
+    manager: { startInstall, updater: { updateType: 'stepper', startUpdate } },
+};
+
 const textPage = {
     routePath: '/textGenerationPage',
     cards: [
@@ -802,12 +843,21 @@ const textPage = {
             arguments: sillyArguments,
             methods: sillyRendererMethods,
         },
+        {
+            id: OPEN_WEBUI_ID,
+            title: 'Open WebUI',
+            description: 'Open WebUI is an extensible, feature-rich, and user-friendly self-hosted ' +
+                'WebUI designed to operate entirely offline. It supports various LLM runners,' +
+                ' including Ollama and OpenAI-compatible APIs. ',
+            repoUrl: 'https://github.com/open-webui/open-webui',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/223520d9-9071-4b73-9171-9628a804f89f/' +
+                'width=300/00025-4013828223.jpeg',
+            methods: openWebUIRendererMethods,
+        },
     ],
 };
 
 const rendererModules = [imagePage, textPage, audioPage];
-function setCurrentBuild(build) {
-    console.log(build);
-}
 
-export { rendererModules as default, setCurrentBuild };
+export { rendererModules as default };

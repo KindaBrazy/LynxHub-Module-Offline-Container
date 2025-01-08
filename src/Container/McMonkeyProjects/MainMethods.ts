@@ -8,7 +8,7 @@ const DEFAULT_BATCH_DATA: string = isWin
   ? '@echo off\n\ncall launch-windows.bat'
   : '#!/bin/bash\n\nbash ./launch-linux.sh';
 
-export async function getRunCommands(dir: string): Promise<string | string[]> {
+export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 

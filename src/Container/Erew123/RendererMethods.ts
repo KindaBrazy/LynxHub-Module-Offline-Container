@@ -41,14 +41,18 @@ export function startInstall(stepper: InstallationStepper) {
   });
 }
 
-function startUpdate(stepper: InstallationStepper, dir: string) {
+function startUpdate(stepper: InstallationStepper, dir?: string) {
   stepper.initialSteps(['Pull Changes', 'Update', 'Finish']);
-  stepper.executeTerminalCommands('git pull', dir).then(() => {
-    stepper.nextStep();
-    stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
-      stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+  if (dir) {
+    stepper.executeTerminalCommands('git pull', dir).then(() => {
+      stepper.nextStep();
+      stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+        stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+      });
     });
-  });
+  } else {
+    stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
+  }
 }
 
 const erew123RendererMethods: CardRendererMethods = {

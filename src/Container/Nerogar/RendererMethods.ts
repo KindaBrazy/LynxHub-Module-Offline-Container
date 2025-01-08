@@ -41,11 +41,15 @@ export function startInstall(stepper: InstallationStepper) {
   });
 }
 
-function startUpdate(stepper: InstallationStepper, dir: string) {
+function startUpdate(stepper: InstallationStepper, dir?: string) {
   stepper.initialSteps(['Update', 'Finish']);
-  stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
-    stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
-  });
+  if (dir) {
+    stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+      stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+    });
+  } else {
+    stepper.showFinalStep('error', 'Unable to update OneTrainer');
+  }
 }
 
 const nerogarRendererMethods: CardRendererMethods = {

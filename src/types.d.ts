@@ -7,7 +7,15 @@ export type ExtensionData = {
   stars?: number;
 };
 
-export type LynxApiUpdate = {isPullAvailable: Promise<boolean>};
+export type LynxApiUpdate = {
+  isPullAvailable: Promise<boolean>;
+  storage: {get: (key: string) => any; set: (key: string, data: any) => void};
+};
+
+export type LynxApiInstalled = {
+  installedDirExistAndWatch: Promise<boolean>;
+  storage: {get: (key: string) => any; set: (key: string, data: any) => void};
+};
 
 export type MainIpcTypes = {
   handle(channel: string, listener: (event: any, ...args: any[]) => any): void;
@@ -18,7 +26,7 @@ export type MainIpcTypes = {
 /** These methods will be called in the main process */
 export type CardMainMethods = {
   /** Return commands based on installed directory to be executed with terminal */
-  getRunCommands: (dir: string) => Promise<string | string[]>;
+  getRunCommands: (dir?: string) => Promise<string | string[]>;
 
   /** Read saved argument from file and return data with the array of type ChosenArgument */
   readArgs?: (dir: string) => Promise<ChosenArgument[]>;
@@ -32,12 +40,14 @@ export type CardMainMethods = {
    */
   mainIpc?: (ipc: MainIpcTypes) => void;
   updateAvailable?: (lynxApi: LynxApiUpdate) => Promise<boolean>;
+  isInstalled?: (lynxApi: LynxApiInstalled) => Promise<boolean>;
 };
 
 export type InstallationMethod = {chosen: 'install' | 'locate'; targetDirectory?: string};
 export type UserInputFieldType = 'checkbox' | 'text-input' | 'select' | 'directory' | 'file';
 export type UserInputField = {id: string; label: string; type: UserInputFieldType; selectOptions?: string[]};
 export type UserInputResult = {id: string; result: string | boolean};
+export type StarterStepOptions = {disableSelectDir?: boolean};
 export type RendererIpcTypes = {
   invoke(channel: string, ...args: any[]): Promise<any>;
   on(channel: string, listener: any): () => void;
@@ -55,7 +65,7 @@ export type InstallationStepper = {
   /** Normally the first step (Contain locating or start installation)
    * @return A promise resolving to the user's choice of installation method.
    */
-  starterStep: () => Promise<InstallationMethod>;
+  starterStep: (options?: StarterStepOptions) => Promise<InstallationMethod>;
 
   /** Clone a Git repository to a user-selected directory.
    * @param repositoryUrl The URL of the Git repository to clone.
@@ -103,7 +113,7 @@ export type InstallationStepper = {
   /** Call this when installation is done to set the card installed
    * @param dir The directory to save
    */
-  setInstalled: (dir: string) => void;
+  setInstalled: (dir?: string) => void;
 
   /** Collect user input for various configuration options.
    * @param inputFields An array of input fields to present to the user.
@@ -230,7 +240,7 @@ export type CardRendererMethods = {
     startInstall: (stepper: InstallationStepper) => void;
     updater: {
       updateType: 'git' | 'stepper';
-      startUpdate?: (stepper: InstallationStepper, dir: string) => void;
+      startUpdate?: (stepper: InstallationStepper, dir?: string) => void;
     };
   };
 };

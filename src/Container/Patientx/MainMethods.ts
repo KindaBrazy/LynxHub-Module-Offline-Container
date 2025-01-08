@@ -14,7 +14,7 @@ const DEFAULT_BATCH_DATA: string =
   '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
   '\npause';
 
-export async function getRunCommands(dir: string): Promise<string | string[]> {
+export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 

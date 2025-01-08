@@ -14,6 +14,7 @@ export const EREW123_ID = 'Erew123_SD';
 
 export const OOBABOOGA_ID = 'Oobabooga_TG';
 export const SILLYTAVERN_ID = 'SillyTavern_TG';
+export const OPEN_WEBUI_ID = 'OpenWebUI_TG';
 
 export const RSXDALV_ID = 'Rsxdalv_AG';
 export const GITMYLO_ID = 'Gitmylo_AG';

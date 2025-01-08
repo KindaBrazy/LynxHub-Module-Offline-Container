@@ -1,7 +1,8 @@
-import {OOBABOOGA_ID, SILLYTAVERN_ID} from '../Constants';
+import {OOBABOOGA_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID} from '../Constants';
 import {PagesData} from '../types';
 import oobaboogaArguments from './Oobabooga/Arguments';
 import oobaRendererMethods from './Oobabooga/RendererMethods';
+import openWebUIRendererMethods from './OpenWebUI/RendererMethods';
 import sillyArguments from './SillyTavern/Arguments';
 import sillyRendererMethods from './SillyTavern/RendererMethods';
 
@@ -34,6 +35,20 @@ const textPage: PagesData = {
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
       arguments: sillyArguments,
       methods: sillyRendererMethods,
+    },
+    {
+      id: OPEN_WEBUI_ID,
+      title: 'Open WebUI',
+      description:
+        'Open WebUI is an extensible, feature-rich, and user-friendly self-hosted ' +
+        'WebUI designed to operate entirely offline. It supports various LLM runners,' +
+        ' including Ollama and OpenAI-compatible APIs. ',
+      repoUrl: 'https://github.com/open-webui/open-webui',
+      type: 'text',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/223520d9-9071-4b73-9171-9628a804f89f/' +
+        'width=300/00025-4013828223.jpeg',
+      methods: openWebUIRendererMethods,
     },
   ],
 };

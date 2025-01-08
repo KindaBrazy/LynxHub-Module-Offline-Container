@@ -5,8 +5,4 @@ import {CardModules} from './types';
 
 const rendererModules: CardModules = [imagePage, textPage, audioPage];
 
-export function setCurrentBuild(build: number) {
-  console.log(build);
-}
-
 export default rendererModules;

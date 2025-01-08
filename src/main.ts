@@ -13,6 +13,7 @@ import {
   MCMONKEYPROJECTS_ID,
   NEROGAR_ID,
   OOBABOOGA_ID,
+  OPEN_WEBUI_ID,
   RSXDALV_ID,
   SILLYTAVERN_ID,
   VLADMANDIC_ID,
@@ -26,6 +27,7 @@ import invokeMainMethods from './Container/InvokeAI/MainMethods';
 import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
 import nerogarMainMethods from './Container/Nerogar/MainMethods';
 import oobaMainMethods from './Container/Oobabooga/MainMethods';
+import openWebUIMainMethods from './Container/OpenWebUI/MainMethods';
 import comfyZludaMainMethods from './Container/Patientx/MainMethods';
 import rsxMainMethods from './Container/Rsxdalv/MainMethods';
 import sillyMainMethods from './Container/SillyTavern/MainMethods';
@@ -46,20 +48,11 @@ const mainModules: MainModules[] = [
   {id: GITMYLO_ID, methods: gitmyloMainMethods},
   {id: SILLYTAVERN_ID, methods: sillyMainMethods},
   {id: ANAPNOE_ID, methods: a1MainMethods},
+  {id: ComfyUI_Zluda_ID, methods: comfyZludaMainMethods},
+  {id: NEROGAR_ID, methods: nerogarMainMethods},
+  {id: INVOKEAI_ID, methods: invokeMainMethods},
+  {id: EREW123_ID, methods: erew123MainMethods},
+  {id: OPEN_WEBUI_ID, methods: openWebUIMainMethods},
 ];
-
-export function setCurrentBuild(build: number) {
-  if (build > 11) {
-    mainModules.push(
-      {id: ComfyUI_Zluda_ID, methods: comfyZludaMainMethods},
-      {id: NEROGAR_ID, methods: nerogarMainMethods},
-      {id: INVOKEAI_ID, methods: invokeMainMethods},
-      {
-        id: EREW123_ID,
-        methods: erew123MainMethods,
-      },
-    );
-  }
-}
 
 export default mainModules;

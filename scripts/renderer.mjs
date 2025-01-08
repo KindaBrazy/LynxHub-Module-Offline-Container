@@ -1,4 +1,4 @@
-import { i as isWin, y as catchAddress$1, z as getArgumentType, D as lodashExports, F as isValidArg, R as RSXDALV_ID, G as GITMYLO_ID, H as gitmyloArguments, J as gitmyloRendererMethods, E as EREW123_ID, K as automatic1111Arguments, C as ComfyUI_ID, P as comfyArguments, Q as comfyRendererMethods, x as ComfyUI_Zluda_ID, T as comfyZludaArguments, U as comfyZludaRendererMethods, A as AUTOMATIC1111_ID, W as a1RendererMethods, L as LSHQQYTIGER_ID, X as lshqqytigerArguments, u as LLLYASVIEL_ID, v as LSHQQYTIGER_FORGE_ID, V as VLADMANDIC_ID, Y as vladmandicArguments, Z as vladRendererMethods, M as MCMONKEYPROJECTS_ID, _ as mcMonkeyArguments, $ as mcMonkeyRendererMethods, B as BMALTAIS_ID, a0 as bmaltaisArguments, a1 as bmaltaisRendererMethods, w as ANAPNOE_ID, N as NEROGAR_ID, I as INVOKEAI_ID, O as OOBABOOGA_ID, a2 as oobaboogaArguments, a3 as oobaRendererMethods, S as SILLYTAVERN_ID, a4 as sillyArguments, a5 as sillyRendererMethods } from './RendererMethods_Bn24Xk.mjs';
+import { L as DOWNLOAD_URL, i as isWin, M as INPUT_ID, I as INSTALLED_VERSION_KEY, V as VERSION_NAME, U as UPDATE_TIME_KEY$1, N as DescriptionManager, P as formatSize, Q as catchAddress$1, R as getArgumentType, W as lodashExports, X as isValidArg, Y as CardInfo, Z as GitInstaller, z as TTS_ID, B as AG_ID, _ as gitmyloArguments, $ as AG_RM, H as ALLTALK_ID, a0 as automatic1111Arguments, a1 as fetchExtensionList, j as parseArgsToString$1, k as parseStringToArgs$1, C as COMFYUI_ID, a2 as comfyArguments, a3 as COMFYUI_RM, F as COMFYUI_ZLUDA_ID, a4 as comfyZludaArguments, a5 as COMFYUI_ZLUDA_RM, A as A1_ID, S as SD_AMD_ID, a6 as lshqqytigerArguments, v as SD_FORGE_ID, w as SD_FORGE_AMD_ID, x as SD_NEXT_ID, a7 as vladmandicArguments, a8 as SD_NEXT_RM, y as SWARM_ID, a9 as mcMonkeyArguments, aa as SWARM_RM, K as KOHYA_ID, ab as bmaltaisArguments, ac as KOHYA_GUI_RM, E as SD_UIUX_ID, O as ONETRAINER_ID, G as INVOKE_ID, T as TG_ID, ad as oobaboogaArguments, ae as TG_RM, D as SILLYTAVERN_ID, af as sillyArguments, ag as SILLYTAVERN_RM, J as OPEN_WEBUI_ID } from './RendererMethods_CDw5J_.mjs';
 
 const invokeArguments = [
     {
@@ -326,10 +326,7 @@ const invokeArguments = [
     },
 ];
 
-const DOWNLOAD_URL = 'https://github.com/invoke-ai/InvokeAI/releases/download/v5.5.0/InvokeAI-installer-v5.5.0.zip';
-const VERSION_NAME = '5.5.0';
-const INPUT_ID = 'install_dir';
-function startInstall$2(stepper) {
+function startInstall$9(stepper) {
     stepper.initialSteps(['InvokeAI', 'Download', 'Install', 'Directory', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -356,6 +353,7 @@ function startInstall$2(stepper) {
                                 stepper.utils.verifyFilesExist(finalDir, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
                                     if (exist) {
                                         stepper.setInstalled(finalDir);
+                                        stepper.storage.set(INSTALLED_VERSION_KEY, VERSION_NAME);
                                         stepper.showFinalStep('success', 'InvokeAI Installation Complete', 'All installation steps have been completed successfully.' +
                                             ' Your InvokeAI environment is now ready for use.');
                                     }
@@ -384,15 +382,50 @@ function startInstall$2(stepper) {
         }
     });
 }
-function startUpdate$2(stepper) {
+function startUpdate$3(stepper) {
     stepper.initialSteps([`Download V${VERSION_NAME}`, 'Install', 'Finish']);
     stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
         stepper.utils.decompressFile(path).then(folderPath => {
             stepper.nextStep();
             stepper.runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh').then(() => {
+                const currentDate = new Date();
+                stepper.storage.set(UPDATE_TIME_KEY$1, currentDate.toLocaleString());
+                stepper.storage.set(INSTALLED_VERSION_KEY, VERSION_NAME);
                 stepper.showFinalStep('success', 'InvokeAI Updated Successfully', `Version ${VERSION_NAME} has been installed successfully.`);
             });
         });
+    });
+}
+async function cardInfo$9(api, callback) {
+    const dir = api.installationFolder;
+    if (!dir)
+        return;
+    callback.setOpenFolders([dir]);
+    const descManager = new DescriptionManager([
+        {
+            title: 'Installation Data',
+            items: [
+                { label: 'Install Date', result: 'loading' },
+                { label: 'Update Date', result: 'loading' },
+                { label: 'Current Version', result: 'loading' },
+            ],
+        },
+        {
+            title: 'Disk Usage',
+            items: [{ label: 'Total', result: 'loading' }],
+        },
+    ], callback);
+    api.getFolderCreationTime(dir).then(result => {
+        descManager.updateItem(0, 0, result);
+    });
+    api.storage.get(UPDATE_TIME_KEY$1).then(result => {
+        descManager.updateItem(0, 1, result);
+    });
+    api.storage.get(INSTALLED_VERSION_KEY).then(result => {
+        descManager.updateItem(0, 2, result);
+    });
+    api.getFolderSize(dir).then(result => {
+        descManager.updateItem(1, 0, formatSize(result));
     });
 }
 
@@ -449,23 +482,24 @@ function parseStringToArgs(args) {
     });
     return argResult;
 }
-const invokeRendererMethods = {
+const INVOKE_RM = {
     catchAddress: catchAddress$1,
     parseArgsToString,
     parseStringToArgs,
+    cardInfo: cardInfo$9,
     manager: {
-        startInstall: startInstall$2,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
+        startInstall: startInstall$9,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$3 },
     },
 };
 
-const AllTalk_URL = 'https://github.com/erew123/alltalk_tts';
-function startInstall$1(stepper) {
+const URL$2 = 'https://github.com/erew123/alltalk_tts';
+function startInstall$8(stepper) {
     stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
             stepper.nextStep();
-            stepper.cloneRepository(AllTalk_URL).then(dir => {
+            stepper.cloneRepository(URL$2).then(dir => {
                 stepper.nextStep();
                 stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
                     stepper.setInstalled(dir);
@@ -474,7 +508,7 @@ function startInstall$1(stepper) {
             });
         }
         else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, AllTalk_URL).then(isValid => {
+            stepper.utils.validateGitRepository(targetDirectory, URL$2).then(isValid => {
                 if (isValid) {
                     stepper.setInstalled(targetDirectory);
                     stepper.showFinalStep('success', 'AllTalk TTS located successfully!', 'Pre-installed AllTalk TTS detected. Installation skipped as your existing setup is ready to use.');
@@ -486,22 +520,32 @@ function startInstall$1(stepper) {
         }
     });
 }
-function startUpdate$1(stepper, dir) {
+function startUpdate$2(stepper, dir) {
     stepper.initialSteps(['Pull Changes', 'Update', 'Finish']);
-    stepper.executeTerminalCommands('git pull', dir).then(() => {
-        stepper.nextStep();
-        stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
-            stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+    if (dir) {
+        stepper.executeTerminalCommands('git pull', dir).then(() => {
+            stepper.nextStep();
+            stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+                stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+            });
         });
-    });
+    }
+    else {
+        stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
+    }
 }
-const erew123RendererMethods = {
+async function cardInfo$8(api, callback) {
+    return CardInfo(URL$2, undefined, api, callback);
+}
+const ALLTALK_RM = {
+    cardInfo: cardInfo$8,
     manager: {
-        startInstall: startInstall$1,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+        startInstall: startInstall$8,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
     },
 };
 
+const URL$1 = 'https://github.com/rsxdalv/tts-generation-webui';
 function catchAddress(input) {
     if (input.toLowerCase().includes('Installed Packages tab loaded'.toLowerCase())) {
         return 'http://127.0.0.1:7770';
@@ -510,13 +554,23 @@ function catchAddress(input) {
         return undefined;
     }
 }
-const rsxdalvRendererMethods = { catchAddress };
+function startInstall$7(stepper) {
+    GitInstaller('Text to Speech', URL$1, stepper);
+}
+async function cardInfo$7(api, callback) {
+    return CardInfo(URL$1, '/extensions', api, callback);
+}
+const TTS_RM = {
+    catchAddress,
+    cardInfo: cardInfo$7,
+    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
+};
 
 const audioPage = {
     routePath: '/audioGenerationPage',
     cards: [
         {
-            id: RSXDALV_ID,
+            id: TTS_ID,
             title: 'Text to Speech',
             description: 'TTS Generation Web UI (Bark, MusicGen + AudioGen, Tortoise, RVC, Vocos,' +
                 ' Demucs, SeamlessM4T, MAGNet, StyleTTS2, MMS)',
@@ -524,10 +578,11 @@ const audioPage = {
             type: 'audio',
             extensionsDir: '/extensions',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
-            methods: rsxdalvRendererMethods,
+            methods: TTS_RM,
+            installationType: 'git',
         },
         {
-            id: GITMYLO_ID,
+            id: AG_ID,
             title: 'Audio Generation',
             description: 'A webui for different audio related Neural Networks',
             repoUrl: 'https://github.com/gitmylo/audio-webui',
@@ -535,10 +590,11 @@ const audioPage = {
             arguments: gitmyloArguments,
             extensionsDir: '/extensions',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/a7473108-d6fb-4c9d-97a6-b58ca82bcdfb/width=300/00002-1953665041.jpeg',
-            methods: gitmyloRendererMethods,
+            methods: AG_RM,
+            installationType: 'git',
         },
         {
-            id: EREW123_ID,
+            id: ALLTALK_ID,
             title: 'AllTalk TTS',
             description: 'AllTalk is based on the Coqui TTS engine, similar to the Coqui_tts extension for Text generation webUI, ' +
                 'however supports a variety of advanced features, such as a settings page, low VRAM support, DeepSpeed, ' +
@@ -548,9 +604,59 @@ const audioPage = {
             type: 'audio',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/d0f56692-50fc-4e8e-ac8b-02d8ec070417' +
                 '/width=300/00006-951269360.jpeg',
-            methods: erew123RendererMethods,
+            methods: ALLTALK_RM,
+            installationType: 'git',
         },
     ],
+};
+
+const URL = 'https://github.com/Nerogar/OneTrainer';
+function startInstall$6(stepper) {
+    stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.cloneRepository(URL).then(dir => {
+                stepper.nextStep();
+                stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository.');
+                }
+            });
+        }
+    });
+}
+function startUpdate$1(stepper, dir) {
+    stepper.initialSteps(['Update', 'Finish']);
+    if (dir) {
+        stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+            stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+        });
+    }
+    else {
+        stepper.showFinalStep('error', 'Unable to update OneTrainer');
+    }
+}
+async function cardInfo$6(api, callback) {
+    return CardInfo(URL, undefined, api, callback);
+}
+const ONETRAINER_RM = {
+    cardInfo: cardInfo$6,
+    manager: {
+        startInstall: startInstall$6,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+    },
 };
 
 const lshqqytigerForgeArguments = lodashExports.cloneDeep(automatic1111Arguments);
@@ -585,51 +691,91 @@ if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsInde
     lshqqytigerForgeArguments[commandLineArgsIndex].sections.unshift(newSection);
 }
 
-const ONETRAINER_URL = 'https://github.com/Nerogar/OneTrainer';
-function startInstall(stepper) {
-    stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(ONETRAINER_URL).then(dir => {
-                stepper.nextStep();
-                stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
-                    stepper.setInstalled(dir);
-                    stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
-                });
-            });
-        }
-        else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, ONETRAINER_URL).then(isValid => {
-                if (isValid) {
-                    stepper.setInstalled(targetDirectory);
-                    stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository.');
-                }
-            });
-        }
-    });
+const A1_URL = 'https://github.com/AUTOMATIC1111/stable-diffusion-webui';
+function startInstall$5(stepper) {
+    GitInstaller('Automatic1111', A1_URL, stepper);
 }
-function startUpdate(stepper, dir) {
-    stepper.initialSteps(['Update', 'Finish']);
-    stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
-        stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
-    });
+async function cardInfo$5(api, callback) {
+    return CardInfo(A1_URL, '/extensions', api, callback);
 }
-const nerogarRendererMethods = {
-    manager: {
-        startInstall,
-        updater: { updateType: 'stepper', startUpdate },
-    },
+const A1_RM = {
+    catchAddress: catchAddress$1,
+    fetchExtensionList,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
+    cardInfo: cardInfo$5,
+    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
+};
+
+const SdAMD_URL$2 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
+function startInstall$4(stepper) {
+    GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL$2, stepper);
+}
+async function cardInfo$4(api, callback) {
+    return CardInfo(SdAMD_URL$2, '/extensions', api, callback);
+}
+const SD_AMD_RM = {
+    catchAddress: catchAddress$1,
+    fetchExtensionList,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
+    cardInfo: cardInfo$4,
+    manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
+};
+
+const SD_FORGE_URL = 'https://github.com/lllyasviel/stable-diffusion-webui-forge';
+function startInstall$3(stepper) {
+    GitInstaller('SD Forge', SD_FORGE_URL, stepper);
+}
+async function cardInfo$3(api, callback) {
+    return CardInfo(SD_FORGE_URL, '/extensions', api, callback);
+}
+const SD_FORGE_RM = {
+    catchAddress: catchAddress$1,
+    fetchExtensionList,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
+    cardInfo: cardInfo$3,
+    manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
+};
+
+const SdAMD_URL$1 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge';
+function startInstall$2(stepper) {
+    GitInstaller('SD Forge AMDGPU', SdAMD_URL$1, stepper);
+}
+async function cardInfo$2(api, callback) {
+    return CardInfo(SdAMD_URL$1, 'RendererMethods', api, callback);
+}
+const SD_FORGE_AMD_RM = {
+    catchAddress: catchAddress$1,
+    fetchExtensionList,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
+    cardInfo: cardInfo$2,
+    manager: { startInstall: startInstall$2, updater: { updateType: 'git' } },
+};
+
+const SdAMD_URL = 'https://github.com/anapnoe/stable-diffusion-webui-ux';
+function startInstall$1(stepper) {
+    GitInstaller('SD UI-UX', SdAMD_URL, stepper);
+}
+async function cardInfo$1(api, callback) {
+    return CardInfo(SdAMD_URL, '/extensions', api, callback);
+}
+const SD_UIUX_RM = {
+    catchAddress: catchAddress$1,
+    fetchExtensionList,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
+    cardInfo: cardInfo$1,
+    manager: { startInstall: startInstall$1, updater: { updateType: 'git' } },
 };
 
 const imagePage = {
     routePath: '/imageGenerationPage',
     cards: [
         {
-            id: ComfyUI_ID,
+            id: COMFYUI_ID,
             title: 'ComfyUI',
             description: 'This ui will let you design and execute advanced stable diffusion pipelines' +
                 ' using a graph/nodes/flowchart based interface.',
@@ -638,10 +784,11 @@ const imagePage = {
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e7be14a2-5e23-41df-b653-4ba5b45ad065/width=300/00008-2000176836.jpeg',
             arguments: comfyArguments,
-            methods: comfyRendererMethods,
+            methods: COMFYUI_RM,
+            installationType: 'git',
         },
         {
-            id: ComfyUI_Zluda_ID,
+            id: COMFYUI_ZLUDA_ID,
             title: 'ComfyUI Zluda',
             description: 'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
                 ' Now ZLUDA enhanced  for better AMD GPU performance.',
@@ -651,10 +798,11 @@ const imagePage = {
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
                 '/width=300/00023-3290977700.jpeg',
             arguments: comfyZludaArguments,
-            methods: comfyZludaRendererMethods,
+            methods: COMFYUI_ZLUDA_RM,
+            installationType: 'git',
         },
         {
-            id: AUTOMATIC1111_ID,
+            id: A1_ID,
             title: 'Stable Diffusion',
             description: 'A web interface for Stable Diffusion, implemented using Gradio library.',
             repoUrl: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
@@ -662,10 +810,11 @@ const imagePage = {
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9608d0fa-6010-4ff8-b149-86e440ff9254/width=300/00000-3587005815.jpeg',
             arguments: automatic1111Arguments,
-            methods: a1RendererMethods,
+            methods: A1_RM,
+            installationType: 'git',
         },
         {
-            id: LSHQQYTIGER_ID,
+            id: SD_AMD_ID,
             title: 'Stable Diffusion AMDGPU',
             description: 'A web interface for Stable Diffusion, implemented using Gradio library.',
             repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu',
@@ -673,10 +822,11 @@ const imagePage = {
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3eaf306e-9edc-46bd-89d0-7f7398068e01/width=300/00002-1900763417.jpeg',
             arguments: lshqqytigerArguments,
-            methods: a1RendererMethods,
+            methods: SD_AMD_RM,
+            installationType: 'git',
         },
         {
-            id: LLLYASVIEL_ID,
+            id: SD_FORGE_ID,
             title: 'SD Forge',
             description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
                 ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
@@ -686,10 +836,11 @@ const imagePage = {
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/width=300/00004-3953235735.jpeg',
             arguments: automatic1111Arguments,
-            methods: a1RendererMethods,
+            methods: SD_FORGE_RM,
+            installationType: 'git',
         },
         {
-            id: LSHQQYTIGER_FORGE_ID,
+            id: SD_FORGE_AMD_ID,
             title: 'SD Forge AMDGPU',
             description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
                 ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
@@ -699,10 +850,11 @@ const imagePage = {
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/61a9d607-08ce-409a-8d5e-e9df25c72d39/width=300/00017-2936809481.jpeg',
             arguments: lshqqytigerForgeArguments,
-            methods: a1RendererMethods,
+            methods: SD_FORGE_AMD_RM,
+            installationType: 'git',
         },
         {
-            id: VLADMANDIC_ID,
+            id: SD_NEXT_ID,
             title: 'SD Next',
             description: 'Advanced Implementation of Stable Diffusion and other Diffusion-based generative image models',
             repoUrl: 'https://github.com/vladmandic/automatic',
@@ -710,10 +862,11 @@ const imagePage = {
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e396ff35-0cf7-4121-8e69-4dd80b2429fa/width=300/00002-1070114876.jpeg',
             arguments: vladmandicArguments,
-            methods: vladRendererMethods,
+            methods: SD_NEXT_RM,
+            installationType: 'git',
         },
         {
-            id: MCMONKEYPROJECTS_ID,
+            id: SWARM_ID,
             title: 'SwarmUI',
             description: 'A Modular AI Image Generation Web-User-Interface, with an emphasis on making powertools ' +
                 'easily accessible, high performance, and extensibility. Supports Stable Diffusion, Flux, ' +
@@ -723,10 +876,11 @@ const imagePage = {
             extensionsDir: '/src/Extensions',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9dac48c1-20fd-4fb0-b84b-f5f533c5cdc5/width=300/00014-3815479772.jpeg',
             arguments: mcMonkeyArguments,
-            methods: mcMonkeyRendererMethods,
+            methods: SWARM_RM,
+            installationType: 'git',
         },
         {
-            id: BMALTAIS_ID,
+            id: KOHYA_ID,
             title: "Kohya's GUI",
             description: "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
                 'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
@@ -734,10 +888,11 @@ const imagePage = {
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/db3575cb-162a-4436-b5d0-f9fbf9ed1140/width=300/00002-4073703889.jpeg',
             arguments: bmaltaisArguments,
-            methods: bmaltaisRendererMethods,
+            methods: KOHYA_GUI_RM,
+            installationType: 'git',
         },
         {
-            id: ANAPNOE_ID,
+            id: SD_UIUX_ID,
             title: 'SD UI-UX',
             description: 'A bespoke, highly adaptable user interface for the Stable Diffusion, utilizing the powerful Gradio library.' +
                 ' This cutting-edge browser interface offer an unparalleled level of customization and optimization for users,' +
@@ -747,20 +902,22 @@ const imagePage = {
             extensionsDir: '/extensions',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/026dfc41-f150-4b5c-9bbd-b959b833f059/width=300/00004-1682382699.jpeg',
             arguments: automatic1111Arguments,
-            methods: a1RendererMethods,
+            methods: SD_UIUX_RM,
+            installationType: 'git',
         },
         {
-            id: NEROGAR_ID,
+            id: ONETRAINER_ID,
             title: 'OneTrainer',
             description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
             repoUrl: 'https://github.com/Nerogar/OneTrainer',
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
                 '/width=300/00005-1318253062.jpeg',
-            methods: nerogarRendererMethods,
+            methods: ONETRAINER_RM,
+            installationType: 'git',
         },
         {
-            id: INVOKEAI_ID,
+            id: INVOKE_ID,
             title: 'Invoke AI',
             description: 'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
                 ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
@@ -770,16 +927,79 @@ const imagePage = {
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
                 '/width=300/00002-3715244638.jpeg',
             arguments: invokeArguments,
-            methods: invokeRendererMethods,
+            methods: INVOKE_RM,
+            installationType: 'others',
         },
     ],
+};
+
+const INSTALL_TIME_KEY = 'install-time-openwebui';
+const UPDATE_TIME_KEY = 'update-time-openwebui';
+function startInstall(stepper) {
+    stepper.initialSteps(['Getting Started', 'Detect Existing', 'Install Open WebUI', 'All Done!']);
+    stepper.starterStep({ disableSelectDir: true }).then(() => {
+        stepper.nextStep();
+        stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
+        stepper.ipc.invoke('isInstalled').then((isInstalled) => {
+            if (isInstalled) {
+                stepper.setInstalled();
+                const currentDate = new Date();
+                stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
+                stepper.showFinalStep('success', "You're All Set!", "Open WebUI is already installed. You're good to go!");
+            }
+            else {
+                stepper.nextStep();
+                stepper.executeTerminalCommands('pip install open-webui').then(() => {
+                    stepper.setInstalled();
+                    const currentDate = new Date();
+                    stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
+                    stepper.showFinalStep('success', 'Installation Complete!', 'Your Open WebUI environment is ready. Enjoy!');
+                });
+            }
+        });
+    });
+}
+function startUpdate(stepper) {
+    stepper.initialSteps(['Update Open WebUI', 'Complete Update']);
+    stepper.executeTerminalCommands('pip install --upgrade open-webui').then(() => {
+        const currentDate = new Date();
+        stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
+        stepper.showFinalStep('success', 'Open WebUI Updated Successfully!', `Open WebUI has been updated to the latest version. You can now enjoy the new features and improvements.`);
+    });
+}
+async function cardInfo(api, callback) {
+    callback.setOpenFolders(undefined);
+    const descManager = new DescriptionManager([
+        {
+            title: 'Installation Data',
+            items: [
+                { label: 'Install Date', result: 'loading' },
+                { label: 'Update Date', result: 'loading' },
+                { label: 'Current Version', result: 'loading' },
+            ],
+        },
+    ], callback);
+    api.storage.get(INSTALL_TIME_KEY).then(result => {
+        descManager.updateItem(0, 0, result);
+    });
+    api.storage.get(UPDATE_TIME_KEY).then(result => {
+        descManager.updateItem(0, 1, result);
+    });
+    api.ipc.invoke('current-version').then(result => {
+        descManager.updateItem(0, 2, result);
+    });
+}
+const OPEN_WEBUI_RM = {
+    catchAddress: catchAddress$1,
+    cardInfo,
+    manager: { startInstall, updater: { updateType: 'stepper', startUpdate } },
 };
 
 const textPage = {
     routePath: '/textGenerationPage',
     cards: [
         {
-            id: OOBABOOGA_ID,
+            id: TG_ID,
             title: 'Text Generation',
             description: 'A Gradio web UI for Large Language Models.',
             repoUrl: 'https://github.com/oobabooga/text-generation-webui',
@@ -787,7 +1007,8 @@ const textPage = {
             extensionsDir: '/extensions',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/71c60a56-df44-4185-8227-c285e58a3cf1/width=300/00000-3546450635.jpeg',
             arguments: oobaboogaArguments,
-            methods: oobaRendererMethods,
+            methods: TG_RM,
+            installationType: 'git',
         },
         {
             id: SILLYTAVERN_ID,
@@ -800,14 +1021,25 @@ const textPage = {
             type: 'text',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
             arguments: sillyArguments,
-            methods: sillyRendererMethods,
+            methods: SILLYTAVERN_RM,
+            installationType: 'git',
+        },
+        {
+            id: OPEN_WEBUI_ID,
+            title: 'Open WebUI',
+            description: 'Open WebUI is an extensible, feature-rich, and user-friendly self-hosted ' +
+                'WebUI designed to operate entirely offline. It supports various LLM runners,' +
+                ' including Ollama and OpenAI-compatible APIs. ',
+            repoUrl: 'https://github.com/open-webui/open-webui',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/223520d9-9071-4b73-9171-9628a804f89f/' +
+                'width=300/00025-4013828223.jpeg',
+            methods: OPEN_WEBUI_RM,
+            installationType: 'others',
         },
     ],
 };
 
 const rendererModules = [imagePage, textPage, audioPage];
-function setCurrentBuild(build) {
-    console.log(build);
-}
 
-export { rendererModules as default, setCurrentBuild };
+export { rendererModules as default };

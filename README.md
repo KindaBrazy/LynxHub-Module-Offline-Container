@@ -35,6 +35,7 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 |------------------------------------------------------------------------------------------------|-----------------|------------------------------------------------------------|
 | <img height='20' src="https://avatars.githubusercontent.com/u/112222186?s=20&v=4"> Oobabooga   | Text Generation | [Link](https://github.com/oobabooga/text-generation-webui) |
 | <img height='20' src="https://avatars.githubusercontent.com/u/134869877?s=20&v=4"> SillyTavern | SillyTavern     | [Link](https://github.com/SillyTavern/SillyTavern)         |
+| <img height='20' src="https://avatars.githubusercontent.com/u/158137808?s=20&v=4"> SillyTavern | Open WebUI      | [Link](https://github.com/open-webui/open-webui)           |
 
 ### 🎵 Audio Generation
 
@@ -52,9 +53,9 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 
 | Category         | Number of Modules |
 |------------------|-------------------|
-| **Overall**      | **17**            |
+| **Overall**      | **18**            |
 | Image Generation | 12                |
-| Text Generation  | 2                 |
+| Text Generation  | 3                 |
 | Audio Generation | 3                 |
 
 ## 🔍 Explore More

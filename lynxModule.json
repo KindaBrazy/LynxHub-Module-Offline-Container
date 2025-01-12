@@ -5,9 +5,9 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 12,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "8.2.0",
-  "updateDate": "2025-01-04 17:48",
-  "changeLog": "V8.2.0\n・Add PyTorch installation during 'ComfyUI' setup \n\nV8.1.0\n・Add environment variable arguments to ComfyUI Zluda",
+  "version": "8.3.0",
+  "updateDate": "2025-01-12 08:17",
+  "changeLog": "V8.3.0\n・Fix address parsing in Text to Speech\n\nV8.2.0\n・Add PyTorch installation during 'ComfyUI' setup",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

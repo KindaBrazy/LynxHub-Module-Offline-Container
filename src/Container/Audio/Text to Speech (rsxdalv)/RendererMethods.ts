@@ -4,7 +4,7 @@ import {CardInfo, GitInstaller} from '../../../Utils/RendererUtils';
 const URL = 'https://github.com/rsxdalv/tts-generation-webui';
 
 function catchAddress(input: string): string | undefined {
-  if (input.toLowerCase().includes('Installed Packages tab loaded'.toLowerCase())) {
+  if (input.toLowerCase().includes('Installed Packages'.toLowerCase())) {
     return 'http://127.0.0.1:7770';
   } else {
     return undefined;

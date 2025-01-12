@@ -1,6 +1,6 @@
-import audioPage from './Container/AudioGeneration';
-import imagePage from './Container/ImageGeneration';
-import textPage from './Container/TextGeneration';
+import audioPage from './Container/Audio/AudioGeneration';
+import imagePage from './Container/Image/ImageGeneration';
+import textPage from './Container/Text/TextGeneration';
 import {CardModules} from './types';
 
 const rendererModules: CardModules = [imagePage, textPage, audioPage];

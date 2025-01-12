@@ -134,6 +134,8 @@ export type InstallationStepper = {
    */
   ipc: RendererIpcTypes;
 
+  storage: {get: (key: string) => any; set: (key: string, data: any) => void};
+
   /** Use these operations after the `setInstalled` function */
   postInstall: {
     /**
@@ -220,6 +222,25 @@ export type InstallationStepper = {
   };
 };
 
+export type CardInfoApi = {
+  installationFolder?: string;
+
+  storage: {get: (key: string) => Promise<any>; set: (key: string, data: any) => void};
+  ipc: RendererIpcTypes;
+
+  getFolderSize: (dir: string) => Promise<number>;
+  getFolderCreationTime: (dir: string) => Promise<string>;
+  getLastPulledDate: (dir: string) => Promise<string>;
+  getCurrentReleaseTag: (dir: string) => Promise<string>;
+};
+
+export type CardInfoDescriptions_Items = {label: string; result: string | 'loading' | undefined | null}[];
+export type CardInfoDescriptions = {title: string; items: CardInfoDescriptions_Items}[] | undefined;
+export type CardInfoCallback = {
+  setDescription: (descriptions: CardInfoDescriptions) => void;
+  setOpenFolders: (dir: string[] | undefined) => void;
+};
+
 /** These methods will be called in the renderer process */
 export type CardRendererMethods = {
   /** This method will be called with terminal output line parameter
@@ -235,6 +256,8 @@ export type CardRendererMethods = {
 
   /** Parse given string to the arguments */
   parseStringToArgs?: (args: string) => ChosenArgument[];
+
+  cardInfo?: (api: CardInfoApi, callback: CardInfoCallback) => void;
 
   manager?: {
     startInstall: (stepper: InstallationStepper) => void;
@@ -272,6 +295,8 @@ export type CardData = {
    *   - Leave undefined if WebUI have no extension ability
    */
   extensionsDir?: string;
+
+  installationType: 'git' | 'others';
 
   /** Type of AI (Using type for things like discord activity status) */
   type?: 'image' | 'audio' | 'text' | 'unknown';

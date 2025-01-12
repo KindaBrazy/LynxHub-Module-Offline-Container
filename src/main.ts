@@ -1,57 +1,57 @@
 import {
-  ANAPNOE_ID,
-  AUTOMATIC1111_ID,
-  BMALTAIS_ID,
-  ComfyUI_ID,
-  ComfyUI_Zluda_ID,
-  EREW123_ID,
-  GITMYLO_ID,
-  INVOKEAI_ID,
-  LLLYASVIEL_ID,
-  LSHQQYTIGER_FORGE_ID,
-  LSHQQYTIGER_ID,
-  MCMONKEYPROJECTS_ID,
-  NEROGAR_ID,
-  OOBABOOGA_ID,
+  A1_ID,
+  AG_ID,
+  ALLTALK_ID,
+  COMFYUI_ID,
+  COMFYUI_ZLUDA_ID,
+  INVOKE_ID,
+  KOHYA_ID,
+  ONETRAINER_ID,
   OPEN_WEBUI_ID,
-  RSXDALV_ID,
+  SD_AMD_ID,
+  SD_FORGE_AMD_ID,
+  SD_FORGE_ID,
+  SD_NEXT_ID,
+  SD_UIUX_ID,
   SILLYTAVERN_ID,
-  VLADMANDIC_ID,
+  SWARM_ID,
+  TG_ID,
+  TTS_ID,
 } from './Constants';
-import a1MainMethods from './Container/Automatic1111 & Forks/MainMethods';
-import bmaltaisMainMethods from './Container/Bmaltais/MainMethods';
-import comfyMainMethods from './Container/ComfyUI/MainMethods';
-import erew123MainMethods from './Container/Erew123/MainMethods';
-import gitmyloMainMethods from './Container/Gitmylo/MainMethods';
-import invokeMainMethods from './Container/InvokeAI/MainMethods';
-import mcMonkeyMainMethods from './Container/McMonkeyProjects/MainMethods';
-import nerogarMainMethods from './Container/Nerogar/MainMethods';
-import oobaMainMethods from './Container/Oobabooga/MainMethods';
-import openWebUIMainMethods from './Container/OpenWebUI/MainMethods';
-import comfyZludaMainMethods from './Container/Patientx/MainMethods';
-import rsxMainMethods from './Container/Rsxdalv/MainMethods';
-import sillyMainMethods from './Container/SillyTavern/MainMethods';
-import vladMainMethods from './Container/Vladmandic/MainMethods';
+import erew123MainMethods from './Container/Audio/AllTalk TTS (erew123)/MainMethods';
+import gitmyloMainMethods from './Container/Audio/Audio Generation (gitmylo)/MainMethods';
+import rsxMainMethods from './Container/Audio/Text to Speech (rsxdalv)/MainMethods';
+import comfyMainMethods from './Container/Image/ComfyUI (comfyanonymous)/MainMethods';
+import comfyZludaMainMethods from './Container/Image/ComfyUI Zluda (patientx)/MainMethods';
+import invokeMainMethods from './Container/Image/InvokeAI/MainMethods';
+import bmaltaisMainMethods from './Container/Image/Kohyas GUI (bmaltais)/MainMethods';
+import nerogarMainMethods from './Container/Image/OneTrainer (Nerogar)/MainMethods';
+import a1MainMethods from './Container/Image/SD (AUTOMATIC1111)/MainMethods';
+import vladMainMethods from './Container/Image/SD Next (vladmandic)/MainMethods';
+import mcMonkeyMainMethods from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
+import openWebUIMainMethods from './Container/Text/OpenWebUI/MainMethods';
+import sillyMainMethods from './Container/Text/SillyTavern/MainMethods';
+import oobaMainMethods from './Container/Text/Text Generation (oobabooga)/MainMethods';
 import {MainModules} from './types';
 
 const mainModules: MainModules[] = [
-  {id: ComfyUI_ID, methods: comfyMainMethods},
-  {id: AUTOMATIC1111_ID, methods: a1MainMethods},
-  {id: LSHQQYTIGER_ID, methods: a1MainMethods},
-  {id: LLLYASVIEL_ID, methods: a1MainMethods},
-  {id: LSHQQYTIGER_FORGE_ID, methods: a1MainMethods},
-  {id: VLADMANDIC_ID, methods: vladMainMethods},
-  {id: MCMONKEYPROJECTS_ID, methods: mcMonkeyMainMethods},
-  {id: BMALTAIS_ID, methods: bmaltaisMainMethods},
-  {id: OOBABOOGA_ID, methods: oobaMainMethods},
-  {id: RSXDALV_ID, methods: rsxMainMethods},
-  {id: GITMYLO_ID, methods: gitmyloMainMethods},
+  {id: COMFYUI_ID, methods: comfyMainMethods},
+  {id: A1_ID, methods: a1MainMethods},
+  {id: SD_AMD_ID, methods: a1MainMethods},
+  {id: SD_FORGE_ID, methods: a1MainMethods},
+  {id: SD_FORGE_AMD_ID, methods: a1MainMethods},
+  {id: SD_NEXT_ID, methods: vladMainMethods},
+  {id: SWARM_ID, methods: mcMonkeyMainMethods},
+  {id: KOHYA_ID, methods: bmaltaisMainMethods},
+  {id: TG_ID, methods: oobaMainMethods},
+  {id: TTS_ID, methods: rsxMainMethods},
+  {id: AG_ID, methods: gitmyloMainMethods},
   {id: SILLYTAVERN_ID, methods: sillyMainMethods},
-  {id: ANAPNOE_ID, methods: a1MainMethods},
-  {id: ComfyUI_Zluda_ID, methods: comfyZludaMainMethods},
-  {id: NEROGAR_ID, methods: nerogarMainMethods},
-  {id: INVOKEAI_ID, methods: invokeMainMethods},
-  {id: EREW123_ID, methods: erew123MainMethods},
+  {id: SD_UIUX_ID, methods: a1MainMethods},
+  {id: COMFYUI_ZLUDA_ID, methods: comfyZludaMainMethods},
+  {id: ONETRAINER_ID, methods: nerogarMainMethods},
+  {id: INVOKE_ID, methods: invokeMainMethods},
+  {id: ALLTALK_ID, methods: erew123MainMethods},
   {id: OPEN_WEBUI_ID, methods: openWebUIMainMethods},
 ];
 

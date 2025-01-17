@@ -16,14 +16,9 @@ const ALLTALK_ID = 'Erew123_SD';
 const TG_ID = 'Oobabooga_TG';
 const SILLYTAVERN_ID = 'SillyTavern_TG';
 const OPEN_WEBUI_ID = 'OpenWebUI_TG';
-<<<<<<<< HEAD:scripts/RendererMethods_CDw5J_.mjs
 // Audio Generation
 const TTS_ID = 'Rsxdalv_AG';
 const AG_ID = 'Gitmylo_AG';
-========
-const RSXDALV_ID = 'Rsxdalv_AG';
-const GITMYLO_ID = 'Gitmylo_AG';
->>>>>>>> origin/compiled_ea:scripts/RendererMethods_DBvoqT.mjs
 
 async function isWinOS() {
     let isWin = true;
@@ -21794,8 +21789,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-<<<<<<<< HEAD:scripts/RendererMethods_CDw5J_.mjs
 export { AG_RM as $, A1_ID as A, AG_ID as B, COMFYUI_ID as C, SILLYTAVERN_ID as D, SD_UIUX_ID as E, COMFYUI_ZLUDA_ID as F, INVOKE_ID as G, ALLTALK_ID as H, INSTALLED_VERSION_KEY as I, OPEN_WEBUI_ID as J, KOHYA_ID as K, DOWNLOAD_URL as L, INPUT_ID as M, DescriptionManager as N, ONETRAINER_ID as O, formatSize as P, catchAddress as Q, getArgumentType as R, SD_AMD_ID as S, TG_ID as T, UPDATE_TIME_KEY as U, VERSION_NAME as V, lodashExports as W, isValidArg as X, CardInfo as Y, GitInstaller as Z, gitmyloArguments as _, parseStringToArgs$8 as a, automatic1111Arguments as a0, fetchExtensionList$2 as a1, comfyArguments as a2, COMFYUI_RM as a3, comfyZludaArguments as a4, COMFYUI_ZLUDA_RM as a5, lshqqytigerArguments as a6, vladmandicArguments as a7, SD_NEXT_RM as a8, mcMonkeyArguments as a9, SWARM_RM as aa, bmaltaisArguments as ab, KOHYA_GUI_RM as ac, oobaboogaArguments as ad, TG_RM as ae, sillyArguments as af, SILLYTAVERN_RM as ag, parseArgsToString$7 as b, commonjsGlobal as c, parseStringToArgs$7 as d, parseArgsToString$6 as e, parseStringToArgs$6 as f, parseArgsToString$5 as g, parseStringToArgs$5 as h, isWin as i, parseArgsToString$4 as j, parseStringToArgs$4 as k, parseArgsToString$3 as l, parseStringToArgs$3 as m, parseArgsToString$2 as n, parseStringToArgs$2 as o, parseArgsToString$8 as p, getDefaultExportFromCjs as q, parseArgsToString$1 as r, parseStringToArgs$1 as s, parseArgsToString as t, parseStringToArgs as u, SD_FORGE_ID as v, SD_FORGE_AMD_ID as w, SD_NEXT_ID as x, SWARM_ID as y, TTS_ID as z };
-========
-export { vladRendererMethods as $, AUTOMATIC1111_ID as A, BMALTAIS_ID as B, ComfyUI_ID as C, catchAddress as D, EREW123_ID as E, getArgumentType as F, GITMYLO_ID as G, lodashExports as H, INVOKEAI_ID as I, isValidArg as J, gitmyloArguments as K, LSHQQYTIGER_ID as L, MCMONKEYPROJECTS_ID as M, NEROGAR_ID as N, OOBABOOGA_ID as O, gitmyloRendererMethods as P, automatic1111Arguments as Q, RSXDALV_ID as R, SILLYTAVERN_ID as S, comfyArguments as T, comfyRendererMethods as U, VLADMANDIC_ID as V, comfyZludaArguments as W, comfyZludaRendererMethods as X, a1RendererMethods as Y, lshqqytigerArguments as Z, vladmandicArguments as _, parseStringToArgs$8 as a, mcMonkeyArguments as a0, mcMonkeyRendererMethods as a1, bmaltaisArguments as a2, bmaltaisRendererMethods as a3, oobaboogaArguments as a4, oobaRendererMethods as a5, sillyArguments as a6, sillyRendererMethods as a7, parseArgsToString$7 as b, commonjsGlobal as c, parseStringToArgs$7 as d, parseArgsToString$6 as e, parseStringToArgs$6 as f, parseArgsToString$5 as g, parseStringToArgs$5 as h, isWin as i, parseArgsToString$4 as j, parseStringToArgs$4 as k, parseArgsToString$3 as l, parseStringToArgs$3 as m, getDefaultExportFromCjs as n, parseArgsToString$2 as o, parseArgsToString$8 as p, parseStringToArgs$2 as q, parseArgsToString$1 as r, parseStringToArgs$1 as s, parseArgsToString as t, parseStringToArgs as u, LLLYASVIEL_ID as v, LSHQQYTIGER_FORGE_ID as w, ANAPNOE_ID as x, ComfyUI_Zluda_ID as y, OPEN_WEBUI_ID as z };
->>>>>>>> origin/compiled_ea:scripts/RendererMethods_DBvoqT.mjs

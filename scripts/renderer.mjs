@@ -547,7 +547,7 @@ const ALLTALK_RM = {
 
 const URL$1 = 'https://github.com/rsxdalv/tts-generation-webui';
 function catchAddress(input) {
-    if (input.toLowerCase().includes('Installed Packages tab loaded'.toLowerCase())) {
+    if (input.toLowerCase().includes('Installed Packages'.toLowerCase())) {
         return 'http://127.0.0.1:7770';
     }
     else {

@@ -52,6 +52,7 @@ export default [
           bracketSpacing: false,
           bracketSameLine: true,
           arrowParens: 'avoid',
+          endOfLine: 'auto',
         },
       ],
     },

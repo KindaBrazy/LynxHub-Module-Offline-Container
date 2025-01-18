@@ -42,4 +42,17 @@ export class DescriptionManager {
   }
 }
 
+export function extractGitUrl(url: string): {owner: string; repo: string; platform: 'github' | 'gitlab'} {
+  // Regular expression to match GitHub and GitLab repository URLs with or without protocol
+  const gitRepoRegex = /^(https?:\/\/)?(www\.)?(github|gitlab)\.com\/([^/]+)\/([^/.]+)(?:\.git)?$/;
+  const match = url.match(gitRepoRegex);
+
+  if (!match) {
+    throw new Error(`Invalid Git repository URL: ${url}`);
+  }
+
+  const [, , , platform, owner, repo] = match;
+  return {owner, repo, platform: platform as 'github' | 'gitlab'};
+}
+
 export const isWin = await isWinOS();

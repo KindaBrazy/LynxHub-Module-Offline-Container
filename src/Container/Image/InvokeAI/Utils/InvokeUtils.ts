@@ -1,20 +1,6 @@
 import axios, {AxiosResponse} from 'axios';
 
-type GitHubReleaseAsset = {
-  name: string;
-  browser_download_url: string;
-};
-
-type GitHubRelease = {
-  tag_name: string;
-  prerelease: boolean;
-  assets: GitHubReleaseAsset[];
-};
-
-type ReleaseInfo = {
-  version: string;
-  downloadUrl: string;
-};
+import {GitHubRelease, ReleaseInfo} from './CrossTypes';
 
 export async function getLatestNonRCReleaseAndAsset(owner: string, repo: string): Promise<ReleaseInfo | null> {
   try {

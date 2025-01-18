@@ -1,7 +1,7 @@
 import {CardInfoApi, CardInfoCallback, InstallationStepper} from '../../../types';
-import {DescriptionManager, extractGitUrl, formatSize, isWin} from '../../../Utils/CrossUtils';
-import {INSTALLED_VERSION_KEY, UPDATE_TIME_KEY} from './CrossConstants';
-import {getLatestNonRCReleaseAndAsset} from './InvokeUtils';
+import {DescriptionManager, formatSize, isWin} from '../../../Utils/CrossUtils';
+import {INSTALLED_VERSION_KEY, UPDATE_TIME_KEY} from './Utils/CrossConstants';
+import {ReleaseInfo} from './Utils/CrossTypes';
 
 export const INPUT_ID = 'install_dir';
 
@@ -11,8 +11,7 @@ export function startInstall(stepper: InstallationStepper) {
     if (chosen === 'install') {
       stepper.nextStep();
       stepper.progressBar(true, 'Getting the latest version of InvokeAI...');
-      const {owner, repo} = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
-      getLatestNonRCReleaseAndAsset(owner, repo).then(releaseInfo => {
+      stepper.ipc.invoke('get-latest').then((releaseInfo: ReleaseInfo) => {
         if (releaseInfo) {
           const {version, downloadUrl} = releaseInfo;
           stepper.initialSteps(['Get Latest', 'InvokeAI', `Download (v${version})`, 'Install', 'Directory', 'Finish']);
@@ -93,12 +92,16 @@ export function startInstall(stepper: InstallationStepper) {
 export function startUpdate(stepper: InstallationStepper) {
   stepper.initialSteps(['Checking', 'Downloading', 'Installing', 'Finishing Up']);
   stepper.progressBar(true, 'Checking for the latest version of InvokeAI...');
-  const {owner, repo} = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
-  getLatestNonRCReleaseAndAsset(owner, repo).then(result => {
-    if (result) {
-      stepper.initialSteps(['Update Available!', `Downloading (v${result.version})`, 'Installing', 'Finishing Up']);
+  stepper.ipc.invoke('get-latest').then((releaseInfo: ReleaseInfo) => {
+    if (releaseInfo) {
+      stepper.initialSteps([
+        'Update Available!',
+        `Downloading (v${releaseInfo.version})`,
+        'Installing',
+        'Finishing Up',
+      ]);
       stepper.nextStep();
-      stepper.downloadFileFromUrl(result.downloadUrl).then(path => {
+      stepper.downloadFileFromUrl(releaseInfo.downloadUrl).then(path => {
         stepper.utils.decompressFile(path).then(folderPath => {
           stepper.nextStep();
           stepper
@@ -106,12 +109,12 @@ export function startUpdate(stepper: InstallationStepper) {
             .then(() => {
               const currentDate = new Date();
               stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
-              stepper.storage.set(INSTALLED_VERSION_KEY, result.version);
+              stepper.storage.set(INSTALLED_VERSION_KEY, releaseInfo.version);
               stepper.setUpdated();
               stepper.showFinalStep(
                 'success',
                 'InvokeAI Updated Successfully',
-                `InvokeAI has been successfully updated to version ${result.version}. Enjoy!`,
+                `InvokeAI has been successfully updated to version ${releaseInfo.version}. Enjoy!`,
               );
             });
         });

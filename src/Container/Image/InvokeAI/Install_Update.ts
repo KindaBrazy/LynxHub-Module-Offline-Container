@@ -82,6 +82,7 @@ export function startUpdate(stepper: InstallationStepper) {
         const currentDate = new Date();
         stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
         stepper.storage.set(INSTALLED_VERSION_KEY, VERSION_NAME);
+        stepper.setUpdated();
         stepper.showFinalStep(
           'success',
           'InvokeAI Updated Successfully',

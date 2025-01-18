@@ -34,6 +34,7 @@ function startUpdate(stepper: InstallationStepper) {
   stepper.executeTerminalCommands('pip install --upgrade open-webui').then(() => {
     const currentDate = new Date();
     stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
+    stepper.setUpdated();
     stepper.showFinalStep(
       'success',
       'Open WebUI Updated Successfully!',

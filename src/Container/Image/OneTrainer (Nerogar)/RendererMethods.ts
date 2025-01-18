@@ -46,6 +46,7 @@ function startUpdate(stepper: InstallationStepper, dir?: string) {
   stepper.initialSteps(['Update', 'Finish']);
   if (dir) {
     stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+      stepper.setUpdated();
       stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
     });
   } else {

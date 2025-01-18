@@ -48,6 +48,7 @@ function startUpdate(stepper: InstallationStepper, dir?: string) {
     stepper.executeTerminalCommands('git pull', dir).then(() => {
       stepper.nextStep();
       stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+        stepper.setUpdated();
         stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
       });
     });

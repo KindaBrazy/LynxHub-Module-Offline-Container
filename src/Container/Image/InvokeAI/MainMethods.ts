@@ -1,9 +1,10 @@
 import {compare} from 'semver';
 
 import {CardMainMethods, ChosenArgument, LynxApiUpdate} from '../../../types';
-import {isWin} from '../../../Utils/CrossUtils';
+import {extractGitUrl, isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
-import {INSTALLED_VERSION_KEY, VERSION_NAME} from './CrossConstants';
+import {INSTALLED_VERSION_KEY} from './CrossConstants';
+import {getLatestNonRCReleaseAndAsset} from './InvokeUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -25,7 +26,12 @@ async function updateAvailable(lynxApi: LynxApiUpdate) {
   const installedVersion: string | undefined = lynxApi.storage.get(INSTALLED_VERSION_KEY);
   if (!installedVersion) return false;
 
-  return compare(installedVersion, VERSION_NAME) === -1;
+  const {owner, repo} = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
+  const latestVersion = await getLatestNonRCReleaseAndAsset(owner, repo);
+
+  if (!latestVersion) return false;
+
+  return compare(installedVersion, latestVersion.version) === -1;
 }
 
 const invokeMainMethods: CardMainMethods = {getRunCommands, updateAvailable};

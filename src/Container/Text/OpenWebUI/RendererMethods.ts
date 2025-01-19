@@ -7,7 +7,7 @@ import {
   InstallationStepper,
 } from '../../../types';
 import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
-import {catchAddress, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
+import {catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import openArguments from './Arguments';
 
 const INSTALL_TIME_KEY = 'install-time-openwebui';
@@ -34,9 +34,15 @@ function checkLinuxArgLine(line: string): 'set' | 'export' | 'var' | undefined {
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
   args.forEach(arg => {
-    const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
-    const eResult: string = `export ${arg.name}="${arg.value}"\n`;
-    result += isWin ? eWinResult : eResult;
+    if (getArgumentType(arg.name, openArguments) === 'CheckBox') {
+      const eWinResult: string = `set ${arg.name}=true\n`;
+      const eResult: string = `export ${arg.name}="true"\n`;
+      result += isWin ? eWinResult : eResult;
+    } else {
+      const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
+      const eResult: string = `export ${arg.name}="${arg.value}"\n`;
+      result += isWin ? eWinResult : eResult;
+    }
   });
   result += isWin ? `\nopen-webui serve` : `open-webui serve`;
 
@@ -142,6 +148,8 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
 const OPEN_WEBUI_RM: CardRendererMethods = {
   catchAddress,
   cardInfo,
+  parseStringToArgs,
+  parseArgsToString,
   manager: {startInstall, updater: {updateType: 'stepper', startUpdate}},
 };
 

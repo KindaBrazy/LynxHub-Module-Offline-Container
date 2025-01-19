@@ -3,13 +3,26 @@ import {platform} from 'node:os';
 
 import {compare} from 'semver';
 
-import {CardMainMethods, MainIpcTypes} from '../../../types';
+import {CardMainMethods, ChosenArgument, MainIpcTypes} from '../../../types';
+import {isWin} from '../../../Utils/CrossUtils';
+import {utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
+import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const LINE_ENDING = platform() === 'win32' ? '\r' : '\n';
+const CONFIG_FILE = isWin ? 'open-webui.bat' : 'open-webui.sh';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
 
 async function getRunCommands(): Promise<string | string[]> {
   return `open-webui serve ${LINE_ENDING}`;
+}
+
+async function saveArgs(args: ChosenArgument[], cardDir?: string, configDir?: string) {
+  return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, configDir);
+}
+
+async function readArgs(cardDir?: string, configDir?: string) {
+  return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
 async function isInstalled(): Promise<boolean> {
@@ -46,6 +59,13 @@ function mainIpc(ipc: MainIpcTypes) {
   ipc.handle('current-version', () => getPipPackageVersion('open-webui'));
 }
 
-const openWebUIMainMethods: CardMainMethods = {getRunCommands, updateAvailable, isInstalled, mainIpc};
+const openWebUIMainMethods: CardMainMethods = {
+  getRunCommands,
+  updateAvailable,
+  isInstalled,
+  mainIpc,
+  saveArgs,
+  readArgs,
+};
 
 export default openWebUIMainMethods;

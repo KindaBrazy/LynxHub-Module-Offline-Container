@@ -3,40 +3,7 @@ import {isEmpty} from 'lodash';
 import {ArgType, Category, ChosenArgument, DataSection, ExtensionData} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
-import lshqqytigerArguments from '../SD AMDGPU (lshqqytiger)/LshqqytigerArguments';
-
-function getTypeByCategoryName(category: string): Category {
-  switch (category) {
-    case 'Command Line Arguments':
-      return 'cl';
-    case 'Environment':
-    case 'Environment Variables':
-      return 'env';
-    default:
-      return undefined;
-  }
-}
-
-function getCategoryType(name: string): Category {
-  if (!name) return undefined;
-
-  for (const argument of lshqqytigerArguments) {
-    if ('sections' in argument) {
-      for (const section of argument.sections) {
-        if (section.items.some(item => item.name === name)) {
-          if (section.section === 'Variables') return 'envVar';
-          return getTypeByCategoryName(argument.category);
-        }
-      }
-    } else {
-      if (argument.items.some(item => item.name === name)) {
-        return getTypeByCategoryName(argument.category);
-      }
-    }
-  }
-
-  return undefined;
-}
+import automatic1111Arguments from './Automatic1111Arguments';
 
 export async function fetchExtensionList(): Promise<ExtensionData[]> {
   try {
@@ -56,6 +23,39 @@ export async function fetchExtensionList(): Promise<ExtensionData[]> {
   }
 }
 
+function getTypeByCategoryName(category: string): Category {
+  switch (category) {
+    case 'Command Line Arguments':
+      return 'cl';
+    case 'Environment':
+    case 'Environment Variables':
+      return 'env';
+    default:
+      return undefined;
+  }
+}
+
+function getCategoryType(name: string): Category {
+  if (!name) return undefined;
+
+  for (const argument of automatic1111Arguments) {
+    if ('sections' in argument) {
+      for (const section of argument.sections) {
+        if (section.items.some(item => item.name === name)) {
+          if (section.section === 'Variables') return 'envVar';
+          return getTypeByCategoryName(argument.category);
+        }
+      }
+    } else {
+      if (argument.items.some(item => item.name === name)) {
+        return getTypeByCategoryName(argument.category);
+      }
+    }
+  }
+
+  return undefined;
+}
+
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
   let clResult: string = '';
@@ -67,7 +67,7 @@ export function parseArgsToString(args: ChosenArgument[]): string {
       const eResult: string = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
       if (arg.name !== 'COMMANDLINE_ARGS') result += isWin ? eWinResult : eResult;
     } else if (cat === 'cl') {
-      const argType = getArgumentType(arg.name, lshqqytigerArguments);
+      const argType = getArgumentType(arg.name, automatic1111Arguments);
       if (argType === 'CheckBox') {
         clResult += `${arg.name} `;
       } else if (argType === 'File' || argType === 'Directory') {
@@ -91,7 +91,7 @@ function checkLinuxArgLine(line: string): 'set' | 'export' | 'var' | undefined {
 
   if (line.startsWith('export ')) return 'export';
 
-  for (const arg of lshqqytigerArguments) {
+  for (const arg of automatic1111Arguments) {
     if (arg.category === 'Environment') {
       if ((arg as DataSection).sections[0].items.find(item => item.name === line.split('=')[0])) {
         return 'var';
@@ -132,8 +132,8 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
       // Process each argument
       result.forEach((value: ArgType): void => {
         // Check if the argument exists or valid
-        if (isValidArg(value.name, lshqqytigerArguments)) {
-          if (getArgumentType(value.name, lshqqytigerArguments) === 'CheckBox') {
+        if (isValidArg(value.name, automatic1111Arguments)) {
+          if (getArgumentType(value.name, automatic1111Arguments) === 'CheckBox') {
             argResult.push({name: value.name, value: ''});
           } else {
             argResult.push({name: value.name, value: value.value});
@@ -147,14 +147,14 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
         let [name, value] = line.replace(`${lineType} `, '').split('=');
         name = removeEscapes(name.trim());
         value = removeEscapes(value.trim());
-        if (isValidArg(name, lshqqytigerArguments)) {
+        if (isValidArg(name, automatic1111Arguments)) {
           argResult.push({name, value});
         }
       } else if (checkLinuxArgLine(line) === 'var') {
         let [name, value] = line.split('=');
         name = removeEscapes(name.trim());
         value = removeEscapes(value.trim());
-        if (isValidArg(name, lshqqytigerArguments)) {
+        if (isValidArg(name, automatic1111Arguments)) {
           argResult.push({name, value});
         }
       }

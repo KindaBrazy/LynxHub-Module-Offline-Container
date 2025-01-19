@@ -1,20 +1,24 @@
 import {exec} from 'node:child_process';
-import {platform} from 'node:os';
+import path from 'node:path';
 
 import {compare} from 'semver';
 
 import {CardMainMethods, ChosenArgument, MainIpcTypes} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
+import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
-const LINE_ENDING = platform() === 'win32' ? '\r' : '\n';
 const CONFIG_FILE = isWin ? 'open-webui.bat' : 'open-webui.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
 
-async function getRunCommands(): Promise<string | string[]> {
-  return `open-webui serve ${LINE_ENDING}`;
+async function getRunCommands(dir?: string, configDir?: string): Promise<string | string[]> {
+  if (!configDir) return '';
+
+  const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
+  await initBatchFile(filePath, DEFAULT_BATCH_DATA);
+
+  return `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`;
 }
 
 async function saveArgs(args: ChosenArgument[], cardDir?: string, configDir?: string) {

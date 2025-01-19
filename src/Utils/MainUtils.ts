@@ -27,11 +27,12 @@ export async function utilRunCommands(
 }
 
 export async function utilSaveArgs(
-  cardDir: string,
   args: ChosenArgument[],
   batFileName: string,
   parser: (args: ChosenArgument[]) => string,
+  cardDir?: string,
 ) {
+  if (!cardDir) return;
   const result = parser(args);
   const finalDir = path.join(cardDir, batFileName);
 
@@ -39,11 +40,12 @@ export async function utilSaveArgs(
 }
 
 export async function utilReadArgs(
-  cardDir: string,
   batFileName: string,
   defaultData: string,
   parser: (args: string) => ChosenArgument[],
+  cardDir?: string,
 ) {
+  if (!cardDir) return [];
   const finalDir = path.join(cardDir, batFileName);
 
   await initBatchFile(finalDir, defaultData);

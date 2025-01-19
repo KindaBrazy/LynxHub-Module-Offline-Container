@@ -10,12 +10,12 @@ export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 
-export async function saveArgs(cardDir: string, args: ChosenArgument[]) {
-  return await utilSaveArgs(cardDir, args, BAT_FILE_NAME, parseArgsToString);
+async function saveArgs(args: ChosenArgument[], cardDir?: string) {
+  return await utilSaveArgs(args, BAT_FILE_NAME, parseArgsToString, cardDir);
 }
 
-export async function readArgs(cardDir: string) {
-  return await utilReadArgs(cardDir, BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs);
+export async function readArgs(cardDir?: string) {
+  return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
 const gitmyloMainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};

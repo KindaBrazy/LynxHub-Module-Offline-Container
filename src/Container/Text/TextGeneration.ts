@@ -1,5 +1,6 @@
 import {OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
 import {PagesData} from '../../types';
+import openArguments from './OpenWebUI/Arguments';
 import OPEN_WEBUI_RM from './OpenWebUI/RendererMethods';
 import sillyArguments from './SillyTavern/Arguments';
 import SILLYTAVERN_RM from './SillyTavern/RendererMethods';
@@ -52,6 +53,7 @@ const textPage: PagesData = {
         'width=300/00025-4013828223.jpeg',
       methods: OPEN_WEBUI_RM,
       installationType: 'others',
+      arguments: openArguments,
     },
   ],
 };

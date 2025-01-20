@@ -1,9 +1,9 @@
-import {exec} from 'node:child_process';
+import {platform} from 'node:os';
 import path from 'node:path';
 
 import {compare} from 'semver';
 
-import {CardMainMethods, ChosenArgument, MainIpcTypes} from '../../../types';
+import {CardMainMethods, ChosenArgument, LynxApiInstalled, MainIpcTypes} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
@@ -29,20 +29,28 @@ async function readArgs(cardDir?: string, configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function isInstalled(): Promise<boolean> {
+async function checkInstalled(pty: any): Promise<boolean> {
   return new Promise(resolve => {
-    exec('pip show open-webui', (error, stdout, stderr) => {
-      if (error) {
-        resolve(false);
-      } else if (stderr) {
-        resolve(false);
-      } else if (stdout) {
-        resolve(stdout.includes('Version:'));
-      } else {
-        resolve(false);
-      }
+    const shell = platform() === 'win32' ? 'powershell.exe' : 'bash';
+    const ptyProcess = pty.spawn(shell, [], {});
+
+    let output = '';
+
+    ptyProcess.onData((data: any) => {
+      output += data;
     });
+
+    ptyProcess.onExit(() => {
+      resolve(output.includes('Version:'));
+    });
+
+    ptyProcess.write('pip show open-webui\r');
+    ptyProcess.write('exit\r');
   });
+}
+
+async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {
+  return checkInstalled(lynxApi.pty);
 }
 
 async function updateAvailable(): Promise<boolean> {
@@ -59,7 +67,7 @@ async function updateAvailable(): Promise<boolean> {
 }
 
 function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('isInstalled', isInstalled);
+  ipc.handle('isInstalled', () => checkInstalled(ipc.pty));
   ipc.handle('current-version', () => getPipPackageVersion('open-webui'));
 }
 

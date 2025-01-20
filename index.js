@@ -1,7 +1,7 @@
 import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-import {promises} from 'graceful-fs';
+import fs from 'graceful-fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -9,8 +9,8 @@ const __dirname = dirname(__filename);
 const compiledPath = join(__dirname, '..', 'Compiled');
 
 async function copyDirectory(src, dest) {
-  await promises.mkdir(dest, {recursive: true});
-  const entries = await promises.readdir(src, {withFileTypes: true});
+  await fs.promises.mkdir(dest, {recursive: true});
+  const entries = await fs.promises.readdir(src, {withFileTypes: true});
 
   for (let entry of entries) {
     const srcPath = join(src, entry.name);
@@ -19,19 +19,19 @@ async function copyDirectory(src, dest) {
     if (entry.isDirectory()) {
       await copyDirectory(srcPath, destPath);
     } else {
-      await promises.copyFile(srcPath, destPath);
+      await fs.promises.copyFile(srcPath, destPath);
     }
   }
 }
 
 async function main() {
   try {
-    await promises.rm(join(compiledPath, 'scripts'), {recursive: true, force: true});
-    await promises.unlink(join(compiledPath, 'lynxModule.json')).catch(() => {});
+    await fs.promises.rm(join(compiledPath, 'scripts'), {recursive: true, force: true});
+    await fs.promises.unlink(join(compiledPath, 'lynxModule.json')).catch(() => {});
 
     await copyDirectory(join(__dirname, 'scripts'), join(compiledPath, 'scripts'));
 
-    await promises.copyFile(join(__dirname, 'lynxModule.json'), join(compiledPath, 'lynxModule.json'));
+    await fs.promises.copyFile(join(__dirname, 'lynxModule.json'), join(compiledPath, 'lynxModule.json'));
 
     console.log('Files and folders copied successfully!');
   } catch (error) {

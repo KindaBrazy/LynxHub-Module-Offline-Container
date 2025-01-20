@@ -2,11 +2,10 @@ import {compare} from 'semver';
 
 import {CardMainMethods, ChosenArgument, LynxApiUpdate, MainIpcTypes} from '../../../types';
 import {extractGitUrl, isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {getLatestNonRCReleaseAndAsset, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 import {INSTALLED_VERSION_KEY} from './Utils/CrossConstants';
 import {ReleaseInfo} from './Utils/CrossTypes';
-import {getLatestNonRCReleaseAndAsset} from './Utils/InvokeUtils';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
@@ -25,7 +24,7 @@ export async function readArgs(cardDir?: string) {
 
 async function getLatest(): Promise<ReleaseInfo | null> {
   const {owner, repo} = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
-  return await getLatestNonRCReleaseAndAsset(owner, repo);
+  return await getLatestNonRCReleaseAndAsset(owner, repo, 'InvokeAI-installer');
 }
 
 async function updateAvailable(lynxApi: LynxApiUpdate) {

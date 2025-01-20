@@ -17,6 +17,7 @@ export const ALLTALK_ID = 'Erew123_SD';
 export const TG_ID = 'Oobabooga_TG';
 export const SILLYTAVERN_ID = 'SillyTavern_TG';
 export const OPEN_WEBUI_ID = 'OpenWebUI_TG';
+export const LoLLMS_ID = 'LoLLMS_TG';
 
 // Audio Generation
 export const TTS_ID = 'Rsxdalv_AG';

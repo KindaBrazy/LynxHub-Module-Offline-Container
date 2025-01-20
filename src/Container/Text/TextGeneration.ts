@@ -1,5 +1,6 @@
-import {OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
+import {LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
 import {PagesData} from '../../types';
+import LoLLM_RM from './LoLLMs (ParisNeo)/RendererMethods';
 import openArguments from './OpenWebUI/Arguments';
 import OPEN_WEBUI_RM from './OpenWebUI/RendererMethods';
 import sillyArguments from './SillyTavern/Arguments';
@@ -54,6 +55,18 @@ const textPage: PagesData = {
       methods: OPEN_WEBUI_RM,
       installationType: 'others',
       arguments: openArguments,
+    },
+    {
+      id: LoLLMS_ID,
+      title: 'LoLLMs',
+      description: 'Lord of Large Language and Multi modal Systems Web User Interface',
+      repoUrl: 'https://github.com/ParisNeo/lollms-webui',
+      type: 'text',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9129f22d-70d1-4584-a7af-9aa96713debc/' +
+        'width=300/00007-1103515559.jpeg',
+      methods: LoLLM_RM,
+      installationType: 'git',
     },
   ],
 };

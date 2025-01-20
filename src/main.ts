@@ -6,6 +6,7 @@ import {
   COMFYUI_ZLUDA_ID,
   INVOKE_ID,
   KOHYA_ID,
+  LoLLMS_ID,
   ONETRAINER_ID,
   OPEN_WEBUI_ID,
   SD_AMD_ID,
@@ -30,6 +31,7 @@ import a1MainMethods from './Container/Image/SD (AUTOMATIC1111)/MainMethods';
 import lsMainMethods from './Container/Image/SD AMDGPU (lshqqytiger)/MainMethods';
 import vladMainMethods from './Container/Image/SD Next (vladmandic)/MainMethods';
 import mcMonkeyMainMethods from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
+import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import openWebUIMainMethods from './Container/Text/OpenWebUI/MainMethods';
 import sillyMainMethods from './Container/Text/SillyTavern/MainMethods';
 import oobaMainMethods from './Container/Text/Text Generation (oobabooga)/MainMethods';
@@ -54,6 +56,7 @@ const mainModules: MainModules[] = [
   {id: INVOKE_ID, methods: invokeMainMethods},
   {id: ALLTALK_ID, methods: erew123MainMethods},
   {id: OPEN_WEBUI_ID, methods: openWebUIMainMethods},
+  {id: LoLLMS_ID, methods: LoLLM_MM},
 ];
 
 export default mainModules;

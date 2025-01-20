@@ -1,7 +1,9 @@
 import path from 'node:path';
 
+import axios, {AxiosResponse} from 'axios';
 import fs from 'graceful-fs';
 
+import {GitHubRelease, ReleaseInfo} from '../Container/Image/InvokeAI/Utils/CrossTypes';
 import {ChosenArgument} from '../types';
 import {isWin} from './CrossUtils';
 
@@ -55,4 +57,44 @@ export async function utilReadArgs(
   if (!data) return [];
 
   return parser(data);
+}
+
+export async function getLatestNonRCReleaseAndAsset(
+  owner: string,
+  repo: string,
+  assetNameInclude: string,
+): Promise<ReleaseInfo | null> {
+  try {
+    const response: AxiosResponse<GitHubRelease[]> = await axios.get(
+      `https://api.github.com/repos/${owner}/${repo}/releases`,
+      {
+        headers: {
+          Accept: 'application/vnd.github.v3+json',
+        },
+      },
+    );
+
+    const releases = response.data;
+
+    for (const release of releases) {
+      const tagName = release.tag_name;
+      const isRC = tagName.includes('rc');
+      const isPrerelease = release.prerelease;
+
+      if (!isRC && !isPrerelease) {
+        const version = tagName.startsWith('v') ? tagName.slice(1) : tagName;
+
+        const asset = release.assets.find(a => a.name.toLowerCase().includes(assetNameInclude.toLowerCase()));
+
+        if (asset) {
+          return {version, downloadUrl: asset.browser_download_url};
+        }
+      }
+    }
+
+    return null; // No non-RC, non-prerelease release with a matching asset found
+  } catch (error) {
+    console.error('Error fetching releases from GitHub:', error);
+    return null;
+  }
 }

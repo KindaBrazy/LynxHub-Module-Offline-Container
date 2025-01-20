@@ -11,6 +11,7 @@
     "axios": "^1.7.9",
     "graceful-fs": "^4.2.11",
     "lodash": "^4.17.21",
+    "node-pty": "^1.0.0",
     "semver": "^7.6.3"
   },
   "devDependencies": {

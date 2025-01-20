@@ -10,17 +10,20 @@ export type ExtensionData = {
 export type LynxApiUpdate = {
   isPullAvailable: Promise<boolean>;
   storage: {get: (key: string) => any; set: (key: string, data: any) => void};
+  pty: any;
 };
 
 export type LynxApiInstalled = {
   installedDirExistAndWatch: Promise<boolean>;
   storage: {get: (key: string) => any; set: (key: string, data: any) => void};
+  pty: any;
 };
 
 export type MainIpcTypes = {
   handle(channel: string, listener: (event: any, ...args: any[]) => any): void;
   on(channel: string, listener: (event: any, ...args: any[]) => void): void;
   send: (channel: string, ...args: any[]) => void;
+  pty: any;
 };
 
 /** These methods will be called in the main process */

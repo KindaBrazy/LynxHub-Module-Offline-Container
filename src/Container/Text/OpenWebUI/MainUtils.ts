@@ -1,22 +1,31 @@
-import {exec} from 'node:child_process';
-
 import axios from 'axios';
 
-export async function getPipPackageVersion(packageName: string): Promise<string | null> {
+import {LINE_ENDING} from '../../../Utils/MainUtils';
+
+export async function getPipPackageVersion(packageName: string, pty: any): Promise<string | null> {
   return new Promise(resolve => {
-    exec(`pip show ${packageName}`, (error, stdout, stderr) => {
-      if (error || stderr || !stdout) {
-        resolve(null);
+    const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
+    const ptyProcess = pty.spawn(shell, [], {});
+
+    let output = '';
+
+    ptyProcess.onData((data: any) => {
+      output += data;
+    });
+
+    ptyProcess.onExit(() => {
+      const lines = output.split(/\r?\n/);
+      const versionLine = lines.find(line => line.toLowerCase().includes('version:'));
+      if (versionLine) {
+        const version = versionLine.split(': ')[1].trim();
+        resolve(version);
       } else {
-        const versionLine = stdout.split('\n').find(line => line.startsWith('Version:'));
-        if (versionLine) {
-          const version = versionLine.split(': ')[1].trim();
-          resolve(version);
-        } else {
-          resolve(null);
-        }
+        resolve(null);
       }
     });
+
+    ptyProcess.write(`pip show ${packageName}${LINE_ENDING}`);
+    ptyProcess.write(`exit${LINE_ENDING}`);
   });
 }
 

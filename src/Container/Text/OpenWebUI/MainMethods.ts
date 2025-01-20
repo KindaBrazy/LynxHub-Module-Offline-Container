@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import {compare} from 'semver';
 
-import {CardMainMethods, ChosenArgument, LynxApiInstalled, MainIpcTypes} from '../../../types';
+import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
@@ -41,11 +41,11 @@ async function checkInstalled(pty: any): Promise<boolean> {
     });
 
     ptyProcess.onExit(() => {
-      resolve(output.includes('Version:'));
+      resolve(output.toLowerCase().includes('version:'));
     });
 
-    ptyProcess.write('pip show open-webui\r');
-    ptyProcess.write('exit\r');
+    ptyProcess.write(`pip show open-webui${LINE_ENDING}`);
+    ptyProcess.write(`exit${LINE_ENDING}`);
   });
 }
 
@@ -53,9 +53,9 @@ async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {
   return checkInstalled(lynxApi.pty);
 }
 
-async function updateAvailable(): Promise<boolean> {
+async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
   try {
-    const currentVersion = await getPipPackageVersion('open-webui');
+    const currentVersion = await getPipPackageVersion('open-webui', lynxApi.pty);
     const latestVersion = await getLatestPipPackageVersion('open-webui');
     if (currentVersion && latestVersion) return compare(currentVersion, latestVersion) === -1;
   } catch (err) {
@@ -68,7 +68,7 @@ async function updateAvailable(): Promise<boolean> {
 
 function mainIpc(ipc: MainIpcTypes) {
   ipc.handle('isInstalled', () => checkInstalled(ipc.pty));
-  ipc.handle('current-version', () => getPipPackageVersion('open-webui'));
+  ipc.handle('current-version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
 
 const openWebUIMainMethods: CardMainMethods = {

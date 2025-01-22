@@ -5,9 +5,9 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 16,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "9.0.0",
-  "updateDate": "2025-01-22 07:07",
-  "changeLog": "V9.0.0\n・Add Open WebUI integration\n・Add LoLLMs WebUI integration\n・Dynamically fetch InvokeAI latest version for installation and updates\n・Resolve issue with reading and writing InvokeAI arguments",
+  "version": "9.0.1",
+  "updateDate": "2025-01-22 16:30",
+  "changeLog": "V9.0.1\n\n・Fix (Open Webui): Removed admin requirement for .webui_secret_key access.\n・Fix (Open Webui): PORT is now passed as an argument instead of an environment variable.\nV9.0.0\n\n・Add Open WebUI integration\n・Add LoLLMs WebUI integration\n・Dynamically fetch InvokeAI latest version for installation and updates\n・Resolve issue with reading and writing InvokeAI arguments",
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

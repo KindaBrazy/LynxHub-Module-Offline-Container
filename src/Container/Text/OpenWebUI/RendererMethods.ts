@@ -1,4 +1,5 @@
 import {
+  ArgType,
   CardInfoApi,
   CardInfoCallback,
   CardRendererMethods,
@@ -33,7 +34,14 @@ function checkLinuxArgLine(line: string): 'set' | 'export' | 'var' | undefined {
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+  let cmArgs: string = '';
+
   args.forEach(arg => {
+    if (arg.name === 'PORT') {
+      cmArgs = `--port ${arg.value}`;
+      return;
+    }
+
     if (getArgumentType(arg.name, openArguments) === 'CheckBox') {
       const eWinResult: string = `set ${arg.name}=true\n`;
       const eResult: string = `export ${arg.name}="true"\n`;
@@ -44,7 +52,8 @@ export function parseArgsToString(args: ChosenArgument[]): string {
       result += isWin ? eWinResult : eResult;
     }
   });
-  result += isWin ? `\nopen-webui serve` : `open-webui serve`;
+
+  result += isWin ? `\nopen-webui serve ${cmArgs}` : `open-webui serve ${cmArgs}`;
 
   return result;
 }
@@ -56,22 +65,47 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   lines.forEach((line: string): void => {
     if (line.startsWith('#')) {
       return;
-    } else {
-      const lineType = checkLinuxArgLine(line);
-      if (lineType === 'export' || lineType === 'set') {
-        let [name, value] = line.replace(`${lineType} `, '').split('=');
-        name = removeEscapes(name.trim());
-        value = removeEscapes(value.trim());
-        if (isValidArg(name, openArguments)) {
-          argResult.push({name, value});
+    }
+
+    if (line.startsWith('open-webui serve')) {
+      const clArg: string = line.split('open-webui serve ')[1];
+      if (!clArg) return;
+
+      const clArgs: string[] = clArg.split('--').filter(Boolean);
+
+      const result: ArgType[] = clArgs.map((arg: string): ArgType => {
+        const [id, ...value] = arg.trim().split(' ');
+        return {
+          name: `${id}`.toUpperCase(),
+          value: value.join(' ').replace(/"/g, ''),
+        };
+      });
+
+      result.forEach((value: ArgType): void => {
+        if (isValidArg(value.name, openArguments)) {
+          if (getArgumentType(value.name, openArguments) === 'CheckBox') {
+            argResult.push({name: value.name, value: ''});
+          } else {
+            argResult.push({name: value.name, value: value.value});
+          }
         }
-      } else if (checkLinuxArgLine(line) === 'var') {
-        let [name, value] = line.split('=');
-        name = removeEscapes(name.trim());
-        value = removeEscapes(value.trim());
-        if (isValidArg(name, openArguments)) {
-          argResult.push({name, value});
-        }
+      });
+    }
+
+    const lineType = checkLinuxArgLine(line);
+    if (lineType === 'export' || lineType === 'set') {
+      let [name, value] = line.replace(`${lineType} `, '').split('=');
+      name = removeEscapes(name.trim());
+      value = removeEscapes(value.trim());
+      if (isValidArg(name, openArguments)) {
+        argResult.push({name, value});
+      }
+    } else if (checkLinuxArgLine(line) === 'var') {
+      let [name, value] = line.split('=');
+      name = removeEscapes(name.trim());
+      value = removeEscapes(value.trim());
+      if (isValidArg(name, openArguments)) {
+        argResult.push({name, value});
       }
     }
   });

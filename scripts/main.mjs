@@ -1,4 +1,4 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as parseArgsToString$3, j as parseStringToArgs$3, k as extractGitUrl, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as parseArgsToString$9, x as parseStringToArgs$9, y as parseArgsToString$a, z as parseStringToArgs$a, A as parseArgsToString$b, B as parseStringToArgs$b, C as COMFYUI_ID, D as A1_ID, S as SD_AMD_ID, E as SD_FORGE_ID, F as SD_FORGE_AMD_ID, G as SD_NEXT_ID, H as SWARM_ID, K as KOHYA_ID, T as TG_ID, J as TTS_ID, L as AG_ID, M as SILLYTAVERN_ID, N as SD_UIUX_ID, O as COMFYUI_ZLUDA_ID, P as ONETRAINER_ID, Q as INVOKE_ID, R as ALLTALK_ID, U as OPEN_WEBUI_ID, V as LoLLMS_ID } from './RendererMethods_Dg2Fsr.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as parseArgsToString$3, j as parseStringToArgs$3, k as extractGitUrl, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as parseArgsToString$9, x as parseStringToArgs$9, y as parseArgsToString$a, z as parseStringToArgs$a, A as parseArgsToString$b, B as parseStringToArgs$b, C as COMFYUI_ID, D as A1_ID, S as SD_AMD_ID, E as SD_FORGE_ID, F as SD_FORGE_AMD_ID, G as SD_NEXT_ID, H as SWARM_ID, K as KOHYA_ID, T as TG_ID, J as TTS_ID, L as AG_ID, M as SILLYTAVERN_ID, N as SD_UIUX_ID, O as COMFYUI_ZLUDA_ID, P as ONETRAINER_ID, Q as INVOKE_ID, R as ALLTALK_ID, U as OPEN_WEBUI_ID, V as LoLLMS_ID } from './RendererMethods_B5OntM.mjs';
 import path from 'node:path';
 import require$$1 from 'util';
 import stream, { Readable } from 'stream';
@@ -22911,19 +22911,32 @@ async function getLatestPipPackageVersion(packageName) {
     }
 }
 
-const CONFIG_FILE = isWin ? 'open-webui.bat' : 'open-webui.sh';
+const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
 const DEFAULT_BATCH_DATA$2 = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
-async function getRunCommands$2(dir, configDir) {
+function getCdCommand(dirPath) {
+    const escapedPath = dirPath.replace(/ /g, '\\ ');
+    const quotedPath = `"${dirPath}"`;
+    if (platform$2() === 'win32') {
+        return `cd ${quotedPath}`;
+    }
+    else if (platform$2() === 'linux' || platform$2() === 'darwin') {
+        return `cd ${escapedPath}`;
+    }
+    else {
+        throw new Error(`Unsupported platform: ${platform$2}`);
+    }
+}
+async function getRunCommands$2(_, configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
     await initBatchFile(filePath, DEFAULT_BATCH_DATA$2);
-    return `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`;
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
-async function saveArgs$2(args, cardDir, configDir) {
+async function saveArgs$2(args, _, configDir) {
     return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString$9, configDir);
 }
-async function readArgs$2(cardDir, configDir) {
+async function readArgs$2(_, configDir) {
     return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$9, configDir);
 }
 async function checkInstalled(pty) {

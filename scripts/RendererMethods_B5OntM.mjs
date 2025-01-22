@@ -22873,7 +22873,12 @@ function checkLinuxArgLine(line) {
 }
 function parseArgsToString$2(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let cmArgs = '';
     args.forEach(arg => {
+        if (arg.name === 'PORT') {
+            cmArgs = `--port ${arg.value}`;
+            return;
+        }
         if (getArgumentType(arg.name, openArguments) === 'CheckBox') {
             const eWinResult = `set ${arg.name}=true\n`;
             const eResult = `export ${arg.name}="true"\n`;
@@ -22885,7 +22890,7 @@ function parseArgsToString$2(args) {
             result += isWin ? eWinResult : eResult;
         }
     });
-    result += isWin ? `\nopen-webui serve` : `open-webui serve`;
+    result += isWin ? `\nopen-webui serve ${cmArgs}` : `open-webui serve ${cmArgs}`;
     return result;
 }
 function parseStringToArgs$2(args) {
@@ -22895,23 +22900,44 @@ function parseStringToArgs$2(args) {
         if (line.startsWith('#')) {
             return;
         }
-        else {
-            const lineType = checkLinuxArgLine(line);
-            if (lineType === 'export' || lineType === 'set') {
-                let [name, value] = line.replace(`${lineType} `, '').split('=');
-                name = removeEscapes(name.trim());
-                value = removeEscapes(value.trim());
-                if (isValidArg(name, openArguments)) {
-                    argResult.push({ name, value });
+        if (line.startsWith('open-webui serve')) {
+            const clArg = line.split('open-webui serve ')[1];
+            if (!clArg)
+                return;
+            const clArgs = clArg.split('--').filter(Boolean);
+            const result = clArgs.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return {
+                    name: `${id}`.toUpperCase(),
+                    value: value.join(' ').replace(/"/g, ''),
+                };
+            });
+            result.forEach((value) => {
+                if (isValidArg(value.name, openArguments)) {
+                    if (getArgumentType(value.name, openArguments) === 'CheckBox') {
+                        argResult.push({ name: value.name, value: '' });
+                    }
+                    else {
+                        argResult.push({ name: value.name, value: value.value });
+                    }
                 }
+            });
+        }
+        const lineType = checkLinuxArgLine(line);
+        if (lineType === 'export' || lineType === 'set') {
+            let [name, value] = line.replace(`${lineType} `, '').split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, openArguments)) {
+                argResult.push({ name, value });
             }
-            else if (checkLinuxArgLine(line) === 'var') {
-                let [name, value] = line.split('=');
-                name = removeEscapes(name.trim());
-                value = removeEscapes(value.trim());
-                if (isValidArg(name, openArguments)) {
-                    argResult.push({ name, value });
-                }
+        }
+        else if (checkLinuxArgLine(line) === 'var') {
+            let [name, value] = line.split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, openArguments)) {
+                argResult.push({ name, value });
             }
         }
     });

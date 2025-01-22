@@ -1,3811 +1,19 @@
-import { c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, V as VERSION_NAME, g as parseArgsToString$3, h as parseStringToArgs$3, j as parseArgsToString$4, k as parseStringToArgs$4, l as parseArgsToString$5, m as parseStringToArgs$5, n as parseArgsToString$6, o as parseStringToArgs$6, q as getDefaultExportFromCjs, r as parseArgsToString$7, s as parseStringToArgs$7, t as parseArgsToString$8, u as parseStringToArgs$8, C as COMFYUI_ID, A as A1_ID, S as SD_AMD_ID, v as SD_FORGE_ID, w as SD_FORGE_AMD_ID, x as SD_NEXT_ID, y as SWARM_ID, K as KOHYA_ID, T as TG_ID, z as TTS_ID, B as AG_ID, D as SILLYTAVERN_ID, E as SD_UIUX_ID, F as COMFYUI_ZLUDA_ID, O as ONETRAINER_ID, G as INVOKE_ID, H as ALLTALK_ID, J as OPEN_WEBUI_ID } from './RendererMethods_CDw5J_.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as parseArgsToString$3, j as parseStringToArgs$3, k as extractGitUrl, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as parseArgsToString$9, x as parseStringToArgs$9, y as parseArgsToString$a, z as parseStringToArgs$a, A as parseArgsToString$b, B as parseStringToArgs$b, C as COMFYUI_ID, D as A1_ID, S as SD_AMD_ID, E as SD_FORGE_ID, F as SD_FORGE_AMD_ID, G as SD_NEXT_ID, H as SWARM_ID, K as KOHYA_ID, T as TG_ID, J as TTS_ID, L as AG_ID, M as SILLYTAVERN_ID, N as SD_UIUX_ID, O as COMFYUI_ZLUDA_ID, P as ONETRAINER_ID, Q as INVOKE_ID, R as ALLTALK_ID, U as OPEN_WEBUI_ID, V as LoLLMS_ID } from './RendererMethods_Dg2Fsr.mjs';
 import path from 'node:path';
-import require$$0$2 from 'fs';
-import require$$0$1 from 'constants';
-import stream, { Readable } from 'stream';
 import require$$1 from 'util';
-import require$$5 from 'assert';
-import { exec } from 'node:child_process';
-import { platform as platform$2 } from 'node:os';
+import stream, { Readable } from 'stream';
 import require$$1$1 from 'path';
 import require$$3 from 'http';
 import require$$4 from 'https';
-import require$$0$3 from 'url';
+import require$$0$1 from 'url';
+import require$$6 from 'fs';
+import require$$4$1 from 'assert';
 import require$$1$2 from 'tty';
-import require$$0$4 from 'os';
+import require$$0$2 from 'os';
 import zlib from 'zlib';
 import { EventEmitter } from 'events';
-
-var polyfills;
-var hasRequiredPolyfills;
-
-function requirePolyfills () {
-	if (hasRequiredPolyfills) return polyfills;
-	hasRequiredPolyfills = 1;
-	var constants = require$$0$1;
-
-	var origCwd = process.cwd;
-	var cwd = null;
-
-	var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform;
-
-	process.cwd = function() {
-	  if (!cwd)
-	    cwd = origCwd.call(process);
-	  return cwd
-	};
-	try {
-	  process.cwd();
-	} catch (er) {}
-
-	// This check is needed until node.js 12 is required
-	if (typeof process.chdir === 'function') {
-	  var chdir = process.chdir;
-	  process.chdir = function (d) {
-	    cwd = null;
-	    chdir.call(process, d);
-	  };
-	  if (Object.setPrototypeOf) Object.setPrototypeOf(process.chdir, chdir);
-	}
-
-	polyfills = patch;
-
-	function patch (fs) {
-	  // (re-)implement some things that are known busted or missing.
-
-	  // lchmod, broken prior to 0.6.2
-	  // back-port the fix here.
-	  if (constants.hasOwnProperty('O_SYMLINK') &&
-	      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-	    patchLchmod(fs);
-	  }
-
-	  // lutimes implementation, or no-op
-	  if (!fs.lutimes) {
-	    patchLutimes(fs);
-	  }
-
-	  // https://github.com/isaacs/node-graceful-fs/issues/4
-	  // Chown should not fail on einval or eperm if non-root.
-	  // It should not fail on enosys ever, as this just indicates
-	  // that a fs doesn't support the intended operation.
-
-	  fs.chown = chownFix(fs.chown);
-	  fs.fchown = chownFix(fs.fchown);
-	  fs.lchown = chownFix(fs.lchown);
-
-	  fs.chmod = chmodFix(fs.chmod);
-	  fs.fchmod = chmodFix(fs.fchmod);
-	  fs.lchmod = chmodFix(fs.lchmod);
-
-	  fs.chownSync = chownFixSync(fs.chownSync);
-	  fs.fchownSync = chownFixSync(fs.fchownSync);
-	  fs.lchownSync = chownFixSync(fs.lchownSync);
-
-	  fs.chmodSync = chmodFixSync(fs.chmodSync);
-	  fs.fchmodSync = chmodFixSync(fs.fchmodSync);
-	  fs.lchmodSync = chmodFixSync(fs.lchmodSync);
-
-	  fs.stat = statFix(fs.stat);
-	  fs.fstat = statFix(fs.fstat);
-	  fs.lstat = statFix(fs.lstat);
-
-	  fs.statSync = statFixSync(fs.statSync);
-	  fs.fstatSync = statFixSync(fs.fstatSync);
-	  fs.lstatSync = statFixSync(fs.lstatSync);
-
-	  // if lchmod/lchown do not exist, then make them no-ops
-	  if (fs.chmod && !fs.lchmod) {
-	    fs.lchmod = function (path, mode, cb) {
-	      if (cb) process.nextTick(cb);
-	    };
-	    fs.lchmodSync = function () {};
-	  }
-	  if (fs.chown && !fs.lchown) {
-	    fs.lchown = function (path, uid, gid, cb) {
-	      if (cb) process.nextTick(cb);
-	    };
-	    fs.lchownSync = function () {};
-	  }
-
-	  // on Windows, A/V software can lock the directory, causing this
-	  // to fail with an EACCES or EPERM if the directory contains newly
-	  // created files.  Try again on failure, for up to 60 seconds.
-
-	  // Set the timeout this long because some Windows Anti-Virus, such as Parity
-	  // bit9, may lock files for up to a minute, causing npm package install
-	  // failures. Also, take care to yield the scheduler. Windows scheduling gives
-	  // CPU to a busy looping process, which can cause the program causing the lock
-	  // contention to be starved of CPU by node, so the contention doesn't resolve.
-	  if (platform === "win32") {
-	    fs.rename = typeof fs.rename !== 'function' ? fs.rename
-	    : (function (fs$rename) {
-	      function rename (from, to, cb) {
-	        var start = Date.now();
-	        var backoff = 0;
-	        fs$rename(from, to, function CB (er) {
-	          if (er
-	              && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY")
-	              && Date.now() - start < 60000) {
-	            setTimeout(function() {
-	              fs.stat(to, function (stater, st) {
-	                if (stater && stater.code === "ENOENT")
-	                  fs$rename(from, to, CB);
-	                else
-	                  cb(er);
-	              });
-	            }, backoff);
-	            if (backoff < 100)
-	              backoff += 10;
-	            return;
-	          }
-	          if (cb) cb(er);
-	        });
-	      }
-	      if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
-	      return rename
-	    })(fs.rename);
-	  }
-
-	  // if read() returns EAGAIN, then just try it again.
-	  fs.read = typeof fs.read !== 'function' ? fs.read
-	  : (function (fs$read) {
-	    function read (fd, buffer, offset, length, position, callback_) {
-	      var callback;
-	      if (callback_ && typeof callback_ === 'function') {
-	        var eagCounter = 0;
-	        callback = function (er, _, __) {
-	          if (er && er.code === 'EAGAIN' && eagCounter < 10) {
-	            eagCounter ++;
-	            return fs$read.call(fs, fd, buffer, offset, length, position, callback)
-	          }
-	          callback_.apply(this, arguments);
-	        };
-	      }
-	      return fs$read.call(fs, fd, buffer, offset, length, position, callback)
-	    }
-
-	    // This ensures `util.promisify` works as it does for native `fs.read`.
-	    if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
-	    return read
-	  })(fs.read);
-
-	  fs.readSync = typeof fs.readSync !== 'function' ? fs.readSync
-	  : (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
-	    var eagCounter = 0;
-	    while (true) {
-	      try {
-	        return fs$readSync.call(fs, fd, buffer, offset, length, position)
-	      } catch (er) {
-	        if (er.code === 'EAGAIN' && eagCounter < 10) {
-	          eagCounter ++;
-	          continue
-	        }
-	        throw er
-	      }
-	    }
-	  }})(fs.readSync);
-
-	  function patchLchmod (fs) {
-	    fs.lchmod = function (path, mode, callback) {
-	      fs.open( path
-	             , constants.O_WRONLY | constants.O_SYMLINK
-	             , mode
-	             , function (err, fd) {
-	        if (err) {
-	          if (callback) callback(err);
-	          return
-	        }
-	        // prefer to return the chmod error, if one occurs,
-	        // but still try to close, and report closing errors if they occur.
-	        fs.fchmod(fd, mode, function (err) {
-	          fs.close(fd, function(err2) {
-	            if (callback) callback(err || err2);
-	          });
-	        });
-	      });
-	    };
-
-	    fs.lchmodSync = function (path, mode) {
-	      var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode);
-
-	      // prefer to return the chmod error, if one occurs,
-	      // but still try to close, and report closing errors if they occur.
-	      var threw = true;
-	      var ret;
-	      try {
-	        ret = fs.fchmodSync(fd, mode);
-	        threw = false;
-	      } finally {
-	        if (threw) {
-	          try {
-	            fs.closeSync(fd);
-	          } catch (er) {}
-	        } else {
-	          fs.closeSync(fd);
-	        }
-	      }
-	      return ret
-	    };
-	  }
-
-	  function patchLutimes (fs) {
-	    if (constants.hasOwnProperty("O_SYMLINK") && fs.futimes) {
-	      fs.lutimes = function (path, at, mt, cb) {
-	        fs.open(path, constants.O_SYMLINK, function (er, fd) {
-	          if (er) {
-	            if (cb) cb(er);
-	            return
-	          }
-	          fs.futimes(fd, at, mt, function (er) {
-	            fs.close(fd, function (er2) {
-	              if (cb) cb(er || er2);
-	            });
-	          });
-	        });
-	      };
-
-	      fs.lutimesSync = function (path, at, mt) {
-	        var fd = fs.openSync(path, constants.O_SYMLINK);
-	        var ret;
-	        var threw = true;
-	        try {
-	          ret = fs.futimesSync(fd, at, mt);
-	          threw = false;
-	        } finally {
-	          if (threw) {
-	            try {
-	              fs.closeSync(fd);
-	            } catch (er) {}
-	          } else {
-	            fs.closeSync(fd);
-	          }
-	        }
-	        return ret
-	      };
-
-	    } else if (fs.futimes) {
-	      fs.lutimes = function (_a, _b, _c, cb) { if (cb) process.nextTick(cb); };
-	      fs.lutimesSync = function () {};
-	    }
-	  }
-
-	  function chmodFix (orig) {
-	    if (!orig) return orig
-	    return function (target, mode, cb) {
-	      return orig.call(fs, target, mode, function (er) {
-	        if (chownErOk(er)) er = null;
-	        if (cb) cb.apply(this, arguments);
-	      })
-	    }
-	  }
-
-	  function chmodFixSync (orig) {
-	    if (!orig) return orig
-	    return function (target, mode) {
-	      try {
-	        return orig.call(fs, target, mode)
-	      } catch (er) {
-	        if (!chownErOk(er)) throw er
-	      }
-	    }
-	  }
-
-
-	  function chownFix (orig) {
-	    if (!orig) return orig
-	    return function (target, uid, gid, cb) {
-	      return orig.call(fs, target, uid, gid, function (er) {
-	        if (chownErOk(er)) er = null;
-	        if (cb) cb.apply(this, arguments);
-	      })
-	    }
-	  }
-
-	  function chownFixSync (orig) {
-	    if (!orig) return orig
-	    return function (target, uid, gid) {
-	      try {
-	        return orig.call(fs, target, uid, gid)
-	      } catch (er) {
-	        if (!chownErOk(er)) throw er
-	      }
-	    }
-	  }
-
-	  function statFix (orig) {
-	    if (!orig) return orig
-	    // Older versions of Node erroneously returned signed integers for
-	    // uid + gid.
-	    return function (target, options, cb) {
-	      if (typeof options === 'function') {
-	        cb = options;
-	        options = null;
-	      }
-	      function callback (er, stats) {
-	        if (stats) {
-	          if (stats.uid < 0) stats.uid += 0x100000000;
-	          if (stats.gid < 0) stats.gid += 0x100000000;
-	        }
-	        if (cb) cb.apply(this, arguments);
-	      }
-	      return options ? orig.call(fs, target, options, callback)
-	        : orig.call(fs, target, callback)
-	    }
-	  }
-
-	  function statFixSync (orig) {
-	    if (!orig) return orig
-	    // Older versions of Node erroneously returned signed integers for
-	    // uid + gid.
-	    return function (target, options) {
-	      var stats = options ? orig.call(fs, target, options)
-	        : orig.call(fs, target);
-	      if (stats) {
-	        if (stats.uid < 0) stats.uid += 0x100000000;
-	        if (stats.gid < 0) stats.gid += 0x100000000;
-	      }
-	      return stats;
-	    }
-	  }
-
-	  // ENOSYS means that the fs doesn't support the op. Just ignore
-	  // that, because it doesn't matter.
-	  //
-	  // if there's no getuid, or if getuid() is something other
-	  // than 0, and the error is EINVAL or EPERM, then just ignore
-	  // it.
-	  //
-	  // This specific case is a silent failure in cp, install, tar,
-	  // and most other unix tools that manage permissions.
-	  //
-	  // When running as root, or if other types of errors are
-	  // encountered, then it's strict.
-	  function chownErOk (er) {
-	    if (!er)
-	      return true
-
-	    if (er.code === "ENOSYS")
-	      return true
-
-	    var nonroot = !process.getuid || process.getuid() !== 0;
-	    if (nonroot) {
-	      if (er.code === "EINVAL" || er.code === "EPERM")
-	        return true
-	    }
-
-	    return false
-	  }
-	}
-	return polyfills;
-}
-
-var legacyStreams;
-var hasRequiredLegacyStreams;
-
-function requireLegacyStreams () {
-	if (hasRequiredLegacyStreams) return legacyStreams;
-	hasRequiredLegacyStreams = 1;
-	var Stream = stream.Stream;
-
-	legacyStreams = legacy;
-
-	function legacy (fs) {
-	  return {
-	    ReadStream: ReadStream,
-	    WriteStream: WriteStream
-	  }
-
-	  function ReadStream (path, options) {
-	    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
-
-	    Stream.call(this);
-
-	    var self = this;
-
-	    this.path = path;
-	    this.fd = null;
-	    this.readable = true;
-	    this.paused = false;
-
-	    this.flags = 'r';
-	    this.mode = 438; /*=0666*/
-	    this.bufferSize = 64 * 1024;
-
-	    options = options || {};
-
-	    // Mixin options into this
-	    var keys = Object.keys(options);
-	    for (var index = 0, length = keys.length; index < length; index++) {
-	      var key = keys[index];
-	      this[key] = options[key];
-	    }
-
-	    if (this.encoding) this.setEncoding(this.encoding);
-
-	    if (this.start !== undefined) {
-	      if ('number' !== typeof this.start) {
-	        throw TypeError('start must be a Number');
-	      }
-	      if (this.end === undefined) {
-	        this.end = Infinity;
-	      } else if ('number' !== typeof this.end) {
-	        throw TypeError('end must be a Number');
-	      }
-
-	      if (this.start > this.end) {
-	        throw new Error('start must be <= end');
-	      }
-
-	      this.pos = this.start;
-	    }
-
-	    if (this.fd !== null) {
-	      process.nextTick(function() {
-	        self._read();
-	      });
-	      return;
-	    }
-
-	    fs.open(this.path, this.flags, this.mode, function (err, fd) {
-	      if (err) {
-	        self.emit('error', err);
-	        self.readable = false;
-	        return;
-	      }
-
-	      self.fd = fd;
-	      self.emit('open', fd);
-	      self._read();
-	    });
-	  }
-
-	  function WriteStream (path, options) {
-	    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
-
-	    Stream.call(this);
-
-	    this.path = path;
-	    this.fd = null;
-	    this.writable = true;
-
-	    this.flags = 'w';
-	    this.encoding = 'binary';
-	    this.mode = 438; /*=0666*/
-	    this.bytesWritten = 0;
-
-	    options = options || {};
-
-	    // Mixin options into this
-	    var keys = Object.keys(options);
-	    for (var index = 0, length = keys.length; index < length; index++) {
-	      var key = keys[index];
-	      this[key] = options[key];
-	    }
-
-	    if (this.start !== undefined) {
-	      if ('number' !== typeof this.start) {
-	        throw TypeError('start must be a Number');
-	      }
-	      if (this.start < 0) {
-	        throw new Error('start must be >= zero');
-	      }
-
-	      this.pos = this.start;
-	    }
-
-	    this.busy = false;
-	    this._queue = [];
-
-	    if (this.fd === null) {
-	      this._open = fs.open;
-	      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
-	      this.flush();
-	    }
-	  }
-	}
-	return legacyStreams;
-}
-
-var clone_1;
-var hasRequiredClone;
-
-function requireClone () {
-	if (hasRequiredClone) return clone_1;
-	hasRequiredClone = 1;
-
-	clone_1 = clone;
-
-	var getPrototypeOf = Object.getPrototypeOf || function (obj) {
-	  return obj.__proto__
-	};
-
-	function clone (obj) {
-	  if (obj === null || typeof obj !== 'object')
-	    return obj
-
-	  if (obj instanceof Object)
-	    var copy = { __proto__: getPrototypeOf(obj) };
-	  else
-	    var copy = Object.create(null);
-
-	  Object.getOwnPropertyNames(obj).forEach(function (key) {
-	    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key));
-	  });
-
-	  return copy
-	}
-	return clone_1;
-}
-
-var gracefulFs;
-var hasRequiredGracefulFs;
-
-function requireGracefulFs () {
-	if (hasRequiredGracefulFs) return gracefulFs;
-	hasRequiredGracefulFs = 1;
-	var fs = require$$0$2;
-	var polyfills = requirePolyfills();
-	var legacy = requireLegacyStreams();
-	var clone = requireClone();
-
-	var util = require$$1;
-
-	/* istanbul ignore next - node 0.x polyfill */
-	var gracefulQueue;
-	var previousSymbol;
-
-	/* istanbul ignore else - node 0.x polyfill */
-	if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
-	  gracefulQueue = Symbol.for('graceful-fs.queue');
-	  // This is used in testing by future versions
-	  previousSymbol = Symbol.for('graceful-fs.previous');
-	} else {
-	  gracefulQueue = '___graceful-fs.queue';
-	  previousSymbol = '___graceful-fs.previous';
-	}
-
-	function noop () {}
-
-	function publishQueue(context, queue) {
-	  Object.defineProperty(context, gracefulQueue, {
-	    get: function() {
-	      return queue
-	    }
-	  });
-	}
-
-	var debug = noop;
-	if (util.debuglog)
-	  debug = util.debuglog('gfs4');
-	else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
-	  debug = function() {
-	    var m = util.format.apply(util, arguments);
-	    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ');
-	    console.error(m);
-	  };
-
-	// Once time initialization
-	if (!fs[gracefulQueue]) {
-	  // This queue can be shared by multiple loaded instances
-	  var queue = commonjsGlobal[gracefulQueue] || [];
-	  publishQueue(fs, queue);
-
-	  // Patch fs.close/closeSync to shared queue version, because we need
-	  // to retry() whenever a close happens *anywhere* in the program.
-	  // This is essential when multiple graceful-fs instances are
-	  // in play at the same time.
-	  fs.close = (function (fs$close) {
-	    function close (fd, cb) {
-	      return fs$close.call(fs, fd, function (err) {
-	        // This function uses the graceful-fs shared queue
-	        if (!err) {
-	          resetQueue();
-	        }
-
-	        if (typeof cb === 'function')
-	          cb.apply(this, arguments);
-	      })
-	    }
-
-	    Object.defineProperty(close, previousSymbol, {
-	      value: fs$close
-	    });
-	    return close
-	  })(fs.close);
-
-	  fs.closeSync = (function (fs$closeSync) {
-	    function closeSync (fd) {
-	      // This function uses the graceful-fs shared queue
-	      fs$closeSync.apply(fs, arguments);
-	      resetQueue();
-	    }
-
-	    Object.defineProperty(closeSync, previousSymbol, {
-	      value: fs$closeSync
-	    });
-	    return closeSync
-	  })(fs.closeSync);
-
-	  if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
-	    process.on('exit', function() {
-	      debug(fs[gracefulQueue]);
-	      require$$5.equal(fs[gracefulQueue].length, 0);
-	    });
-	  }
-	}
-
-	if (!commonjsGlobal[gracefulQueue]) {
-	  publishQueue(commonjsGlobal, fs[gracefulQueue]);
-	}
-
-	gracefulFs = patch(clone(fs));
-	if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs.__patched) {
-	    gracefulFs = patch(fs);
-	    fs.__patched = true;
-	}
-
-	function patch (fs) {
-	  // Everything that references the open() function needs to be in here
-	  polyfills(fs);
-	  fs.gracefulify = patch;
-
-	  fs.createReadStream = createReadStream;
-	  fs.createWriteStream = createWriteStream;
-	  var fs$readFile = fs.readFile;
-	  fs.readFile = readFile;
-	  function readFile (path, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    return go$readFile(path, options, cb)
-
-	    function go$readFile (path, options, cb, startTime) {
-	      return fs$readFile(path, options, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$readFile, [path, options, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$writeFile = fs.writeFile;
-	  fs.writeFile = writeFile;
-	  function writeFile (path, data, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    return go$writeFile(path, data, options, cb)
-
-	    function go$writeFile (path, data, options, cb, startTime) {
-	      return fs$writeFile(path, data, options, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$writeFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$appendFile = fs.appendFile;
-	  if (fs$appendFile)
-	    fs.appendFile = appendFile;
-	  function appendFile (path, data, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    return go$appendFile(path, data, options, cb)
-
-	    function go$appendFile (path, data, options, cb, startTime) {
-	      return fs$appendFile(path, data, options, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$appendFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$copyFile = fs.copyFile;
-	  if (fs$copyFile)
-	    fs.copyFile = copyFile;
-	  function copyFile (src, dest, flags, cb) {
-	    if (typeof flags === 'function') {
-	      cb = flags;
-	      flags = 0;
-	    }
-	    return go$copyFile(src, dest, flags, cb)
-
-	    function go$copyFile (src, dest, flags, cb, startTime) {
-	      return fs$copyFile(src, dest, flags, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$copyFile, [src, dest, flags, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$readdir = fs.readdir;
-	  fs.readdir = readdir;
-	  var noReaddirOptionVersions = /^v[0-5]\./;
-	  function readdir (path, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    var go$readdir = noReaddirOptionVersions.test(process.version)
-	      ? function go$readdir (path, options, cb, startTime) {
-	        return fs$readdir(path, fs$readdirCallback(
-	          path, options, cb, startTime
-	        ))
-	      }
-	      : function go$readdir (path, options, cb, startTime) {
-	        return fs$readdir(path, options, fs$readdirCallback(
-	          path, options, cb, startTime
-	        ))
-	      };
-
-	    return go$readdir(path, options, cb)
-
-	    function fs$readdirCallback (path, options, cb, startTime) {
-	      return function (err, files) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([
-	            go$readdir,
-	            [path, options, cb],
-	            err,
-	            startTime || Date.now(),
-	            Date.now()
-	          ]);
-	        else {
-	          if (files && files.sort)
-	            files.sort();
-
-	          if (typeof cb === 'function')
-	            cb.call(this, err, files);
-	        }
-	      }
-	    }
-	  }
-
-	  if (process.version.substr(0, 4) === 'v0.8') {
-	    var legStreams = legacy(fs);
-	    ReadStream = legStreams.ReadStream;
-	    WriteStream = legStreams.WriteStream;
-	  }
-
-	  var fs$ReadStream = fs.ReadStream;
-	  if (fs$ReadStream) {
-	    ReadStream.prototype = Object.create(fs$ReadStream.prototype);
-	    ReadStream.prototype.open = ReadStream$open;
-	  }
-
-	  var fs$WriteStream = fs.WriteStream;
-	  if (fs$WriteStream) {
-	    WriteStream.prototype = Object.create(fs$WriteStream.prototype);
-	    WriteStream.prototype.open = WriteStream$open;
-	  }
-
-	  Object.defineProperty(fs, 'ReadStream', {
-	    get: function () {
-	      return ReadStream
-	    },
-	    set: function (val) {
-	      ReadStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-	  Object.defineProperty(fs, 'WriteStream', {
-	    get: function () {
-	      return WriteStream
-	    },
-	    set: function (val) {
-	      WriteStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-
-	  // legacy names
-	  var FileReadStream = ReadStream;
-	  Object.defineProperty(fs, 'FileReadStream', {
-	    get: function () {
-	      return FileReadStream
-	    },
-	    set: function (val) {
-	      FileReadStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-	  var FileWriteStream = WriteStream;
-	  Object.defineProperty(fs, 'FileWriteStream', {
-	    get: function () {
-	      return FileWriteStream
-	    },
-	    set: function (val) {
-	      FileWriteStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-
-	  function ReadStream (path, options) {
-	    if (this instanceof ReadStream)
-	      return fs$ReadStream.apply(this, arguments), this
-	    else
-	      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
-	  }
-
-	  function ReadStream$open () {
-	    var that = this;
-	    open(that.path, that.flags, that.mode, function (err, fd) {
-	      if (err) {
-	        if (that.autoClose)
-	          that.destroy();
-
-	        that.emit('error', err);
-	      } else {
-	        that.fd = fd;
-	        that.emit('open', fd);
-	        that.read();
-	      }
-	    });
-	  }
-
-	  function WriteStream (path, options) {
-	    if (this instanceof WriteStream)
-	      return fs$WriteStream.apply(this, arguments), this
-	    else
-	      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
-	  }
-
-	  function WriteStream$open () {
-	    var that = this;
-	    open(that.path, that.flags, that.mode, function (err, fd) {
-	      if (err) {
-	        that.destroy();
-	        that.emit('error', err);
-	      } else {
-	        that.fd = fd;
-	        that.emit('open', fd);
-	      }
-	    });
-	  }
-
-	  function createReadStream (path, options) {
-	    return new fs.ReadStream(path, options)
-	  }
-
-	  function createWriteStream (path, options) {
-	    return new fs.WriteStream(path, options)
-	  }
-
-	  var fs$open = fs.open;
-	  fs.open = open;
-	  function open (path, flags, mode, cb) {
-	    if (typeof mode === 'function')
-	      cb = mode, mode = null;
-
-	    return go$open(path, flags, mode, cb)
-
-	    function go$open (path, flags, mode, cb, startTime) {
-	      return fs$open(path, flags, mode, function (err, fd) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$open, [path, flags, mode, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  return fs
-	}
-
-	function enqueue (elem) {
-	  debug('ENQUEUE', elem[0].name, elem[1]);
-	  fs[gracefulQueue].push(elem);
-	  retry();
-	}
-
-	// keep track of the timeout between retry() calls
-	var retryTimer;
-
-	// reset the startTime and lastTime to now
-	// this resets the start of the 60 second overall timeout as well as the
-	// delay between attempts so that we'll retry these jobs sooner
-	function resetQueue () {
-	  var now = Date.now();
-	  for (var i = 0; i < fs[gracefulQueue].length; ++i) {
-	    // entries that are only a length of 2 are from an older version, don't
-	    // bother modifying those since they'll be retried anyway.
-	    if (fs[gracefulQueue][i].length > 2) {
-	      fs[gracefulQueue][i][3] = now; // startTime
-	      fs[gracefulQueue][i][4] = now; // lastTime
-	    }
-	  }
-	  // call retry to make sure we're actively processing the queue
-	  retry();
-	}
-
-	function retry () {
-	  // clear the timer and remove it to help prevent unintended concurrency
-	  clearTimeout(retryTimer);
-	  retryTimer = undefined;
-
-	  if (fs[gracefulQueue].length === 0)
-	    return
-
-	  var elem = fs[gracefulQueue].shift();
-	  var fn = elem[0];
-	  var args = elem[1];
-	  // these items may be unset if they were added by an older graceful-fs
-	  var err = elem[2];
-	  var startTime = elem[3];
-	  var lastTime = elem[4];
-
-	  // if we don't have a startTime we have no way of knowing if we've waited
-	  // long enough, so go ahead and retry this item now
-	  if (startTime === undefined) {
-	    debug('RETRY', fn.name, args);
-	    fn.apply(null, args);
-	  } else if (Date.now() - startTime >= 60000) {
-	    // it's been more than 60 seconds total, bail now
-	    debug('TIMEOUT', fn.name, args);
-	    var cb = args.pop();
-	    if (typeof cb === 'function')
-	      cb.call(null, err);
-	  } else {
-	    // the amount of time between the last attempt and right now
-	    var sinceAttempt = Date.now() - lastTime;
-	    // the amount of time between when we first tried, and when we last tried
-	    // rounded up to at least 1
-	    var sinceStart = Math.max(lastTime - startTime, 1);
-	    // backoff. wait longer than the total time we've been retrying, but only
-	    // up to a maximum of 100ms
-	    var desiredDelay = Math.min(sinceStart * 1.2, 100);
-	    // it's been long enough since the last retry, do it again
-	    if (sinceAttempt >= desiredDelay) {
-	      debug('RETRY', fn.name, args);
-	      fn.apply(null, args.concat([startTime]));
-	    } else {
-	      // if we can't do this job yet, push it to the end of the queue
-	      // and let the next iteration check again
-	      fs[gracefulQueue].push(elem);
-	    }
-	  }
-
-	  // schedule our next run if one isn't already scheduled
-	  if (retryTimer === undefined) {
-	    retryTimer = setTimeout(retry, 0);
-	  }
-	}
-	return gracefulFs;
-}
-
-var gracefulFsExports = requireGracefulFs();
-
-const LINE_ENDING$1 = isWin ? '\r' : '\n';
-async function initBatchFile(path, data) {
-    try {
-        await gracefulFsExports.promises.access(path);
-    }
-    catch (error) {
-        console.log(error);
-        await gracefulFsExports.promises.writeFile(path, data, { encoding: 'utf-8' });
-    }
-}
-async function utilRunCommands(batFileName, dir, defaultData) {
-    if (dir && defaultData)
-        await initBatchFile(path.join(dir, batFileName), defaultData);
-    return `${isWin ? './' : 'bash ./'}${batFileName}${LINE_ENDING$1}`;
-}
-async function utilSaveArgs(cardDir, args, batFileName, parser) {
-    const result = parser(args);
-    const finalDir = path.join(cardDir, batFileName);
-    await gracefulFsExports.promises.writeFile(finalDir, result);
-}
-async function utilReadArgs(cardDir, batFileName, defaultData, parser) {
-    const finalDir = path.join(cardDir, batFileName);
-    await initBatchFile(finalDir, defaultData);
-    const data = await gracefulFsExports.promises.readFile(finalDir, 'utf-8');
-    if (!data)
-        return [];
-    return parser(data);
-}
-
-const BAT_FILE_NAME$b = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
-async function getRunCommands$d(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$b, dir, DEFAULT_BATCH_DATA$a);
-}
-const erew123MainMethods = { getRunCommands: getRunCommands$d };
-
-const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
-async function getRunCommands$c(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$9);
-}
-async function saveArgs$8(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$a, parseArgsToString);
-}
-async function readArgs$8(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$9, parseStringToArgs);
-}
-const gitmyloMainMethods = { getRunCommands: getRunCommands$c, readArgs: readArgs$8, saveArgs: saveArgs$8 };
-
-const BAT_FILE_NAME$9 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
-async function getRunCommands$b(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$9, dir);
-}
-const rsxMainMethods = { getRunCommands: getRunCommands$b };
-
-const BAT_FILE_NAME$8 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
-async function getRunCommands$a(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$8, dir, DEFAULT_BATCH_DATA$8);
-}
-async function saveArgs$7(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$8, parseArgsToString$1);
-}
-async function readArgs$7(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$8, DEFAULT_BATCH_DATA$8, parseStringToArgs$1);
-}
-const comfyMainMethods = { getRunCommands: getRunCommands$a, readArgs: readArgs$7, saveArgs: saveArgs$7 };
-
-const BAT_FILE_NAME$7 = 'lynx-user.bat';
-const DEFAULT_BATCH_DATA$7 = '@echo off\n' +
-    '\n' +
-    'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
-    'set VENV_DIR=./venv\n' +
-    '\n' +
-    'set ZLUDA_COMGR_LOG_LEVEL=1\n' +
-    '\n' +
-    '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
-    '\npause';
-async function getRunCommands$9(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$7);
-}
-async function saveArgs$6(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$7, parseArgsToString$2);
-}
-async function readArgs$6(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$7, parseStringToArgs$2);
-}
-const comfyZludaMainMethods = { getRunCommands: getRunCommands$9, readArgs: readArgs$6, saveArgs: saveArgs$6 };
-
-var re = {exports: {}};
-
-var constants;
-var hasRequiredConstants;
-
-function requireConstants () {
-	if (hasRequiredConstants) return constants;
-	hasRequiredConstants = 1;
-	// Note: this is the semver.org version of the spec that it implements
-	// Not necessarily the package version of this code.
-	const SEMVER_SPEC_VERSION = '2.0.0';
-
-	const MAX_LENGTH = 256;
-	const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER ||
-	/* istanbul ignore next */ 9007199254740991;
-
-	// Max safe segment length for coercion.
-	const MAX_SAFE_COMPONENT_LENGTH = 16;
-
-	// Max safe length for a build identifier. The max length minus 6 characters for
-	// the shortest version with a build 0.0.0+BUILD.
-	const MAX_SAFE_BUILD_LENGTH = MAX_LENGTH - 6;
-
-	const RELEASE_TYPES = [
-	  'major',
-	  'premajor',
-	  'minor',
-	  'preminor',
-	  'patch',
-	  'prepatch',
-	  'prerelease',
-	];
-
-	constants = {
-	  MAX_LENGTH,
-	  MAX_SAFE_COMPONENT_LENGTH,
-	  MAX_SAFE_BUILD_LENGTH,
-	  MAX_SAFE_INTEGER,
-	  RELEASE_TYPES,
-	  SEMVER_SPEC_VERSION,
-	  FLAG_INCLUDE_PRERELEASE: 0b001,
-	  FLAG_LOOSE: 0b010,
-	};
-	return constants;
-}
-
-var debug_1$1;
-var hasRequiredDebug$1;
-
-function requireDebug$1 () {
-	if (hasRequiredDebug$1) return debug_1$1;
-	hasRequiredDebug$1 = 1;
-	const debug = (
-	  typeof process === 'object' &&
-	  process.env &&
-	  process.env.NODE_DEBUG &&
-	  /\bsemver\b/i.test(process.env.NODE_DEBUG)
-	) ? (...args) => console.error('SEMVER', ...args)
-	  : () => {};
-
-	debug_1$1 = debug;
-	return debug_1$1;
-}
-
-var hasRequiredRe;
-
-function requireRe () {
-	if (hasRequiredRe) return re.exports;
-	hasRequiredRe = 1;
-	(function (module, exports) {
-		const {
-		  MAX_SAFE_COMPONENT_LENGTH,
-		  MAX_SAFE_BUILD_LENGTH,
-		  MAX_LENGTH,
-		} = requireConstants();
-		const debug = requireDebug$1();
-		exports = module.exports = {};
-
-		// The actual regexps go on exports.re
-		const re = exports.re = [];
-		const safeRe = exports.safeRe = [];
-		const src = exports.src = [];
-		const t = exports.t = {};
-		let R = 0;
-
-		const LETTERDASHNUMBER = '[a-zA-Z0-9-]';
-
-		// Replace some greedy regex tokens to prevent regex dos issues. These regex are
-		// used internally via the safeRe object since all inputs in this library get
-		// normalized first to trim and collapse all extra whitespace. The original
-		// regexes are exported for userland consumption and lower level usage. A
-		// future breaking change could export the safer regex only with a note that
-		// all input should have extra whitespace removed.
-		const safeRegexReplacements = [
-		  ['\\s', 1],
-		  ['\\d', MAX_LENGTH],
-		  [LETTERDASHNUMBER, MAX_SAFE_BUILD_LENGTH],
-		];
-
-		const makeSafeRegex = (value) => {
-		  for (const [token, max] of safeRegexReplacements) {
-		    value = value
-		      .split(`${token}*`).join(`${token}{0,${max}}`)
-		      .split(`${token}+`).join(`${token}{1,${max}}`);
-		  }
-		  return value
-		};
-
-		const createToken = (name, value, isGlobal) => {
-		  const safe = makeSafeRegex(value);
-		  const index = R++;
-		  debug(name, index, value);
-		  t[name] = index;
-		  src[index] = value;
-		  re[index] = new RegExp(value, isGlobal ? 'g' : undefined);
-		  safeRe[index] = new RegExp(safe, isGlobal ? 'g' : undefined);
-		};
-
-		// The following Regular Expressions can be used for tokenizing,
-		// validating, and parsing SemVer version strings.
-
-		// ## Numeric Identifier
-		// A single `0`, or a non-zero digit followed by zero or more digits.
-
-		createToken('NUMERICIDENTIFIER', '0|[1-9]\\d*');
-		createToken('NUMERICIDENTIFIERLOOSE', '\\d+');
-
-		// ## Non-numeric Identifier
-		// Zero or more digits, followed by a letter or hyphen, and then zero or
-		// more letters, digits, or hyphens.
-
-		createToken('NONNUMERICIDENTIFIER', `\\d*[a-zA-Z-]${LETTERDASHNUMBER}*`);
-
-		// ## Main Version
-		// Three dot-separated numeric identifiers.
-
-		createToken('MAINVERSION', `(${src[t.NUMERICIDENTIFIER]})\\.` +
-		                   `(${src[t.NUMERICIDENTIFIER]})\\.` +
-		                   `(${src[t.NUMERICIDENTIFIER]})`);
-
-		createToken('MAINVERSIONLOOSE', `(${src[t.NUMERICIDENTIFIERLOOSE]})\\.` +
-		                        `(${src[t.NUMERICIDENTIFIERLOOSE]})\\.` +
-		                        `(${src[t.NUMERICIDENTIFIERLOOSE]})`);
-
-		// ## Pre-release Version Identifier
-		// A numeric identifier, or a non-numeric identifier.
-
-		createToken('PRERELEASEIDENTIFIER', `(?:${src[t.NUMERICIDENTIFIER]
-		}|${src[t.NONNUMERICIDENTIFIER]})`);
-
-		createToken('PRERELEASEIDENTIFIERLOOSE', `(?:${src[t.NUMERICIDENTIFIERLOOSE]
-		}|${src[t.NONNUMERICIDENTIFIER]})`);
-
-		// ## Pre-release Version
-		// Hyphen, followed by one or more dot-separated pre-release version
-		// identifiers.
-
-		createToken('PRERELEASE', `(?:-(${src[t.PRERELEASEIDENTIFIER]
-		}(?:\\.${src[t.PRERELEASEIDENTIFIER]})*))`);
-
-		createToken('PRERELEASELOOSE', `(?:-?(${src[t.PRERELEASEIDENTIFIERLOOSE]
-		}(?:\\.${src[t.PRERELEASEIDENTIFIERLOOSE]})*))`);
-
-		// ## Build Metadata Identifier
-		// Any combination of digits, letters, or hyphens.
-
-		createToken('BUILDIDENTIFIER', `${LETTERDASHNUMBER}+`);
-
-		// ## Build Metadata
-		// Plus sign, followed by one or more period-separated build metadata
-		// identifiers.
-
-		createToken('BUILD', `(?:\\+(${src[t.BUILDIDENTIFIER]
-		}(?:\\.${src[t.BUILDIDENTIFIER]})*))`);
-
-		// ## Full Version String
-		// A main version, followed optionally by a pre-release version and
-		// build metadata.
-
-		// Note that the only major, minor, patch, and pre-release sections of
-		// the version string are capturing groups.  The build metadata is not a
-		// capturing group, because it should not ever be used in version
-		// comparison.
-
-		createToken('FULLPLAIN', `v?${src[t.MAINVERSION]
-		}${src[t.PRERELEASE]}?${
-		  src[t.BUILD]}?`);
-
-		createToken('FULL', `^${src[t.FULLPLAIN]}$`);
-
-		// like full, but allows v1.2.3 and =1.2.3, which people do sometimes.
-		// also, 1.0.0alpha1 (prerelease without the hyphen) which is pretty
-		// common in the npm registry.
-		createToken('LOOSEPLAIN', `[v=\\s]*${src[t.MAINVERSIONLOOSE]
-		}${src[t.PRERELEASELOOSE]}?${
-		  src[t.BUILD]}?`);
-
-		createToken('LOOSE', `^${src[t.LOOSEPLAIN]}$`);
-
-		createToken('GTLT', '((?:<|>)?=?)');
-
-		// Something like "2.*" or "1.2.x".
-		// Note that "x.x" is a valid xRange identifer, meaning "any version"
-		// Only the first item is strictly required.
-		createToken('XRANGEIDENTIFIERLOOSE', `${src[t.NUMERICIDENTIFIERLOOSE]}|x|X|\\*`);
-		createToken('XRANGEIDENTIFIER', `${src[t.NUMERICIDENTIFIER]}|x|X|\\*`);
-
-		createToken('XRANGEPLAIN', `[v=\\s]*(${src[t.XRANGEIDENTIFIER]})` +
-		                   `(?:\\.(${src[t.XRANGEIDENTIFIER]})` +
-		                   `(?:\\.(${src[t.XRANGEIDENTIFIER]})` +
-		                   `(?:${src[t.PRERELEASE]})?${
-		                     src[t.BUILD]}?` +
-		                   `)?)?`);
-
-		createToken('XRANGEPLAINLOOSE', `[v=\\s]*(${src[t.XRANGEIDENTIFIERLOOSE]})` +
-		                        `(?:\\.(${src[t.XRANGEIDENTIFIERLOOSE]})` +
-		                        `(?:\\.(${src[t.XRANGEIDENTIFIERLOOSE]})` +
-		                        `(?:${src[t.PRERELEASELOOSE]})?${
-		                          src[t.BUILD]}?` +
-		                        `)?)?`);
-
-		createToken('XRANGE', `^${src[t.GTLT]}\\s*${src[t.XRANGEPLAIN]}$`);
-		createToken('XRANGELOOSE', `^${src[t.GTLT]}\\s*${src[t.XRANGEPLAINLOOSE]}$`);
-
-		// Coercion.
-		// Extract anything that could conceivably be a part of a valid semver
-		createToken('COERCEPLAIN', `${'(^|[^\\d])' +
-		              '(\\d{1,'}${MAX_SAFE_COMPONENT_LENGTH}})` +
-		              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?` +
-		              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?`);
-		createToken('COERCE', `${src[t.COERCEPLAIN]}(?:$|[^\\d])`);
-		createToken('COERCEFULL', src[t.COERCEPLAIN] +
-		              `(?:${src[t.PRERELEASE]})?` +
-		              `(?:${src[t.BUILD]})?` +
-		              `(?:$|[^\\d])`);
-		createToken('COERCERTL', src[t.COERCE], true);
-		createToken('COERCERTLFULL', src[t.COERCEFULL], true);
-
-		// Tilde ranges.
-		// Meaning is "reasonably at or greater than"
-		createToken('LONETILDE', '(?:~>?)');
-
-		createToken('TILDETRIM', `(\\s*)${src[t.LONETILDE]}\\s+`, true);
-		exports.tildeTrimReplace = '$1~';
-
-		createToken('TILDE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAIN]}$`);
-		createToken('TILDELOOSE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAINLOOSE]}$`);
-
-		// Caret ranges.
-		// Meaning is "at least and backwards compatible with"
-		createToken('LONECARET', '(?:\\^)');
-
-		createToken('CARETTRIM', `(\\s*)${src[t.LONECARET]}\\s+`, true);
-		exports.caretTrimReplace = '$1^';
-
-		createToken('CARET', `^${src[t.LONECARET]}${src[t.XRANGEPLAIN]}$`);
-		createToken('CARETLOOSE', `^${src[t.LONECARET]}${src[t.XRANGEPLAINLOOSE]}$`);
-
-		// A simple gt/lt/eq thing, or just "" to indicate "any version"
-		createToken('COMPARATORLOOSE', `^${src[t.GTLT]}\\s*(${src[t.LOOSEPLAIN]})$|^$`);
-		createToken('COMPARATOR', `^${src[t.GTLT]}\\s*(${src[t.FULLPLAIN]})$|^$`);
-
-		// An expression to strip any whitespace between the gtlt and the thing
-		// it modifies, so that `> 1.2.3` ==> `>1.2.3`
-		createToken('COMPARATORTRIM', `(\\s*)${src[t.GTLT]
-		}\\s*(${src[t.LOOSEPLAIN]}|${src[t.XRANGEPLAIN]})`, true);
-		exports.comparatorTrimReplace = '$1$2$3';
-
-		// Something like `1.2.3 - 1.2.4`
-		// Note that these all use the loose form, because they'll be
-		// checked against either the strict or loose comparator form
-		// later.
-		createToken('HYPHENRANGE', `^\\s*(${src[t.XRANGEPLAIN]})` +
-		                   `\\s+-\\s+` +
-		                   `(${src[t.XRANGEPLAIN]})` +
-		                   `\\s*$`);
-
-		createToken('HYPHENRANGELOOSE', `^\\s*(${src[t.XRANGEPLAINLOOSE]})` +
-		                        `\\s+-\\s+` +
-		                        `(${src[t.XRANGEPLAINLOOSE]})` +
-		                        `\\s*$`);
-
-		// Star ranges basically just allow anything at all.
-		createToken('STAR', '(<|>)?=?\\s*\\*');
-		// >=0.0.0 is like a star
-		createToken('GTE0', '^\\s*>=\\s*0\\.0\\.0\\s*$');
-		createToken('GTE0PRE', '^\\s*>=\\s*0\\.0\\.0-0\\s*$'); 
-	} (re, re.exports));
-	return re.exports;
-}
-
-var parseOptions_1;
-var hasRequiredParseOptions;
-
-function requireParseOptions () {
-	if (hasRequiredParseOptions) return parseOptions_1;
-	hasRequiredParseOptions = 1;
-	// parse out just the options we care about
-	const looseOption = Object.freeze({ loose: true });
-	const emptyOpts = Object.freeze({ });
-	const parseOptions = options => {
-	  if (!options) {
-	    return emptyOpts
-	  }
-
-	  if (typeof options !== 'object') {
-	    return looseOption
-	  }
-
-	  return options
-	};
-	parseOptions_1 = parseOptions;
-	return parseOptions_1;
-}
-
-var identifiers;
-var hasRequiredIdentifiers;
-
-function requireIdentifiers () {
-	if (hasRequiredIdentifiers) return identifiers;
-	hasRequiredIdentifiers = 1;
-	const numeric = /^[0-9]+$/;
-	const compareIdentifiers = (a, b) => {
-	  const anum = numeric.test(a);
-	  const bnum = numeric.test(b);
-
-	  if (anum && bnum) {
-	    a = +a;
-	    b = +b;
-	  }
-
-	  return a === b ? 0
-	    : (anum && !bnum) ? -1
-	    : (bnum && !anum) ? 1
-	    : a < b ? -1
-	    : 1
-	};
-
-	const rcompareIdentifiers = (a, b) => compareIdentifiers(b, a);
-
-	identifiers = {
-	  compareIdentifiers,
-	  rcompareIdentifiers,
-	};
-	return identifiers;
-}
-
-var semver$1;
-var hasRequiredSemver$1;
-
-function requireSemver$1 () {
-	if (hasRequiredSemver$1) return semver$1;
-	hasRequiredSemver$1 = 1;
-	const debug = requireDebug$1();
-	const { MAX_LENGTH, MAX_SAFE_INTEGER } = requireConstants();
-	const { safeRe: re, t } = requireRe();
-
-	const parseOptions = requireParseOptions();
-	const { compareIdentifiers } = requireIdentifiers();
-	class SemVer {
-	  constructor (version, options) {
-	    options = parseOptions(options);
-
-	    if (version instanceof SemVer) {
-	      if (version.loose === !!options.loose &&
-	          version.includePrerelease === !!options.includePrerelease) {
-	        return version
-	      } else {
-	        version = version.version;
-	      }
-	    } else if (typeof version !== 'string') {
-	      throw new TypeError(`Invalid version. Must be a string. Got type "${typeof version}".`)
-	    }
-
-	    if (version.length > MAX_LENGTH) {
-	      throw new TypeError(
-	        `version is longer than ${MAX_LENGTH} characters`
-	      )
-	    }
-
-	    debug('SemVer', version, options);
-	    this.options = options;
-	    this.loose = !!options.loose;
-	    // this isn't actually relevant for versions, but keep it so that we
-	    // don't run into trouble passing this.options around.
-	    this.includePrerelease = !!options.includePrerelease;
-
-	    const m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
-
-	    if (!m) {
-	      throw new TypeError(`Invalid Version: ${version}`)
-	    }
-
-	    this.raw = version;
-
-	    // these are actually numbers
-	    this.major = +m[1];
-	    this.minor = +m[2];
-	    this.patch = +m[3];
-
-	    if (this.major > MAX_SAFE_INTEGER || this.major < 0) {
-	      throw new TypeError('Invalid major version')
-	    }
-
-	    if (this.minor > MAX_SAFE_INTEGER || this.minor < 0) {
-	      throw new TypeError('Invalid minor version')
-	    }
-
-	    if (this.patch > MAX_SAFE_INTEGER || this.patch < 0) {
-	      throw new TypeError('Invalid patch version')
-	    }
-
-	    // numberify any prerelease numeric ids
-	    if (!m[4]) {
-	      this.prerelease = [];
-	    } else {
-	      this.prerelease = m[4].split('.').map((id) => {
-	        if (/^[0-9]+$/.test(id)) {
-	          const num = +id;
-	          if (num >= 0 && num < MAX_SAFE_INTEGER) {
-	            return num
-	          }
-	        }
-	        return id
-	      });
-	    }
-
-	    this.build = m[5] ? m[5].split('.') : [];
-	    this.format();
-	  }
-
-	  format () {
-	    this.version = `${this.major}.${this.minor}.${this.patch}`;
-	    if (this.prerelease.length) {
-	      this.version += `-${this.prerelease.join('.')}`;
-	    }
-	    return this.version
-	  }
-
-	  toString () {
-	    return this.version
-	  }
-
-	  compare (other) {
-	    debug('SemVer.compare', this.version, this.options, other);
-	    if (!(other instanceof SemVer)) {
-	      if (typeof other === 'string' && other === this.version) {
-	        return 0
-	      }
-	      other = new SemVer(other, this.options);
-	    }
-
-	    if (other.version === this.version) {
-	      return 0
-	    }
-
-	    return this.compareMain(other) || this.comparePre(other)
-	  }
-
-	  compareMain (other) {
-	    if (!(other instanceof SemVer)) {
-	      other = new SemVer(other, this.options);
-	    }
-
-	    return (
-	      compareIdentifiers(this.major, other.major) ||
-	      compareIdentifiers(this.minor, other.minor) ||
-	      compareIdentifiers(this.patch, other.patch)
-	    )
-	  }
-
-	  comparePre (other) {
-	    if (!(other instanceof SemVer)) {
-	      other = new SemVer(other, this.options);
-	    }
-
-	    // NOT having a prerelease is > having one
-	    if (this.prerelease.length && !other.prerelease.length) {
-	      return -1
-	    } else if (!this.prerelease.length && other.prerelease.length) {
-	      return 1
-	    } else if (!this.prerelease.length && !other.prerelease.length) {
-	      return 0
-	    }
-
-	    let i = 0;
-	    do {
-	      const a = this.prerelease[i];
-	      const b = other.prerelease[i];
-	      debug('prerelease compare', i, a, b);
-	      if (a === undefined && b === undefined) {
-	        return 0
-	      } else if (b === undefined) {
-	        return 1
-	      } else if (a === undefined) {
-	        return -1
-	      } else if (a === b) {
-	        continue
-	      } else {
-	        return compareIdentifiers(a, b)
-	      }
-	    } while (++i)
-	  }
-
-	  compareBuild (other) {
-	    if (!(other instanceof SemVer)) {
-	      other = new SemVer(other, this.options);
-	    }
-
-	    let i = 0;
-	    do {
-	      const a = this.build[i];
-	      const b = other.build[i];
-	      debug('build compare', i, a, b);
-	      if (a === undefined && b === undefined) {
-	        return 0
-	      } else if (b === undefined) {
-	        return 1
-	      } else if (a === undefined) {
-	        return -1
-	      } else if (a === b) {
-	        continue
-	      } else {
-	        return compareIdentifiers(a, b)
-	      }
-	    } while (++i)
-	  }
-
-	  // preminor will bump the version up to the next minor release, and immediately
-	  // down to pre-release. premajor and prepatch work the same way.
-	  inc (release, identifier, identifierBase) {
-	    switch (release) {
-	      case 'premajor':
-	        this.prerelease.length = 0;
-	        this.patch = 0;
-	        this.minor = 0;
-	        this.major++;
-	        this.inc('pre', identifier, identifierBase);
-	        break
-	      case 'preminor':
-	        this.prerelease.length = 0;
-	        this.patch = 0;
-	        this.minor++;
-	        this.inc('pre', identifier, identifierBase);
-	        break
-	      case 'prepatch':
-	        // If this is already a prerelease, it will bump to the next version
-	        // drop any prereleases that might already exist, since they are not
-	        // relevant at this point.
-	        this.prerelease.length = 0;
-	        this.inc('patch', identifier, identifierBase);
-	        this.inc('pre', identifier, identifierBase);
-	        break
-	      // If the input is a non-prerelease version, this acts the same as
-	      // prepatch.
-	      case 'prerelease':
-	        if (this.prerelease.length === 0) {
-	          this.inc('patch', identifier, identifierBase);
-	        }
-	        this.inc('pre', identifier, identifierBase);
-	        break
-
-	      case 'major':
-	        // If this is a pre-major version, bump up to the same major version.
-	        // Otherwise increment major.
-	        // 1.0.0-5 bumps to 1.0.0
-	        // 1.1.0 bumps to 2.0.0
-	        if (
-	          this.minor !== 0 ||
-	          this.patch !== 0 ||
-	          this.prerelease.length === 0
-	        ) {
-	          this.major++;
-	        }
-	        this.minor = 0;
-	        this.patch = 0;
-	        this.prerelease = [];
-	        break
-	      case 'minor':
-	        // If this is a pre-minor version, bump up to the same minor version.
-	        // Otherwise increment minor.
-	        // 1.2.0-5 bumps to 1.2.0
-	        // 1.2.1 bumps to 1.3.0
-	        if (this.patch !== 0 || this.prerelease.length === 0) {
-	          this.minor++;
-	        }
-	        this.patch = 0;
-	        this.prerelease = [];
-	        break
-	      case 'patch':
-	        // If this is not a pre-release version, it will increment the patch.
-	        // If it is a pre-release it will bump up to the same patch version.
-	        // 1.2.0-5 patches to 1.2.0
-	        // 1.2.0 patches to 1.2.1
-	        if (this.prerelease.length === 0) {
-	          this.patch++;
-	        }
-	        this.prerelease = [];
-	        break
-	      // This probably shouldn't be used publicly.
-	      // 1.0.0 'pre' would become 1.0.0-0 which is the wrong direction.
-	      case 'pre': {
-	        const base = Number(identifierBase) ? 1 : 0;
-
-	        if (!identifier && identifierBase === false) {
-	          throw new Error('invalid increment argument: identifier is empty')
-	        }
-
-	        if (this.prerelease.length === 0) {
-	          this.prerelease = [base];
-	        } else {
-	          let i = this.prerelease.length;
-	          while (--i >= 0) {
-	            if (typeof this.prerelease[i] === 'number') {
-	              this.prerelease[i]++;
-	              i = -2;
-	            }
-	          }
-	          if (i === -1) {
-	            // didn't increment anything
-	            if (identifier === this.prerelease.join('.') && identifierBase === false) {
-	              throw new Error('invalid increment argument: identifier already exists')
-	            }
-	            this.prerelease.push(base);
-	          }
-	        }
-	        if (identifier) {
-	          // 1.2.0-beta.1 bumps to 1.2.0-beta.2,
-	          // 1.2.0-beta.fooblz or 1.2.0-beta bumps to 1.2.0-beta.0
-	          let prerelease = [identifier, base];
-	          if (identifierBase === false) {
-	            prerelease = [identifier];
-	          }
-	          if (compareIdentifiers(this.prerelease[0], identifier) === 0) {
-	            if (isNaN(this.prerelease[1])) {
-	              this.prerelease = prerelease;
-	            }
-	          } else {
-	            this.prerelease = prerelease;
-	          }
-	        }
-	        break
-	      }
-	      default:
-	        throw new Error(`invalid increment argument: ${release}`)
-	    }
-	    this.raw = this.format();
-	    if (this.build.length) {
-	      this.raw += `+${this.build.join('.')}`;
-	    }
-	    return this
-	  }
-	}
-
-	semver$1 = SemVer;
-	return semver$1;
-}
-
-var parse_1;
-var hasRequiredParse;
-
-function requireParse () {
-	if (hasRequiredParse) return parse_1;
-	hasRequiredParse = 1;
-	const SemVer = requireSemver$1();
-	const parse = (version, options, throwErrors = false) => {
-	  if (version instanceof SemVer) {
-	    return version
-	  }
-	  try {
-	    return new SemVer(version, options)
-	  } catch (er) {
-	    if (!throwErrors) {
-	      return null
-	    }
-	    throw er
-	  }
-	};
-
-	parse_1 = parse;
-	return parse_1;
-}
-
-var valid_1;
-var hasRequiredValid$1;
-
-function requireValid$1 () {
-	if (hasRequiredValid$1) return valid_1;
-	hasRequiredValid$1 = 1;
-	const parse = requireParse();
-	const valid = (version, options) => {
-	  const v = parse(version, options);
-	  return v ? v.version : null
-	};
-	valid_1 = valid;
-	return valid_1;
-}
-
-var clean_1;
-var hasRequiredClean;
-
-function requireClean () {
-	if (hasRequiredClean) return clean_1;
-	hasRequiredClean = 1;
-	const parse = requireParse();
-	const clean = (version, options) => {
-	  const s = parse(version.trim().replace(/^[=v]+/, ''), options);
-	  return s ? s.version : null
-	};
-	clean_1 = clean;
-	return clean_1;
-}
-
-var inc_1;
-var hasRequiredInc;
-
-function requireInc () {
-	if (hasRequiredInc) return inc_1;
-	hasRequiredInc = 1;
-	const SemVer = requireSemver$1();
-
-	const inc = (version, release, options, identifier, identifierBase) => {
-	  if (typeof (options) === 'string') {
-	    identifierBase = identifier;
-	    identifier = options;
-	    options = undefined;
-	  }
-
-	  try {
-	    return new SemVer(
-	      version instanceof SemVer ? version.version : version,
-	      options
-	    ).inc(release, identifier, identifierBase).version
-	  } catch (er) {
-	    return null
-	  }
-	};
-	inc_1 = inc;
-	return inc_1;
-}
-
-var diff_1;
-var hasRequiredDiff;
-
-function requireDiff () {
-	if (hasRequiredDiff) return diff_1;
-	hasRequiredDiff = 1;
-	const parse = requireParse();
-
-	const diff = (version1, version2) => {
-	  const v1 = parse(version1, null, true);
-	  const v2 = parse(version2, null, true);
-	  const comparison = v1.compare(v2);
-
-	  if (comparison === 0) {
-	    return null
-	  }
-
-	  const v1Higher = comparison > 0;
-	  const highVersion = v1Higher ? v1 : v2;
-	  const lowVersion = v1Higher ? v2 : v1;
-	  const highHasPre = !!highVersion.prerelease.length;
-	  const lowHasPre = !!lowVersion.prerelease.length;
-
-	  if (lowHasPre && !highHasPre) {
-	    // Going from prerelease -> no prerelease requires some special casing
-
-	    // If the low version has only a major, then it will always be a major
-	    // Some examples:
-	    // 1.0.0-1 -> 1.0.0
-	    // 1.0.0-1 -> 1.1.1
-	    // 1.0.0-1 -> 2.0.0
-	    if (!lowVersion.patch && !lowVersion.minor) {
-	      return 'major'
-	    }
-
-	    // Otherwise it can be determined by checking the high version
-
-	    if (highVersion.patch) {
-	      // anything higher than a patch bump would result in the wrong version
-	      return 'patch'
-	    }
-
-	    if (highVersion.minor) {
-	      // anything higher than a minor bump would result in the wrong version
-	      return 'minor'
-	    }
-
-	    // bumping major/minor/patch all have same result
-	    return 'major'
-	  }
-
-	  // add the `pre` prefix if we are going to a prerelease version
-	  const prefix = highHasPre ? 'pre' : '';
-
-	  if (v1.major !== v2.major) {
-	    return prefix + 'major'
-	  }
-
-	  if (v1.minor !== v2.minor) {
-	    return prefix + 'minor'
-	  }
-
-	  if (v1.patch !== v2.patch) {
-	    return prefix + 'patch'
-	  }
-
-	  // high and low are preleases
-	  return 'prerelease'
-	};
-
-	diff_1 = diff;
-	return diff_1;
-}
-
-var major_1;
-var hasRequiredMajor;
-
-function requireMajor () {
-	if (hasRequiredMajor) return major_1;
-	hasRequiredMajor = 1;
-	const SemVer = requireSemver$1();
-	const major = (a, loose) => new SemVer(a, loose).major;
-	major_1 = major;
-	return major_1;
-}
-
-var minor_1;
-var hasRequiredMinor;
-
-function requireMinor () {
-	if (hasRequiredMinor) return minor_1;
-	hasRequiredMinor = 1;
-	const SemVer = requireSemver$1();
-	const minor = (a, loose) => new SemVer(a, loose).minor;
-	minor_1 = minor;
-	return minor_1;
-}
-
-var patch_1;
-var hasRequiredPatch;
-
-function requirePatch () {
-	if (hasRequiredPatch) return patch_1;
-	hasRequiredPatch = 1;
-	const SemVer = requireSemver$1();
-	const patch = (a, loose) => new SemVer(a, loose).patch;
-	patch_1 = patch;
-	return patch_1;
-}
-
-var prerelease_1;
-var hasRequiredPrerelease;
-
-function requirePrerelease () {
-	if (hasRequiredPrerelease) return prerelease_1;
-	hasRequiredPrerelease = 1;
-	const parse = requireParse();
-	const prerelease = (version, options) => {
-	  const parsed = parse(version, options);
-	  return (parsed && parsed.prerelease.length) ? parsed.prerelease : null
-	};
-	prerelease_1 = prerelease;
-	return prerelease_1;
-}
-
-var compare_1;
-var hasRequiredCompare;
-
-function requireCompare () {
-	if (hasRequiredCompare) return compare_1;
-	hasRequiredCompare = 1;
-	const SemVer = requireSemver$1();
-	const compare = (a, b, loose) =>
-	  new SemVer(a, loose).compare(new SemVer(b, loose));
-
-	compare_1 = compare;
-	return compare_1;
-}
-
-var rcompare_1;
-var hasRequiredRcompare;
-
-function requireRcompare () {
-	if (hasRequiredRcompare) return rcompare_1;
-	hasRequiredRcompare = 1;
-	const compare = requireCompare();
-	const rcompare = (a, b, loose) => compare(b, a, loose);
-	rcompare_1 = rcompare;
-	return rcompare_1;
-}
-
-var compareLoose_1;
-var hasRequiredCompareLoose;
-
-function requireCompareLoose () {
-	if (hasRequiredCompareLoose) return compareLoose_1;
-	hasRequiredCompareLoose = 1;
-	const compare = requireCompare();
-	const compareLoose = (a, b) => compare(a, b, true);
-	compareLoose_1 = compareLoose;
-	return compareLoose_1;
-}
-
-var compareBuild_1;
-var hasRequiredCompareBuild;
-
-function requireCompareBuild () {
-	if (hasRequiredCompareBuild) return compareBuild_1;
-	hasRequiredCompareBuild = 1;
-	const SemVer = requireSemver$1();
-	const compareBuild = (a, b, loose) => {
-	  const versionA = new SemVer(a, loose);
-	  const versionB = new SemVer(b, loose);
-	  return versionA.compare(versionB) || versionA.compareBuild(versionB)
-	};
-	compareBuild_1 = compareBuild;
-	return compareBuild_1;
-}
-
-var sort_1;
-var hasRequiredSort;
-
-function requireSort () {
-	if (hasRequiredSort) return sort_1;
-	hasRequiredSort = 1;
-	const compareBuild = requireCompareBuild();
-	const sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
-	sort_1 = sort;
-	return sort_1;
-}
-
-var rsort_1;
-var hasRequiredRsort;
-
-function requireRsort () {
-	if (hasRequiredRsort) return rsort_1;
-	hasRequiredRsort = 1;
-	const compareBuild = requireCompareBuild();
-	const rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
-	rsort_1 = rsort;
-	return rsort_1;
-}
-
-var gt_1;
-var hasRequiredGt;
-
-function requireGt () {
-	if (hasRequiredGt) return gt_1;
-	hasRequiredGt = 1;
-	const compare = requireCompare();
-	const gt = (a, b, loose) => compare(a, b, loose) > 0;
-	gt_1 = gt;
-	return gt_1;
-}
-
-var lt_1;
-var hasRequiredLt;
-
-function requireLt () {
-	if (hasRequiredLt) return lt_1;
-	hasRequiredLt = 1;
-	const compare = requireCompare();
-	const lt = (a, b, loose) => compare(a, b, loose) < 0;
-	lt_1 = lt;
-	return lt_1;
-}
-
-var eq_1;
-var hasRequiredEq;
-
-function requireEq () {
-	if (hasRequiredEq) return eq_1;
-	hasRequiredEq = 1;
-	const compare = requireCompare();
-	const eq = (a, b, loose) => compare(a, b, loose) === 0;
-	eq_1 = eq;
-	return eq_1;
-}
-
-var neq_1;
-var hasRequiredNeq;
-
-function requireNeq () {
-	if (hasRequiredNeq) return neq_1;
-	hasRequiredNeq = 1;
-	const compare = requireCompare();
-	const neq = (a, b, loose) => compare(a, b, loose) !== 0;
-	neq_1 = neq;
-	return neq_1;
-}
-
-var gte_1;
-var hasRequiredGte;
-
-function requireGte () {
-	if (hasRequiredGte) return gte_1;
-	hasRequiredGte = 1;
-	const compare = requireCompare();
-	const gte = (a, b, loose) => compare(a, b, loose) >= 0;
-	gte_1 = gte;
-	return gte_1;
-}
-
-var lte_1;
-var hasRequiredLte;
-
-function requireLte () {
-	if (hasRequiredLte) return lte_1;
-	hasRequiredLte = 1;
-	const compare = requireCompare();
-	const lte = (a, b, loose) => compare(a, b, loose) <= 0;
-	lte_1 = lte;
-	return lte_1;
-}
-
-var cmp_1;
-var hasRequiredCmp;
-
-function requireCmp () {
-	if (hasRequiredCmp) return cmp_1;
-	hasRequiredCmp = 1;
-	const eq = requireEq();
-	const neq = requireNeq();
-	const gt = requireGt();
-	const gte = requireGte();
-	const lt = requireLt();
-	const lte = requireLte();
-
-	const cmp = (a, op, b, loose) => {
-	  switch (op) {
-	    case '===':
-	      if (typeof a === 'object') {
-	        a = a.version;
-	      }
-	      if (typeof b === 'object') {
-	        b = b.version;
-	      }
-	      return a === b
-
-	    case '!==':
-	      if (typeof a === 'object') {
-	        a = a.version;
-	      }
-	      if (typeof b === 'object') {
-	        b = b.version;
-	      }
-	      return a !== b
-
-	    case '':
-	    case '=':
-	    case '==':
-	      return eq(a, b, loose)
-
-	    case '!=':
-	      return neq(a, b, loose)
-
-	    case '>':
-	      return gt(a, b, loose)
-
-	    case '>=':
-	      return gte(a, b, loose)
-
-	    case '<':
-	      return lt(a, b, loose)
-
-	    case '<=':
-	      return lte(a, b, loose)
-
-	    default:
-	      throw new TypeError(`Invalid operator: ${op}`)
-	  }
-	};
-	cmp_1 = cmp;
-	return cmp_1;
-}
-
-var coerce_1;
-var hasRequiredCoerce;
-
-function requireCoerce () {
-	if (hasRequiredCoerce) return coerce_1;
-	hasRequiredCoerce = 1;
-	const SemVer = requireSemver$1();
-	const parse = requireParse();
-	const { safeRe: re, t } = requireRe();
-
-	const coerce = (version, options) => {
-	  if (version instanceof SemVer) {
-	    return version
-	  }
-
-	  if (typeof version === 'number') {
-	    version = String(version);
-	  }
-
-	  if (typeof version !== 'string') {
-	    return null
-	  }
-
-	  options = options || {};
-
-	  let match = null;
-	  if (!options.rtl) {
-	    match = version.match(options.includePrerelease ? re[t.COERCEFULL] : re[t.COERCE]);
-	  } else {
-	    // Find the right-most coercible string that does not share
-	    // a terminus with a more left-ward coercible string.
-	    // Eg, '1.2.3.4' wants to coerce '2.3.4', not '3.4' or '4'
-	    // With includePrerelease option set, '1.2.3.4-rc' wants to coerce '2.3.4-rc', not '2.3.4'
-	    //
-	    // Walk through the string checking with a /g regexp
-	    // Manually set the index so as to pick up overlapping matches.
-	    // Stop when we get a match that ends at the string end, since no
-	    // coercible string can be more right-ward without the same terminus.
-	    const coerceRtlRegex = options.includePrerelease ? re[t.COERCERTLFULL] : re[t.COERCERTL];
-	    let next;
-	    while ((next = coerceRtlRegex.exec(version)) &&
-	        (!match || match.index + match[0].length !== version.length)
-	    ) {
-	      if (!match ||
-	            next.index + next[0].length !== match.index + match[0].length) {
-	        match = next;
-	      }
-	      coerceRtlRegex.lastIndex = next.index + next[1].length + next[2].length;
-	    }
-	    // leave it in a clean state
-	    coerceRtlRegex.lastIndex = -1;
-	  }
-
-	  if (match === null) {
-	    return null
-	  }
-
-	  const major = match[2];
-	  const minor = match[3] || '0';
-	  const patch = match[4] || '0';
-	  const prerelease = options.includePrerelease && match[5] ? `-${match[5]}` : '';
-	  const build = options.includePrerelease && match[6] ? `+${match[6]}` : '';
-
-	  return parse(`${major}.${minor}.${patch}${prerelease}${build}`, options)
-	};
-	coerce_1 = coerce;
-	return coerce_1;
-}
-
-var lrucache;
-var hasRequiredLrucache;
-
-function requireLrucache () {
-	if (hasRequiredLrucache) return lrucache;
-	hasRequiredLrucache = 1;
-	class LRUCache {
-	  constructor () {
-	    this.max = 1000;
-	    this.map = new Map();
-	  }
-
-	  get (key) {
-	    const value = this.map.get(key);
-	    if (value === undefined) {
-	      return undefined
-	    } else {
-	      // Remove the key from the map and add it to the end
-	      this.map.delete(key);
-	      this.map.set(key, value);
-	      return value
-	    }
-	  }
-
-	  delete (key) {
-	    return this.map.delete(key)
-	  }
-
-	  set (key, value) {
-	    const deleted = this.delete(key);
-
-	    if (!deleted && value !== undefined) {
-	      // If cache is full, delete the least recently used item
-	      if (this.map.size >= this.max) {
-	        const firstKey = this.map.keys().next().value;
-	        this.delete(firstKey);
-	      }
-
-	      this.map.set(key, value);
-	    }
-
-	    return this
-	  }
-	}
-
-	lrucache = LRUCache;
-	return lrucache;
-}
-
-var range;
-var hasRequiredRange;
-
-function requireRange () {
-	if (hasRequiredRange) return range;
-	hasRequiredRange = 1;
-	const SPACE_CHARACTERS = /\s+/g;
-
-	// hoisted class for cyclic dependency
-	class Range {
-	  constructor (range, options) {
-	    options = parseOptions(options);
-
-	    if (range instanceof Range) {
-	      if (
-	        range.loose === !!options.loose &&
-	        range.includePrerelease === !!options.includePrerelease
-	      ) {
-	        return range
-	      } else {
-	        return new Range(range.raw, options)
-	      }
-	    }
-
-	    if (range instanceof Comparator) {
-	      // just put it in the set and return
-	      this.raw = range.value;
-	      this.set = [[range]];
-	      this.formatted = undefined;
-	      return this
-	    }
-
-	    this.options = options;
-	    this.loose = !!options.loose;
-	    this.includePrerelease = !!options.includePrerelease;
-
-	    // First reduce all whitespace as much as possible so we do not have to rely
-	    // on potentially slow regexes like \s*. This is then stored and used for
-	    // future error messages as well.
-	    this.raw = range.trim().replace(SPACE_CHARACTERS, ' ');
-
-	    // First, split on ||
-	    this.set = this.raw
-	      .split('||')
-	      // map the range to a 2d array of comparators
-	      .map(r => this.parseRange(r.trim()))
-	      // throw out any comparator lists that are empty
-	      // this generally means that it was not a valid range, which is allowed
-	      // in loose mode, but will still throw if the WHOLE range is invalid.
-	      .filter(c => c.length);
-
-	    if (!this.set.length) {
-	      throw new TypeError(`Invalid SemVer Range: ${this.raw}`)
-	    }
-
-	    // if we have any that are not the null set, throw out null sets.
-	    if (this.set.length > 1) {
-	      // keep the first one, in case they're all null sets
-	      const first = this.set[0];
-	      this.set = this.set.filter(c => !isNullSet(c[0]));
-	      if (this.set.length === 0) {
-	        this.set = [first];
-	      } else if (this.set.length > 1) {
-	        // if we have any that are *, then the range is just *
-	        for (const c of this.set) {
-	          if (c.length === 1 && isAny(c[0])) {
-	            this.set = [c];
-	            break
-	          }
-	        }
-	      }
-	    }
-
-	    this.formatted = undefined;
-	  }
-
-	  get range () {
-	    if (this.formatted === undefined) {
-	      this.formatted = '';
-	      for (let i = 0; i < this.set.length; i++) {
-	        if (i > 0) {
-	          this.formatted += '||';
-	        }
-	        const comps = this.set[i];
-	        for (let k = 0; k < comps.length; k++) {
-	          if (k > 0) {
-	            this.formatted += ' ';
-	          }
-	          this.formatted += comps[k].toString().trim();
-	        }
-	      }
-	    }
-	    return this.formatted
-	  }
-
-	  format () {
-	    return this.range
-	  }
-
-	  toString () {
-	    return this.range
-	  }
-
-	  parseRange (range) {
-	    // memoize range parsing for performance.
-	    // this is a very hot path, and fully deterministic.
-	    const memoOpts =
-	      (this.options.includePrerelease && FLAG_INCLUDE_PRERELEASE) |
-	      (this.options.loose && FLAG_LOOSE);
-	    const memoKey = memoOpts + ':' + range;
-	    const cached = cache.get(memoKey);
-	    if (cached) {
-	      return cached
-	    }
-
-	    const loose = this.options.loose;
-	    // `1.2.3 - 1.2.4` => `>=1.2.3 <=1.2.4`
-	    const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
-	    range = range.replace(hr, hyphenReplace(this.options.includePrerelease));
-	    debug('hyphen replace', range);
-
-	    // `> 1.2.3 < 1.2.5` => `>1.2.3 <1.2.5`
-	    range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
-	    debug('comparator trim', range);
-
-	    // `~ 1.2.3` => `~1.2.3`
-	    range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
-	    debug('tilde trim', range);
-
-	    // `^ 1.2.3` => `^1.2.3`
-	    range = range.replace(re[t.CARETTRIM], caretTrimReplace);
-	    debug('caret trim', range);
-
-	    // At this point, the range is completely trimmed and
-	    // ready to be split into comparators.
-
-	    let rangeList = range
-	      .split(' ')
-	      .map(comp => parseComparator(comp, this.options))
-	      .join(' ')
-	      .split(/\s+/)
-	      // >=0.0.0 is equivalent to *
-	      .map(comp => replaceGTE0(comp, this.options));
-
-	    if (loose) {
-	      // in loose mode, throw out any that are not valid comparators
-	      rangeList = rangeList.filter(comp => {
-	        debug('loose invalid filter', comp, this.options);
-	        return !!comp.match(re[t.COMPARATORLOOSE])
-	      });
-	    }
-	    debug('range list', rangeList);
-
-	    // if any comparators are the null set, then replace with JUST null set
-	    // if more than one comparator, remove any * comparators
-	    // also, don't include the same comparator more than once
-	    const rangeMap = new Map();
-	    const comparators = rangeList.map(comp => new Comparator(comp, this.options));
-	    for (const comp of comparators) {
-	      if (isNullSet(comp)) {
-	        return [comp]
-	      }
-	      rangeMap.set(comp.value, comp);
-	    }
-	    if (rangeMap.size > 1 && rangeMap.has('')) {
-	      rangeMap.delete('');
-	    }
-
-	    const result = [...rangeMap.values()];
-	    cache.set(memoKey, result);
-	    return result
-	  }
-
-	  intersects (range, options) {
-	    if (!(range instanceof Range)) {
-	      throw new TypeError('a Range is required')
-	    }
-
-	    return this.set.some((thisComparators) => {
-	      return (
-	        isSatisfiable(thisComparators, options) &&
-	        range.set.some((rangeComparators) => {
-	          return (
-	            isSatisfiable(rangeComparators, options) &&
-	            thisComparators.every((thisComparator) => {
-	              return rangeComparators.every((rangeComparator) => {
-	                return thisComparator.intersects(rangeComparator, options)
-	              })
-	            })
-	          )
-	        })
-	      )
-	    })
-	  }
-
-	  // if ANY of the sets match ALL of its comparators, then pass
-	  test (version) {
-	    if (!version) {
-	      return false
-	    }
-
-	    if (typeof version === 'string') {
-	      try {
-	        version = new SemVer(version, this.options);
-	      } catch (er) {
-	        return false
-	      }
-	    }
-
-	    for (let i = 0; i < this.set.length; i++) {
-	      if (testSet(this.set[i], version, this.options)) {
-	        return true
-	      }
-	    }
-	    return false
-	  }
-	}
-
-	range = Range;
-
-	const LRU = requireLrucache();
-	const cache = new LRU();
-
-	const parseOptions = requireParseOptions();
-	const Comparator = requireComparator();
-	const debug = requireDebug$1();
-	const SemVer = requireSemver$1();
-	const {
-	  safeRe: re,
-	  t,
-	  comparatorTrimReplace,
-	  tildeTrimReplace,
-	  caretTrimReplace,
-	} = requireRe();
-	const { FLAG_INCLUDE_PRERELEASE, FLAG_LOOSE } = requireConstants();
-
-	const isNullSet = c => c.value === '<0.0.0-0';
-	const isAny = c => c.value === '';
-
-	// take a set of comparators and determine whether there
-	// exists a version which can satisfy it
-	const isSatisfiable = (comparators, options) => {
-	  let result = true;
-	  const remainingComparators = comparators.slice();
-	  let testComparator = remainingComparators.pop();
-
-	  while (result && remainingComparators.length) {
-	    result = remainingComparators.every((otherComparator) => {
-	      return testComparator.intersects(otherComparator, options)
-	    });
-
-	    testComparator = remainingComparators.pop();
-	  }
-
-	  return result
-	};
-
-	// comprised of xranges, tildes, stars, and gtlt's at this point.
-	// already replaced the hyphen ranges
-	// turn into a set of JUST comparators.
-	const parseComparator = (comp, options) => {
-	  debug('comp', comp, options);
-	  comp = replaceCarets(comp, options);
-	  debug('caret', comp);
-	  comp = replaceTildes(comp, options);
-	  debug('tildes', comp);
-	  comp = replaceXRanges(comp, options);
-	  debug('xrange', comp);
-	  comp = replaceStars(comp, options);
-	  debug('stars', comp);
-	  return comp
-	};
-
-	const isX = id => !id || id.toLowerCase() === 'x' || id === '*';
-
-	// ~, ~> --> * (any, kinda silly)
-	// ~2, ~2.x, ~2.x.x, ~>2, ~>2.x ~>2.x.x --> >=2.0.0 <3.0.0-0
-	// ~2.0, ~2.0.x, ~>2.0, ~>2.0.x --> >=2.0.0 <2.1.0-0
-	// ~1.2, ~1.2.x, ~>1.2, ~>1.2.x --> >=1.2.0 <1.3.0-0
-	// ~1.2.3, ~>1.2.3 --> >=1.2.3 <1.3.0-0
-	// ~1.2.0, ~>1.2.0 --> >=1.2.0 <1.3.0-0
-	// ~0.0.1 --> >=0.0.1 <0.1.0-0
-	const replaceTildes = (comp, options) => {
-	  return comp
-	    .trim()
-	    .split(/\s+/)
-	    .map((c) => replaceTilde(c, options))
-	    .join(' ')
-	};
-
-	const replaceTilde = (comp, options) => {
-	  const r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
-	  return comp.replace(r, (_, M, m, p, pr) => {
-	    debug('tilde', comp, _, M, m, p, pr);
-	    let ret;
-
-	    if (isX(M)) {
-	      ret = '';
-	    } else if (isX(m)) {
-	      ret = `>=${M}.0.0 <${+M + 1}.0.0-0`;
-	    } else if (isX(p)) {
-	      // ~1.2 == >=1.2.0 <1.3.0-0
-	      ret = `>=${M}.${m}.0 <${M}.${+m + 1}.0-0`;
-	    } else if (pr) {
-	      debug('replaceTilde pr', pr);
-	      ret = `>=${M}.${m}.${p}-${pr
-	      } <${M}.${+m + 1}.0-0`;
-	    } else {
-	      // ~1.2.3 == >=1.2.3 <1.3.0-0
-	      ret = `>=${M}.${m}.${p
-	      } <${M}.${+m + 1}.0-0`;
-	    }
-
-	    debug('tilde return', ret);
-	    return ret
-	  })
-	};
-
-	// ^ --> * (any, kinda silly)
-	// ^2, ^2.x, ^2.x.x --> >=2.0.0 <3.0.0-0
-	// ^2.0, ^2.0.x --> >=2.0.0 <3.0.0-0
-	// ^1.2, ^1.2.x --> >=1.2.0 <2.0.0-0
-	// ^1.2.3 --> >=1.2.3 <2.0.0-0
-	// ^1.2.0 --> >=1.2.0 <2.0.0-0
-	// ^0.0.1 --> >=0.0.1 <0.0.2-0
-	// ^0.1.0 --> >=0.1.0 <0.2.0-0
-	const replaceCarets = (comp, options) => {
-	  return comp
-	    .trim()
-	    .split(/\s+/)
-	    .map((c) => replaceCaret(c, options))
-	    .join(' ')
-	};
-
-	const replaceCaret = (comp, options) => {
-	  debug('caret', comp, options);
-	  const r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
-	  const z = options.includePrerelease ? '-0' : '';
-	  return comp.replace(r, (_, M, m, p, pr) => {
-	    debug('caret', comp, _, M, m, p, pr);
-	    let ret;
-
-	    if (isX(M)) {
-	      ret = '';
-	    } else if (isX(m)) {
-	      ret = `>=${M}.0.0${z} <${+M + 1}.0.0-0`;
-	    } else if (isX(p)) {
-	      if (M === '0') {
-	        ret = `>=${M}.${m}.0${z} <${M}.${+m + 1}.0-0`;
-	      } else {
-	        ret = `>=${M}.${m}.0${z} <${+M + 1}.0.0-0`;
-	      }
-	    } else if (pr) {
-	      debug('replaceCaret pr', pr);
-	      if (M === '0') {
-	        if (m === '0') {
-	          ret = `>=${M}.${m}.${p}-${pr
-	          } <${M}.${m}.${+p + 1}-0`;
-	        } else {
-	          ret = `>=${M}.${m}.${p}-${pr
-	          } <${M}.${+m + 1}.0-0`;
-	        }
-	      } else {
-	        ret = `>=${M}.${m}.${p}-${pr
-	        } <${+M + 1}.0.0-0`;
-	      }
-	    } else {
-	      debug('no pr');
-	      if (M === '0') {
-	        if (m === '0') {
-	          ret = `>=${M}.${m}.${p
-	          }${z} <${M}.${m}.${+p + 1}-0`;
-	        } else {
-	          ret = `>=${M}.${m}.${p
-	          }${z} <${M}.${+m + 1}.0-0`;
-	        }
-	      } else {
-	        ret = `>=${M}.${m}.${p
-	        } <${+M + 1}.0.0-0`;
-	      }
-	    }
-
-	    debug('caret return', ret);
-	    return ret
-	  })
-	};
-
-	const replaceXRanges = (comp, options) => {
-	  debug('replaceXRanges', comp, options);
-	  return comp
-	    .split(/\s+/)
-	    .map((c) => replaceXRange(c, options))
-	    .join(' ')
-	};
-
-	const replaceXRange = (comp, options) => {
-	  comp = comp.trim();
-	  const r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
-	  return comp.replace(r, (ret, gtlt, M, m, p, pr) => {
-	    debug('xRange', comp, ret, gtlt, M, m, p, pr);
-	    const xM = isX(M);
-	    const xm = xM || isX(m);
-	    const xp = xm || isX(p);
-	    const anyX = xp;
-
-	    if (gtlt === '=' && anyX) {
-	      gtlt = '';
-	    }
-
-	    // if we're including prereleases in the match, then we need
-	    // to fix this to -0, the lowest possible prerelease value
-	    pr = options.includePrerelease ? '-0' : '';
-
-	    if (xM) {
-	      if (gtlt === '>' || gtlt === '<') {
-	        // nothing is allowed
-	        ret = '<0.0.0-0';
-	      } else {
-	        // nothing is forbidden
-	        ret = '*';
-	      }
-	    } else if (gtlt && anyX) {
-	      // we know patch is an x, because we have any x at all.
-	      // replace X with 0
-	      if (xm) {
-	        m = 0;
-	      }
-	      p = 0;
-
-	      if (gtlt === '>') {
-	        // >1 => >=2.0.0
-	        // >1.2 => >=1.3.0
-	        gtlt = '>=';
-	        if (xm) {
-	          M = +M + 1;
-	          m = 0;
-	          p = 0;
-	        } else {
-	          m = +m + 1;
-	          p = 0;
-	        }
-	      } else if (gtlt === '<=') {
-	        // <=0.7.x is actually <0.8.0, since any 0.7.x should
-	        // pass.  Similarly, <=7.x is actually <8.0.0, etc.
-	        gtlt = '<';
-	        if (xm) {
-	          M = +M + 1;
-	        } else {
-	          m = +m + 1;
-	        }
-	      }
-
-	      if (gtlt === '<') {
-	        pr = '-0';
-	      }
-
-	      ret = `${gtlt + M}.${m}.${p}${pr}`;
-	    } else if (xm) {
-	      ret = `>=${M}.0.0${pr} <${+M + 1}.0.0-0`;
-	    } else if (xp) {
-	      ret = `>=${M}.${m}.0${pr
-	      } <${M}.${+m + 1}.0-0`;
-	    }
-
-	    debug('xRange return', ret);
-
-	    return ret
-	  })
-	};
-
-	// Because * is AND-ed with everything else in the comparator,
-	// and '' means "any version", just remove the *s entirely.
-	const replaceStars = (comp, options) => {
-	  debug('replaceStars', comp, options);
-	  // Looseness is ignored here.  star is always as loose as it gets!
-	  return comp
-	    .trim()
-	    .replace(re[t.STAR], '')
-	};
-
-	const replaceGTE0 = (comp, options) => {
-	  debug('replaceGTE0', comp, options);
-	  return comp
-	    .trim()
-	    .replace(re[options.includePrerelease ? t.GTE0PRE : t.GTE0], '')
-	};
-
-	// This function is passed to string.replace(re[t.HYPHENRANGE])
-	// M, m, patch, prerelease, build
-	// 1.2 - 3.4.5 => >=1.2.0 <=3.4.5
-	// 1.2.3 - 3.4 => >=1.2.0 <3.5.0-0 Any 3.4.x will do
-	// 1.2 - 3.4 => >=1.2.0 <3.5.0-0
-	// TODO build?
-	const hyphenReplace = incPr => ($0,
-	  from, fM, fm, fp, fpr, fb,
-	  to, tM, tm, tp, tpr) => {
-	  if (isX(fM)) {
-	    from = '';
-	  } else if (isX(fm)) {
-	    from = `>=${fM}.0.0${incPr ? '-0' : ''}`;
-	  } else if (isX(fp)) {
-	    from = `>=${fM}.${fm}.0${incPr ? '-0' : ''}`;
-	  } else if (fpr) {
-	    from = `>=${from}`;
-	  } else {
-	    from = `>=${from}${incPr ? '-0' : ''}`;
-	  }
-
-	  if (isX(tM)) {
-	    to = '';
-	  } else if (isX(tm)) {
-	    to = `<${+tM + 1}.0.0-0`;
-	  } else if (isX(tp)) {
-	    to = `<${tM}.${+tm + 1}.0-0`;
-	  } else if (tpr) {
-	    to = `<=${tM}.${tm}.${tp}-${tpr}`;
-	  } else if (incPr) {
-	    to = `<${tM}.${tm}.${+tp + 1}-0`;
-	  } else {
-	    to = `<=${to}`;
-	  }
-
-	  return `${from} ${to}`.trim()
-	};
-
-	const testSet = (set, version, options) => {
-	  for (let i = 0; i < set.length; i++) {
-	    if (!set[i].test(version)) {
-	      return false
-	    }
-	  }
-
-	  if (version.prerelease.length && !options.includePrerelease) {
-	    // Find the set of versions that are allowed to have prereleases
-	    // For example, ^1.2.3-pr.1 desugars to >=1.2.3-pr.1 <2.0.0
-	    // That should allow `1.2.3-pr.2` to pass.
-	    // However, `1.2.4-alpha.notready` should NOT be allowed,
-	    // even though it's within the range set by the comparators.
-	    for (let i = 0; i < set.length; i++) {
-	      debug(set[i].semver);
-	      if (set[i].semver === Comparator.ANY) {
-	        continue
-	      }
-
-	      if (set[i].semver.prerelease.length > 0) {
-	        const allowed = set[i].semver;
-	        if (allowed.major === version.major &&
-	            allowed.minor === version.minor &&
-	            allowed.patch === version.patch) {
-	          return true
-	        }
-	      }
-	    }
-
-	    // Version has a -pre, but it's not one of the ones we like.
-	    return false
-	  }
-
-	  return true
-	};
-	return range;
-}
-
-var comparator;
-var hasRequiredComparator;
-
-function requireComparator () {
-	if (hasRequiredComparator) return comparator;
-	hasRequiredComparator = 1;
-	const ANY = Symbol('SemVer ANY');
-	// hoisted class for cyclic dependency
-	class Comparator {
-	  static get ANY () {
-	    return ANY
-	  }
-
-	  constructor (comp, options) {
-	    options = parseOptions(options);
-
-	    if (comp instanceof Comparator) {
-	      if (comp.loose === !!options.loose) {
-	        return comp
-	      } else {
-	        comp = comp.value;
-	      }
-	    }
-
-	    comp = comp.trim().split(/\s+/).join(' ');
-	    debug('comparator', comp, options);
-	    this.options = options;
-	    this.loose = !!options.loose;
-	    this.parse(comp);
-
-	    if (this.semver === ANY) {
-	      this.value = '';
-	    } else {
-	      this.value = this.operator + this.semver.version;
-	    }
-
-	    debug('comp', this);
-	  }
-
-	  parse (comp) {
-	    const r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
-	    const m = comp.match(r);
-
-	    if (!m) {
-	      throw new TypeError(`Invalid comparator: ${comp}`)
-	    }
-
-	    this.operator = m[1] !== undefined ? m[1] : '';
-	    if (this.operator === '=') {
-	      this.operator = '';
-	    }
-
-	    // if it literally is just '>' or '' then allow anything.
-	    if (!m[2]) {
-	      this.semver = ANY;
-	    } else {
-	      this.semver = new SemVer(m[2], this.options.loose);
-	    }
-	  }
-
-	  toString () {
-	    return this.value
-	  }
-
-	  test (version) {
-	    debug('Comparator.test', version, this.options.loose);
-
-	    if (this.semver === ANY || version === ANY) {
-	      return true
-	    }
-
-	    if (typeof version === 'string') {
-	      try {
-	        version = new SemVer(version, this.options);
-	      } catch (er) {
-	        return false
-	      }
-	    }
-
-	    return cmp(version, this.operator, this.semver, this.options)
-	  }
-
-	  intersects (comp, options) {
-	    if (!(comp instanceof Comparator)) {
-	      throw new TypeError('a Comparator is required')
-	    }
-
-	    if (this.operator === '') {
-	      if (this.value === '') {
-	        return true
-	      }
-	      return new Range(comp.value, options).test(this.value)
-	    } else if (comp.operator === '') {
-	      if (comp.value === '') {
-	        return true
-	      }
-	      return new Range(this.value, options).test(comp.semver)
-	    }
-
-	    options = parseOptions(options);
-
-	    // Special cases where nothing can possibly be lower
-	    if (options.includePrerelease &&
-	      (this.value === '<0.0.0-0' || comp.value === '<0.0.0-0')) {
-	      return false
-	    }
-	    if (!options.includePrerelease &&
-	      (this.value.startsWith('<0.0.0') || comp.value.startsWith('<0.0.0'))) {
-	      return false
-	    }
-
-	    // Same direction increasing (> or >=)
-	    if (this.operator.startsWith('>') && comp.operator.startsWith('>')) {
-	      return true
-	    }
-	    // Same direction decreasing (< or <=)
-	    if (this.operator.startsWith('<') && comp.operator.startsWith('<')) {
-	      return true
-	    }
-	    // same SemVer and both sides are inclusive (<= or >=)
-	    if (
-	      (this.semver.version === comp.semver.version) &&
-	      this.operator.includes('=') && comp.operator.includes('=')) {
-	      return true
-	    }
-	    // opposite directions less than
-	    if (cmp(this.semver, '<', comp.semver, options) &&
-	      this.operator.startsWith('>') && comp.operator.startsWith('<')) {
-	      return true
-	    }
-	    // opposite directions greater than
-	    if (cmp(this.semver, '>', comp.semver, options) &&
-	      this.operator.startsWith('<') && comp.operator.startsWith('>')) {
-	      return true
-	    }
-	    return false
-	  }
-	}
-
-	comparator = Comparator;
-
-	const parseOptions = requireParseOptions();
-	const { safeRe: re, t } = requireRe();
-	const cmp = requireCmp();
-	const debug = requireDebug$1();
-	const SemVer = requireSemver$1();
-	const Range = requireRange();
-	return comparator;
-}
-
-var satisfies_1;
-var hasRequiredSatisfies;
-
-function requireSatisfies () {
-	if (hasRequiredSatisfies) return satisfies_1;
-	hasRequiredSatisfies = 1;
-	const Range = requireRange();
-	const satisfies = (version, range, options) => {
-	  try {
-	    range = new Range(range, options);
-	  } catch (er) {
-	    return false
-	  }
-	  return range.test(version)
-	};
-	satisfies_1 = satisfies;
-	return satisfies_1;
-}
-
-var toComparators_1;
-var hasRequiredToComparators;
-
-function requireToComparators () {
-	if (hasRequiredToComparators) return toComparators_1;
-	hasRequiredToComparators = 1;
-	const Range = requireRange();
-
-	// Mostly just for testing and legacy API reasons
-	const toComparators = (range, options) =>
-	  new Range(range, options).set
-	    .map(comp => comp.map(c => c.value).join(' ').trim().split(' '));
-
-	toComparators_1 = toComparators;
-	return toComparators_1;
-}
-
-var maxSatisfying_1;
-var hasRequiredMaxSatisfying;
-
-function requireMaxSatisfying () {
-	if (hasRequiredMaxSatisfying) return maxSatisfying_1;
-	hasRequiredMaxSatisfying = 1;
-	const SemVer = requireSemver$1();
-	const Range = requireRange();
-
-	const maxSatisfying = (versions, range, options) => {
-	  let max = null;
-	  let maxSV = null;
-	  let rangeObj = null;
-	  try {
-	    rangeObj = new Range(range, options);
-	  } catch (er) {
-	    return null
-	  }
-	  versions.forEach((v) => {
-	    if (rangeObj.test(v)) {
-	      // satisfies(v, range, options)
-	      if (!max || maxSV.compare(v) === -1) {
-	        // compare(max, v, true)
-	        max = v;
-	        maxSV = new SemVer(max, options);
-	      }
-	    }
-	  });
-	  return max
-	};
-	maxSatisfying_1 = maxSatisfying;
-	return maxSatisfying_1;
-}
-
-var minSatisfying_1;
-var hasRequiredMinSatisfying;
-
-function requireMinSatisfying () {
-	if (hasRequiredMinSatisfying) return minSatisfying_1;
-	hasRequiredMinSatisfying = 1;
-	const SemVer = requireSemver$1();
-	const Range = requireRange();
-	const minSatisfying = (versions, range, options) => {
-	  let min = null;
-	  let minSV = null;
-	  let rangeObj = null;
-	  try {
-	    rangeObj = new Range(range, options);
-	  } catch (er) {
-	    return null
-	  }
-	  versions.forEach((v) => {
-	    if (rangeObj.test(v)) {
-	      // satisfies(v, range, options)
-	      if (!min || minSV.compare(v) === 1) {
-	        // compare(min, v, true)
-	        min = v;
-	        minSV = new SemVer(min, options);
-	      }
-	    }
-	  });
-	  return min
-	};
-	minSatisfying_1 = minSatisfying;
-	return minSatisfying_1;
-}
-
-var minVersion_1;
-var hasRequiredMinVersion;
-
-function requireMinVersion () {
-	if (hasRequiredMinVersion) return minVersion_1;
-	hasRequiredMinVersion = 1;
-	const SemVer = requireSemver$1();
-	const Range = requireRange();
-	const gt = requireGt();
-
-	const minVersion = (range, loose) => {
-	  range = new Range(range, loose);
-
-	  let minver = new SemVer('0.0.0');
-	  if (range.test(minver)) {
-	    return minver
-	  }
-
-	  minver = new SemVer('0.0.0-0');
-	  if (range.test(minver)) {
-	    return minver
-	  }
-
-	  minver = null;
-	  for (let i = 0; i < range.set.length; ++i) {
-	    const comparators = range.set[i];
-
-	    let setMin = null;
-	    comparators.forEach((comparator) => {
-	      // Clone to avoid manipulating the comparator's semver object.
-	      const compver = new SemVer(comparator.semver.version);
-	      switch (comparator.operator) {
-	        case '>':
-	          if (compver.prerelease.length === 0) {
-	            compver.patch++;
-	          } else {
-	            compver.prerelease.push(0);
-	          }
-	          compver.raw = compver.format();
-	          /* fallthrough */
-	        case '':
-	        case '>=':
-	          if (!setMin || gt(compver, setMin)) {
-	            setMin = compver;
-	          }
-	          break
-	        case '<':
-	        case '<=':
-	          /* Ignore maximum versions */
-	          break
-	        /* istanbul ignore next */
-	        default:
-	          throw new Error(`Unexpected operation: ${comparator.operator}`)
-	      }
-	    });
-	    if (setMin && (!minver || gt(minver, setMin))) {
-	      minver = setMin;
-	    }
-	  }
-
-	  if (minver && range.test(minver)) {
-	    return minver
-	  }
-
-	  return null
-	};
-	minVersion_1 = minVersion;
-	return minVersion_1;
-}
-
-var valid;
-var hasRequiredValid;
-
-function requireValid () {
-	if (hasRequiredValid) return valid;
-	hasRequiredValid = 1;
-	const Range = requireRange();
-	const validRange = (range, options) => {
-	  try {
-	    // Return '*' instead of '' so that truthiness works.
-	    // This will throw if it's invalid anyway
-	    return new Range(range, options).range || '*'
-	  } catch (er) {
-	    return null
-	  }
-	};
-	valid = validRange;
-	return valid;
-}
-
-var outside_1;
-var hasRequiredOutside;
-
-function requireOutside () {
-	if (hasRequiredOutside) return outside_1;
-	hasRequiredOutside = 1;
-	const SemVer = requireSemver$1();
-	const Comparator = requireComparator();
-	const { ANY } = Comparator;
-	const Range = requireRange();
-	const satisfies = requireSatisfies();
-	const gt = requireGt();
-	const lt = requireLt();
-	const lte = requireLte();
-	const gte = requireGte();
-
-	const outside = (version, range, hilo, options) => {
-	  version = new SemVer(version, options);
-	  range = new Range(range, options);
-
-	  let gtfn, ltefn, ltfn, comp, ecomp;
-	  switch (hilo) {
-	    case '>':
-	      gtfn = gt;
-	      ltefn = lte;
-	      ltfn = lt;
-	      comp = '>';
-	      ecomp = '>=';
-	      break
-	    case '<':
-	      gtfn = lt;
-	      ltefn = gte;
-	      ltfn = gt;
-	      comp = '<';
-	      ecomp = '<=';
-	      break
-	    default:
-	      throw new TypeError('Must provide a hilo val of "<" or ">"')
-	  }
-
-	  // If it satisfies the range it is not outside
-	  if (satisfies(version, range, options)) {
-	    return false
-	  }
-
-	  // From now on, variable terms are as if we're in "gtr" mode.
-	  // but note that everything is flipped for the "ltr" function.
-
-	  for (let i = 0; i < range.set.length; ++i) {
-	    const comparators = range.set[i];
-
-	    let high = null;
-	    let low = null;
-
-	    comparators.forEach((comparator) => {
-	      if (comparator.semver === ANY) {
-	        comparator = new Comparator('>=0.0.0');
-	      }
-	      high = high || comparator;
-	      low = low || comparator;
-	      if (gtfn(comparator.semver, high.semver, options)) {
-	        high = comparator;
-	      } else if (ltfn(comparator.semver, low.semver, options)) {
-	        low = comparator;
-	      }
-	    });
-
-	    // If the edge version comparator has a operator then our version
-	    // isn't outside it
-	    if (high.operator === comp || high.operator === ecomp) {
-	      return false
-	    }
-
-	    // If the lowest version comparator has an operator and our version
-	    // is less than it then it isn't higher than the range
-	    if ((!low.operator || low.operator === comp) &&
-	        ltefn(version, low.semver)) {
-	      return false
-	    } else if (low.operator === ecomp && ltfn(version, low.semver)) {
-	      return false
-	    }
-	  }
-	  return true
-	};
-
-	outside_1 = outside;
-	return outside_1;
-}
-
-var gtr_1;
-var hasRequiredGtr;
-
-function requireGtr () {
-	if (hasRequiredGtr) return gtr_1;
-	hasRequiredGtr = 1;
-	// Determine if version is greater than all the versions possible in the range.
-	const outside = requireOutside();
-	const gtr = (version, range, options) => outside(version, range, '>', options);
-	gtr_1 = gtr;
-	return gtr_1;
-}
-
-var ltr_1;
-var hasRequiredLtr;
-
-function requireLtr () {
-	if (hasRequiredLtr) return ltr_1;
-	hasRequiredLtr = 1;
-	const outside = requireOutside();
-	// Determine if version is less than all the versions possible in the range
-	const ltr = (version, range, options) => outside(version, range, '<', options);
-	ltr_1 = ltr;
-	return ltr_1;
-}
-
-var intersects_1;
-var hasRequiredIntersects;
-
-function requireIntersects () {
-	if (hasRequiredIntersects) return intersects_1;
-	hasRequiredIntersects = 1;
-	const Range = requireRange();
-	const intersects = (r1, r2, options) => {
-	  r1 = new Range(r1, options);
-	  r2 = new Range(r2, options);
-	  return r1.intersects(r2, options)
-	};
-	intersects_1 = intersects;
-	return intersects_1;
-}
-
-var simplify;
-var hasRequiredSimplify;
-
-function requireSimplify () {
-	if (hasRequiredSimplify) return simplify;
-	hasRequiredSimplify = 1;
-	// given a set of versions and a range, create a "simplified" range
-	// that includes the same versions that the original range does
-	// If the original range is shorter than the simplified one, return that.
-	const satisfies = requireSatisfies();
-	const compare = requireCompare();
-	simplify = (versions, range, options) => {
-	  const set = [];
-	  let first = null;
-	  let prev = null;
-	  const v = versions.sort((a, b) => compare(a, b, options));
-	  for (const version of v) {
-	    const included = satisfies(version, range, options);
-	    if (included) {
-	      prev = version;
-	      if (!first) {
-	        first = version;
-	      }
-	    } else {
-	      if (prev) {
-	        set.push([first, prev]);
-	      }
-	      prev = null;
-	      first = null;
-	    }
-	  }
-	  if (first) {
-	    set.push([first, null]);
-	  }
-
-	  const ranges = [];
-	  for (const [min, max] of set) {
-	    if (min === max) {
-	      ranges.push(min);
-	    } else if (!max && min === v[0]) {
-	      ranges.push('*');
-	    } else if (!max) {
-	      ranges.push(`>=${min}`);
-	    } else if (min === v[0]) {
-	      ranges.push(`<=${max}`);
-	    } else {
-	      ranges.push(`${min} - ${max}`);
-	    }
-	  }
-	  const simplified = ranges.join(' || ');
-	  const original = typeof range.raw === 'string' ? range.raw : String(range);
-	  return simplified.length < original.length ? simplified : range
-	};
-	return simplify;
-}
-
-var subset_1;
-var hasRequiredSubset;
-
-function requireSubset () {
-	if (hasRequiredSubset) return subset_1;
-	hasRequiredSubset = 1;
-	const Range = requireRange();
-	const Comparator = requireComparator();
-	const { ANY } = Comparator;
-	const satisfies = requireSatisfies();
-	const compare = requireCompare();
-
-	// Complex range `r1 || r2 || ...` is a subset of `R1 || R2 || ...` iff:
-	// - Every simple range `r1, r2, ...` is a null set, OR
-	// - Every simple range `r1, r2, ...` which is not a null set is a subset of
-	//   some `R1, R2, ...`
-	//
-	// Simple range `c1 c2 ...` is a subset of simple range `C1 C2 ...` iff:
-	// - If c is only the ANY comparator
-	//   - If C is only the ANY comparator, return true
-	//   - Else if in prerelease mode, return false
-	//   - else replace c with `[>=0.0.0]`
-	// - If C is only the ANY comparator
-	//   - if in prerelease mode, return true
-	//   - else replace C with `[>=0.0.0]`
-	// - Let EQ be the set of = comparators in c
-	// - If EQ is more than one, return true (null set)
-	// - Let GT be the highest > or >= comparator in c
-	// - Let LT be the lowest < or <= comparator in c
-	// - If GT and LT, and GT.semver > LT.semver, return true (null set)
-	// - If any C is a = range, and GT or LT are set, return false
-	// - If EQ
-	//   - If GT, and EQ does not satisfy GT, return true (null set)
-	//   - If LT, and EQ does not satisfy LT, return true (null set)
-	//   - If EQ satisfies every C, return true
-	//   - Else return false
-	// - If GT
-	//   - If GT.semver is lower than any > or >= comp in C, return false
-	//   - If GT is >=, and GT.semver does not satisfy every C, return false
-	//   - If GT.semver has a prerelease, and not in prerelease mode
-	//     - If no C has a prerelease and the GT.semver tuple, return false
-	// - If LT
-	//   - If LT.semver is greater than any < or <= comp in C, return false
-	//   - If LT is <=, and LT.semver does not satisfy every C, return false
-	//   - If GT.semver has a prerelease, and not in prerelease mode
-	//     - If no C has a prerelease and the LT.semver tuple, return false
-	// - Else return true
-
-	const subset = (sub, dom, options = {}) => {
-	  if (sub === dom) {
-	    return true
-	  }
-
-	  sub = new Range(sub, options);
-	  dom = new Range(dom, options);
-	  let sawNonNull = false;
-
-	  OUTER: for (const simpleSub of sub.set) {
-	    for (const simpleDom of dom.set) {
-	      const isSub = simpleSubset(simpleSub, simpleDom, options);
-	      sawNonNull = sawNonNull || isSub !== null;
-	      if (isSub) {
-	        continue OUTER
-	      }
-	    }
-	    // the null set is a subset of everything, but null simple ranges in
-	    // a complex range should be ignored.  so if we saw a non-null range,
-	    // then we know this isn't a subset, but if EVERY simple range was null,
-	    // then it is a subset.
-	    if (sawNonNull) {
-	      return false
-	    }
-	  }
-	  return true
-	};
-
-	const minimumVersionWithPreRelease = [new Comparator('>=0.0.0-0')];
-	const minimumVersion = [new Comparator('>=0.0.0')];
-
-	const simpleSubset = (sub, dom, options) => {
-	  if (sub === dom) {
-	    return true
-	  }
-
-	  if (sub.length === 1 && sub[0].semver === ANY) {
-	    if (dom.length === 1 && dom[0].semver === ANY) {
-	      return true
-	    } else if (options.includePrerelease) {
-	      sub = minimumVersionWithPreRelease;
-	    } else {
-	      sub = minimumVersion;
-	    }
-	  }
-
-	  if (dom.length === 1 && dom[0].semver === ANY) {
-	    if (options.includePrerelease) {
-	      return true
-	    } else {
-	      dom = minimumVersion;
-	    }
-	  }
-
-	  const eqSet = new Set();
-	  let gt, lt;
-	  for (const c of sub) {
-	    if (c.operator === '>' || c.operator === '>=') {
-	      gt = higherGT(gt, c, options);
-	    } else if (c.operator === '<' || c.operator === '<=') {
-	      lt = lowerLT(lt, c, options);
-	    } else {
-	      eqSet.add(c.semver);
-	    }
-	  }
-
-	  if (eqSet.size > 1) {
-	    return null
-	  }
-
-	  let gtltComp;
-	  if (gt && lt) {
-	    gtltComp = compare(gt.semver, lt.semver, options);
-	    if (gtltComp > 0) {
-	      return null
-	    } else if (gtltComp === 0 && (gt.operator !== '>=' || lt.operator !== '<=')) {
-	      return null
-	    }
-	  }
-
-	  // will iterate one or zero times
-	  for (const eq of eqSet) {
-	    if (gt && !satisfies(eq, String(gt), options)) {
-	      return null
-	    }
-
-	    if (lt && !satisfies(eq, String(lt), options)) {
-	      return null
-	    }
-
-	    for (const c of dom) {
-	      if (!satisfies(eq, String(c), options)) {
-	        return false
-	      }
-	    }
-
-	    return true
-	  }
-
-	  let higher, lower;
-	  let hasDomLT, hasDomGT;
-	  // if the subset has a prerelease, we need a comparator in the superset
-	  // with the same tuple and a prerelease, or it's not a subset
-	  let needDomLTPre = lt &&
-	    !options.includePrerelease &&
-	    lt.semver.prerelease.length ? lt.semver : false;
-	  let needDomGTPre = gt &&
-	    !options.includePrerelease &&
-	    gt.semver.prerelease.length ? gt.semver : false;
-	  // exception: <1.2.3-0 is the same as <1.2.3
-	  if (needDomLTPre && needDomLTPre.prerelease.length === 1 &&
-	      lt.operator === '<' && needDomLTPre.prerelease[0] === 0) {
-	    needDomLTPre = false;
-	  }
-
-	  for (const c of dom) {
-	    hasDomGT = hasDomGT || c.operator === '>' || c.operator === '>=';
-	    hasDomLT = hasDomLT || c.operator === '<' || c.operator === '<=';
-	    if (gt) {
-	      if (needDomGTPre) {
-	        if (c.semver.prerelease && c.semver.prerelease.length &&
-	            c.semver.major === needDomGTPre.major &&
-	            c.semver.minor === needDomGTPre.minor &&
-	            c.semver.patch === needDomGTPre.patch) {
-	          needDomGTPre = false;
-	        }
-	      }
-	      if (c.operator === '>' || c.operator === '>=') {
-	        higher = higherGT(gt, c, options);
-	        if (higher === c && higher !== gt) {
-	          return false
-	        }
-	      } else if (gt.operator === '>=' && !satisfies(gt.semver, String(c), options)) {
-	        return false
-	      }
-	    }
-	    if (lt) {
-	      if (needDomLTPre) {
-	        if (c.semver.prerelease && c.semver.prerelease.length &&
-	            c.semver.major === needDomLTPre.major &&
-	            c.semver.minor === needDomLTPre.minor &&
-	            c.semver.patch === needDomLTPre.patch) {
-	          needDomLTPre = false;
-	        }
-	      }
-	      if (c.operator === '<' || c.operator === '<=') {
-	        lower = lowerLT(lt, c, options);
-	        if (lower === c && lower !== lt) {
-	          return false
-	        }
-	      } else if (lt.operator === '<=' && !satisfies(lt.semver, String(c), options)) {
-	        return false
-	      }
-	    }
-	    if (!c.operator && (lt || gt) && gtltComp !== 0) {
-	      return false
-	    }
-	  }
-
-	  // if there was a < or >, and nothing in the dom, then must be false
-	  // UNLESS it was limited by another range in the other direction.
-	  // Eg, >1.0.0 <1.0.1 is still a subset of <2.0.0
-	  if (gt && hasDomLT && !lt && gtltComp !== 0) {
-	    return false
-	  }
-
-	  if (lt && hasDomGT && !gt && gtltComp !== 0) {
-	    return false
-	  }
-
-	  // we needed a prerelease range in a specific tuple, but didn't get one
-	  // then this isn't a subset.  eg >=1.2.3-pre is not a subset of >=1.0.0,
-	  // because it includes prereleases in the 1.2.3 tuple
-	  if (needDomGTPre || needDomLTPre) {
-	    return false
-	  }
-
-	  return true
-	};
-
-	// >=1.2.3 is lower than >1.2.3
-	const higherGT = (a, b, options) => {
-	  if (!a) {
-	    return b
-	  }
-	  const comp = compare(a.semver, b.semver, options);
-	  return comp > 0 ? a
-	    : comp < 0 ? b
-	    : b.operator === '>' && a.operator === '>=' ? b
-	    : a
-	};
-
-	// <=1.2.3 is higher than <1.2.3
-	const lowerLT = (a, b, options) => {
-	  if (!a) {
-	    return b
-	  }
-	  const comp = compare(a.semver, b.semver, options);
-	  return comp < 0 ? a
-	    : comp > 0 ? b
-	    : b.operator === '<' && a.operator === '<=' ? b
-	    : a
-	};
-
-	subset_1 = subset;
-	return subset_1;
-}
-
-var semver;
-var hasRequiredSemver;
-
-function requireSemver () {
-	if (hasRequiredSemver) return semver;
-	hasRequiredSemver = 1;
-	// just pre-load all the stuff that index.js lazily exports
-	const internalRe = requireRe();
-	const constants = requireConstants();
-	const SemVer = requireSemver$1();
-	const identifiers = requireIdentifiers();
-	const parse = requireParse();
-	const valid = requireValid$1();
-	const clean = requireClean();
-	const inc = requireInc();
-	const diff = requireDiff();
-	const major = requireMajor();
-	const minor = requireMinor();
-	const patch = requirePatch();
-	const prerelease = requirePrerelease();
-	const compare = requireCompare();
-	const rcompare = requireRcompare();
-	const compareLoose = requireCompareLoose();
-	const compareBuild = requireCompareBuild();
-	const sort = requireSort();
-	const rsort = requireRsort();
-	const gt = requireGt();
-	const lt = requireLt();
-	const eq = requireEq();
-	const neq = requireNeq();
-	const gte = requireGte();
-	const lte = requireLte();
-	const cmp = requireCmp();
-	const coerce = requireCoerce();
-	const Comparator = requireComparator();
-	const Range = requireRange();
-	const satisfies = requireSatisfies();
-	const toComparators = requireToComparators();
-	const maxSatisfying = requireMaxSatisfying();
-	const minSatisfying = requireMinSatisfying();
-	const minVersion = requireMinVersion();
-	const validRange = requireValid();
-	const outside = requireOutside();
-	const gtr = requireGtr();
-	const ltr = requireLtr();
-	const intersects = requireIntersects();
-	const simplifyRange = requireSimplify();
-	const subset = requireSubset();
-	semver = {
-	  parse,
-	  valid,
-	  clean,
-	  inc,
-	  diff,
-	  major,
-	  minor,
-	  patch,
-	  prerelease,
-	  compare,
-	  rcompare,
-	  compareLoose,
-	  compareBuild,
-	  sort,
-	  rsort,
-	  gt,
-	  lt,
-	  eq,
-	  neq,
-	  gte,
-	  lte,
-	  cmp,
-	  coerce,
-	  Comparator,
-	  Range,
-	  satisfies,
-	  toComparators,
-	  maxSatisfying,
-	  minSatisfying,
-	  minVersion,
-	  validRange,
-	  outside,
-	  gtr,
-	  ltr,
-	  intersects,
-	  simplifyRange,
-	  subset,
-	  SemVer,
-	  re: internalRe.re,
-	  src: internalRe.src,
-	  tokens: internalRe.t,
-	  SEMVER_SPEC_VERSION: constants.SEMVER_SPEC_VERSION,
-	  RELEASE_TYPES: constants.RELEASE_TYPES,
-	  compareIdentifiers: identifiers.compareIdentifiers,
-	  rcompareIdentifiers: identifiers.rcompareIdentifiers,
-	};
-	return semver;
-}
-
-var semverExports = requireSemver();
-
-const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
-async function getRunCommands$8(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$6);
-}
-async function updateAvailable$2(lynxApi) {
-    const installedVersion = lynxApi.storage.get(INSTALLED_VERSION_KEY);
-    if (!installedVersion)
-        return false;
-    return semverExports.compare(installedVersion, VERSION_NAME) === -1;
-}
-const invokeMainMethods = { getRunCommands: getRunCommands$8, updateAvailable: updateAvailable$2 };
-
-const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
-async function getRunCommands$7(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$5);
-}
-async function saveArgs$5(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$5, parseArgsToString$3);
-}
-async function readArgs$5(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$5, parseStringToArgs$3);
-}
-const bmaltaisMainMethods = { getRunCommands: getRunCommands$7, readArgs: readArgs$5, saveArgs: saveArgs$5 };
-
-const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
-async function getRunCommands$6(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$4, dir);
-}
-async function updateAvailable$1(lynxApi) {
-    return await lynxApi.isPullAvailable;
-}
-const nerogarMainMethods = { getRunCommands: getRunCommands$6, updateAvailable: updateAvailable$1 };
-
-const CONFIG_FILE = isWin ? 'webui-user.bat' : 'webui-user.sh';
-const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
-const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$5(dir) {
-    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$4);
-}
-async function saveArgs$4(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, CONFIG_FILE, parseArgsToString$4);
-}
-async function readArgs$4(cardDir) {
-    return await utilReadArgs(cardDir, CONFIG_FILE, DEFAULT_BATCH_DATA$4, parseStringToArgs$4);
-}
-const a1MainMethods = { getRunCommands: getRunCommands$5, readArgs: readArgs$4, saveArgs: saveArgs$4 };
-
-const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
-async function getRunCommands$4(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$3);
-}
-async function saveArgs$3(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$3, parseArgsToString$5);
-}
-async function readArgs$3(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$3, parseStringToArgs$5);
-}
-const vladMainMethods = { getRunCommands: getRunCommands$4, readArgs: readArgs$3, saveArgs: saveArgs$3 };
-
-const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$2 = isWin
-    ? '@echo off\n\ncall launch-windows.bat'
-    : '#!/bin/bash\n\nbash ./launch-linux.sh';
-async function getRunCommands$3(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$2);
-}
-async function saveArgs$2(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$2, parseArgsToString$6);
-}
-async function readArgs$2(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$2, parseStringToArgs$6);
-}
-const mcMonkeyMainMethods = { getRunCommands: getRunCommands$3, readArgs: readArgs$2, saveArgs: saveArgs$2 };
+import require$$0$3 from 'constants';
+import { platform as platform$2 } from 'node:os';
 
 function bind(fn, thisArg) {
   return function wrap() {
@@ -16416,8 +12624,8 @@ function requireForm_data () {
 	var path = require$$1$1;
 	var http = require$$3;
 	var https = require$$4;
-	var parseUrl = require$$0$3.parse;
-	var fs = require$$0$2;
+	var parseUrl = require$$0$1.parse;
+	var fs = require$$6;
 	var Stream = stream.Stream;
 	var mime = requireMimeTypes();
 	var asynckit = requireAsynckit();
@@ -17319,7 +13527,7 @@ var transitionalDefaults = {
   clarifyTimeoutError: false
 };
 
-var URLSearchParams = require$$0$3.URLSearchParams;
+var URLSearchParams = require$$0$1.URLSearchParams;
 
 var platform$1 = {
   isNode: true,
@@ -18113,7 +14321,7 @@ function requireProxyFromEnv () {
 	if (hasRequiredProxyFromEnv) return proxyFromEnv$1;
 	hasRequiredProxyFromEnv = 1;
 
-	var parseUrl = require$$0$3.parse;
+	var parseUrl = require$$0$1.parse;
 
 	var DEFAULT_PORTS = {
 	  ftp: 21,
@@ -18989,7 +15197,7 @@ var hasRequiredSupportsColor;
 function requireSupportsColor () {
 	if (hasRequiredSupportsColor) return supportsColor_1;
 	hasRequiredSupportsColor = 1;
-	const os = require$$0$4;
+	const os = require$$0$2;
 	const tty = require$$1$2;
 	const hasFlag = requireHasFlag();
 
@@ -19417,15 +15625,15 @@ function requireSrc () {
 	return src.exports;
 }
 
-var debug_1;
-var hasRequiredDebug;
+var debug_1$1;
+var hasRequiredDebug$1;
 
-function requireDebug () {
-	if (hasRequiredDebug) return debug_1;
-	hasRequiredDebug = 1;
+function requireDebug$1 () {
+	if (hasRequiredDebug$1) return debug_1$1;
+	hasRequiredDebug$1 = 1;
 	var debug;
 
-	debug_1 = function () {
+	debug_1$1 = function () {
 	  if (!debug) {
 	    try {
 	      /* eslint global-require: off */
@@ -19438,7 +15646,7 @@ function requireDebug () {
 	  }
 	  debug.apply(null, arguments);
 	};
-	return debug_1;
+	return debug_1$1;
 }
 
 var hasRequiredFollowRedirects;
@@ -19446,13 +15654,13 @@ var hasRequiredFollowRedirects;
 function requireFollowRedirects () {
 	if (hasRequiredFollowRedirects) return followRedirects$1.exports;
 	hasRequiredFollowRedirects = 1;
-	var url = require$$0$3;
+	var url = require$$0$1;
 	var URL = url.URL;
 	var http = require$$3;
 	var https = require$$4;
 	var Writable = stream.Writable;
-	var assert = require$$5;
-	var debug = requireDebug();
+	var assert = require$$4$1;
+	var debug = requireDebug$1();
 
 	// Preventive platform detection
 	// istanbul ignore next
@@ -22790,23 +18998,3888 @@ axios.HttpStatusCode = HttpStatusCode;
 
 axios.default = axios;
 
-async function getPipPackageVersion(packageName) {
+var polyfills;
+var hasRequiredPolyfills;
+
+function requirePolyfills () {
+	if (hasRequiredPolyfills) return polyfills;
+	hasRequiredPolyfills = 1;
+	var constants = require$$0$3;
+
+	var origCwd = process.cwd;
+	var cwd = null;
+
+	var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform;
+
+	process.cwd = function() {
+	  if (!cwd)
+	    cwd = origCwd.call(process);
+	  return cwd
+	};
+	try {
+	  process.cwd();
+	} catch (er) {}
+
+	// This check is needed until node.js 12 is required
+	if (typeof process.chdir === 'function') {
+	  var chdir = process.chdir;
+	  process.chdir = function (d) {
+	    cwd = null;
+	    chdir.call(process, d);
+	  };
+	  if (Object.setPrototypeOf) Object.setPrototypeOf(process.chdir, chdir);
+	}
+
+	polyfills = patch;
+
+	function patch (fs) {
+	  // (re-)implement some things that are known busted or missing.
+
+	  // lchmod, broken prior to 0.6.2
+	  // back-port the fix here.
+	  if (constants.hasOwnProperty('O_SYMLINK') &&
+	      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
+	    patchLchmod(fs);
+	  }
+
+	  // lutimes implementation, or no-op
+	  if (!fs.lutimes) {
+	    patchLutimes(fs);
+	  }
+
+	  // https://github.com/isaacs/node-graceful-fs/issues/4
+	  // Chown should not fail on einval or eperm if non-root.
+	  // It should not fail on enosys ever, as this just indicates
+	  // that a fs doesn't support the intended operation.
+
+	  fs.chown = chownFix(fs.chown);
+	  fs.fchown = chownFix(fs.fchown);
+	  fs.lchown = chownFix(fs.lchown);
+
+	  fs.chmod = chmodFix(fs.chmod);
+	  fs.fchmod = chmodFix(fs.fchmod);
+	  fs.lchmod = chmodFix(fs.lchmod);
+
+	  fs.chownSync = chownFixSync(fs.chownSync);
+	  fs.fchownSync = chownFixSync(fs.fchownSync);
+	  fs.lchownSync = chownFixSync(fs.lchownSync);
+
+	  fs.chmodSync = chmodFixSync(fs.chmodSync);
+	  fs.fchmodSync = chmodFixSync(fs.fchmodSync);
+	  fs.lchmodSync = chmodFixSync(fs.lchmodSync);
+
+	  fs.stat = statFix(fs.stat);
+	  fs.fstat = statFix(fs.fstat);
+	  fs.lstat = statFix(fs.lstat);
+
+	  fs.statSync = statFixSync(fs.statSync);
+	  fs.fstatSync = statFixSync(fs.fstatSync);
+	  fs.lstatSync = statFixSync(fs.lstatSync);
+
+	  // if lchmod/lchown do not exist, then make them no-ops
+	  if (fs.chmod && !fs.lchmod) {
+	    fs.lchmod = function (path, mode, cb) {
+	      if (cb) process.nextTick(cb);
+	    };
+	    fs.lchmodSync = function () {};
+	  }
+	  if (fs.chown && !fs.lchown) {
+	    fs.lchown = function (path, uid, gid, cb) {
+	      if (cb) process.nextTick(cb);
+	    };
+	    fs.lchownSync = function () {};
+	  }
+
+	  // on Windows, A/V software can lock the directory, causing this
+	  // to fail with an EACCES or EPERM if the directory contains newly
+	  // created files.  Try again on failure, for up to 60 seconds.
+
+	  // Set the timeout this long because some Windows Anti-Virus, such as Parity
+	  // bit9, may lock files for up to a minute, causing npm package install
+	  // failures. Also, take care to yield the scheduler. Windows scheduling gives
+	  // CPU to a busy looping process, which can cause the program causing the lock
+	  // contention to be starved of CPU by node, so the contention doesn't resolve.
+	  if (platform === "win32") {
+	    fs.rename = typeof fs.rename !== 'function' ? fs.rename
+	    : (function (fs$rename) {
+	      function rename (from, to, cb) {
+	        var start = Date.now();
+	        var backoff = 0;
+	        fs$rename(from, to, function CB (er) {
+	          if (er
+	              && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY")
+	              && Date.now() - start < 60000) {
+	            setTimeout(function() {
+	              fs.stat(to, function (stater, st) {
+	                if (stater && stater.code === "ENOENT")
+	                  fs$rename(from, to, CB);
+	                else
+	                  cb(er);
+	              });
+	            }, backoff);
+	            if (backoff < 100)
+	              backoff += 10;
+	            return;
+	          }
+	          if (cb) cb(er);
+	        });
+	      }
+	      if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
+	      return rename
+	    })(fs.rename);
+	  }
+
+	  // if read() returns EAGAIN, then just try it again.
+	  fs.read = typeof fs.read !== 'function' ? fs.read
+	  : (function (fs$read) {
+	    function read (fd, buffer, offset, length, position, callback_) {
+	      var callback;
+	      if (callback_ && typeof callback_ === 'function') {
+	        var eagCounter = 0;
+	        callback = function (er, _, __) {
+	          if (er && er.code === 'EAGAIN' && eagCounter < 10) {
+	            eagCounter ++;
+	            return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+	          }
+	          callback_.apply(this, arguments);
+	        };
+	      }
+	      return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+	    }
+
+	    // This ensures `util.promisify` works as it does for native `fs.read`.
+	    if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
+	    return read
+	  })(fs.read);
+
+	  fs.readSync = typeof fs.readSync !== 'function' ? fs.readSync
+	  : (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
+	    var eagCounter = 0;
+	    while (true) {
+	      try {
+	        return fs$readSync.call(fs, fd, buffer, offset, length, position)
+	      } catch (er) {
+	        if (er.code === 'EAGAIN' && eagCounter < 10) {
+	          eagCounter ++;
+	          continue
+	        }
+	        throw er
+	      }
+	    }
+	  }})(fs.readSync);
+
+	  function patchLchmod (fs) {
+	    fs.lchmod = function (path, mode, callback) {
+	      fs.open( path
+	             , constants.O_WRONLY | constants.O_SYMLINK
+	             , mode
+	             , function (err, fd) {
+	        if (err) {
+	          if (callback) callback(err);
+	          return
+	        }
+	        // prefer to return the chmod error, if one occurs,
+	        // but still try to close, and report closing errors if they occur.
+	        fs.fchmod(fd, mode, function (err) {
+	          fs.close(fd, function(err2) {
+	            if (callback) callback(err || err2);
+	          });
+	        });
+	      });
+	    };
+
+	    fs.lchmodSync = function (path, mode) {
+	      var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode);
+
+	      // prefer to return the chmod error, if one occurs,
+	      // but still try to close, and report closing errors if they occur.
+	      var threw = true;
+	      var ret;
+	      try {
+	        ret = fs.fchmodSync(fd, mode);
+	        threw = false;
+	      } finally {
+	        if (threw) {
+	          try {
+	            fs.closeSync(fd);
+	          } catch (er) {}
+	        } else {
+	          fs.closeSync(fd);
+	        }
+	      }
+	      return ret
+	    };
+	  }
+
+	  function patchLutimes (fs) {
+	    if (constants.hasOwnProperty("O_SYMLINK") && fs.futimes) {
+	      fs.lutimes = function (path, at, mt, cb) {
+	        fs.open(path, constants.O_SYMLINK, function (er, fd) {
+	          if (er) {
+	            if (cb) cb(er);
+	            return
+	          }
+	          fs.futimes(fd, at, mt, function (er) {
+	            fs.close(fd, function (er2) {
+	              if (cb) cb(er || er2);
+	            });
+	          });
+	        });
+	      };
+
+	      fs.lutimesSync = function (path, at, mt) {
+	        var fd = fs.openSync(path, constants.O_SYMLINK);
+	        var ret;
+	        var threw = true;
+	        try {
+	          ret = fs.futimesSync(fd, at, mt);
+	          threw = false;
+	        } finally {
+	          if (threw) {
+	            try {
+	              fs.closeSync(fd);
+	            } catch (er) {}
+	          } else {
+	            fs.closeSync(fd);
+	          }
+	        }
+	        return ret
+	      };
+
+	    } else if (fs.futimes) {
+	      fs.lutimes = function (_a, _b, _c, cb) { if (cb) process.nextTick(cb); };
+	      fs.lutimesSync = function () {};
+	    }
+	  }
+
+	  function chmodFix (orig) {
+	    if (!orig) return orig
+	    return function (target, mode, cb) {
+	      return orig.call(fs, target, mode, function (er) {
+	        if (chownErOk(er)) er = null;
+	        if (cb) cb.apply(this, arguments);
+	      })
+	    }
+	  }
+
+	  function chmodFixSync (orig) {
+	    if (!orig) return orig
+	    return function (target, mode) {
+	      try {
+	        return orig.call(fs, target, mode)
+	      } catch (er) {
+	        if (!chownErOk(er)) throw er
+	      }
+	    }
+	  }
+
+
+	  function chownFix (orig) {
+	    if (!orig) return orig
+	    return function (target, uid, gid, cb) {
+	      return orig.call(fs, target, uid, gid, function (er) {
+	        if (chownErOk(er)) er = null;
+	        if (cb) cb.apply(this, arguments);
+	      })
+	    }
+	  }
+
+	  function chownFixSync (orig) {
+	    if (!orig) return orig
+	    return function (target, uid, gid) {
+	      try {
+	        return orig.call(fs, target, uid, gid)
+	      } catch (er) {
+	        if (!chownErOk(er)) throw er
+	      }
+	    }
+	  }
+
+	  function statFix (orig) {
+	    if (!orig) return orig
+	    // Older versions of Node erroneously returned signed integers for
+	    // uid + gid.
+	    return function (target, options, cb) {
+	      if (typeof options === 'function') {
+	        cb = options;
+	        options = null;
+	      }
+	      function callback (er, stats) {
+	        if (stats) {
+	          if (stats.uid < 0) stats.uid += 0x100000000;
+	          if (stats.gid < 0) stats.gid += 0x100000000;
+	        }
+	        if (cb) cb.apply(this, arguments);
+	      }
+	      return options ? orig.call(fs, target, options, callback)
+	        : orig.call(fs, target, callback)
+	    }
+	  }
+
+	  function statFixSync (orig) {
+	    if (!orig) return orig
+	    // Older versions of Node erroneously returned signed integers for
+	    // uid + gid.
+	    return function (target, options) {
+	      var stats = options ? orig.call(fs, target, options)
+	        : orig.call(fs, target);
+	      if (stats) {
+	        if (stats.uid < 0) stats.uid += 0x100000000;
+	        if (stats.gid < 0) stats.gid += 0x100000000;
+	      }
+	      return stats;
+	    }
+	  }
+
+	  // ENOSYS means that the fs doesn't support the op. Just ignore
+	  // that, because it doesn't matter.
+	  //
+	  // if there's no getuid, or if getuid() is something other
+	  // than 0, and the error is EINVAL or EPERM, then just ignore
+	  // it.
+	  //
+	  // This specific case is a silent failure in cp, install, tar,
+	  // and most other unix tools that manage permissions.
+	  //
+	  // When running as root, or if other types of errors are
+	  // encountered, then it's strict.
+	  function chownErOk (er) {
+	    if (!er)
+	      return true
+
+	    if (er.code === "ENOSYS")
+	      return true
+
+	    var nonroot = !process.getuid || process.getuid() !== 0;
+	    if (nonroot) {
+	      if (er.code === "EINVAL" || er.code === "EPERM")
+	        return true
+	    }
+
+	    return false
+	  }
+	}
+	return polyfills;
+}
+
+var legacyStreams;
+var hasRequiredLegacyStreams;
+
+function requireLegacyStreams () {
+	if (hasRequiredLegacyStreams) return legacyStreams;
+	hasRequiredLegacyStreams = 1;
+	var Stream = stream.Stream;
+
+	legacyStreams = legacy;
+
+	function legacy (fs) {
+	  return {
+	    ReadStream: ReadStream,
+	    WriteStream: WriteStream
+	  }
+
+	  function ReadStream (path, options) {
+	    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
+
+	    Stream.call(this);
+
+	    var self = this;
+
+	    this.path = path;
+	    this.fd = null;
+	    this.readable = true;
+	    this.paused = false;
+
+	    this.flags = 'r';
+	    this.mode = 438; /*=0666*/
+	    this.bufferSize = 64 * 1024;
+
+	    options = options || {};
+
+	    // Mixin options into this
+	    var keys = Object.keys(options);
+	    for (var index = 0, length = keys.length; index < length; index++) {
+	      var key = keys[index];
+	      this[key] = options[key];
+	    }
+
+	    if (this.encoding) this.setEncoding(this.encoding);
+
+	    if (this.start !== undefined) {
+	      if ('number' !== typeof this.start) {
+	        throw TypeError('start must be a Number');
+	      }
+	      if (this.end === undefined) {
+	        this.end = Infinity;
+	      } else if ('number' !== typeof this.end) {
+	        throw TypeError('end must be a Number');
+	      }
+
+	      if (this.start > this.end) {
+	        throw new Error('start must be <= end');
+	      }
+
+	      this.pos = this.start;
+	    }
+
+	    if (this.fd !== null) {
+	      process.nextTick(function() {
+	        self._read();
+	      });
+	      return;
+	    }
+
+	    fs.open(this.path, this.flags, this.mode, function (err, fd) {
+	      if (err) {
+	        self.emit('error', err);
+	        self.readable = false;
+	        return;
+	      }
+
+	      self.fd = fd;
+	      self.emit('open', fd);
+	      self._read();
+	    });
+	  }
+
+	  function WriteStream (path, options) {
+	    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
+
+	    Stream.call(this);
+
+	    this.path = path;
+	    this.fd = null;
+	    this.writable = true;
+
+	    this.flags = 'w';
+	    this.encoding = 'binary';
+	    this.mode = 438; /*=0666*/
+	    this.bytesWritten = 0;
+
+	    options = options || {};
+
+	    // Mixin options into this
+	    var keys = Object.keys(options);
+	    for (var index = 0, length = keys.length; index < length; index++) {
+	      var key = keys[index];
+	      this[key] = options[key];
+	    }
+
+	    if (this.start !== undefined) {
+	      if ('number' !== typeof this.start) {
+	        throw TypeError('start must be a Number');
+	      }
+	      if (this.start < 0) {
+	        throw new Error('start must be >= zero');
+	      }
+
+	      this.pos = this.start;
+	    }
+
+	    this.busy = false;
+	    this._queue = [];
+
+	    if (this.fd === null) {
+	      this._open = fs.open;
+	      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
+	      this.flush();
+	    }
+	  }
+	}
+	return legacyStreams;
+}
+
+var clone_1;
+var hasRequiredClone;
+
+function requireClone () {
+	if (hasRequiredClone) return clone_1;
+	hasRequiredClone = 1;
+
+	clone_1 = clone;
+
+	var getPrototypeOf = Object.getPrototypeOf || function (obj) {
+	  return obj.__proto__
+	};
+
+	function clone (obj) {
+	  if (obj === null || typeof obj !== 'object')
+	    return obj
+
+	  if (obj instanceof Object)
+	    var copy = { __proto__: getPrototypeOf(obj) };
+	  else
+	    var copy = Object.create(null);
+
+	  Object.getOwnPropertyNames(obj).forEach(function (key) {
+	    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key));
+	  });
+
+	  return copy
+	}
+	return clone_1;
+}
+
+var gracefulFs;
+var hasRequiredGracefulFs;
+
+function requireGracefulFs () {
+	if (hasRequiredGracefulFs) return gracefulFs;
+	hasRequiredGracefulFs = 1;
+	var fs = require$$6;
+	var polyfills = requirePolyfills();
+	var legacy = requireLegacyStreams();
+	var clone = requireClone();
+
+	var util = require$$1;
+
+	/* istanbul ignore next - node 0.x polyfill */
+	var gracefulQueue;
+	var previousSymbol;
+
+	/* istanbul ignore else - node 0.x polyfill */
+	if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
+	  gracefulQueue = Symbol.for('graceful-fs.queue');
+	  // This is used in testing by future versions
+	  previousSymbol = Symbol.for('graceful-fs.previous');
+	} else {
+	  gracefulQueue = '___graceful-fs.queue';
+	  previousSymbol = '___graceful-fs.previous';
+	}
+
+	function noop () {}
+
+	function publishQueue(context, queue) {
+	  Object.defineProperty(context, gracefulQueue, {
+	    get: function() {
+	      return queue
+	    }
+	  });
+	}
+
+	var debug = noop;
+	if (util.debuglog)
+	  debug = util.debuglog('gfs4');
+	else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
+	  debug = function() {
+	    var m = util.format.apply(util, arguments);
+	    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ');
+	    console.error(m);
+	  };
+
+	// Once time initialization
+	if (!fs[gracefulQueue]) {
+	  // This queue can be shared by multiple loaded instances
+	  var queue = commonjsGlobal[gracefulQueue] || [];
+	  publishQueue(fs, queue);
+
+	  // Patch fs.close/closeSync to shared queue version, because we need
+	  // to retry() whenever a close happens *anywhere* in the program.
+	  // This is essential when multiple graceful-fs instances are
+	  // in play at the same time.
+	  fs.close = (function (fs$close) {
+	    function close (fd, cb) {
+	      return fs$close.call(fs, fd, function (err) {
+	        // This function uses the graceful-fs shared queue
+	        if (!err) {
+	          resetQueue();
+	        }
+
+	        if (typeof cb === 'function')
+	          cb.apply(this, arguments);
+	      })
+	    }
+
+	    Object.defineProperty(close, previousSymbol, {
+	      value: fs$close
+	    });
+	    return close
+	  })(fs.close);
+
+	  fs.closeSync = (function (fs$closeSync) {
+	    function closeSync (fd) {
+	      // This function uses the graceful-fs shared queue
+	      fs$closeSync.apply(fs, arguments);
+	      resetQueue();
+	    }
+
+	    Object.defineProperty(closeSync, previousSymbol, {
+	      value: fs$closeSync
+	    });
+	    return closeSync
+	  })(fs.closeSync);
+
+	  if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
+	    process.on('exit', function() {
+	      debug(fs[gracefulQueue]);
+	      require$$4$1.equal(fs[gracefulQueue].length, 0);
+	    });
+	  }
+	}
+
+	if (!commonjsGlobal[gracefulQueue]) {
+	  publishQueue(commonjsGlobal, fs[gracefulQueue]);
+	}
+
+	gracefulFs = patch(clone(fs));
+	if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs.__patched) {
+	    gracefulFs = patch(fs);
+	    fs.__patched = true;
+	}
+
+	function patch (fs) {
+	  // Everything that references the open() function needs to be in here
+	  polyfills(fs);
+	  fs.gracefulify = patch;
+
+	  fs.createReadStream = createReadStream;
+	  fs.createWriteStream = createWriteStream;
+	  var fs$readFile = fs.readFile;
+	  fs.readFile = readFile;
+	  function readFile (path, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    return go$readFile(path, options, cb)
+
+	    function go$readFile (path, options, cb, startTime) {
+	      return fs$readFile(path, options, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$readFile, [path, options, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$writeFile = fs.writeFile;
+	  fs.writeFile = writeFile;
+	  function writeFile (path, data, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    return go$writeFile(path, data, options, cb)
+
+	    function go$writeFile (path, data, options, cb, startTime) {
+	      return fs$writeFile(path, data, options, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$writeFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$appendFile = fs.appendFile;
+	  if (fs$appendFile)
+	    fs.appendFile = appendFile;
+	  function appendFile (path, data, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    return go$appendFile(path, data, options, cb)
+
+	    function go$appendFile (path, data, options, cb, startTime) {
+	      return fs$appendFile(path, data, options, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$appendFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$copyFile = fs.copyFile;
+	  if (fs$copyFile)
+	    fs.copyFile = copyFile;
+	  function copyFile (src, dest, flags, cb) {
+	    if (typeof flags === 'function') {
+	      cb = flags;
+	      flags = 0;
+	    }
+	    return go$copyFile(src, dest, flags, cb)
+
+	    function go$copyFile (src, dest, flags, cb, startTime) {
+	      return fs$copyFile(src, dest, flags, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$copyFile, [src, dest, flags, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$readdir = fs.readdir;
+	  fs.readdir = readdir;
+	  var noReaddirOptionVersions = /^v[0-5]\./;
+	  function readdir (path, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    var go$readdir = noReaddirOptionVersions.test(process.version)
+	      ? function go$readdir (path, options, cb, startTime) {
+	        return fs$readdir(path, fs$readdirCallback(
+	          path, options, cb, startTime
+	        ))
+	      }
+	      : function go$readdir (path, options, cb, startTime) {
+	        return fs$readdir(path, options, fs$readdirCallback(
+	          path, options, cb, startTime
+	        ))
+	      };
+
+	    return go$readdir(path, options, cb)
+
+	    function fs$readdirCallback (path, options, cb, startTime) {
+	      return function (err, files) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([
+	            go$readdir,
+	            [path, options, cb],
+	            err,
+	            startTime || Date.now(),
+	            Date.now()
+	          ]);
+	        else {
+	          if (files && files.sort)
+	            files.sort();
+
+	          if (typeof cb === 'function')
+	            cb.call(this, err, files);
+	        }
+	      }
+	    }
+	  }
+
+	  if (process.version.substr(0, 4) === 'v0.8') {
+	    var legStreams = legacy(fs);
+	    ReadStream = legStreams.ReadStream;
+	    WriteStream = legStreams.WriteStream;
+	  }
+
+	  var fs$ReadStream = fs.ReadStream;
+	  if (fs$ReadStream) {
+	    ReadStream.prototype = Object.create(fs$ReadStream.prototype);
+	    ReadStream.prototype.open = ReadStream$open;
+	  }
+
+	  var fs$WriteStream = fs.WriteStream;
+	  if (fs$WriteStream) {
+	    WriteStream.prototype = Object.create(fs$WriteStream.prototype);
+	    WriteStream.prototype.open = WriteStream$open;
+	  }
+
+	  Object.defineProperty(fs, 'ReadStream', {
+	    get: function () {
+	      return ReadStream
+	    },
+	    set: function (val) {
+	      ReadStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+	  Object.defineProperty(fs, 'WriteStream', {
+	    get: function () {
+	      return WriteStream
+	    },
+	    set: function (val) {
+	      WriteStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+
+	  // legacy names
+	  var FileReadStream = ReadStream;
+	  Object.defineProperty(fs, 'FileReadStream', {
+	    get: function () {
+	      return FileReadStream
+	    },
+	    set: function (val) {
+	      FileReadStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+	  var FileWriteStream = WriteStream;
+	  Object.defineProperty(fs, 'FileWriteStream', {
+	    get: function () {
+	      return FileWriteStream
+	    },
+	    set: function (val) {
+	      FileWriteStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+
+	  function ReadStream (path, options) {
+	    if (this instanceof ReadStream)
+	      return fs$ReadStream.apply(this, arguments), this
+	    else
+	      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
+	  }
+
+	  function ReadStream$open () {
+	    var that = this;
+	    open(that.path, that.flags, that.mode, function (err, fd) {
+	      if (err) {
+	        if (that.autoClose)
+	          that.destroy();
+
+	        that.emit('error', err);
+	      } else {
+	        that.fd = fd;
+	        that.emit('open', fd);
+	        that.read();
+	      }
+	    });
+	  }
+
+	  function WriteStream (path, options) {
+	    if (this instanceof WriteStream)
+	      return fs$WriteStream.apply(this, arguments), this
+	    else
+	      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
+	  }
+
+	  function WriteStream$open () {
+	    var that = this;
+	    open(that.path, that.flags, that.mode, function (err, fd) {
+	      if (err) {
+	        that.destroy();
+	        that.emit('error', err);
+	      } else {
+	        that.fd = fd;
+	        that.emit('open', fd);
+	      }
+	    });
+	  }
+
+	  function createReadStream (path, options) {
+	    return new fs.ReadStream(path, options)
+	  }
+
+	  function createWriteStream (path, options) {
+	    return new fs.WriteStream(path, options)
+	  }
+
+	  var fs$open = fs.open;
+	  fs.open = open;
+	  function open (path, flags, mode, cb) {
+	    if (typeof mode === 'function')
+	      cb = mode, mode = null;
+
+	    return go$open(path, flags, mode, cb)
+
+	    function go$open (path, flags, mode, cb, startTime) {
+	      return fs$open(path, flags, mode, function (err, fd) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$open, [path, flags, mode, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  return fs
+	}
+
+	function enqueue (elem) {
+	  debug('ENQUEUE', elem[0].name, elem[1]);
+	  fs[gracefulQueue].push(elem);
+	  retry();
+	}
+
+	// keep track of the timeout between retry() calls
+	var retryTimer;
+
+	// reset the startTime and lastTime to now
+	// this resets the start of the 60 second overall timeout as well as the
+	// delay between attempts so that we'll retry these jobs sooner
+	function resetQueue () {
+	  var now = Date.now();
+	  for (var i = 0; i < fs[gracefulQueue].length; ++i) {
+	    // entries that are only a length of 2 are from an older version, don't
+	    // bother modifying those since they'll be retried anyway.
+	    if (fs[gracefulQueue][i].length > 2) {
+	      fs[gracefulQueue][i][3] = now; // startTime
+	      fs[gracefulQueue][i][4] = now; // lastTime
+	    }
+	  }
+	  // call retry to make sure we're actively processing the queue
+	  retry();
+	}
+
+	function retry () {
+	  // clear the timer and remove it to help prevent unintended concurrency
+	  clearTimeout(retryTimer);
+	  retryTimer = undefined;
+
+	  if (fs[gracefulQueue].length === 0)
+	    return
+
+	  var elem = fs[gracefulQueue].shift();
+	  var fn = elem[0];
+	  var args = elem[1];
+	  // these items may be unset if they were added by an older graceful-fs
+	  var err = elem[2];
+	  var startTime = elem[3];
+	  var lastTime = elem[4];
+
+	  // if we don't have a startTime we have no way of knowing if we've waited
+	  // long enough, so go ahead and retry this item now
+	  if (startTime === undefined) {
+	    debug('RETRY', fn.name, args);
+	    fn.apply(null, args);
+	  } else if (Date.now() - startTime >= 60000) {
+	    // it's been more than 60 seconds total, bail now
+	    debug('TIMEOUT', fn.name, args);
+	    var cb = args.pop();
+	    if (typeof cb === 'function')
+	      cb.call(null, err);
+	  } else {
+	    // the amount of time between the last attempt and right now
+	    var sinceAttempt = Date.now() - lastTime;
+	    // the amount of time between when we first tried, and when we last tried
+	    // rounded up to at least 1
+	    var sinceStart = Math.max(lastTime - startTime, 1);
+	    // backoff. wait longer than the total time we've been retrying, but only
+	    // up to a maximum of 100ms
+	    var desiredDelay = Math.min(sinceStart * 1.2, 100);
+	    // it's been long enough since the last retry, do it again
+	    if (sinceAttempt >= desiredDelay) {
+	      debug('RETRY', fn.name, args);
+	      fn.apply(null, args.concat([startTime]));
+	    } else {
+	      // if we can't do this job yet, push it to the end of the queue
+	      // and let the next iteration check again
+	      fs[gracefulQueue].push(elem);
+	    }
+	  }
+
+	  // schedule our next run if one isn't already scheduled
+	  if (retryTimer === undefined) {
+	    retryTimer = setTimeout(retry, 0);
+	  }
+	}
+	return gracefulFs;
+}
+
+var gracefulFsExports = requireGracefulFs();
+var fs = /*@__PURE__*/getDefaultExportFromCjs(gracefulFsExports);
+
+const LINE_ENDING = isWin ? '\r' : '\n';
+async function initBatchFile(path, data) {
+    try {
+        await fs.promises.access(path);
+    }
+    catch (error) {
+        console.log(error);
+        await fs.promises.writeFile(path, data, { encoding: 'utf-8' });
+    }
+}
+async function utilRunCommands(batFileName, dir, defaultData) {
+    if (dir && defaultData)
+        await initBatchFile(path.join(dir, batFileName), defaultData);
+    return `${isWin ? './' : 'bash ./'}${batFileName}${LINE_ENDING}`;
+}
+async function utilSaveArgs(args, batFileName, parser, cardDir) {
+    if (!cardDir)
+        return;
+    const result = parser(args);
+    const finalDir = path.join(cardDir, batFileName);
+    await fs.promises.writeFile(finalDir, result);
+}
+async function utilReadArgs(batFileName, defaultData, parser, cardDir) {
+    if (!cardDir)
+        return [];
+    const finalDir = path.join(cardDir, batFileName);
+    await initBatchFile(finalDir, defaultData);
+    const data = await fs.promises.readFile(finalDir, 'utf-8');
+    if (!data)
+        return [];
+    return parser(data);
+}
+async function getLatestNonRCReleaseAndAsset(owner, repo, assetNameInclude) {
+    try {
+        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/releases`, {
+            headers: {
+                Accept: 'application/vnd.github.v3+json',
+            },
+        });
+        const releases = response.data;
+        for (const release of releases) {
+            const tagName = release.tag_name;
+            const isRC = tagName.includes('rc');
+            const isPrerelease = release.prerelease;
+            if (!isRC && !isPrerelease) {
+                const version = tagName.startsWith('v') ? tagName.slice(1) : tagName;
+                const asset = release.assets.find(a => a.name.toLowerCase().includes(assetNameInclude.toLowerCase()));
+                if (asset) {
+                    return { version, downloadUrl: asset.browser_download_url };
+                }
+            }
+        }
+        return null; // No non-RC, non-prerelease release with a matching asset found
+    }
+    catch (error) {
+        console.error('Error fetching releases from GitHub:', error);
+        return null;
+    }
+}
+
+const BAT_FILE_NAME$b = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
+async function getRunCommands$f(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$b, dir, DEFAULT_BATCH_DATA$c);
+}
+const erew123MainMethods = { getRunCommands: getRunCommands$f };
+
+const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
+async function getRunCommands$e(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$b);
+}
+async function saveArgs$b(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$a, parseArgsToString, cardDir);
+}
+async function readArgs$b(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$b, parseStringToArgs, cardDir);
+}
+const gitmyloMainMethods = { getRunCommands: getRunCommands$e, readArgs: readArgs$b, saveArgs: saveArgs$b };
+
+const BAT_FILE_NAME$9 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
+async function getRunCommands$d(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$9, dir);
+}
+const rsxMainMethods = { getRunCommands: getRunCommands$d };
+
+const BAT_FILE_NAME$8 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+async function getRunCommands$c(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$8, dir, DEFAULT_BATCH_DATA$a);
+}
+async function saveArgs$a(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$8, parseArgsToString$1, cardDir);
+}
+async function readArgs$a(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$8, DEFAULT_BATCH_DATA$a, parseStringToArgs$1, cardDir);
+}
+const comfyMainMethods = { getRunCommands: getRunCommands$c, readArgs: readArgs$a, saveArgs: saveArgs$a };
+
+const BAT_FILE_NAME$7 = 'lynx-user.bat';
+const DEFAULT_BATCH_DATA$9 = '@echo off\n' +
+    '\n' +
+    'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
+    'set VENV_DIR=./venv\n' +
+    '\n' +
+    'set ZLUDA_COMGR_LOG_LEVEL=1\n' +
+    '\n' +
+    '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
+    '\npause';
+async function getRunCommands$b(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$9);
+}
+async function saveArgs$9(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$7, parseArgsToString$2, cardDir);
+}
+async function readArgs$9(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$9, parseStringToArgs$2, cardDir);
+}
+const comfyZludaMainMethods = { getRunCommands: getRunCommands$b, readArgs: readArgs$9, saveArgs: saveArgs$9 };
+
+var re = {exports: {}};
+
+var constants;
+var hasRequiredConstants;
+
+function requireConstants () {
+	if (hasRequiredConstants) return constants;
+	hasRequiredConstants = 1;
+	// Note: this is the semver.org version of the spec that it implements
+	// Not necessarily the package version of this code.
+	const SEMVER_SPEC_VERSION = '2.0.0';
+
+	const MAX_LENGTH = 256;
+	const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER ||
+	/* istanbul ignore next */ 9007199254740991;
+
+	// Max safe segment length for coercion.
+	const MAX_SAFE_COMPONENT_LENGTH = 16;
+
+	// Max safe length for a build identifier. The max length minus 6 characters for
+	// the shortest version with a build 0.0.0+BUILD.
+	const MAX_SAFE_BUILD_LENGTH = MAX_LENGTH - 6;
+
+	const RELEASE_TYPES = [
+	  'major',
+	  'premajor',
+	  'minor',
+	  'preminor',
+	  'patch',
+	  'prepatch',
+	  'prerelease',
+	];
+
+	constants = {
+	  MAX_LENGTH,
+	  MAX_SAFE_COMPONENT_LENGTH,
+	  MAX_SAFE_BUILD_LENGTH,
+	  MAX_SAFE_INTEGER,
+	  RELEASE_TYPES,
+	  SEMVER_SPEC_VERSION,
+	  FLAG_INCLUDE_PRERELEASE: 0b001,
+	  FLAG_LOOSE: 0b010,
+	};
+	return constants;
+}
+
+var debug_1;
+var hasRequiredDebug;
+
+function requireDebug () {
+	if (hasRequiredDebug) return debug_1;
+	hasRequiredDebug = 1;
+	const debug = (
+	  typeof process === 'object' &&
+	  process.env &&
+	  process.env.NODE_DEBUG &&
+	  /\bsemver\b/i.test(process.env.NODE_DEBUG)
+	) ? (...args) => console.error('SEMVER', ...args)
+	  : () => {};
+
+	debug_1 = debug;
+	return debug_1;
+}
+
+var hasRequiredRe;
+
+function requireRe () {
+	if (hasRequiredRe) return re.exports;
+	hasRequiredRe = 1;
+	(function (module, exports) {
+		const {
+		  MAX_SAFE_COMPONENT_LENGTH,
+		  MAX_SAFE_BUILD_LENGTH,
+		  MAX_LENGTH,
+		} = requireConstants();
+		const debug = requireDebug();
+		exports = module.exports = {};
+
+		// The actual regexps go on exports.re
+		const re = exports.re = [];
+		const safeRe = exports.safeRe = [];
+		const src = exports.src = [];
+		const t = exports.t = {};
+		let R = 0;
+
+		const LETTERDASHNUMBER = '[a-zA-Z0-9-]';
+
+		// Replace some greedy regex tokens to prevent regex dos issues. These regex are
+		// used internally via the safeRe object since all inputs in this library get
+		// normalized first to trim and collapse all extra whitespace. The original
+		// regexes are exported for userland consumption and lower level usage. A
+		// future breaking change could export the safer regex only with a note that
+		// all input should have extra whitespace removed.
+		const safeRegexReplacements = [
+		  ['\\s', 1],
+		  ['\\d', MAX_LENGTH],
+		  [LETTERDASHNUMBER, MAX_SAFE_BUILD_LENGTH],
+		];
+
+		const makeSafeRegex = (value) => {
+		  for (const [token, max] of safeRegexReplacements) {
+		    value = value
+		      .split(`${token}*`).join(`${token}{0,${max}}`)
+		      .split(`${token}+`).join(`${token}{1,${max}}`);
+		  }
+		  return value
+		};
+
+		const createToken = (name, value, isGlobal) => {
+		  const safe = makeSafeRegex(value);
+		  const index = R++;
+		  debug(name, index, value);
+		  t[name] = index;
+		  src[index] = value;
+		  re[index] = new RegExp(value, isGlobal ? 'g' : undefined);
+		  safeRe[index] = new RegExp(safe, isGlobal ? 'g' : undefined);
+		};
+
+		// The following Regular Expressions can be used for tokenizing,
+		// validating, and parsing SemVer version strings.
+
+		// ## Numeric Identifier
+		// A single `0`, or a non-zero digit followed by zero or more digits.
+
+		createToken('NUMERICIDENTIFIER', '0|[1-9]\\d*');
+		createToken('NUMERICIDENTIFIERLOOSE', '\\d+');
+
+		// ## Non-numeric Identifier
+		// Zero or more digits, followed by a letter or hyphen, and then zero or
+		// more letters, digits, or hyphens.
+
+		createToken('NONNUMERICIDENTIFIER', `\\d*[a-zA-Z-]${LETTERDASHNUMBER}*`);
+
+		// ## Main Version
+		// Three dot-separated numeric identifiers.
+
+		createToken('MAINVERSION', `(${src[t.NUMERICIDENTIFIER]})\\.` +
+		                   `(${src[t.NUMERICIDENTIFIER]})\\.` +
+		                   `(${src[t.NUMERICIDENTIFIER]})`);
+
+		createToken('MAINVERSIONLOOSE', `(${src[t.NUMERICIDENTIFIERLOOSE]})\\.` +
+		                        `(${src[t.NUMERICIDENTIFIERLOOSE]})\\.` +
+		                        `(${src[t.NUMERICIDENTIFIERLOOSE]})`);
+
+		// ## Pre-release Version Identifier
+		// A numeric identifier, or a non-numeric identifier.
+
+		createToken('PRERELEASEIDENTIFIER', `(?:${src[t.NUMERICIDENTIFIER]
+		}|${src[t.NONNUMERICIDENTIFIER]})`);
+
+		createToken('PRERELEASEIDENTIFIERLOOSE', `(?:${src[t.NUMERICIDENTIFIERLOOSE]
+		}|${src[t.NONNUMERICIDENTIFIER]})`);
+
+		// ## Pre-release Version
+		// Hyphen, followed by one or more dot-separated pre-release version
+		// identifiers.
+
+		createToken('PRERELEASE', `(?:-(${src[t.PRERELEASEIDENTIFIER]
+		}(?:\\.${src[t.PRERELEASEIDENTIFIER]})*))`);
+
+		createToken('PRERELEASELOOSE', `(?:-?(${src[t.PRERELEASEIDENTIFIERLOOSE]
+		}(?:\\.${src[t.PRERELEASEIDENTIFIERLOOSE]})*))`);
+
+		// ## Build Metadata Identifier
+		// Any combination of digits, letters, or hyphens.
+
+		createToken('BUILDIDENTIFIER', `${LETTERDASHNUMBER}+`);
+
+		// ## Build Metadata
+		// Plus sign, followed by one or more period-separated build metadata
+		// identifiers.
+
+		createToken('BUILD', `(?:\\+(${src[t.BUILDIDENTIFIER]
+		}(?:\\.${src[t.BUILDIDENTIFIER]})*))`);
+
+		// ## Full Version String
+		// A main version, followed optionally by a pre-release version and
+		// build metadata.
+
+		// Note that the only major, minor, patch, and pre-release sections of
+		// the version string are capturing groups.  The build metadata is not a
+		// capturing group, because it should not ever be used in version
+		// comparison.
+
+		createToken('FULLPLAIN', `v?${src[t.MAINVERSION]
+		}${src[t.PRERELEASE]}?${
+		  src[t.BUILD]}?`);
+
+		createToken('FULL', `^${src[t.FULLPLAIN]}$`);
+
+		// like full, but allows v1.2.3 and =1.2.3, which people do sometimes.
+		// also, 1.0.0alpha1 (prerelease without the hyphen) which is pretty
+		// common in the npm registry.
+		createToken('LOOSEPLAIN', `[v=\\s]*${src[t.MAINVERSIONLOOSE]
+		}${src[t.PRERELEASELOOSE]}?${
+		  src[t.BUILD]}?`);
+
+		createToken('LOOSE', `^${src[t.LOOSEPLAIN]}$`);
+
+		createToken('GTLT', '((?:<|>)?=?)');
+
+		// Something like "2.*" or "1.2.x".
+		// Note that "x.x" is a valid xRange identifer, meaning "any version"
+		// Only the first item is strictly required.
+		createToken('XRANGEIDENTIFIERLOOSE', `${src[t.NUMERICIDENTIFIERLOOSE]}|x|X|\\*`);
+		createToken('XRANGEIDENTIFIER', `${src[t.NUMERICIDENTIFIER]}|x|X|\\*`);
+
+		createToken('XRANGEPLAIN', `[v=\\s]*(${src[t.XRANGEIDENTIFIER]})` +
+		                   `(?:\\.(${src[t.XRANGEIDENTIFIER]})` +
+		                   `(?:\\.(${src[t.XRANGEIDENTIFIER]})` +
+		                   `(?:${src[t.PRERELEASE]})?${
+		                     src[t.BUILD]}?` +
+		                   `)?)?`);
+
+		createToken('XRANGEPLAINLOOSE', `[v=\\s]*(${src[t.XRANGEIDENTIFIERLOOSE]})` +
+		                        `(?:\\.(${src[t.XRANGEIDENTIFIERLOOSE]})` +
+		                        `(?:\\.(${src[t.XRANGEIDENTIFIERLOOSE]})` +
+		                        `(?:${src[t.PRERELEASELOOSE]})?${
+		                          src[t.BUILD]}?` +
+		                        `)?)?`);
+
+		createToken('XRANGE', `^${src[t.GTLT]}\\s*${src[t.XRANGEPLAIN]}$`);
+		createToken('XRANGELOOSE', `^${src[t.GTLT]}\\s*${src[t.XRANGEPLAINLOOSE]}$`);
+
+		// Coercion.
+		// Extract anything that could conceivably be a part of a valid semver
+		createToken('COERCEPLAIN', `${'(^|[^\\d])' +
+		              '(\\d{1,'}${MAX_SAFE_COMPONENT_LENGTH}})` +
+		              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?` +
+		              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?`);
+		createToken('COERCE', `${src[t.COERCEPLAIN]}(?:$|[^\\d])`);
+		createToken('COERCEFULL', src[t.COERCEPLAIN] +
+		              `(?:${src[t.PRERELEASE]})?` +
+		              `(?:${src[t.BUILD]})?` +
+		              `(?:$|[^\\d])`);
+		createToken('COERCERTL', src[t.COERCE], true);
+		createToken('COERCERTLFULL', src[t.COERCEFULL], true);
+
+		// Tilde ranges.
+		// Meaning is "reasonably at or greater than"
+		createToken('LONETILDE', '(?:~>?)');
+
+		createToken('TILDETRIM', `(\\s*)${src[t.LONETILDE]}\\s+`, true);
+		exports.tildeTrimReplace = '$1~';
+
+		createToken('TILDE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAIN]}$`);
+		createToken('TILDELOOSE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAINLOOSE]}$`);
+
+		// Caret ranges.
+		// Meaning is "at least and backwards compatible with"
+		createToken('LONECARET', '(?:\\^)');
+
+		createToken('CARETTRIM', `(\\s*)${src[t.LONECARET]}\\s+`, true);
+		exports.caretTrimReplace = '$1^';
+
+		createToken('CARET', `^${src[t.LONECARET]}${src[t.XRANGEPLAIN]}$`);
+		createToken('CARETLOOSE', `^${src[t.LONECARET]}${src[t.XRANGEPLAINLOOSE]}$`);
+
+		// A simple gt/lt/eq thing, or just "" to indicate "any version"
+		createToken('COMPARATORLOOSE', `^${src[t.GTLT]}\\s*(${src[t.LOOSEPLAIN]})$|^$`);
+		createToken('COMPARATOR', `^${src[t.GTLT]}\\s*(${src[t.FULLPLAIN]})$|^$`);
+
+		// An expression to strip any whitespace between the gtlt and the thing
+		// it modifies, so that `> 1.2.3` ==> `>1.2.3`
+		createToken('COMPARATORTRIM', `(\\s*)${src[t.GTLT]
+		}\\s*(${src[t.LOOSEPLAIN]}|${src[t.XRANGEPLAIN]})`, true);
+		exports.comparatorTrimReplace = '$1$2$3';
+
+		// Something like `1.2.3 - 1.2.4`
+		// Note that these all use the loose form, because they'll be
+		// checked against either the strict or loose comparator form
+		// later.
+		createToken('HYPHENRANGE', `^\\s*(${src[t.XRANGEPLAIN]})` +
+		                   `\\s+-\\s+` +
+		                   `(${src[t.XRANGEPLAIN]})` +
+		                   `\\s*$`);
+
+		createToken('HYPHENRANGELOOSE', `^\\s*(${src[t.XRANGEPLAINLOOSE]})` +
+		                        `\\s+-\\s+` +
+		                        `(${src[t.XRANGEPLAINLOOSE]})` +
+		                        `\\s*$`);
+
+		// Star ranges basically just allow anything at all.
+		createToken('STAR', '(<|>)?=?\\s*\\*');
+		// >=0.0.0 is like a star
+		createToken('GTE0', '^\\s*>=\\s*0\\.0\\.0\\s*$');
+		createToken('GTE0PRE', '^\\s*>=\\s*0\\.0\\.0-0\\s*$'); 
+	} (re, re.exports));
+	return re.exports;
+}
+
+var parseOptions_1;
+var hasRequiredParseOptions;
+
+function requireParseOptions () {
+	if (hasRequiredParseOptions) return parseOptions_1;
+	hasRequiredParseOptions = 1;
+	// parse out just the options we care about
+	const looseOption = Object.freeze({ loose: true });
+	const emptyOpts = Object.freeze({ });
+	const parseOptions = options => {
+	  if (!options) {
+	    return emptyOpts
+	  }
+
+	  if (typeof options !== 'object') {
+	    return looseOption
+	  }
+
+	  return options
+	};
+	parseOptions_1 = parseOptions;
+	return parseOptions_1;
+}
+
+var identifiers;
+var hasRequiredIdentifiers;
+
+function requireIdentifiers () {
+	if (hasRequiredIdentifiers) return identifiers;
+	hasRequiredIdentifiers = 1;
+	const numeric = /^[0-9]+$/;
+	const compareIdentifiers = (a, b) => {
+	  const anum = numeric.test(a);
+	  const bnum = numeric.test(b);
+
+	  if (anum && bnum) {
+	    a = +a;
+	    b = +b;
+	  }
+
+	  return a === b ? 0
+	    : (anum && !bnum) ? -1
+	    : (bnum && !anum) ? 1
+	    : a < b ? -1
+	    : 1
+	};
+
+	const rcompareIdentifiers = (a, b) => compareIdentifiers(b, a);
+
+	identifiers = {
+	  compareIdentifiers,
+	  rcompareIdentifiers,
+	};
+	return identifiers;
+}
+
+var semver$1;
+var hasRequiredSemver$1;
+
+function requireSemver$1 () {
+	if (hasRequiredSemver$1) return semver$1;
+	hasRequiredSemver$1 = 1;
+	const debug = requireDebug();
+	const { MAX_LENGTH, MAX_SAFE_INTEGER } = requireConstants();
+	const { safeRe: re, t } = requireRe();
+
+	const parseOptions = requireParseOptions();
+	const { compareIdentifiers } = requireIdentifiers();
+	class SemVer {
+	  constructor (version, options) {
+	    options = parseOptions(options);
+
+	    if (version instanceof SemVer) {
+	      if (version.loose === !!options.loose &&
+	          version.includePrerelease === !!options.includePrerelease) {
+	        return version
+	      } else {
+	        version = version.version;
+	      }
+	    } else if (typeof version !== 'string') {
+	      throw new TypeError(`Invalid version. Must be a string. Got type "${typeof version}".`)
+	    }
+
+	    if (version.length > MAX_LENGTH) {
+	      throw new TypeError(
+	        `version is longer than ${MAX_LENGTH} characters`
+	      )
+	    }
+
+	    debug('SemVer', version, options);
+	    this.options = options;
+	    this.loose = !!options.loose;
+	    // this isn't actually relevant for versions, but keep it so that we
+	    // don't run into trouble passing this.options around.
+	    this.includePrerelease = !!options.includePrerelease;
+
+	    const m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
+
+	    if (!m) {
+	      throw new TypeError(`Invalid Version: ${version}`)
+	    }
+
+	    this.raw = version;
+
+	    // these are actually numbers
+	    this.major = +m[1];
+	    this.minor = +m[2];
+	    this.patch = +m[3];
+
+	    if (this.major > MAX_SAFE_INTEGER || this.major < 0) {
+	      throw new TypeError('Invalid major version')
+	    }
+
+	    if (this.minor > MAX_SAFE_INTEGER || this.minor < 0) {
+	      throw new TypeError('Invalid minor version')
+	    }
+
+	    if (this.patch > MAX_SAFE_INTEGER || this.patch < 0) {
+	      throw new TypeError('Invalid patch version')
+	    }
+
+	    // numberify any prerelease numeric ids
+	    if (!m[4]) {
+	      this.prerelease = [];
+	    } else {
+	      this.prerelease = m[4].split('.').map((id) => {
+	        if (/^[0-9]+$/.test(id)) {
+	          const num = +id;
+	          if (num >= 0 && num < MAX_SAFE_INTEGER) {
+	            return num
+	          }
+	        }
+	        return id
+	      });
+	    }
+
+	    this.build = m[5] ? m[5].split('.') : [];
+	    this.format();
+	  }
+
+	  format () {
+	    this.version = `${this.major}.${this.minor}.${this.patch}`;
+	    if (this.prerelease.length) {
+	      this.version += `-${this.prerelease.join('.')}`;
+	    }
+	    return this.version
+	  }
+
+	  toString () {
+	    return this.version
+	  }
+
+	  compare (other) {
+	    debug('SemVer.compare', this.version, this.options, other);
+	    if (!(other instanceof SemVer)) {
+	      if (typeof other === 'string' && other === this.version) {
+	        return 0
+	      }
+	      other = new SemVer(other, this.options);
+	    }
+
+	    if (other.version === this.version) {
+	      return 0
+	    }
+
+	    return this.compareMain(other) || this.comparePre(other)
+	  }
+
+	  compareMain (other) {
+	    if (!(other instanceof SemVer)) {
+	      other = new SemVer(other, this.options);
+	    }
+
+	    return (
+	      compareIdentifiers(this.major, other.major) ||
+	      compareIdentifiers(this.minor, other.minor) ||
+	      compareIdentifiers(this.patch, other.patch)
+	    )
+	  }
+
+	  comparePre (other) {
+	    if (!(other instanceof SemVer)) {
+	      other = new SemVer(other, this.options);
+	    }
+
+	    // NOT having a prerelease is > having one
+	    if (this.prerelease.length && !other.prerelease.length) {
+	      return -1
+	    } else if (!this.prerelease.length && other.prerelease.length) {
+	      return 1
+	    } else if (!this.prerelease.length && !other.prerelease.length) {
+	      return 0
+	    }
+
+	    let i = 0;
+	    do {
+	      const a = this.prerelease[i];
+	      const b = other.prerelease[i];
+	      debug('prerelease compare', i, a, b);
+	      if (a === undefined && b === undefined) {
+	        return 0
+	      } else if (b === undefined) {
+	        return 1
+	      } else if (a === undefined) {
+	        return -1
+	      } else if (a === b) {
+	        continue
+	      } else {
+	        return compareIdentifiers(a, b)
+	      }
+	    } while (++i)
+	  }
+
+	  compareBuild (other) {
+	    if (!(other instanceof SemVer)) {
+	      other = new SemVer(other, this.options);
+	    }
+
+	    let i = 0;
+	    do {
+	      const a = this.build[i];
+	      const b = other.build[i];
+	      debug('build compare', i, a, b);
+	      if (a === undefined && b === undefined) {
+	        return 0
+	      } else if (b === undefined) {
+	        return 1
+	      } else if (a === undefined) {
+	        return -1
+	      } else if (a === b) {
+	        continue
+	      } else {
+	        return compareIdentifiers(a, b)
+	      }
+	    } while (++i)
+	  }
+
+	  // preminor will bump the version up to the next minor release, and immediately
+	  // down to pre-release. premajor and prepatch work the same way.
+	  inc (release, identifier, identifierBase) {
+	    switch (release) {
+	      case 'premajor':
+	        this.prerelease.length = 0;
+	        this.patch = 0;
+	        this.minor = 0;
+	        this.major++;
+	        this.inc('pre', identifier, identifierBase);
+	        break
+	      case 'preminor':
+	        this.prerelease.length = 0;
+	        this.patch = 0;
+	        this.minor++;
+	        this.inc('pre', identifier, identifierBase);
+	        break
+	      case 'prepatch':
+	        // If this is already a prerelease, it will bump to the next version
+	        // drop any prereleases that might already exist, since they are not
+	        // relevant at this point.
+	        this.prerelease.length = 0;
+	        this.inc('patch', identifier, identifierBase);
+	        this.inc('pre', identifier, identifierBase);
+	        break
+	      // If the input is a non-prerelease version, this acts the same as
+	      // prepatch.
+	      case 'prerelease':
+	        if (this.prerelease.length === 0) {
+	          this.inc('patch', identifier, identifierBase);
+	        }
+	        this.inc('pre', identifier, identifierBase);
+	        break
+
+	      case 'major':
+	        // If this is a pre-major version, bump up to the same major version.
+	        // Otherwise increment major.
+	        // 1.0.0-5 bumps to 1.0.0
+	        // 1.1.0 bumps to 2.0.0
+	        if (
+	          this.minor !== 0 ||
+	          this.patch !== 0 ||
+	          this.prerelease.length === 0
+	        ) {
+	          this.major++;
+	        }
+	        this.minor = 0;
+	        this.patch = 0;
+	        this.prerelease = [];
+	        break
+	      case 'minor':
+	        // If this is a pre-minor version, bump up to the same minor version.
+	        // Otherwise increment minor.
+	        // 1.2.0-5 bumps to 1.2.0
+	        // 1.2.1 bumps to 1.3.0
+	        if (this.patch !== 0 || this.prerelease.length === 0) {
+	          this.minor++;
+	        }
+	        this.patch = 0;
+	        this.prerelease = [];
+	        break
+	      case 'patch':
+	        // If this is not a pre-release version, it will increment the patch.
+	        // If it is a pre-release it will bump up to the same patch version.
+	        // 1.2.0-5 patches to 1.2.0
+	        // 1.2.0 patches to 1.2.1
+	        if (this.prerelease.length === 0) {
+	          this.patch++;
+	        }
+	        this.prerelease = [];
+	        break
+	      // This probably shouldn't be used publicly.
+	      // 1.0.0 'pre' would become 1.0.0-0 which is the wrong direction.
+	      case 'pre': {
+	        const base = Number(identifierBase) ? 1 : 0;
+
+	        if (!identifier && identifierBase === false) {
+	          throw new Error('invalid increment argument: identifier is empty')
+	        }
+
+	        if (this.prerelease.length === 0) {
+	          this.prerelease = [base];
+	        } else {
+	          let i = this.prerelease.length;
+	          while (--i >= 0) {
+	            if (typeof this.prerelease[i] === 'number') {
+	              this.prerelease[i]++;
+	              i = -2;
+	            }
+	          }
+	          if (i === -1) {
+	            // didn't increment anything
+	            if (identifier === this.prerelease.join('.') && identifierBase === false) {
+	              throw new Error('invalid increment argument: identifier already exists')
+	            }
+	            this.prerelease.push(base);
+	          }
+	        }
+	        if (identifier) {
+	          // 1.2.0-beta.1 bumps to 1.2.0-beta.2,
+	          // 1.2.0-beta.fooblz or 1.2.0-beta bumps to 1.2.0-beta.0
+	          let prerelease = [identifier, base];
+	          if (identifierBase === false) {
+	            prerelease = [identifier];
+	          }
+	          if (compareIdentifiers(this.prerelease[0], identifier) === 0) {
+	            if (isNaN(this.prerelease[1])) {
+	              this.prerelease = prerelease;
+	            }
+	          } else {
+	            this.prerelease = prerelease;
+	          }
+	        }
+	        break
+	      }
+	      default:
+	        throw new Error(`invalid increment argument: ${release}`)
+	    }
+	    this.raw = this.format();
+	    if (this.build.length) {
+	      this.raw += `+${this.build.join('.')}`;
+	    }
+	    return this
+	  }
+	}
+
+	semver$1 = SemVer;
+	return semver$1;
+}
+
+var parse_1;
+var hasRequiredParse;
+
+function requireParse () {
+	if (hasRequiredParse) return parse_1;
+	hasRequiredParse = 1;
+	const SemVer = requireSemver$1();
+	const parse = (version, options, throwErrors = false) => {
+	  if (version instanceof SemVer) {
+	    return version
+	  }
+	  try {
+	    return new SemVer(version, options)
+	  } catch (er) {
+	    if (!throwErrors) {
+	      return null
+	    }
+	    throw er
+	  }
+	};
+
+	parse_1 = parse;
+	return parse_1;
+}
+
+var valid_1;
+var hasRequiredValid$1;
+
+function requireValid$1 () {
+	if (hasRequiredValid$1) return valid_1;
+	hasRequiredValid$1 = 1;
+	const parse = requireParse();
+	const valid = (version, options) => {
+	  const v = parse(version, options);
+	  return v ? v.version : null
+	};
+	valid_1 = valid;
+	return valid_1;
+}
+
+var clean_1;
+var hasRequiredClean;
+
+function requireClean () {
+	if (hasRequiredClean) return clean_1;
+	hasRequiredClean = 1;
+	const parse = requireParse();
+	const clean = (version, options) => {
+	  const s = parse(version.trim().replace(/^[=v]+/, ''), options);
+	  return s ? s.version : null
+	};
+	clean_1 = clean;
+	return clean_1;
+}
+
+var inc_1;
+var hasRequiredInc;
+
+function requireInc () {
+	if (hasRequiredInc) return inc_1;
+	hasRequiredInc = 1;
+	const SemVer = requireSemver$1();
+
+	const inc = (version, release, options, identifier, identifierBase) => {
+	  if (typeof (options) === 'string') {
+	    identifierBase = identifier;
+	    identifier = options;
+	    options = undefined;
+	  }
+
+	  try {
+	    return new SemVer(
+	      version instanceof SemVer ? version.version : version,
+	      options
+	    ).inc(release, identifier, identifierBase).version
+	  } catch (er) {
+	    return null
+	  }
+	};
+	inc_1 = inc;
+	return inc_1;
+}
+
+var diff_1;
+var hasRequiredDiff;
+
+function requireDiff () {
+	if (hasRequiredDiff) return diff_1;
+	hasRequiredDiff = 1;
+	const parse = requireParse();
+
+	const diff = (version1, version2) => {
+	  const v1 = parse(version1, null, true);
+	  const v2 = parse(version2, null, true);
+	  const comparison = v1.compare(v2);
+
+	  if (comparison === 0) {
+	    return null
+	  }
+
+	  const v1Higher = comparison > 0;
+	  const highVersion = v1Higher ? v1 : v2;
+	  const lowVersion = v1Higher ? v2 : v1;
+	  const highHasPre = !!highVersion.prerelease.length;
+	  const lowHasPre = !!lowVersion.prerelease.length;
+
+	  if (lowHasPre && !highHasPre) {
+	    // Going from prerelease -> no prerelease requires some special casing
+
+	    // If the low version has only a major, then it will always be a major
+	    // Some examples:
+	    // 1.0.0-1 -> 1.0.0
+	    // 1.0.0-1 -> 1.1.1
+	    // 1.0.0-1 -> 2.0.0
+	    if (!lowVersion.patch && !lowVersion.minor) {
+	      return 'major'
+	    }
+
+	    // Otherwise it can be determined by checking the high version
+
+	    if (highVersion.patch) {
+	      // anything higher than a patch bump would result in the wrong version
+	      return 'patch'
+	    }
+
+	    if (highVersion.minor) {
+	      // anything higher than a minor bump would result in the wrong version
+	      return 'minor'
+	    }
+
+	    // bumping major/minor/patch all have same result
+	    return 'major'
+	  }
+
+	  // add the `pre` prefix if we are going to a prerelease version
+	  const prefix = highHasPre ? 'pre' : '';
+
+	  if (v1.major !== v2.major) {
+	    return prefix + 'major'
+	  }
+
+	  if (v1.minor !== v2.minor) {
+	    return prefix + 'minor'
+	  }
+
+	  if (v1.patch !== v2.patch) {
+	    return prefix + 'patch'
+	  }
+
+	  // high and low are preleases
+	  return 'prerelease'
+	};
+
+	diff_1 = diff;
+	return diff_1;
+}
+
+var major_1;
+var hasRequiredMajor;
+
+function requireMajor () {
+	if (hasRequiredMajor) return major_1;
+	hasRequiredMajor = 1;
+	const SemVer = requireSemver$1();
+	const major = (a, loose) => new SemVer(a, loose).major;
+	major_1 = major;
+	return major_1;
+}
+
+var minor_1;
+var hasRequiredMinor;
+
+function requireMinor () {
+	if (hasRequiredMinor) return minor_1;
+	hasRequiredMinor = 1;
+	const SemVer = requireSemver$1();
+	const minor = (a, loose) => new SemVer(a, loose).minor;
+	minor_1 = minor;
+	return minor_1;
+}
+
+var patch_1;
+var hasRequiredPatch;
+
+function requirePatch () {
+	if (hasRequiredPatch) return patch_1;
+	hasRequiredPatch = 1;
+	const SemVer = requireSemver$1();
+	const patch = (a, loose) => new SemVer(a, loose).patch;
+	patch_1 = patch;
+	return patch_1;
+}
+
+var prerelease_1;
+var hasRequiredPrerelease;
+
+function requirePrerelease () {
+	if (hasRequiredPrerelease) return prerelease_1;
+	hasRequiredPrerelease = 1;
+	const parse = requireParse();
+	const prerelease = (version, options) => {
+	  const parsed = parse(version, options);
+	  return (parsed && parsed.prerelease.length) ? parsed.prerelease : null
+	};
+	prerelease_1 = prerelease;
+	return prerelease_1;
+}
+
+var compare_1;
+var hasRequiredCompare;
+
+function requireCompare () {
+	if (hasRequiredCompare) return compare_1;
+	hasRequiredCompare = 1;
+	const SemVer = requireSemver$1();
+	const compare = (a, b, loose) =>
+	  new SemVer(a, loose).compare(new SemVer(b, loose));
+
+	compare_1 = compare;
+	return compare_1;
+}
+
+var rcompare_1;
+var hasRequiredRcompare;
+
+function requireRcompare () {
+	if (hasRequiredRcompare) return rcompare_1;
+	hasRequiredRcompare = 1;
+	const compare = requireCompare();
+	const rcompare = (a, b, loose) => compare(b, a, loose);
+	rcompare_1 = rcompare;
+	return rcompare_1;
+}
+
+var compareLoose_1;
+var hasRequiredCompareLoose;
+
+function requireCompareLoose () {
+	if (hasRequiredCompareLoose) return compareLoose_1;
+	hasRequiredCompareLoose = 1;
+	const compare = requireCompare();
+	const compareLoose = (a, b) => compare(a, b, true);
+	compareLoose_1 = compareLoose;
+	return compareLoose_1;
+}
+
+var compareBuild_1;
+var hasRequiredCompareBuild;
+
+function requireCompareBuild () {
+	if (hasRequiredCompareBuild) return compareBuild_1;
+	hasRequiredCompareBuild = 1;
+	const SemVer = requireSemver$1();
+	const compareBuild = (a, b, loose) => {
+	  const versionA = new SemVer(a, loose);
+	  const versionB = new SemVer(b, loose);
+	  return versionA.compare(versionB) || versionA.compareBuild(versionB)
+	};
+	compareBuild_1 = compareBuild;
+	return compareBuild_1;
+}
+
+var sort_1;
+var hasRequiredSort;
+
+function requireSort () {
+	if (hasRequiredSort) return sort_1;
+	hasRequiredSort = 1;
+	const compareBuild = requireCompareBuild();
+	const sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
+	sort_1 = sort;
+	return sort_1;
+}
+
+var rsort_1;
+var hasRequiredRsort;
+
+function requireRsort () {
+	if (hasRequiredRsort) return rsort_1;
+	hasRequiredRsort = 1;
+	const compareBuild = requireCompareBuild();
+	const rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
+	rsort_1 = rsort;
+	return rsort_1;
+}
+
+var gt_1;
+var hasRequiredGt;
+
+function requireGt () {
+	if (hasRequiredGt) return gt_1;
+	hasRequiredGt = 1;
+	const compare = requireCompare();
+	const gt = (a, b, loose) => compare(a, b, loose) > 0;
+	gt_1 = gt;
+	return gt_1;
+}
+
+var lt_1;
+var hasRequiredLt;
+
+function requireLt () {
+	if (hasRequiredLt) return lt_1;
+	hasRequiredLt = 1;
+	const compare = requireCompare();
+	const lt = (a, b, loose) => compare(a, b, loose) < 0;
+	lt_1 = lt;
+	return lt_1;
+}
+
+var eq_1;
+var hasRequiredEq;
+
+function requireEq () {
+	if (hasRequiredEq) return eq_1;
+	hasRequiredEq = 1;
+	const compare = requireCompare();
+	const eq = (a, b, loose) => compare(a, b, loose) === 0;
+	eq_1 = eq;
+	return eq_1;
+}
+
+var neq_1;
+var hasRequiredNeq;
+
+function requireNeq () {
+	if (hasRequiredNeq) return neq_1;
+	hasRequiredNeq = 1;
+	const compare = requireCompare();
+	const neq = (a, b, loose) => compare(a, b, loose) !== 0;
+	neq_1 = neq;
+	return neq_1;
+}
+
+var gte_1;
+var hasRequiredGte;
+
+function requireGte () {
+	if (hasRequiredGte) return gte_1;
+	hasRequiredGte = 1;
+	const compare = requireCompare();
+	const gte = (a, b, loose) => compare(a, b, loose) >= 0;
+	gte_1 = gte;
+	return gte_1;
+}
+
+var lte_1;
+var hasRequiredLte;
+
+function requireLte () {
+	if (hasRequiredLte) return lte_1;
+	hasRequiredLte = 1;
+	const compare = requireCompare();
+	const lte = (a, b, loose) => compare(a, b, loose) <= 0;
+	lte_1 = lte;
+	return lte_1;
+}
+
+var cmp_1;
+var hasRequiredCmp;
+
+function requireCmp () {
+	if (hasRequiredCmp) return cmp_1;
+	hasRequiredCmp = 1;
+	const eq = requireEq();
+	const neq = requireNeq();
+	const gt = requireGt();
+	const gte = requireGte();
+	const lt = requireLt();
+	const lte = requireLte();
+
+	const cmp = (a, op, b, loose) => {
+	  switch (op) {
+	    case '===':
+	      if (typeof a === 'object') {
+	        a = a.version;
+	      }
+	      if (typeof b === 'object') {
+	        b = b.version;
+	      }
+	      return a === b
+
+	    case '!==':
+	      if (typeof a === 'object') {
+	        a = a.version;
+	      }
+	      if (typeof b === 'object') {
+	        b = b.version;
+	      }
+	      return a !== b
+
+	    case '':
+	    case '=':
+	    case '==':
+	      return eq(a, b, loose)
+
+	    case '!=':
+	      return neq(a, b, loose)
+
+	    case '>':
+	      return gt(a, b, loose)
+
+	    case '>=':
+	      return gte(a, b, loose)
+
+	    case '<':
+	      return lt(a, b, loose)
+
+	    case '<=':
+	      return lte(a, b, loose)
+
+	    default:
+	      throw new TypeError(`Invalid operator: ${op}`)
+	  }
+	};
+	cmp_1 = cmp;
+	return cmp_1;
+}
+
+var coerce_1;
+var hasRequiredCoerce;
+
+function requireCoerce () {
+	if (hasRequiredCoerce) return coerce_1;
+	hasRequiredCoerce = 1;
+	const SemVer = requireSemver$1();
+	const parse = requireParse();
+	const { safeRe: re, t } = requireRe();
+
+	const coerce = (version, options) => {
+	  if (version instanceof SemVer) {
+	    return version
+	  }
+
+	  if (typeof version === 'number') {
+	    version = String(version);
+	  }
+
+	  if (typeof version !== 'string') {
+	    return null
+	  }
+
+	  options = options || {};
+
+	  let match = null;
+	  if (!options.rtl) {
+	    match = version.match(options.includePrerelease ? re[t.COERCEFULL] : re[t.COERCE]);
+	  } else {
+	    // Find the right-most coercible string that does not share
+	    // a terminus with a more left-ward coercible string.
+	    // Eg, '1.2.3.4' wants to coerce '2.3.4', not '3.4' or '4'
+	    // With includePrerelease option set, '1.2.3.4-rc' wants to coerce '2.3.4-rc', not '2.3.4'
+	    //
+	    // Walk through the string checking with a /g regexp
+	    // Manually set the index so as to pick up overlapping matches.
+	    // Stop when we get a match that ends at the string end, since no
+	    // coercible string can be more right-ward without the same terminus.
+	    const coerceRtlRegex = options.includePrerelease ? re[t.COERCERTLFULL] : re[t.COERCERTL];
+	    let next;
+	    while ((next = coerceRtlRegex.exec(version)) &&
+	        (!match || match.index + match[0].length !== version.length)
+	    ) {
+	      if (!match ||
+	            next.index + next[0].length !== match.index + match[0].length) {
+	        match = next;
+	      }
+	      coerceRtlRegex.lastIndex = next.index + next[1].length + next[2].length;
+	    }
+	    // leave it in a clean state
+	    coerceRtlRegex.lastIndex = -1;
+	  }
+
+	  if (match === null) {
+	    return null
+	  }
+
+	  const major = match[2];
+	  const minor = match[3] || '0';
+	  const patch = match[4] || '0';
+	  const prerelease = options.includePrerelease && match[5] ? `-${match[5]}` : '';
+	  const build = options.includePrerelease && match[6] ? `+${match[6]}` : '';
+
+	  return parse(`${major}.${minor}.${patch}${prerelease}${build}`, options)
+	};
+	coerce_1 = coerce;
+	return coerce_1;
+}
+
+var lrucache;
+var hasRequiredLrucache;
+
+function requireLrucache () {
+	if (hasRequiredLrucache) return lrucache;
+	hasRequiredLrucache = 1;
+	class LRUCache {
+	  constructor () {
+	    this.max = 1000;
+	    this.map = new Map();
+	  }
+
+	  get (key) {
+	    const value = this.map.get(key);
+	    if (value === undefined) {
+	      return undefined
+	    } else {
+	      // Remove the key from the map and add it to the end
+	      this.map.delete(key);
+	      this.map.set(key, value);
+	      return value
+	    }
+	  }
+
+	  delete (key) {
+	    return this.map.delete(key)
+	  }
+
+	  set (key, value) {
+	    const deleted = this.delete(key);
+
+	    if (!deleted && value !== undefined) {
+	      // If cache is full, delete the least recently used item
+	      if (this.map.size >= this.max) {
+	        const firstKey = this.map.keys().next().value;
+	        this.delete(firstKey);
+	      }
+
+	      this.map.set(key, value);
+	    }
+
+	    return this
+	  }
+	}
+
+	lrucache = LRUCache;
+	return lrucache;
+}
+
+var range;
+var hasRequiredRange;
+
+function requireRange () {
+	if (hasRequiredRange) return range;
+	hasRequiredRange = 1;
+	const SPACE_CHARACTERS = /\s+/g;
+
+	// hoisted class for cyclic dependency
+	class Range {
+	  constructor (range, options) {
+	    options = parseOptions(options);
+
+	    if (range instanceof Range) {
+	      if (
+	        range.loose === !!options.loose &&
+	        range.includePrerelease === !!options.includePrerelease
+	      ) {
+	        return range
+	      } else {
+	        return new Range(range.raw, options)
+	      }
+	    }
+
+	    if (range instanceof Comparator) {
+	      // just put it in the set and return
+	      this.raw = range.value;
+	      this.set = [[range]];
+	      this.formatted = undefined;
+	      return this
+	    }
+
+	    this.options = options;
+	    this.loose = !!options.loose;
+	    this.includePrerelease = !!options.includePrerelease;
+
+	    // First reduce all whitespace as much as possible so we do not have to rely
+	    // on potentially slow regexes like \s*. This is then stored and used for
+	    // future error messages as well.
+	    this.raw = range.trim().replace(SPACE_CHARACTERS, ' ');
+
+	    // First, split on ||
+	    this.set = this.raw
+	      .split('||')
+	      // map the range to a 2d array of comparators
+	      .map(r => this.parseRange(r.trim()))
+	      // throw out any comparator lists that are empty
+	      // this generally means that it was not a valid range, which is allowed
+	      // in loose mode, but will still throw if the WHOLE range is invalid.
+	      .filter(c => c.length);
+
+	    if (!this.set.length) {
+	      throw new TypeError(`Invalid SemVer Range: ${this.raw}`)
+	    }
+
+	    // if we have any that are not the null set, throw out null sets.
+	    if (this.set.length > 1) {
+	      // keep the first one, in case they're all null sets
+	      const first = this.set[0];
+	      this.set = this.set.filter(c => !isNullSet(c[0]));
+	      if (this.set.length === 0) {
+	        this.set = [first];
+	      } else if (this.set.length > 1) {
+	        // if we have any that are *, then the range is just *
+	        for (const c of this.set) {
+	          if (c.length === 1 && isAny(c[0])) {
+	            this.set = [c];
+	            break
+	          }
+	        }
+	      }
+	    }
+
+	    this.formatted = undefined;
+	  }
+
+	  get range () {
+	    if (this.formatted === undefined) {
+	      this.formatted = '';
+	      for (let i = 0; i < this.set.length; i++) {
+	        if (i > 0) {
+	          this.formatted += '||';
+	        }
+	        const comps = this.set[i];
+	        for (let k = 0; k < comps.length; k++) {
+	          if (k > 0) {
+	            this.formatted += ' ';
+	          }
+	          this.formatted += comps[k].toString().trim();
+	        }
+	      }
+	    }
+	    return this.formatted
+	  }
+
+	  format () {
+	    return this.range
+	  }
+
+	  toString () {
+	    return this.range
+	  }
+
+	  parseRange (range) {
+	    // memoize range parsing for performance.
+	    // this is a very hot path, and fully deterministic.
+	    const memoOpts =
+	      (this.options.includePrerelease && FLAG_INCLUDE_PRERELEASE) |
+	      (this.options.loose && FLAG_LOOSE);
+	    const memoKey = memoOpts + ':' + range;
+	    const cached = cache.get(memoKey);
+	    if (cached) {
+	      return cached
+	    }
+
+	    const loose = this.options.loose;
+	    // `1.2.3 - 1.2.4` => `>=1.2.3 <=1.2.4`
+	    const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
+	    range = range.replace(hr, hyphenReplace(this.options.includePrerelease));
+	    debug('hyphen replace', range);
+
+	    // `> 1.2.3 < 1.2.5` => `>1.2.3 <1.2.5`
+	    range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
+	    debug('comparator trim', range);
+
+	    // `~ 1.2.3` => `~1.2.3`
+	    range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
+	    debug('tilde trim', range);
+
+	    // `^ 1.2.3` => `^1.2.3`
+	    range = range.replace(re[t.CARETTRIM], caretTrimReplace);
+	    debug('caret trim', range);
+
+	    // At this point, the range is completely trimmed and
+	    // ready to be split into comparators.
+
+	    let rangeList = range
+	      .split(' ')
+	      .map(comp => parseComparator(comp, this.options))
+	      .join(' ')
+	      .split(/\s+/)
+	      // >=0.0.0 is equivalent to *
+	      .map(comp => replaceGTE0(comp, this.options));
+
+	    if (loose) {
+	      // in loose mode, throw out any that are not valid comparators
+	      rangeList = rangeList.filter(comp => {
+	        debug('loose invalid filter', comp, this.options);
+	        return !!comp.match(re[t.COMPARATORLOOSE])
+	      });
+	    }
+	    debug('range list', rangeList);
+
+	    // if any comparators are the null set, then replace with JUST null set
+	    // if more than one comparator, remove any * comparators
+	    // also, don't include the same comparator more than once
+	    const rangeMap = new Map();
+	    const comparators = rangeList.map(comp => new Comparator(comp, this.options));
+	    for (const comp of comparators) {
+	      if (isNullSet(comp)) {
+	        return [comp]
+	      }
+	      rangeMap.set(comp.value, comp);
+	    }
+	    if (rangeMap.size > 1 && rangeMap.has('')) {
+	      rangeMap.delete('');
+	    }
+
+	    const result = [...rangeMap.values()];
+	    cache.set(memoKey, result);
+	    return result
+	  }
+
+	  intersects (range, options) {
+	    if (!(range instanceof Range)) {
+	      throw new TypeError('a Range is required')
+	    }
+
+	    return this.set.some((thisComparators) => {
+	      return (
+	        isSatisfiable(thisComparators, options) &&
+	        range.set.some((rangeComparators) => {
+	          return (
+	            isSatisfiable(rangeComparators, options) &&
+	            thisComparators.every((thisComparator) => {
+	              return rangeComparators.every((rangeComparator) => {
+	                return thisComparator.intersects(rangeComparator, options)
+	              })
+	            })
+	          )
+	        })
+	      )
+	    })
+	  }
+
+	  // if ANY of the sets match ALL of its comparators, then pass
+	  test (version) {
+	    if (!version) {
+	      return false
+	    }
+
+	    if (typeof version === 'string') {
+	      try {
+	        version = new SemVer(version, this.options);
+	      } catch (er) {
+	        return false
+	      }
+	    }
+
+	    for (let i = 0; i < this.set.length; i++) {
+	      if (testSet(this.set[i], version, this.options)) {
+	        return true
+	      }
+	    }
+	    return false
+	  }
+	}
+
+	range = Range;
+
+	const LRU = requireLrucache();
+	const cache = new LRU();
+
+	const parseOptions = requireParseOptions();
+	const Comparator = requireComparator();
+	const debug = requireDebug();
+	const SemVer = requireSemver$1();
+	const {
+	  safeRe: re,
+	  t,
+	  comparatorTrimReplace,
+	  tildeTrimReplace,
+	  caretTrimReplace,
+	} = requireRe();
+	const { FLAG_INCLUDE_PRERELEASE, FLAG_LOOSE } = requireConstants();
+
+	const isNullSet = c => c.value === '<0.0.0-0';
+	const isAny = c => c.value === '';
+
+	// take a set of comparators and determine whether there
+	// exists a version which can satisfy it
+	const isSatisfiable = (comparators, options) => {
+	  let result = true;
+	  const remainingComparators = comparators.slice();
+	  let testComparator = remainingComparators.pop();
+
+	  while (result && remainingComparators.length) {
+	    result = remainingComparators.every((otherComparator) => {
+	      return testComparator.intersects(otherComparator, options)
+	    });
+
+	    testComparator = remainingComparators.pop();
+	  }
+
+	  return result
+	};
+
+	// comprised of xranges, tildes, stars, and gtlt's at this point.
+	// already replaced the hyphen ranges
+	// turn into a set of JUST comparators.
+	const parseComparator = (comp, options) => {
+	  debug('comp', comp, options);
+	  comp = replaceCarets(comp, options);
+	  debug('caret', comp);
+	  comp = replaceTildes(comp, options);
+	  debug('tildes', comp);
+	  comp = replaceXRanges(comp, options);
+	  debug('xrange', comp);
+	  comp = replaceStars(comp, options);
+	  debug('stars', comp);
+	  return comp
+	};
+
+	const isX = id => !id || id.toLowerCase() === 'x' || id === '*';
+
+	// ~, ~> --> * (any, kinda silly)
+	// ~2, ~2.x, ~2.x.x, ~>2, ~>2.x ~>2.x.x --> >=2.0.0 <3.0.0-0
+	// ~2.0, ~2.0.x, ~>2.0, ~>2.0.x --> >=2.0.0 <2.1.0-0
+	// ~1.2, ~1.2.x, ~>1.2, ~>1.2.x --> >=1.2.0 <1.3.0-0
+	// ~1.2.3, ~>1.2.3 --> >=1.2.3 <1.3.0-0
+	// ~1.2.0, ~>1.2.0 --> >=1.2.0 <1.3.0-0
+	// ~0.0.1 --> >=0.0.1 <0.1.0-0
+	const replaceTildes = (comp, options) => {
+	  return comp
+	    .trim()
+	    .split(/\s+/)
+	    .map((c) => replaceTilde(c, options))
+	    .join(' ')
+	};
+
+	const replaceTilde = (comp, options) => {
+	  const r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
+	  return comp.replace(r, (_, M, m, p, pr) => {
+	    debug('tilde', comp, _, M, m, p, pr);
+	    let ret;
+
+	    if (isX(M)) {
+	      ret = '';
+	    } else if (isX(m)) {
+	      ret = `>=${M}.0.0 <${+M + 1}.0.0-0`;
+	    } else if (isX(p)) {
+	      // ~1.2 == >=1.2.0 <1.3.0-0
+	      ret = `>=${M}.${m}.0 <${M}.${+m + 1}.0-0`;
+	    } else if (pr) {
+	      debug('replaceTilde pr', pr);
+	      ret = `>=${M}.${m}.${p}-${pr
+	      } <${M}.${+m + 1}.0-0`;
+	    } else {
+	      // ~1.2.3 == >=1.2.3 <1.3.0-0
+	      ret = `>=${M}.${m}.${p
+	      } <${M}.${+m + 1}.0-0`;
+	    }
+
+	    debug('tilde return', ret);
+	    return ret
+	  })
+	};
+
+	// ^ --> * (any, kinda silly)
+	// ^2, ^2.x, ^2.x.x --> >=2.0.0 <3.0.0-0
+	// ^2.0, ^2.0.x --> >=2.0.0 <3.0.0-0
+	// ^1.2, ^1.2.x --> >=1.2.0 <2.0.0-0
+	// ^1.2.3 --> >=1.2.3 <2.0.0-0
+	// ^1.2.0 --> >=1.2.0 <2.0.0-0
+	// ^0.0.1 --> >=0.0.1 <0.0.2-0
+	// ^0.1.0 --> >=0.1.0 <0.2.0-0
+	const replaceCarets = (comp, options) => {
+	  return comp
+	    .trim()
+	    .split(/\s+/)
+	    .map((c) => replaceCaret(c, options))
+	    .join(' ')
+	};
+
+	const replaceCaret = (comp, options) => {
+	  debug('caret', comp, options);
+	  const r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
+	  const z = options.includePrerelease ? '-0' : '';
+	  return comp.replace(r, (_, M, m, p, pr) => {
+	    debug('caret', comp, _, M, m, p, pr);
+	    let ret;
+
+	    if (isX(M)) {
+	      ret = '';
+	    } else if (isX(m)) {
+	      ret = `>=${M}.0.0${z} <${+M + 1}.0.0-0`;
+	    } else if (isX(p)) {
+	      if (M === '0') {
+	        ret = `>=${M}.${m}.0${z} <${M}.${+m + 1}.0-0`;
+	      } else {
+	        ret = `>=${M}.${m}.0${z} <${+M + 1}.0.0-0`;
+	      }
+	    } else if (pr) {
+	      debug('replaceCaret pr', pr);
+	      if (M === '0') {
+	        if (m === '0') {
+	          ret = `>=${M}.${m}.${p}-${pr
+	          } <${M}.${m}.${+p + 1}-0`;
+	        } else {
+	          ret = `>=${M}.${m}.${p}-${pr
+	          } <${M}.${+m + 1}.0-0`;
+	        }
+	      } else {
+	        ret = `>=${M}.${m}.${p}-${pr
+	        } <${+M + 1}.0.0-0`;
+	      }
+	    } else {
+	      debug('no pr');
+	      if (M === '0') {
+	        if (m === '0') {
+	          ret = `>=${M}.${m}.${p
+	          }${z} <${M}.${m}.${+p + 1}-0`;
+	        } else {
+	          ret = `>=${M}.${m}.${p
+	          }${z} <${M}.${+m + 1}.0-0`;
+	        }
+	      } else {
+	        ret = `>=${M}.${m}.${p
+	        } <${+M + 1}.0.0-0`;
+	      }
+	    }
+
+	    debug('caret return', ret);
+	    return ret
+	  })
+	};
+
+	const replaceXRanges = (comp, options) => {
+	  debug('replaceXRanges', comp, options);
+	  return comp
+	    .split(/\s+/)
+	    .map((c) => replaceXRange(c, options))
+	    .join(' ')
+	};
+
+	const replaceXRange = (comp, options) => {
+	  comp = comp.trim();
+	  const r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
+	  return comp.replace(r, (ret, gtlt, M, m, p, pr) => {
+	    debug('xRange', comp, ret, gtlt, M, m, p, pr);
+	    const xM = isX(M);
+	    const xm = xM || isX(m);
+	    const xp = xm || isX(p);
+	    const anyX = xp;
+
+	    if (gtlt === '=' && anyX) {
+	      gtlt = '';
+	    }
+
+	    // if we're including prereleases in the match, then we need
+	    // to fix this to -0, the lowest possible prerelease value
+	    pr = options.includePrerelease ? '-0' : '';
+
+	    if (xM) {
+	      if (gtlt === '>' || gtlt === '<') {
+	        // nothing is allowed
+	        ret = '<0.0.0-0';
+	      } else {
+	        // nothing is forbidden
+	        ret = '*';
+	      }
+	    } else if (gtlt && anyX) {
+	      // we know patch is an x, because we have any x at all.
+	      // replace X with 0
+	      if (xm) {
+	        m = 0;
+	      }
+	      p = 0;
+
+	      if (gtlt === '>') {
+	        // >1 => >=2.0.0
+	        // >1.2 => >=1.3.0
+	        gtlt = '>=';
+	        if (xm) {
+	          M = +M + 1;
+	          m = 0;
+	          p = 0;
+	        } else {
+	          m = +m + 1;
+	          p = 0;
+	        }
+	      } else if (gtlt === '<=') {
+	        // <=0.7.x is actually <0.8.0, since any 0.7.x should
+	        // pass.  Similarly, <=7.x is actually <8.0.0, etc.
+	        gtlt = '<';
+	        if (xm) {
+	          M = +M + 1;
+	        } else {
+	          m = +m + 1;
+	        }
+	      }
+
+	      if (gtlt === '<') {
+	        pr = '-0';
+	      }
+
+	      ret = `${gtlt + M}.${m}.${p}${pr}`;
+	    } else if (xm) {
+	      ret = `>=${M}.0.0${pr} <${+M + 1}.0.0-0`;
+	    } else if (xp) {
+	      ret = `>=${M}.${m}.0${pr
+	      } <${M}.${+m + 1}.0-0`;
+	    }
+
+	    debug('xRange return', ret);
+
+	    return ret
+	  })
+	};
+
+	// Because * is AND-ed with everything else in the comparator,
+	// and '' means "any version", just remove the *s entirely.
+	const replaceStars = (comp, options) => {
+	  debug('replaceStars', comp, options);
+	  // Looseness is ignored here.  star is always as loose as it gets!
+	  return comp
+	    .trim()
+	    .replace(re[t.STAR], '')
+	};
+
+	const replaceGTE0 = (comp, options) => {
+	  debug('replaceGTE0', comp, options);
+	  return comp
+	    .trim()
+	    .replace(re[options.includePrerelease ? t.GTE0PRE : t.GTE0], '')
+	};
+
+	// This function is passed to string.replace(re[t.HYPHENRANGE])
+	// M, m, patch, prerelease, build
+	// 1.2 - 3.4.5 => >=1.2.0 <=3.4.5
+	// 1.2.3 - 3.4 => >=1.2.0 <3.5.0-0 Any 3.4.x will do
+	// 1.2 - 3.4 => >=1.2.0 <3.5.0-0
+	// TODO build?
+	const hyphenReplace = incPr => ($0,
+	  from, fM, fm, fp, fpr, fb,
+	  to, tM, tm, tp, tpr) => {
+	  if (isX(fM)) {
+	    from = '';
+	  } else if (isX(fm)) {
+	    from = `>=${fM}.0.0${incPr ? '-0' : ''}`;
+	  } else if (isX(fp)) {
+	    from = `>=${fM}.${fm}.0${incPr ? '-0' : ''}`;
+	  } else if (fpr) {
+	    from = `>=${from}`;
+	  } else {
+	    from = `>=${from}${incPr ? '-0' : ''}`;
+	  }
+
+	  if (isX(tM)) {
+	    to = '';
+	  } else if (isX(tm)) {
+	    to = `<${+tM + 1}.0.0-0`;
+	  } else if (isX(tp)) {
+	    to = `<${tM}.${+tm + 1}.0-0`;
+	  } else if (tpr) {
+	    to = `<=${tM}.${tm}.${tp}-${tpr}`;
+	  } else if (incPr) {
+	    to = `<${tM}.${tm}.${+tp + 1}-0`;
+	  } else {
+	    to = `<=${to}`;
+	  }
+
+	  return `${from} ${to}`.trim()
+	};
+
+	const testSet = (set, version, options) => {
+	  for (let i = 0; i < set.length; i++) {
+	    if (!set[i].test(version)) {
+	      return false
+	    }
+	  }
+
+	  if (version.prerelease.length && !options.includePrerelease) {
+	    // Find the set of versions that are allowed to have prereleases
+	    // For example, ^1.2.3-pr.1 desugars to >=1.2.3-pr.1 <2.0.0
+	    // That should allow `1.2.3-pr.2` to pass.
+	    // However, `1.2.4-alpha.notready` should NOT be allowed,
+	    // even though it's within the range set by the comparators.
+	    for (let i = 0; i < set.length; i++) {
+	      debug(set[i].semver);
+	      if (set[i].semver === Comparator.ANY) {
+	        continue
+	      }
+
+	      if (set[i].semver.prerelease.length > 0) {
+	        const allowed = set[i].semver;
+	        if (allowed.major === version.major &&
+	            allowed.minor === version.minor &&
+	            allowed.patch === version.patch) {
+	          return true
+	        }
+	      }
+	    }
+
+	    // Version has a -pre, but it's not one of the ones we like.
+	    return false
+	  }
+
+	  return true
+	};
+	return range;
+}
+
+var comparator;
+var hasRequiredComparator;
+
+function requireComparator () {
+	if (hasRequiredComparator) return comparator;
+	hasRequiredComparator = 1;
+	const ANY = Symbol('SemVer ANY');
+	// hoisted class for cyclic dependency
+	class Comparator {
+	  static get ANY () {
+	    return ANY
+	  }
+
+	  constructor (comp, options) {
+	    options = parseOptions(options);
+
+	    if (comp instanceof Comparator) {
+	      if (comp.loose === !!options.loose) {
+	        return comp
+	      } else {
+	        comp = comp.value;
+	      }
+	    }
+
+	    comp = comp.trim().split(/\s+/).join(' ');
+	    debug('comparator', comp, options);
+	    this.options = options;
+	    this.loose = !!options.loose;
+	    this.parse(comp);
+
+	    if (this.semver === ANY) {
+	      this.value = '';
+	    } else {
+	      this.value = this.operator + this.semver.version;
+	    }
+
+	    debug('comp', this);
+	  }
+
+	  parse (comp) {
+	    const r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
+	    const m = comp.match(r);
+
+	    if (!m) {
+	      throw new TypeError(`Invalid comparator: ${comp}`)
+	    }
+
+	    this.operator = m[1] !== undefined ? m[1] : '';
+	    if (this.operator === '=') {
+	      this.operator = '';
+	    }
+
+	    // if it literally is just '>' or '' then allow anything.
+	    if (!m[2]) {
+	      this.semver = ANY;
+	    } else {
+	      this.semver = new SemVer(m[2], this.options.loose);
+	    }
+	  }
+
+	  toString () {
+	    return this.value
+	  }
+
+	  test (version) {
+	    debug('Comparator.test', version, this.options.loose);
+
+	    if (this.semver === ANY || version === ANY) {
+	      return true
+	    }
+
+	    if (typeof version === 'string') {
+	      try {
+	        version = new SemVer(version, this.options);
+	      } catch (er) {
+	        return false
+	      }
+	    }
+
+	    return cmp(version, this.operator, this.semver, this.options)
+	  }
+
+	  intersects (comp, options) {
+	    if (!(comp instanceof Comparator)) {
+	      throw new TypeError('a Comparator is required')
+	    }
+
+	    if (this.operator === '') {
+	      if (this.value === '') {
+	        return true
+	      }
+	      return new Range(comp.value, options).test(this.value)
+	    } else if (comp.operator === '') {
+	      if (comp.value === '') {
+	        return true
+	      }
+	      return new Range(this.value, options).test(comp.semver)
+	    }
+
+	    options = parseOptions(options);
+
+	    // Special cases where nothing can possibly be lower
+	    if (options.includePrerelease &&
+	      (this.value === '<0.0.0-0' || comp.value === '<0.0.0-0')) {
+	      return false
+	    }
+	    if (!options.includePrerelease &&
+	      (this.value.startsWith('<0.0.0') || comp.value.startsWith('<0.0.0'))) {
+	      return false
+	    }
+
+	    // Same direction increasing (> or >=)
+	    if (this.operator.startsWith('>') && comp.operator.startsWith('>')) {
+	      return true
+	    }
+	    // Same direction decreasing (< or <=)
+	    if (this.operator.startsWith('<') && comp.operator.startsWith('<')) {
+	      return true
+	    }
+	    // same SemVer and both sides are inclusive (<= or >=)
+	    if (
+	      (this.semver.version === comp.semver.version) &&
+	      this.operator.includes('=') && comp.operator.includes('=')) {
+	      return true
+	    }
+	    // opposite directions less than
+	    if (cmp(this.semver, '<', comp.semver, options) &&
+	      this.operator.startsWith('>') && comp.operator.startsWith('<')) {
+	      return true
+	    }
+	    // opposite directions greater than
+	    if (cmp(this.semver, '>', comp.semver, options) &&
+	      this.operator.startsWith('<') && comp.operator.startsWith('>')) {
+	      return true
+	    }
+	    return false
+	  }
+	}
+
+	comparator = Comparator;
+
+	const parseOptions = requireParseOptions();
+	const { safeRe: re, t } = requireRe();
+	const cmp = requireCmp();
+	const debug = requireDebug();
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+	return comparator;
+}
+
+var satisfies_1;
+var hasRequiredSatisfies;
+
+function requireSatisfies () {
+	if (hasRequiredSatisfies) return satisfies_1;
+	hasRequiredSatisfies = 1;
+	const Range = requireRange();
+	const satisfies = (version, range, options) => {
+	  try {
+	    range = new Range(range, options);
+	  } catch (er) {
+	    return false
+	  }
+	  return range.test(version)
+	};
+	satisfies_1 = satisfies;
+	return satisfies_1;
+}
+
+var toComparators_1;
+var hasRequiredToComparators;
+
+function requireToComparators () {
+	if (hasRequiredToComparators) return toComparators_1;
+	hasRequiredToComparators = 1;
+	const Range = requireRange();
+
+	// Mostly just for testing and legacy API reasons
+	const toComparators = (range, options) =>
+	  new Range(range, options).set
+	    .map(comp => comp.map(c => c.value).join(' ').trim().split(' '));
+
+	toComparators_1 = toComparators;
+	return toComparators_1;
+}
+
+var maxSatisfying_1;
+var hasRequiredMaxSatisfying;
+
+function requireMaxSatisfying () {
+	if (hasRequiredMaxSatisfying) return maxSatisfying_1;
+	hasRequiredMaxSatisfying = 1;
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+
+	const maxSatisfying = (versions, range, options) => {
+	  let max = null;
+	  let maxSV = null;
+	  let rangeObj = null;
+	  try {
+	    rangeObj = new Range(range, options);
+	  } catch (er) {
+	    return null
+	  }
+	  versions.forEach((v) => {
+	    if (rangeObj.test(v)) {
+	      // satisfies(v, range, options)
+	      if (!max || maxSV.compare(v) === -1) {
+	        // compare(max, v, true)
+	        max = v;
+	        maxSV = new SemVer(max, options);
+	      }
+	    }
+	  });
+	  return max
+	};
+	maxSatisfying_1 = maxSatisfying;
+	return maxSatisfying_1;
+}
+
+var minSatisfying_1;
+var hasRequiredMinSatisfying;
+
+function requireMinSatisfying () {
+	if (hasRequiredMinSatisfying) return minSatisfying_1;
+	hasRequiredMinSatisfying = 1;
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+	const minSatisfying = (versions, range, options) => {
+	  let min = null;
+	  let minSV = null;
+	  let rangeObj = null;
+	  try {
+	    rangeObj = new Range(range, options);
+	  } catch (er) {
+	    return null
+	  }
+	  versions.forEach((v) => {
+	    if (rangeObj.test(v)) {
+	      // satisfies(v, range, options)
+	      if (!min || minSV.compare(v) === 1) {
+	        // compare(min, v, true)
+	        min = v;
+	        minSV = new SemVer(min, options);
+	      }
+	    }
+	  });
+	  return min
+	};
+	minSatisfying_1 = minSatisfying;
+	return minSatisfying_1;
+}
+
+var minVersion_1;
+var hasRequiredMinVersion;
+
+function requireMinVersion () {
+	if (hasRequiredMinVersion) return minVersion_1;
+	hasRequiredMinVersion = 1;
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+	const gt = requireGt();
+
+	const minVersion = (range, loose) => {
+	  range = new Range(range, loose);
+
+	  let minver = new SemVer('0.0.0');
+	  if (range.test(minver)) {
+	    return minver
+	  }
+
+	  minver = new SemVer('0.0.0-0');
+	  if (range.test(minver)) {
+	    return minver
+	  }
+
+	  minver = null;
+	  for (let i = 0; i < range.set.length; ++i) {
+	    const comparators = range.set[i];
+
+	    let setMin = null;
+	    comparators.forEach((comparator) => {
+	      // Clone to avoid manipulating the comparator's semver object.
+	      const compver = new SemVer(comparator.semver.version);
+	      switch (comparator.operator) {
+	        case '>':
+	          if (compver.prerelease.length === 0) {
+	            compver.patch++;
+	          } else {
+	            compver.prerelease.push(0);
+	          }
+	          compver.raw = compver.format();
+	          /* fallthrough */
+	        case '':
+	        case '>=':
+	          if (!setMin || gt(compver, setMin)) {
+	            setMin = compver;
+	          }
+	          break
+	        case '<':
+	        case '<=':
+	          /* Ignore maximum versions */
+	          break
+	        /* istanbul ignore next */
+	        default:
+	          throw new Error(`Unexpected operation: ${comparator.operator}`)
+	      }
+	    });
+	    if (setMin && (!minver || gt(minver, setMin))) {
+	      minver = setMin;
+	    }
+	  }
+
+	  if (minver && range.test(minver)) {
+	    return minver
+	  }
+
+	  return null
+	};
+	minVersion_1 = minVersion;
+	return minVersion_1;
+}
+
+var valid;
+var hasRequiredValid;
+
+function requireValid () {
+	if (hasRequiredValid) return valid;
+	hasRequiredValid = 1;
+	const Range = requireRange();
+	const validRange = (range, options) => {
+	  try {
+	    // Return '*' instead of '' so that truthiness works.
+	    // This will throw if it's invalid anyway
+	    return new Range(range, options).range || '*'
+	  } catch (er) {
+	    return null
+	  }
+	};
+	valid = validRange;
+	return valid;
+}
+
+var outside_1;
+var hasRequiredOutside;
+
+function requireOutside () {
+	if (hasRequiredOutside) return outside_1;
+	hasRequiredOutside = 1;
+	const SemVer = requireSemver$1();
+	const Comparator = requireComparator();
+	const { ANY } = Comparator;
+	const Range = requireRange();
+	const satisfies = requireSatisfies();
+	const gt = requireGt();
+	const lt = requireLt();
+	const lte = requireLte();
+	const gte = requireGte();
+
+	const outside = (version, range, hilo, options) => {
+	  version = new SemVer(version, options);
+	  range = new Range(range, options);
+
+	  let gtfn, ltefn, ltfn, comp, ecomp;
+	  switch (hilo) {
+	    case '>':
+	      gtfn = gt;
+	      ltefn = lte;
+	      ltfn = lt;
+	      comp = '>';
+	      ecomp = '>=';
+	      break
+	    case '<':
+	      gtfn = lt;
+	      ltefn = gte;
+	      ltfn = gt;
+	      comp = '<';
+	      ecomp = '<=';
+	      break
+	    default:
+	      throw new TypeError('Must provide a hilo val of "<" or ">"')
+	  }
+
+	  // If it satisfies the range it is not outside
+	  if (satisfies(version, range, options)) {
+	    return false
+	  }
+
+	  // From now on, variable terms are as if we're in "gtr" mode.
+	  // but note that everything is flipped for the "ltr" function.
+
+	  for (let i = 0; i < range.set.length; ++i) {
+	    const comparators = range.set[i];
+
+	    let high = null;
+	    let low = null;
+
+	    comparators.forEach((comparator) => {
+	      if (comparator.semver === ANY) {
+	        comparator = new Comparator('>=0.0.0');
+	      }
+	      high = high || comparator;
+	      low = low || comparator;
+	      if (gtfn(comparator.semver, high.semver, options)) {
+	        high = comparator;
+	      } else if (ltfn(comparator.semver, low.semver, options)) {
+	        low = comparator;
+	      }
+	    });
+
+	    // If the edge version comparator has a operator then our version
+	    // isn't outside it
+	    if (high.operator === comp || high.operator === ecomp) {
+	      return false
+	    }
+
+	    // If the lowest version comparator has an operator and our version
+	    // is less than it then it isn't higher than the range
+	    if ((!low.operator || low.operator === comp) &&
+	        ltefn(version, low.semver)) {
+	      return false
+	    } else if (low.operator === ecomp && ltfn(version, low.semver)) {
+	      return false
+	    }
+	  }
+	  return true
+	};
+
+	outside_1 = outside;
+	return outside_1;
+}
+
+var gtr_1;
+var hasRequiredGtr;
+
+function requireGtr () {
+	if (hasRequiredGtr) return gtr_1;
+	hasRequiredGtr = 1;
+	// Determine if version is greater than all the versions possible in the range.
+	const outside = requireOutside();
+	const gtr = (version, range, options) => outside(version, range, '>', options);
+	gtr_1 = gtr;
+	return gtr_1;
+}
+
+var ltr_1;
+var hasRequiredLtr;
+
+function requireLtr () {
+	if (hasRequiredLtr) return ltr_1;
+	hasRequiredLtr = 1;
+	const outside = requireOutside();
+	// Determine if version is less than all the versions possible in the range
+	const ltr = (version, range, options) => outside(version, range, '<', options);
+	ltr_1 = ltr;
+	return ltr_1;
+}
+
+var intersects_1;
+var hasRequiredIntersects;
+
+function requireIntersects () {
+	if (hasRequiredIntersects) return intersects_1;
+	hasRequiredIntersects = 1;
+	const Range = requireRange();
+	const intersects = (r1, r2, options) => {
+	  r1 = new Range(r1, options);
+	  r2 = new Range(r2, options);
+	  return r1.intersects(r2, options)
+	};
+	intersects_1 = intersects;
+	return intersects_1;
+}
+
+var simplify;
+var hasRequiredSimplify;
+
+function requireSimplify () {
+	if (hasRequiredSimplify) return simplify;
+	hasRequiredSimplify = 1;
+	// given a set of versions and a range, create a "simplified" range
+	// that includes the same versions that the original range does
+	// If the original range is shorter than the simplified one, return that.
+	const satisfies = requireSatisfies();
+	const compare = requireCompare();
+	simplify = (versions, range, options) => {
+	  const set = [];
+	  let first = null;
+	  let prev = null;
+	  const v = versions.sort((a, b) => compare(a, b, options));
+	  for (const version of v) {
+	    const included = satisfies(version, range, options);
+	    if (included) {
+	      prev = version;
+	      if (!first) {
+	        first = version;
+	      }
+	    } else {
+	      if (prev) {
+	        set.push([first, prev]);
+	      }
+	      prev = null;
+	      first = null;
+	    }
+	  }
+	  if (first) {
+	    set.push([first, null]);
+	  }
+
+	  const ranges = [];
+	  for (const [min, max] of set) {
+	    if (min === max) {
+	      ranges.push(min);
+	    } else if (!max && min === v[0]) {
+	      ranges.push('*');
+	    } else if (!max) {
+	      ranges.push(`>=${min}`);
+	    } else if (min === v[0]) {
+	      ranges.push(`<=${max}`);
+	    } else {
+	      ranges.push(`${min} - ${max}`);
+	    }
+	  }
+	  const simplified = ranges.join(' || ');
+	  const original = typeof range.raw === 'string' ? range.raw : String(range);
+	  return simplified.length < original.length ? simplified : range
+	};
+	return simplify;
+}
+
+var subset_1;
+var hasRequiredSubset;
+
+function requireSubset () {
+	if (hasRequiredSubset) return subset_1;
+	hasRequiredSubset = 1;
+	const Range = requireRange();
+	const Comparator = requireComparator();
+	const { ANY } = Comparator;
+	const satisfies = requireSatisfies();
+	const compare = requireCompare();
+
+	// Complex range `r1 || r2 || ...` is a subset of `R1 || R2 || ...` iff:
+	// - Every simple range `r1, r2, ...` is a null set, OR
+	// - Every simple range `r1, r2, ...` which is not a null set is a subset of
+	//   some `R1, R2, ...`
+	//
+	// Simple range `c1 c2 ...` is a subset of simple range `C1 C2 ...` iff:
+	// - If c is only the ANY comparator
+	//   - If C is only the ANY comparator, return true
+	//   - Else if in prerelease mode, return false
+	//   - else replace c with `[>=0.0.0]`
+	// - If C is only the ANY comparator
+	//   - if in prerelease mode, return true
+	//   - else replace C with `[>=0.0.0]`
+	// - Let EQ be the set of = comparators in c
+	// - If EQ is more than one, return true (null set)
+	// - Let GT be the highest > or >= comparator in c
+	// - Let LT be the lowest < or <= comparator in c
+	// - If GT and LT, and GT.semver > LT.semver, return true (null set)
+	// - If any C is a = range, and GT or LT are set, return false
+	// - If EQ
+	//   - If GT, and EQ does not satisfy GT, return true (null set)
+	//   - If LT, and EQ does not satisfy LT, return true (null set)
+	//   - If EQ satisfies every C, return true
+	//   - Else return false
+	// - If GT
+	//   - If GT.semver is lower than any > or >= comp in C, return false
+	//   - If GT is >=, and GT.semver does not satisfy every C, return false
+	//   - If GT.semver has a prerelease, and not in prerelease mode
+	//     - If no C has a prerelease and the GT.semver tuple, return false
+	// - If LT
+	//   - If LT.semver is greater than any < or <= comp in C, return false
+	//   - If LT is <=, and LT.semver does not satisfy every C, return false
+	//   - If GT.semver has a prerelease, and not in prerelease mode
+	//     - If no C has a prerelease and the LT.semver tuple, return false
+	// - Else return true
+
+	const subset = (sub, dom, options = {}) => {
+	  if (sub === dom) {
+	    return true
+	  }
+
+	  sub = new Range(sub, options);
+	  dom = new Range(dom, options);
+	  let sawNonNull = false;
+
+	  OUTER: for (const simpleSub of sub.set) {
+	    for (const simpleDom of dom.set) {
+	      const isSub = simpleSubset(simpleSub, simpleDom, options);
+	      sawNonNull = sawNonNull || isSub !== null;
+	      if (isSub) {
+	        continue OUTER
+	      }
+	    }
+	    // the null set is a subset of everything, but null simple ranges in
+	    // a complex range should be ignored.  so if we saw a non-null range,
+	    // then we know this isn't a subset, but if EVERY simple range was null,
+	    // then it is a subset.
+	    if (sawNonNull) {
+	      return false
+	    }
+	  }
+	  return true
+	};
+
+	const minimumVersionWithPreRelease = [new Comparator('>=0.0.0-0')];
+	const minimumVersion = [new Comparator('>=0.0.0')];
+
+	const simpleSubset = (sub, dom, options) => {
+	  if (sub === dom) {
+	    return true
+	  }
+
+	  if (sub.length === 1 && sub[0].semver === ANY) {
+	    if (dom.length === 1 && dom[0].semver === ANY) {
+	      return true
+	    } else if (options.includePrerelease) {
+	      sub = minimumVersionWithPreRelease;
+	    } else {
+	      sub = minimumVersion;
+	    }
+	  }
+
+	  if (dom.length === 1 && dom[0].semver === ANY) {
+	    if (options.includePrerelease) {
+	      return true
+	    } else {
+	      dom = minimumVersion;
+	    }
+	  }
+
+	  const eqSet = new Set();
+	  let gt, lt;
+	  for (const c of sub) {
+	    if (c.operator === '>' || c.operator === '>=') {
+	      gt = higherGT(gt, c, options);
+	    } else if (c.operator === '<' || c.operator === '<=') {
+	      lt = lowerLT(lt, c, options);
+	    } else {
+	      eqSet.add(c.semver);
+	    }
+	  }
+
+	  if (eqSet.size > 1) {
+	    return null
+	  }
+
+	  let gtltComp;
+	  if (gt && lt) {
+	    gtltComp = compare(gt.semver, lt.semver, options);
+	    if (gtltComp > 0) {
+	      return null
+	    } else if (gtltComp === 0 && (gt.operator !== '>=' || lt.operator !== '<=')) {
+	      return null
+	    }
+	  }
+
+	  // will iterate one or zero times
+	  for (const eq of eqSet) {
+	    if (gt && !satisfies(eq, String(gt), options)) {
+	      return null
+	    }
+
+	    if (lt && !satisfies(eq, String(lt), options)) {
+	      return null
+	    }
+
+	    for (const c of dom) {
+	      if (!satisfies(eq, String(c), options)) {
+	        return false
+	      }
+	    }
+
+	    return true
+	  }
+
+	  let higher, lower;
+	  let hasDomLT, hasDomGT;
+	  // if the subset has a prerelease, we need a comparator in the superset
+	  // with the same tuple and a prerelease, or it's not a subset
+	  let needDomLTPre = lt &&
+	    !options.includePrerelease &&
+	    lt.semver.prerelease.length ? lt.semver : false;
+	  let needDomGTPre = gt &&
+	    !options.includePrerelease &&
+	    gt.semver.prerelease.length ? gt.semver : false;
+	  // exception: <1.2.3-0 is the same as <1.2.3
+	  if (needDomLTPre && needDomLTPre.prerelease.length === 1 &&
+	      lt.operator === '<' && needDomLTPre.prerelease[0] === 0) {
+	    needDomLTPre = false;
+	  }
+
+	  for (const c of dom) {
+	    hasDomGT = hasDomGT || c.operator === '>' || c.operator === '>=';
+	    hasDomLT = hasDomLT || c.operator === '<' || c.operator === '<=';
+	    if (gt) {
+	      if (needDomGTPre) {
+	        if (c.semver.prerelease && c.semver.prerelease.length &&
+	            c.semver.major === needDomGTPre.major &&
+	            c.semver.minor === needDomGTPre.minor &&
+	            c.semver.patch === needDomGTPre.patch) {
+	          needDomGTPre = false;
+	        }
+	      }
+	      if (c.operator === '>' || c.operator === '>=') {
+	        higher = higherGT(gt, c, options);
+	        if (higher === c && higher !== gt) {
+	          return false
+	        }
+	      } else if (gt.operator === '>=' && !satisfies(gt.semver, String(c), options)) {
+	        return false
+	      }
+	    }
+	    if (lt) {
+	      if (needDomLTPre) {
+	        if (c.semver.prerelease && c.semver.prerelease.length &&
+	            c.semver.major === needDomLTPre.major &&
+	            c.semver.minor === needDomLTPre.minor &&
+	            c.semver.patch === needDomLTPre.patch) {
+	          needDomLTPre = false;
+	        }
+	      }
+	      if (c.operator === '<' || c.operator === '<=') {
+	        lower = lowerLT(lt, c, options);
+	        if (lower === c && lower !== lt) {
+	          return false
+	        }
+	      } else if (lt.operator === '<=' && !satisfies(lt.semver, String(c), options)) {
+	        return false
+	      }
+	    }
+	    if (!c.operator && (lt || gt) && gtltComp !== 0) {
+	      return false
+	    }
+	  }
+
+	  // if there was a < or >, and nothing in the dom, then must be false
+	  // UNLESS it was limited by another range in the other direction.
+	  // Eg, >1.0.0 <1.0.1 is still a subset of <2.0.0
+	  if (gt && hasDomLT && !lt && gtltComp !== 0) {
+	    return false
+	  }
+
+	  if (lt && hasDomGT && !gt && gtltComp !== 0) {
+	    return false
+	  }
+
+	  // we needed a prerelease range in a specific tuple, but didn't get one
+	  // then this isn't a subset.  eg >=1.2.3-pre is not a subset of >=1.0.0,
+	  // because it includes prereleases in the 1.2.3 tuple
+	  if (needDomGTPre || needDomLTPre) {
+	    return false
+	  }
+
+	  return true
+	};
+
+	// >=1.2.3 is lower than >1.2.3
+	const higherGT = (a, b, options) => {
+	  if (!a) {
+	    return b
+	  }
+	  const comp = compare(a.semver, b.semver, options);
+	  return comp > 0 ? a
+	    : comp < 0 ? b
+	    : b.operator === '>' && a.operator === '>=' ? b
+	    : a
+	};
+
+	// <=1.2.3 is higher than <1.2.3
+	const lowerLT = (a, b, options) => {
+	  if (!a) {
+	    return b
+	  }
+	  const comp = compare(a.semver, b.semver, options);
+	  return comp < 0 ? a
+	    : comp > 0 ? b
+	    : b.operator === '<' && a.operator === '<=' ? b
+	    : a
+	};
+
+	subset_1 = subset;
+	return subset_1;
+}
+
+var semver;
+var hasRequiredSemver;
+
+function requireSemver () {
+	if (hasRequiredSemver) return semver;
+	hasRequiredSemver = 1;
+	// just pre-load all the stuff that index.js lazily exports
+	const internalRe = requireRe();
+	const constants = requireConstants();
+	const SemVer = requireSemver$1();
+	const identifiers = requireIdentifiers();
+	const parse = requireParse();
+	const valid = requireValid$1();
+	const clean = requireClean();
+	const inc = requireInc();
+	const diff = requireDiff();
+	const major = requireMajor();
+	const minor = requireMinor();
+	const patch = requirePatch();
+	const prerelease = requirePrerelease();
+	const compare = requireCompare();
+	const rcompare = requireRcompare();
+	const compareLoose = requireCompareLoose();
+	const compareBuild = requireCompareBuild();
+	const sort = requireSort();
+	const rsort = requireRsort();
+	const gt = requireGt();
+	const lt = requireLt();
+	const eq = requireEq();
+	const neq = requireNeq();
+	const gte = requireGte();
+	const lte = requireLte();
+	const cmp = requireCmp();
+	const coerce = requireCoerce();
+	const Comparator = requireComparator();
+	const Range = requireRange();
+	const satisfies = requireSatisfies();
+	const toComparators = requireToComparators();
+	const maxSatisfying = requireMaxSatisfying();
+	const minSatisfying = requireMinSatisfying();
+	const minVersion = requireMinVersion();
+	const validRange = requireValid();
+	const outside = requireOutside();
+	const gtr = requireGtr();
+	const ltr = requireLtr();
+	const intersects = requireIntersects();
+	const simplifyRange = requireSimplify();
+	const subset = requireSubset();
+	semver = {
+	  parse,
+	  valid,
+	  clean,
+	  inc,
+	  diff,
+	  major,
+	  minor,
+	  patch,
+	  prerelease,
+	  compare,
+	  rcompare,
+	  compareLoose,
+	  compareBuild,
+	  sort,
+	  rsort,
+	  gt,
+	  lt,
+	  eq,
+	  neq,
+	  gte,
+	  lte,
+	  cmp,
+	  coerce,
+	  Comparator,
+	  Range,
+	  satisfies,
+	  toComparators,
+	  maxSatisfying,
+	  minSatisfying,
+	  minVersion,
+	  validRange,
+	  outside,
+	  gtr,
+	  ltr,
+	  intersects,
+	  simplifyRange,
+	  subset,
+	  SemVer,
+	  re: internalRe.re,
+	  src: internalRe.src,
+	  tokens: internalRe.t,
+	  SEMVER_SPEC_VERSION: constants.SEMVER_SPEC_VERSION,
+	  RELEASE_TYPES: constants.RELEASE_TYPES,
+	  compareIdentifiers: identifiers.compareIdentifiers,
+	  rcompareIdentifiers: identifiers.rcompareIdentifiers,
+	};
+	return semver;
+}
+
+var semverExports = requireSemver();
+
+const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
+async function getRunCommands$a(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$8);
+}
+async function saveArgs$8(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$6, parseArgsToString$3, cardDir);
+}
+async function readArgs$8(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$8, parseStringToArgs$3, cardDir);
+}
+async function getLatest() {
+    const { owner, repo } = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
+    return await getLatestNonRCReleaseAndAsset(owner, repo, 'InvokeAI-installer');
+}
+async function updateAvailable$3(lynxApi) {
+    const installedVersion = lynxApi.storage.get(INSTALLED_VERSION_KEY);
+    if (!installedVersion)
+        return false;
+    const latestVersion = await getLatest();
+    if (!latestVersion)
+        return false;
+    return semverExports.compare(installedVersion, latestVersion.version) === -1;
+}
+function mainIpc$1(ipc) {
+    ipc.handle('get-latest', getLatest);
+}
+const invokeMainMethods = { getRunCommands: getRunCommands$a, updateAvailable: updateAvailable$3, mainIpc: mainIpc$1, saveArgs: saveArgs$8, readArgs: readArgs$8 };
+
+const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
+async function getRunCommands$9(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$7);
+}
+async function saveArgs$7(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$5, parseArgsToString$4, cardDir);
+}
+async function readArgs$7(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$7, parseStringToArgs$4, cardDir);
+}
+const bmaltaisMainMethods = { getRunCommands: getRunCommands$9, readArgs: readArgs$7, saveArgs: saveArgs$7 };
+
+const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
+async function getRunCommands$8(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$4, dir);
+}
+async function updateAvailable$2(lynxApi) {
+    return await lynxApi.isPullAvailable;
+}
+const nerogarMainMethods = { getRunCommands: getRunCommands$8, updateAvailable: updateAvailable$2 };
+
+const CONFIG_FILE$2 = isWin ? 'webui-user.bat' : 'webui-user.sh';
+const EXEC_FILE$1 = isWin ? 'webui-user.bat' : 'webui.sh';
+const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$7(dir) {
+    return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$6);
+}
+async function saveArgs$6(args, cardDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$2, parseArgsToString$5, cardDir);
+}
+async function readArgs$6(cardDir) {
+    return await utilReadArgs(CONFIG_FILE$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$5, cardDir);
+}
+const a1MainMethods = { getRunCommands: getRunCommands$7, readArgs: readArgs$6, saveArgs: saveArgs$6 };
+
+const CONFIG_FILE$1 = isWin ? 'webui-user.bat' : 'webui-user.sh';
+const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
+const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$6(dir) {
+    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$5);
+}
+async function saveArgs$5(args, cardDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$6, cardDir);
+}
+async function readArgs$5(cardDir) {
+    return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$5, parseStringToArgs$6, cardDir);
+}
+const lsMainMethods = { getRunCommands: getRunCommands$6, readArgs: readArgs$5, saveArgs: saveArgs$5 };
+
+const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
+async function getRunCommands$5(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$4);
+}
+async function saveArgs$4(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$3, parseArgsToString$7, cardDir);
+}
+async function readArgs$4(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$4, parseStringToArgs$7, cardDir);
+}
+const vladMainMethods = { getRunCommands: getRunCommands$5, readArgs: readArgs$4, saveArgs: saveArgs$4 };
+
+const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$3 = isWin
+    ? '@echo off\n\ncall launch-windows.bat'
+    : '#!/bin/bash\n\nbash ./launch-linux.sh';
+async function getRunCommands$4(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$3);
+}
+async function saveArgs$3(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$2, parseArgsToString$8, cardDir);
+}
+async function readArgs$3(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$3, parseStringToArgs$8, cardDir);
+}
+const mcMonkeyMainMethods = { getRunCommands: getRunCommands$4, readArgs: readArgs$3, saveArgs: saveArgs$3 };
+
+async function getRunCommands$3() {
+    return `python app.py ${LINE_ENDING}`;
+}
+async function updateAvailable$1(lynxApi) {
+    return await lynxApi.isPullAvailable;
+}
+const LoLLM_MM = { getRunCommands: getRunCommands$3, updateAvailable: updateAvailable$1 };
+
+async function getPipPackageVersion(packageName, pty) {
     return new Promise(resolve => {
-        exec(`pip show ${packageName}`, (error, stdout, stderr) => {
-            if (error || stderr || !stdout) {
-                resolve(null);
+        const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
+        const ptyProcess = pty.spawn(shell, [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(() => {
+            const lines = output.split(/\r?\n/);
+            const versionLine = lines.find(line => line.toLowerCase().includes('version:'));
+            if (versionLine) {
+                const version = versionLine.split(': ')[1].trim();
+                resolve(version);
             }
             else {
-                const versionLine = stdout.split('\n').find(line => line.startsWith('Version:'));
-                if (versionLine) {
-                    const version = versionLine.split(': ')[1].trim();
-                    resolve(version);
-                }
-                else {
-                    resolve(null);
-                }
+                resolve(null);
             }
         });
+        ptyProcess.write(`pip show ${packageName}${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
     });
 }
 async function getLatestPipPackageVersion(packageName) {
@@ -22838,31 +22911,42 @@ async function getLatestPipPackageVersion(packageName) {
     }
 }
 
-const LINE_ENDING = platform$2() === 'win32' ? '\r' : '\n';
-async function getRunCommands$2() {
-    return `open-webui serve ${LINE_ENDING}`;
+const CONFIG_FILE = isWin ? 'open-webui.bat' : 'open-webui.sh';
+const DEFAULT_BATCH_DATA$2 = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
+async function getRunCommands$2(dir, configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$2);
+    return `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`;
 }
-async function isInstalled() {
+async function saveArgs$2(args, cardDir, configDir) {
+    return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString$9, configDir);
+}
+async function readArgs$2(cardDir, configDir) {
+    return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$9, configDir);
+}
+async function checkInstalled(pty) {
     return new Promise(resolve => {
-        exec('pip show open-webui', (error, stdout, stderr) => {
-            if (error) {
-                resolve(false);
-            }
-            else if (stderr) {
-                resolve(false);
-            }
-            else if (stdout) {
-                resolve(stdout.includes('Version:'));
-            }
-            else {
-                resolve(false);
-            }
+        const shell = platform$2() === 'win32' ? 'powershell.exe' : 'bash';
+        const ptyProcess = pty.spawn(shell, [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
         });
+        ptyProcess.onExit(() => {
+            resolve(output.toLowerCase().includes('version:'));
+        });
+        ptyProcess.write(`pip show open-webui${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
     });
 }
-async function updateAvailable() {
+async function isInstalled(lynxApi) {
+    return checkInstalled(lynxApi.pty);
+}
+async function updateAvailable(lynxApi) {
     try {
-        const currentVersion = await getPipPackageVersion('open-webui');
+        const currentVersion = await getPipPackageVersion('open-webui', lynxApi.pty);
         const latestVersion = await getLatestPipPackageVersion('open-webui');
         if (currentVersion && latestVersion)
             return semverExports.compare(currentVersion, latestVersion) === -1;
@@ -22874,21 +22958,28 @@ async function updateAvailable() {
     return false;
 }
 function mainIpc(ipc) {
-    ipc.handle('isInstalled', isInstalled);
-    ipc.handle('current-version', () => getPipPackageVersion('open-webui'));
+    ipc.handle('isInstalled', () => checkInstalled(ipc.pty));
+    ipc.handle('current-version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
-const openWebUIMainMethods = { getRunCommands: getRunCommands$2, updateAvailable, isInstalled, mainIpc };
+const openWebUIMainMethods = {
+    getRunCommands: getRunCommands$2,
+    updateAvailable,
+    isInstalled,
+    mainIpc,
+    saveArgs: saveArgs$2,
+    readArgs: readArgs$2,
+};
 
 const BAT_FILE_NAME$1 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$1 = isWin ? '@echo off\n\ncall start.bat' : '#!/bin/bash\n\nbash ./start.sh';
 async function getRunCommands$1(dir) {
     return await utilRunCommands(BAT_FILE_NAME$1, dir, DEFAULT_BATCH_DATA$1);
 }
-async function saveArgs$1(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME$1, parseArgsToString$7);
+async function saveArgs$1(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$1, parseArgsToString$a, cardDir);
 }
 async function readArgs$1(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$7);
+    return await utilReadArgs(BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$a, cardDir);
 }
 const sillyMainMethods = { getRunCommands: getRunCommands$1, readArgs: readArgs$1, saveArgs: saveArgs$1 };
 
@@ -22899,18 +22990,18 @@ const DEFAULT_BATCH_DATA = isWin
 async function getRunCommands(dir) {
     return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
-async function saveArgs(cardDir, args) {
-    return await utilSaveArgs(cardDir, args, BAT_FILE_NAME, parseArgsToString$8);
+async function saveArgs(args, cardDir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME, parseArgsToString$b, cardDir);
 }
 async function readArgs(cardDir) {
-    return await utilReadArgs(cardDir, BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs$8);
+    return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs$b, cardDir);
 }
 const oobaMainMethods = { getRunCommands, readArgs, saveArgs };
 
 const mainModules = [
     { id: COMFYUI_ID, methods: comfyMainMethods },
     { id: A1_ID, methods: a1MainMethods },
-    { id: SD_AMD_ID, methods: a1MainMethods },
+    { id: SD_AMD_ID, methods: lsMainMethods },
     { id: SD_FORGE_ID, methods: a1MainMethods },
     { id: SD_FORGE_AMD_ID, methods: a1MainMethods },
     { id: SD_NEXT_ID, methods: vladMainMethods },
@@ -22926,6 +23017,7 @@ const mainModules = [
     { id: INVOKE_ID, methods: invokeMainMethods },
     { id: ALLTALK_ID, methods: erew123MainMethods },
     { id: OPEN_WEBUI_ID, methods: openWebUIMainMethods },
+    { id: LoLLMS_ID, methods: LoLLM_MM },
 ];
 
 export { mainModules as default };

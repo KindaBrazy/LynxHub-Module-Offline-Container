@@ -1,500 +1,7 @@
-import { L as DOWNLOAD_URL, i as isWin, M as INPUT_ID, I as INSTALLED_VERSION_KEY, V as VERSION_NAME, U as UPDATE_TIME_KEY$1, N as DescriptionManager, P as formatSize, Q as catchAddress$1, R as getArgumentType, W as lodashExports, X as isValidArg, Y as CardInfo, Z as GitInstaller, z as TTS_ID, B as AG_ID, _ as gitmyloArguments, $ as AG_RM, H as ALLTALK_ID, a0 as automatic1111Arguments, a1 as fetchExtensionList, j as parseArgsToString$1, k as parseStringToArgs$1, C as COMFYUI_ID, a2 as comfyArguments, a3 as COMFYUI_RM, F as COMFYUI_ZLUDA_ID, a4 as comfyZludaArguments, a5 as COMFYUI_ZLUDA_RM, A as A1_ID, S as SD_AMD_ID, a6 as lshqqytigerArguments, v as SD_FORGE_ID, w as SD_FORGE_AMD_ID, x as SD_NEXT_ID, a7 as vladmandicArguments, a8 as SD_NEXT_RM, y as SWARM_ID, a9 as mcMonkeyArguments, aa as SWARM_RM, K as KOHYA_ID, ab as bmaltaisArguments, ac as KOHYA_GUI_RM, E as SD_UIUX_ID, O as ONETRAINER_ID, G as INVOKE_ID, T as TG_ID, ad as oobaboogaArguments, ae as TG_RM, D as SILLYTAVERN_ID, af as sillyArguments, ag as SILLYTAVERN_RM, J as OPEN_WEBUI_ID } from './RendererMethods_CDw5J_.mjs';
-
-const invokeArguments = [
-    {
-        category: 'Subset Settings',
-        items: [
-            {
-                name: '--root',
-                description: 'Specify the root directory',
-                type: 'Directory',
-            },
-            {
-                name: '--config',
-                description: 'Override the default "invokeai.yaml" file location',
-                type: 'File',
-            },
-        ],
-    },
-    {
-        category: 'Command Line Arguments',
-        items: [
-            {
-                name: 'host',
-                description: 'IP address to bind to. Use 0.0.0.0 to serve to your local network.',
-                type: 'Input',
-                defaultValue: '127.0.0.1',
-            },
-            {
-                name: 'port',
-                description: 'Port to bind to.',
-                type: 'Input',
-                defaultValue: '9090',
-            },
-            {
-                name: 'allow_origins',
-                description: 'Allowed CORS origins.',
-                type: 'Input',
-            },
-            {
-                name: 'allow_credentials',
-                description: 'Allow CORS credentials.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'allow_methods',
-                description: 'Methods allowed for CORS.',
-                type: 'Input',
-                defaultValue: "['*']",
-            },
-            {
-                name: 'allow_headers',
-                description: 'Headers allowed for CORS.',
-                type: 'Input',
-                defaultValue: "['*']",
-            },
-            {
-                name: 'ssl_certfile',
-                description: 'SSL certificate file for HTTPS. See https://www.uvicorn.org/settings/#https.',
-                type: 'File',
-            },
-            {
-                name: 'ssl_keyfile',
-                description: 'SSL key file for HTTPS. See https://www.uvicorn.org/settings/#https.',
-                type: 'File',
-            },
-            {
-                name: 'log_tokenization',
-                description: 'Enable logging of parsed prompt tokens.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'patchmatch',
-                description: 'Enable patchmatch inpaint code.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'models_dir',
-                description: 'Path to the models directory.',
-                type: 'Directory',
-                defaultValue: 'models',
-            },
-            {
-                name: 'convert_cache_dir',
-                description: 'Path to the converted models cache directory (DEPRECATED, but do not delete because it is' +
-                    ' needed for migration from previous versions).',
-                type: 'Directory',
-                defaultValue: 'models/.convert_cache',
-            },
-            {
-                name: 'download_cache_dir',
-                description: 'Path to the directory that contains dynamically downloaded models.',
-                type: 'Directory',
-                defaultValue: 'models/.download_cache',
-            },
-            {
-                name: 'legacy_conf_dir',
-                description: 'Path to directory of legacy checkpoint config files.',
-                type: 'Directory',
-                defaultValue: 'configs',
-            },
-            {
-                name: 'db_dir',
-                description: 'Path to InvokeAI databases directory.',
-                type: 'Directory',
-                defaultValue: 'databases',
-            },
-            {
-                name: 'outputs_dir',
-                description: 'Path to directory for outputs.',
-                type: 'Directory',
-                defaultValue: 'outputs',
-            },
-            {
-                name: 'custom_nodes_dir',
-                description: 'Path to directory for custom nodes.',
-                type: 'Directory',
-                defaultValue: 'nodes',
-            },
-            {
-                name: 'style_presets_dir',
-                description: 'Path to directory for style presets.',
-                type: 'Directory',
-                defaultValue: 'style_presets',
-            },
-            {
-                name: 'log_handlers',
-                description: 'Log handler. Valid options are "console", "file=", "syslog=path|address:host:port", "http=".',
-                type: 'Input',
-                defaultValue: "['console']",
-            },
-            {
-                name: 'log_format',
-                description: 'Log format. Use "plain" for text-only, "color" for colorized output, "legacy" for 2.3-style' +
-                    ' logging and "syslog" for syslog-style.',
-                type: 'DropDown',
-                defaultValue: 'color',
-                values: ['plain', 'color', 'syslog', 'legacy'],
-            },
-            {
-                name: 'log_level',
-                description: 'Emit logging messages at this level or higher.',
-                type: 'DropDown',
-                defaultValue: 'info',
-                values: ['debug', 'info', 'warning', 'error', 'critical'],
-            },
-            {
-                name: 'log_level_network',
-                description: "Log level for network-related messages. 'info' and 'debug' are very verbose.",
-                type: 'DropDown',
-                defaultValue: 'warning',
-                values: ['debug', 'info', 'warning', 'error', 'critical'],
-            },
-            {
-                name: 'log_sql',
-                description: 'Log SQL queries. log_level must be debug for this to do anything. Extremely verbose.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'use_memory_db',
-                description: 'Use in-memory database. Useful for development.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'dev_reload',
-                description: 'Automatically reload when Python sources are changed. Does not reload node definitions.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'profile_graphs',
-                description: 'Enable graph profiling using cProfile.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'profile_prefix',
-                description: 'An optional prefix for profile output files.',
-                type: 'Input',
-            },
-            {
-                name: 'profiles_dir',
-                description: 'Path to profiles output directory.',
-                type: 'Directory',
-                defaultValue: 'profiles',
-            },
-            {
-                name: 'ram',
-                description: 'Maximum memory amount used by memory model cache for rapid switching (GB).',
-                type: 'Input',
-            },
-            {
-                name: 'vram',
-                description: 'Amount of VRAM reserved for model storage (GB).',
-                type: 'Input',
-                defaultValue: '0',
-            },
-            {
-                name: 'lazy_offload',
-                description: 'Keep models in VRAM until their space is needed.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'log_memory_usage',
-                description: 'If True, a memory snapshot will be captured before and after every model cache operation,' +
-                    ' and the result will be logged (at debug level). There is a time cost to capturing the' +
-                    ' memory snapshots, so it is recommended to only enable this feature if you are actively' +
-                    " inspecting the model cache's behaviour.",
-                type: 'CheckBox',
-            },
-            {
-                name: 'device',
-                description: 'Preferred execution device. auto will choose the device depending on the hardware platform' +
-                    ' and the installed torch capabilities.',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'cpu', 'cuda', 'cuda:1', 'mps'],
-            },
-            {
-                name: 'precision',
-                description: 'Floating point precision. float16 will consume half the memory of float32 but produce slightly' +
-                    ' lower-quality images. The auto setting will guess the proper precision based on your video' +
-                    ' card and operating system.',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'float16', 'bfloat16', 'float32'],
-            },
-            {
-                name: 'sequential_guidance',
-                description: 'Whether to calculate guidance in serial instead of in parallel, lowering memory requirements.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'attention_type',
-                description: 'Attention type.',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'normal', 'xformers', 'sliced', 'torch-sdp'],
-            },
-            {
-                name: 'attention_slice_size',
-                description: 'Slice size, valid when attention_type=="sliced".',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'balanced', 'max', '1', '2', '3', '4', '5', '6', '7', '8'],
-            },
-            {
-                name: 'force_tiled_decode',
-                description: 'Whether to enable tiled VAE decode (reduces memory consumption with some performance penalty).',
-                type: 'CheckBox',
-            },
-            {
-                name: 'pil_compress_level',
-                description: 'The compress_level setting of PIL.Image.save(), used for PNG encoding. All settings are lossless.' +
-                    ' 0 = no compression, 1 = fastest with slightly larger filesize, 9 = slowest with smallest filesize.' +
-                    ' 1 is typically the best setting.',
-                type: 'Input',
-                defaultValue: '1',
-            },
-            {
-                name: 'max_queue_size',
-                description: 'Maximum number of items in the session queue.',
-                type: 'Input',
-                defaultValue: '10000',
-            },
-            {
-                name: 'clear_queue_on_startup',
-                description: 'Empties session queue on startup.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'allow_nodes',
-                description: 'List of nodes to allow. Omit to allow all.',
-                type: 'Input',
-            },
-            {
-                name: 'deny_nodes',
-                description: 'List of nodes to deny. Omit to deny none.',
-                type: 'Input',
-            },
-            {
-                name: 'node_cache_size',
-                description: 'How many cached nodes to keep in memory.',
-                type: 'Input',
-                defaultValue: '512',
-            },
-            {
-                name: 'hashing_algorithm',
-                description: "Model hashing algorithm for model installs. 'blake3_multi' is best for SSDs. 'blake3_single'" +
-                    " is best for spinning disk HDDs. 'random' disables hashing, instead assigning a UUID to models." +
-                    " Useful when using a memory db to reduce model installation time, or if you don't care about " +
-                    'storing stable hashes for models. Alternatively, any other hashlib algorithm is accepted, ' +
-                    'though these are not nearly as performant as blake3.',
-                type: 'DropDown',
-                defaultValue: 'blake3_single',
-                values: [
-                    'blake3_multi',
-                    'blake3_single',
-                    'random',
-                    'md5',
-                    'sha1',
-                    'sha224',
-                    'sha256',
-                    'sha384',
-                    'sha512',
-                    'blake2b',
-                    'blake2s',
-                    'sha3_224',
-                    'sha3_256',
-                    'sha3_384',
-                    'sha3_512',
-                    'shake_128',
-                    'shake_256',
-                ],
-            },
-            {
-                name: 'remote_api_tokens',
-                description: 'List of regular expression and token pairs used when downloading models from URLs.' +
-                    ' The download URL is tested against the regex, and if it matches, the token is provided in as a Bearer token.',
-                type: 'Input',
-            },
-            {
-                name: 'scan_models_on_startup',
-                description: 'Scan the models directory on startup, registering orphaned models. This is typically only used' +
-                    ' in conjunction with use_memory_db for testing purposes.',
-                type: 'CheckBox',
-            },
-        ],
-    },
-];
-
-function startInstall$9(stepper) {
-    stepper.initialSteps(['InvokeAI', 'Download', 'Install', 'Directory', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
-                stepper.utils.decompressFile(path).then(folderPath => {
-                    stepper.nextStep();
-                    stepper
-                        .runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh')
-                        .then(() => {
-                        stepper.nextStep();
-                        stepper
-                            .collectUserInput([
-                            {
-                                id: INPUT_ID,
-                                type: 'directory',
-                                label: 'Select the directory you chose during the terminal installation step',
-                            },
-                        ])
-                            .then(result => {
-                            const selectedDir = result.find(item => item.id === INPUT_ID);
-                            if (selectedDir) {
-                                const finalDir = selectedDir.result;
-                                stepper.utils.verifyFilesExist(finalDir, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
-                                    if (exist) {
-                                        stepper.setInstalled(finalDir);
-                                        stepper.storage.set(INSTALLED_VERSION_KEY, VERSION_NAME);
-                                        stepper.showFinalStep('success', 'InvokeAI Installation Complete', 'All installation steps have been completed successfully.' +
-                                            ' Your InvokeAI environment is now ready for use.');
-                                    }
-                                    else {
-                                        stepper.showFinalStep('error', 'InvokeAI Installation Failed', 'Unable to validate the installation directory containing InvokeAI. ' +
-                                            'Please close this window, reopen it, and click "Locate" to select the correct folder.');
-                                    }
-                                });
-                            }
-                        });
-                    });
-                });
-            });
-        }
-        else if (targetDirectory) {
-            stepper.utils.verifyFilesExist(targetDirectory, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
-                if (exist) {
-                    stepper.setInstalled(targetDirectory);
-                    stepper.showFinalStep('success', 'InvokeAI Located Successfully', 'Pre-installed InvokeAI detected. Installation skipped as your existing setup is ready to use.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Unable to Locate InvokeAI', `Please ensure you have selected the correct folder containing ` +
-                        `InvokeAI with the ${isWin ? 'invoke.bat' : 'invoke.sh'} file.`);
-                }
-            });
-        }
-    });
-}
-function startUpdate$3(stepper) {
-    stepper.initialSteps([`Download V${VERSION_NAME}`, 'Install', 'Finish']);
-    stepper.downloadFileFromUrl(DOWNLOAD_URL).then(path => {
-        stepper.utils.decompressFile(path).then(folderPath => {
-            stepper.nextStep();
-            stepper.runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh').then(() => {
-                const currentDate = new Date();
-                stepper.storage.set(UPDATE_TIME_KEY$1, currentDate.toLocaleString());
-                stepper.storage.set(INSTALLED_VERSION_KEY, VERSION_NAME);
-                stepper.showFinalStep('success', 'InvokeAI Updated Successfully', `Version ${VERSION_NAME} has been installed successfully.`);
-            });
-        });
-    });
-}
-async function cardInfo$9(api, callback) {
-    const dir = api.installationFolder;
-    if (!dir)
-        return;
-    callback.setOpenFolders([dir]);
-    const descManager = new DescriptionManager([
-        {
-            title: 'Installation Data',
-            items: [
-                { label: 'Install Date', result: 'loading' },
-                { label: 'Update Date', result: 'loading' },
-                { label: 'Current Version', result: 'loading' },
-            ],
-        },
-        {
-            title: 'Disk Usage',
-            items: [{ label: 'Total', result: 'loading' }],
-        },
-    ], callback);
-    api.getFolderCreationTime(dir).then(result => {
-        descManager.updateItem(0, 0, result);
-    });
-    api.storage.get(UPDATE_TIME_KEY$1).then(result => {
-        descManager.updateItem(0, 1, result);
-    });
-    api.storage.get(INSTALLED_VERSION_KEY).then(result => {
-        descManager.updateItem(0, 2, result);
-    });
-    api.getFolderSize(dir).then(result => {
-        descManager.updateItem(1, 0, formatSize(result));
-    });
-}
-
-const shellCommand = isWin ? 'call invoke.bat' : 'bash ./invoke.sh';
-function parseArgsToString(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, invokeArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand : `${shellCommand} ${argResult}`;
-    return result;
-}
-function parseStringToArgs(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, invokeArguments)) {
-                if (getArgumentType(value.name, invokeArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-const INVOKE_RM = {
-    catchAddress: catchAddress$1,
-    parseArgsToString,
-    parseStringToArgs,
-    cardInfo: cardInfo$9,
-    manager: {
-        startInstall: startInstall$9,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$3 },
-    },
-};
+import { i as isWin, W as CardInfo, X as GitInstaller, J as TTS_ID, L as AG_ID, Y as gitmyloArguments, Z as AG_RM, R as ALLTALK_ID, _ as lodashExports, $ as automatic1111Arguments, a0 as catchAddress$1, a1 as fetchExtensionList, n as parseArgsToString, o as parseStringToArgs, C as COMFYUI_ID, a2 as comfyArguments, a3 as COMFYUI_RM, O as COMFYUI_ZLUDA_ID, a4 as comfyZludaArguments, a5 as COMFYUI_ZLUDA_RM, D as A1_ID, S as SD_AMD_ID, a6 as lshqqytigerArguments, a7 as SD_AMD_RM, E as SD_FORGE_ID, F as SD_FORGE_AMD_ID, G as SD_NEXT_ID, a8 as vladmandicArguments, a9 as SD_NEXT_RM, H as SWARM_ID, aa as mcMonkeyArguments, ab as SWARM_RM, K as KOHYA_ID, ac as bmaltaisArguments, ad as KOHYA_GUI_RM, N as SD_UIUX_ID, P as ONETRAINER_ID, Q as INVOKE_ID, ae as invokeArguments, af as INVOKE_RM, T as TG_ID, ag as oobaboogaArguments, ah as TG_RM, M as SILLYTAVERN_ID, ai as sillyArguments, aj as SILLYTAVERN_RM, U as OPEN_WEBUI_ID, ak as OPEN_WEBUI_RM, al as openArguments, V as LoLLMS_ID } from './RendererMethods_Dg2Fsr.mjs';
 
 const URL$2 = 'https://github.com/erew123/alltalk_tts';
-function startInstall$8(stepper) {
+function startInstall$7(stepper) {
     stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -520,12 +27,13 @@ function startInstall$8(stepper) {
         }
     });
 }
-function startUpdate$2(stepper, dir) {
+function startUpdate$1(stepper, dir) {
     stepper.initialSteps(['Pull Changes', 'Update', 'Finish']);
     if (dir) {
         stepper.executeTerminalCommands('git pull', dir).then(() => {
             stepper.nextStep();
             stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+                stepper.setUpdated();
                 stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
             });
         });
@@ -534,14 +42,14 @@ function startUpdate$2(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
     }
 }
-async function cardInfo$8(api, callback) {
+async function cardInfo$6(api, callback) {
     return CardInfo(URL$2, undefined, api, callback);
 }
 const ALLTALK_RM = {
-    cardInfo: cardInfo$8,
+    cardInfo: cardInfo$6,
     manager: {
-        startInstall: startInstall$8,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
+        startInstall: startInstall$7,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
     },
 };
 
@@ -554,16 +62,16 @@ function catchAddress(input) {
         return undefined;
     }
 }
-function startInstall$7(stepper) {
+function startInstall$6(stepper) {
     GitInstaller('Text to Speech', URL$1, stepper);
 }
-async function cardInfo$7(api, callback) {
+async function cardInfo$5(api, callback) {
     return CardInfo(URL$1, '/extensions', api, callback);
 }
 const TTS_RM = {
     catchAddress,
-    cardInfo: cardInfo$7,
-    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
+    cardInfo: cardInfo$5,
+    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
 };
 
 const audioPage = {
@@ -611,7 +119,7 @@ const audioPage = {
 };
 
 const URL = 'https://github.com/Nerogar/OneTrainer';
-function startInstall$6(stepper) {
+function startInstall$5(stepper) {
     stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -637,10 +145,11 @@ function startInstall$6(stepper) {
         }
     });
 }
-function startUpdate$1(stepper, dir) {
+function startUpdate(stepper, dir) {
     stepper.initialSteps(['Update', 'Finish']);
     if (dir) {
         stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+            stepper.setUpdated();
             stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
         });
     }
@@ -648,14 +157,14 @@ function startUpdate$1(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update OneTrainer');
     }
 }
-async function cardInfo$6(api, callback) {
+async function cardInfo$4(api, callback) {
     return CardInfo(URL, undefined, api, callback);
 }
 const ONETRAINER_RM = {
-    cardInfo: cardInfo$6,
+    cardInfo: cardInfo$4,
     manager: {
-        startInstall: startInstall$6,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+        startInstall: startInstall$5,
+        updater: { updateType: 'stepper', startUpdate },
     },
 };
 
@@ -692,34 +201,18 @@ if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsInde
 }
 
 const A1_URL = 'https://github.com/AUTOMATIC1111/stable-diffusion-webui';
-function startInstall$5(stepper) {
+function startInstall$4(stepper) {
     GitInstaller('Automatic1111', A1_URL, stepper);
 }
-async function cardInfo$5(api, callback) {
+async function cardInfo$3(api, callback) {
     return CardInfo(A1_URL, '/extensions', api, callback);
 }
 const A1_RM = {
     catchAddress: catchAddress$1,
     fetchExtensionList,
-    parseArgsToString: parseArgsToString$1,
-    parseStringToArgs: parseStringToArgs$1,
-    cardInfo: cardInfo$5,
-    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
-};
-
-const SdAMD_URL$2 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
-function startInstall$4(stepper) {
-    GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL$2, stepper);
-}
-async function cardInfo$4(api, callback) {
-    return CardInfo(SdAMD_URL$2, '/extensions', api, callback);
-}
-const SD_AMD_RM = {
-    catchAddress: catchAddress$1,
-    fetchExtensionList,
-    parseArgsToString: parseArgsToString$1,
-    parseStringToArgs: parseStringToArgs$1,
-    cardInfo: cardInfo$4,
+    parseArgsToString,
+    parseStringToArgs,
+    cardInfo: cardInfo$3,
     manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
 };
 
@@ -727,15 +220,15 @@ const SD_FORGE_URL = 'https://github.com/lllyasviel/stable-diffusion-webui-forge
 function startInstall$3(stepper) {
     GitInstaller('SD Forge', SD_FORGE_URL, stepper);
 }
-async function cardInfo$3(api, callback) {
+async function cardInfo$2(api, callback) {
     return CardInfo(SD_FORGE_URL, '/extensions', api, callback);
 }
 const SD_FORGE_RM = {
     catchAddress: catchAddress$1,
     fetchExtensionList,
-    parseArgsToString: parseArgsToString$1,
-    parseStringToArgs: parseStringToArgs$1,
-    cardInfo: cardInfo$3,
+    parseArgsToString,
+    parseStringToArgs,
+    cardInfo: cardInfo$2,
     manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
 };
 
@@ -743,15 +236,15 @@ const SdAMD_URL$1 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgp
 function startInstall$2(stepper) {
     GitInstaller('SD Forge AMDGPU', SdAMD_URL$1, stepper);
 }
-async function cardInfo$2(api, callback) {
+async function cardInfo$1(api, callback) {
     return CardInfo(SdAMD_URL$1, 'RendererMethods', api, callback);
 }
 const SD_FORGE_AMD_RM = {
     catchAddress: catchAddress$1,
     fetchExtensionList,
-    parseArgsToString: parseArgsToString$1,
-    parseStringToArgs: parseStringToArgs$1,
-    cardInfo: cardInfo$2,
+    parseArgsToString,
+    parseStringToArgs,
+    cardInfo: cardInfo$1,
     manager: { startInstall: startInstall$2, updater: { updateType: 'git' } },
 };
 
@@ -759,15 +252,15 @@ const SdAMD_URL = 'https://github.com/anapnoe/stable-diffusion-webui-ux';
 function startInstall$1(stepper) {
     GitInstaller('SD UI-UX', SdAMD_URL, stepper);
 }
-async function cardInfo$1(api, callback) {
+async function cardInfo(api, callback) {
     return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
 const SD_UIUX_RM = {
     catchAddress: catchAddress$1,
     fetchExtensionList,
-    parseArgsToString: parseArgsToString$1,
-    parseStringToArgs: parseStringToArgs$1,
-    cardInfo: cardInfo$1,
+    parseArgsToString,
+    parseStringToArgs,
+    cardInfo,
     manager: { startInstall: startInstall$1, updater: { updateType: 'git' } },
 };
 
@@ -933,66 +426,41 @@ const imagePage = {
     ],
 };
 
-const INSTALL_TIME_KEY = 'install-time-openwebui';
-const UPDATE_TIME_KEY = 'update-time-openwebui';
+const title = 'LoLLMs';
+const url = 'https://github.com/ParisNeo/lollms-webui';
 function startInstall(stepper) {
-    stepper.initialSteps(['Getting Started', 'Detect Existing', 'Install Open WebUI', 'All Done!']);
-    stepper.starterStep({ disableSelectDir: true }).then(() => {
-        stepper.nextStep();
-        stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
-        stepper.ipc.invoke('isInstalled').then((isInstalled) => {
-            if (isInstalled) {
-                stepper.setInstalled();
-                const currentDate = new Date();
-                stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-                stepper.showFinalStep('success', "You're All Set!", "Open WebUI is already installed. You're good to go!");
-            }
-            else {
+    stepper.initialSteps([title, 'Clone', 'Install', 'Requirements', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep();
+            stepper.cloneRepository(url).then(dir => {
                 stepper.nextStep();
-                stepper.executeTerminalCommands('pip install open-webui').then(() => {
-                    stepper.setInstalled();
-                    const currentDate = new Date();
-                    stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-                    stepper.showFinalStep('success', 'Installation Complete!', 'Your Open WebUI environment is ready. Enjoy!');
+                stepper.executeTerminalCommands('git submodule update --init --recursive', dir).then(() => {
+                    stepper.executeTerminalCommands('pip install -e .', `${dir}${isWin ? '\\' : '/'}lollms_core`).then(() => {
+                        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.showFinalStep('success', `${title} installation complete!`, `All installation steps completed successfully. Your ${title} environment is now ready for use.`);
+                        });
+                    });
                 });
-            }
-        });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, url).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', `${title} located successfully!`, `Pre-installed ${title} detected. Installation skipped as your existing setup is ready to use.`);
+                }
+                else {
+                    stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                }
+            });
+        }
     });
 }
-function startUpdate(stepper) {
-    stepper.initialSteps(['Update Open WebUI', 'Complete Update']);
-    stepper.executeTerminalCommands('pip install --upgrade open-webui').then(() => {
-        const currentDate = new Date();
-        stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
-        stepper.showFinalStep('success', 'Open WebUI Updated Successfully!', `Open WebUI has been updated to the latest version. You can now enjoy the new features and improvements.`);
-    });
-}
-async function cardInfo(api, callback) {
-    callback.setOpenFolders(undefined);
-    const descManager = new DescriptionManager([
-        {
-            title: 'Installation Data',
-            items: [
-                { label: 'Install Date', result: 'loading' },
-                { label: 'Update Date', result: 'loading' },
-                { label: 'Current Version', result: 'loading' },
-            ],
-        },
-    ], callback);
-    api.storage.get(INSTALL_TIME_KEY).then(result => {
-        descManager.updateItem(0, 0, result);
-    });
-    api.storage.get(UPDATE_TIME_KEY).then(result => {
-        descManager.updateItem(0, 1, result);
-    });
-    api.ipc.invoke('current-version').then(result => {
-        descManager.updateItem(0, 2, result);
-    });
-}
-const OPEN_WEBUI_RM = {
+const LoLLM_RM = {
     catchAddress: catchAddress$1,
-    cardInfo,
-    manager: { startInstall, updater: { updateType: 'stepper', startUpdate } },
+    manager: { startInstall, updater: { updateType: 'git' } },
 };
 
 const textPage = {
@@ -1036,6 +504,18 @@ const textPage = {
                 'width=300/00025-4013828223.jpeg',
             methods: OPEN_WEBUI_RM,
             installationType: 'others',
+            arguments: openArguments,
+        },
+        {
+            id: LoLLMS_ID,
+            title: 'LoLLMs',
+            description: 'Lord of Large Language and Multi modal Systems Web User Interface',
+            repoUrl: 'https://github.com/ParisNeo/lollms-webui',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9129f22d-70d1-4584-a7af-9aa96713debc/' +
+                'width=300/00007-1103515559.jpeg',
+            methods: LoLLM_RM,
+            installationType: 'git',
         },
     ],
 };

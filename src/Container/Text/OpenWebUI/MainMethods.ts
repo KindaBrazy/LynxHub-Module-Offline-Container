@@ -9,23 +9,36 @@ import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../U
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
-const CONFIG_FILE = isWin ? 'open-webui.bat' : 'open-webui.sh';
+const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
 
-async function getRunCommands(dir?: string, configDir?: string): Promise<string | string[]> {
+function getCdCommand(dirPath: string): string {
+  const escapedPath = dirPath.replace(/ /g, '\\ ');
+  const quotedPath = `"${dirPath}"`;
+
+  if (platform() === 'win32') {
+    return `cd ${quotedPath}`;
+  } else if (platform() === 'linux' || platform() === 'darwin') {
+    return `cd ${escapedPath}`;
+  } else {
+    throw new Error(`Unsupported platform: ${platform}`);
+  }
+}
+
+async function getRunCommands(_?: string, configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';
 
   const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
   await initBatchFile(filePath, DEFAULT_BATCH_DATA);
 
-  return `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`;
+  return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 
-async function saveArgs(args: ChosenArgument[], cardDir?: string, configDir?: string) {
+async function saveArgs(args: ChosenArgument[], _?: string, configDir?: string) {
   return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, configDir);
 }
 
-async function readArgs(cardDir?: string, configDir?: string) {
+async function readArgs(_?: string, configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 

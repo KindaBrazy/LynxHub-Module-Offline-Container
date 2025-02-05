@@ -8,6 +8,56 @@
   "version": "9.0.1",
   "updateDate": "2025-01-22 16:30",
   "changeLog": "V9.0.1\n\n・Fix (Open Webui): Removed admin requirement for .webui_secret_key access.\n・Fix (Open Webui): PORT is now passed as an argument instead of an environment variable.\nV9.0.0\n\n・Add Open WebUI integration\n・Add LoLLMs WebUI integration\n・Dynamically fetch InvokeAI latest version for installation and updates\n・Resolve issue with reading and writing InvokeAI arguments",
+  "changes": [
+    {
+      "title": "V9.0.1",
+      "items": [
+        {
+          "label": "\uD83E\uDEB2 Bug Fixes",
+          "subitems": [
+            {
+              "label": "Fix (Open Webui): Removed admin requirement for .webui_secret_key access."
+            },
+            {
+              "label": "Fix (Open Webui): PORT is now passed as an argument instead of an environment variable."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "V9.0.0",
+      "items": [
+        {
+          "label": "✨ New",
+          "subitems": [
+            {
+              "label": "Add Open WebUI integration."
+            },
+            {
+              "label": "Add LoLLMs WebUI integration."
+            }
+          ]
+        },
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Dynamically fetch InvokeAI latest version for installation and updates."
+            }
+          ]
+        },
+        {
+          "label": "\uD83E\uDEB2 Bug Fixes",
+          "subitems": [
+            {
+              "label": "Resolve issue with reading and writing InvokeAI arguments."
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "logoUrl": "https://avatars.githubusercontent.com/u/143181745?v=4",
   "owner": false
 }

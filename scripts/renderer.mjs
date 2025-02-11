@@ -42,11 +42,11 @@ function startUpdate$1(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
     }
 }
-async function cardInfo$6(api, callback) {
+async function cardInfo$7(api, callback) {
     return CardInfo(URL$2, undefined, api, callback);
 }
 const ALLTALK_RM = {
-    cardInfo: cardInfo$6,
+    cardInfo: cardInfo$7,
     manager: {
         startInstall: startInstall$7,
         updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
@@ -65,12 +65,12 @@ function catchAddress(input) {
 function startInstall$6(stepper) {
     GitInstaller('Text to Speech', URL$1, stepper);
 }
-async function cardInfo$5(api, callback) {
+async function cardInfo$6(api, callback) {
     return CardInfo(URL$1, '/extensions', api, callback);
 }
 const TTS_RM = {
     catchAddress,
-    cardInfo: cardInfo$5,
+    cardInfo: cardInfo$6,
     manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
 };
 
@@ -157,11 +157,11 @@ function startUpdate(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update OneTrainer');
     }
 }
-async function cardInfo$4(api, callback) {
+async function cardInfo$5(api, callback) {
     return CardInfo(URL, undefined, api, callback);
 }
 const ONETRAINER_RM = {
-    cardInfo: cardInfo$4,
+    cardInfo: cardInfo$5,
     manager: {
         startInstall: startInstall$5,
         updater: { updateType: 'stepper', startUpdate },
@@ -204,7 +204,7 @@ const A1_URL = 'https://github.com/AUTOMATIC1111/stable-diffusion-webui';
 function startInstall$4(stepper) {
     GitInstaller('Automatic1111', A1_URL, stepper);
 }
-async function cardInfo$3(api, callback) {
+async function cardInfo$4(api, callback) {
     return CardInfo(A1_URL, '/extensions', api, callback);
 }
 const A1_RM = {
@@ -212,7 +212,7 @@ const A1_RM = {
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
-    cardInfo: cardInfo$3,
+    cardInfo: cardInfo$4,
     manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
 };
 
@@ -220,7 +220,7 @@ const SD_FORGE_URL = 'https://github.com/lllyasviel/stable-diffusion-webui-forge
 function startInstall$3(stepper) {
     GitInstaller('SD Forge', SD_FORGE_URL, stepper);
 }
-async function cardInfo$2(api, callback) {
+async function cardInfo$3(api, callback) {
     return CardInfo(SD_FORGE_URL, '/extensions', api, callback);
 }
 const SD_FORGE_RM = {
@@ -228,7 +228,7 @@ const SD_FORGE_RM = {
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
-    cardInfo: cardInfo$2,
+    cardInfo: cardInfo$3,
     manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
 };
 
@@ -236,7 +236,7 @@ const SdAMD_URL$1 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgp
 function startInstall$2(stepper) {
     GitInstaller('SD Forge AMDGPU', SdAMD_URL$1, stepper);
 }
-async function cardInfo$1(api, callback) {
+async function cardInfo$2(api, callback) {
     return CardInfo(SdAMD_URL$1, 'RendererMethods', api, callback);
 }
 const SD_FORGE_AMD_RM = {
@@ -244,7 +244,7 @@ const SD_FORGE_AMD_RM = {
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
-    cardInfo: cardInfo$1,
+    cardInfo: cardInfo$2,
     manager: { startInstall: startInstall$2, updater: { updateType: 'git' } },
 };
 
@@ -252,7 +252,7 @@ const SdAMD_URL = 'https://github.com/anapnoe/stable-diffusion-webui-ux';
 function startInstall$1(stepper) {
     GitInstaller('SD UI-UX', SdAMD_URL, stepper);
 }
-async function cardInfo(api, callback) {
+async function cardInfo$1(api, callback) {
     return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
 const SD_UIUX_RM = {
@@ -260,7 +260,7 @@ const SD_UIUX_RM = {
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
-    cardInfo,
+    cardInfo: cardInfo$1,
     manager: { startInstall: startInstall$1, updater: { updateType: 'git' } },
 };
 
@@ -458,8 +458,12 @@ function startInstall(stepper) {
         }
     });
 }
+async function cardInfo(api, callback) {
+    return CardInfo(url, undefined, api, callback);
+}
 const LoLLM_RM = {
     catchAddress: catchAddress$1,
+    cardInfo,
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 

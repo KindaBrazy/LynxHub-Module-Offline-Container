@@ -1,6 +1,6 @@
-import {CardRendererMethods, InstallationStepper} from '../../../types';
+import {CardInfoApi, CardInfoCallback, CardRendererMethods, InstallationStepper} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
-import {catchAddress} from '../../../Utils/RendererUtils';
+import {CardInfo, catchAddress} from '../../../Utils/RendererUtils';
 
 const title = 'LoLLMs';
 const url = 'https://github.com/ParisNeo/lollms-webui';
@@ -46,8 +46,13 @@ export function startInstall(stepper: InstallationStepper) {
   });
 }
 
+async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
+  return CardInfo(url, undefined, api, callback);
+}
+
 const LoLLM_RM: CardRendererMethods = {
   catchAddress,
+  cardInfo,
   manager: {startInstall, updater: {updateType: 'git'}},
 };
 

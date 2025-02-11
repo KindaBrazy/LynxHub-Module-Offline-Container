@@ -5,10 +5,23 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 16,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "9.0.1",
-  "updateDate": "2025-01-22 16:30",
-  "changeLog": "V9.0.1\n\n・Fix (Open Webui): Removed admin requirement for .webui_secret_key access.\n・Fix (Open Webui): PORT is now passed as an argument instead of an environment variable.\nV9.0.0\n\n・Add Open WebUI integration\n・Add LoLLMs WebUI integration\n・Dynamically fetch InvokeAI latest version for installation and updates\n・Resolve issue with reading and writing InvokeAI arguments",
+  "version": "9.0.2",
+  "updateDate": "2025-02-11 10:00",
+  "changeLog": "V9.0.2\n\n・Fix (LoLLMs): Fix the information window not showing correct data.\nV9.0.1\n\n・Fix (Open Webui): Removed admin requirement for .webui_secret_key access.\n・Fix (Open Webui): PORT is now passed as an argument instead of an environment variable.\nV9.0.0\n\n・Add Open WebUI integration\n・Add LoLLMs WebUI integration\n・Dynamically fetch InvokeAI latest version for installation and updates\n・Resolve issue with reading and writing InvokeAI arguments",
   "changes": [
+    {
+      "title": "V9.0.2",
+      "items": [
+        {
+          "label": "\uD83E\uDEB2 Bug Fixes",
+          "subitems": [
+            {
+              "label": "Fix (LoLLMs): Fix the information window not showing correct data."
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V9.0.1",
       "items": [

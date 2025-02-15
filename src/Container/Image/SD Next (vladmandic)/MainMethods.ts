@@ -18,6 +18,6 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const vladMainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Vlad_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
 
-export default vladMainMethods;
+export default Vlad_MM;

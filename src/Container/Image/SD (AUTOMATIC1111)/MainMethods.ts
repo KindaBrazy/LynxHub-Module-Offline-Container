@@ -19,6 +19,6 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const a1MainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const A1_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
 
-export default a1MainMethods;
+export default A1_MM;

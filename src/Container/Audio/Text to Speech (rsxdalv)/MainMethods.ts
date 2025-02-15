@@ -8,6 +8,6 @@ async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir);
 }
 
-const rsxMainMethods: CardMainMethods = {getRunCommands};
+const Rsx_MM: CardMainMethods = {getRunCommands};
 
-export default rsxMainMethods;
+export default Rsx_MM;

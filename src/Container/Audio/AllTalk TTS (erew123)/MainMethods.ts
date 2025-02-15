@@ -9,6 +9,6 @@ export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 
-const erew123MainMethods: CardMainMethods = {getRunCommands};
+const Rrew123_MM: CardMainMethods = {getRunCommands};
 
-export default erew123MainMethods;
+export default Rrew123_MM;

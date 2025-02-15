@@ -20,6 +20,6 @@ async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const oobaMainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Ooba_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
 
-export default oobaMainMethods;
+export default Ooba_MM;

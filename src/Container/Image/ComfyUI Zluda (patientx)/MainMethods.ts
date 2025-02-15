@@ -26,6 +26,6 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const comfyZludaMainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const ComfyZluda_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
 
-export default comfyZludaMainMethods;
+export default ComfyZluda_MM;

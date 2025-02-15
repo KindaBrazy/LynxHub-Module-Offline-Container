@@ -18,6 +18,6 @@ async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const sillyMainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Silly_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
 
-export default sillyMainMethods;
+export default Silly_MM;

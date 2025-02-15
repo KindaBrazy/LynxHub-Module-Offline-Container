@@ -42,6 +42,6 @@ function mainIpc(ipc: MainIpcTypes) {
   ipc.handle('get-latest', getLatest);
 }
 
-const invokeMainMethods: CardMainMethods = {getRunCommands, updateAvailable, mainIpc, saveArgs, readArgs};
+const Invoke_MM: CardMainMethods = {getRunCommands, updateAvailable, mainIpc, saveArgs, readArgs};
 
-export default invokeMainMethods;
+export default Invoke_MM;

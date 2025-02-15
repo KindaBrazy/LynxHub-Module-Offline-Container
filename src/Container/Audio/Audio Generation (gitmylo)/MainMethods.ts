@@ -18,6 +18,6 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const gitmyloMainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Gitmylo_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
 
-export default gitmyloMainMethods;
+export default Gitmylo_MM;

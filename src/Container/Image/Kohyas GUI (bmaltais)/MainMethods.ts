@@ -18,6 +18,6 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const bmaltaisMainMethods: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Bmaltais_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
 
-export default bmaltaisMainMethods;
+export default Bmaltais_MM;

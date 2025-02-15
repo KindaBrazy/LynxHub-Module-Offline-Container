@@ -12,6 +12,6 @@ async function updateAvailable(lynxApi: LynxApiUpdate) {
   return await lynxApi.isPullAvailable;
 }
 
-const nerogarMainMethods: CardMainMethods = {getRunCommands, updateAvailable};
+const Nerogar_MM: CardMainMethods = {getRunCommands, updateAvailable};
 
-export default nerogarMainMethods;
+export default Nerogar_MM;

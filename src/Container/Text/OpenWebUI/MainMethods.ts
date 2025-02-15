@@ -84,7 +84,7 @@ function mainIpc(ipc: MainIpcTypes) {
   ipc.handle('current-version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
 
-const openWebUIMainMethods: CardMainMethods = {
+const OpenWebUI_MM: CardMainMethods = {
   getRunCommands,
   updateAvailable,
   isInstalled,
@@ -93,4 +93,4 @@ const openWebUIMainMethods: CardMainMethods = {
   readArgs,
 };
 
-export default openWebUIMainMethods;
+export default OpenWebUI_MM;

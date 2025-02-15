@@ -1,3 +1,5 @@
+import {execSync} from 'node:child_process';
+import {platform} from 'node:os';
 import path from 'node:path';
 
 import axios, {AxiosResponse} from 'axios';
@@ -96,5 +98,54 @@ export async function getLatestNonRCReleaseAndAsset(
   } catch (error) {
     console.error('Error fetching releases from GitHub:', error);
     return null;
+  }
+}
+
+/**
+ * Gets the highest available PowerShell version on the system.
+ * @returns The major version number of PowerShell, or 0 if PowerShell is not found.
+ */
+export function getPowerShellVersion(): number {
+  const command = '$PSVersionTable.PSVersion.Major';
+
+  try {
+    // Try PowerShell Core (pwsh.exe) first
+    const pwshVersion = parseInt(
+      execSync(`pwsh.exe -NoProfile -Command "${command}"`, {
+        encoding: 'utf8' as const,
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim(),
+      10,
+    );
+    if (pwshVersion >= 7) return pwshVersion;
+
+    // Fall back to Windows PowerShell (powershell.exe)
+    const psVersion = parseInt(
+      execSync(`powershell.exe -NoProfile -Command "${command}"`, {
+        encoding: 'utf8' as const,
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim(),
+      10,
+    );
+    return psVersion >= 5 ? psVersion : 0;
+  } catch (err) {
+    console.error('Error determining PowerShell version:', err);
+    return 0;
+  }
+}
+
+/**
+ * Determines the appropriate shell based on the operating system and PowerShell version.
+ * @returns The shell command to use.
+ */
+export function determineShell(): string {
+  switch (platform()) {
+    case 'darwin':
+      return 'zsh';
+    case 'linux':
+      return 'bash';
+    case 'win32':
+    default:
+      return getPowerShellVersion() >= 5 ? 'pwsh.exe' : 'powershell.exe';
   }
 }

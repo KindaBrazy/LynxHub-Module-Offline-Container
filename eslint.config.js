@@ -33,6 +33,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
 
+      'no-control-regex': 'off',
       'perfectionist/sort-jsx-props': [
         'error',
         {

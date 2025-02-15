@@ -118,7 +118,7 @@ function startInstall(stepper: InstallationStepper) {
   stepper.starterStep({disableSelectDir: true}).then(() => {
     stepper.nextStep();
     stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
-    stepper.ipc.invoke('isInstalled').then((isInstalled: boolean) => {
+    stepper.ipc.invoke('is_openwebui_installed').then((isInstalled: boolean) => {
       if (isInstalled) {
         stepper.setInstalled();
         const currentDate = new Date();
@@ -174,7 +174,7 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
   api.storage.get(UPDATE_TIME_KEY).then(result => {
     descManager.updateItem(0, 1, result);
   });
-  api.ipc.invoke('current-version').then(result => {
+  api.ipc.invoke('current_openwebui_version').then(result => {
     descManager.updateItem(0, 2, result);
   });
 }

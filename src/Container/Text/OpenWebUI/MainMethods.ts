@@ -80,8 +80,8 @@ async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
 }
 
 function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('isInstalled', () => checkInstalled(ipc.pty));
-  ipc.handle('current-version', () => getPipPackageVersion('open-webui', ipc.pty));
+  ipc.handle('is_openwebui_installed', () => checkInstalled(ipc.pty));
+  ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
 
 const OpenWebUI_MM: CardMainMethods = {

@@ -1,6 +1,7 @@
 import {platform} from 'node:os';
 import path from 'node:path';
 
+import treeKill from 'tree-kill';
 import which from 'which';
 
 import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
@@ -52,11 +53,14 @@ async function checkInstalled(pty: any): Promise<boolean> {
     });
 
     ptyProcess.onExit(() => {
+      if (pty.pid) {
+        treeKill(pty.pid);
+        if (platform() === 'darwin') pty.kill();
+      }
+
       const cleanOutput = removeAnsi(output).trim().replace('npm list -g flowise', '');
 
       const isInstalled = /flowise@.+/.test(cleanOutput);
-
-      console.log('flowise installed: ', isInstalled);
 
       resolve(isInstalled);
     });
@@ -77,6 +81,11 @@ async function getVersion(pty: any): Promise<string> {
     });
 
     ptyProcess.onExit(() => {
+      if (pty.pid) {
+        treeKill(pty.pid);
+        if (platform() === 'darwin') pty.kill();
+      }
+
       const match = output.match(/flowise@([\d.]+)/i);
       if (match && match[1]) {
         resolve(match[1]);
@@ -100,6 +109,11 @@ async function checkUpdate(pty: any): Promise<string | null> {
     });
 
     ptyProcess.onExit(() => {
+      if (pty.pid) {
+        treeKill(pty.pid);
+        if (platform() === 'darwin') pty.kill();
+      }
+
       const lines = removeAnsi(output).split(LINE_ENDING);
       for (const line of lines) {
         const match = line.match(/flowise\s+([\d.]+)\s+[\d.]+\s+([\d.]+)/i);

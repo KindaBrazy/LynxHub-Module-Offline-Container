@@ -2,6 +2,7 @@ import {platform} from 'node:os';
 import path from 'node:path';
 
 import {compare} from 'semver';
+import treeKill from 'tree-kill';
 
 import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
@@ -54,6 +55,10 @@ async function checkInstalled(pty: any): Promise<boolean> {
     });
 
     ptyProcess.onExit(() => {
+      if (pty.pid) {
+        treeKill(pty.pid);
+        if (platform() === 'darwin') pty.kill();
+      }
       resolve(output.toLowerCase().includes('version:'));
     });
 

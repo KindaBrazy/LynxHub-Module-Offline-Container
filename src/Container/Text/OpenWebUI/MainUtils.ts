@@ -1,4 +1,7 @@
+import {platform} from 'node:os';
+
 import axios from 'axios';
+import treeKill from 'tree-kill';
 
 import {LINE_ENDING} from '../../../Utils/MainUtils';
 
@@ -14,6 +17,10 @@ export async function getPipPackageVersion(packageName: string, pty: any): Promi
     });
 
     ptyProcess.onExit(() => {
+      if (pty.pid) {
+        treeKill(pty.pid);
+        if (platform() === 'darwin') pty.kill();
+      }
       const lines = output.split(/\r?\n/);
       const versionLine = lines.find(line => line.toLowerCase().includes('version:'));
       if (versionLine) {

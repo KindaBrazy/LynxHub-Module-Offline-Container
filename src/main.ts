@@ -4,6 +4,7 @@ import {
   ALLTALK_ID,
   COMFYUI_ID,
   COMFYUI_ZLUDA_ID,
+  FLOWISEAI_ID,
   INVOKE_ID,
   KOHYA_ID,
   LoLLMS_ID,
@@ -32,6 +33,7 @@ import Ls_MM from './Container/Image/SD AMDGPU (lshqqytiger)/MainMethods';
 import Vlad_MM from './Container/Image/SD Next (vladmandic)/MainMethods';
 import McMonkey_MM from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
 import Flow_MM from './Container/Text/Flowise (FlowiseAI)/MainMethods';
+import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
@@ -56,7 +58,8 @@ const mainModules: MainModules[] = [
   {id: INVOKE_ID, methods: Invoke_MM},
   {id: ALLTALK_ID, methods: Rrew123_MM},
   {id: OPEN_WEBUI_ID, methods: OpenWebUI_MM},
-  {id: LoLLMS_ID, methods: Flow_MM},
+  {id: FLOWISEAI_ID, methods: Flow_MM},
+  {id: LoLLMS_ID, methods: LoLLM_MM},
 ];
 
 export default mainModules;

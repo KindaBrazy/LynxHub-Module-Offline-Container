@@ -1,5 +1,7 @@
-import {LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
+import {FLOWISEAI_ID, LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
 import {PagesData} from '../../types';
+import flowiseArguments from './Flowise (FlowiseAI)/Arguments';
+import Flow_RM from './Flowise (FlowiseAI)/RendererMethods';
 import LoLLM_RM from './LoLLMs (ParisNeo)/RendererMethods';
 import openArguments from './OpenWebUI/Arguments';
 import OPEN_WEBUI_RM from './OpenWebUI/RendererMethods';
@@ -55,6 +57,19 @@ const textPage: PagesData = {
       methods: OPEN_WEBUI_RM,
       installationType: 'others',
       arguments: openArguments,
+    },
+    {
+      id: FLOWISEAI_ID,
+      title: 'Flowise',
+      description: 'Drag & drop UI to build your customized LLM flow',
+      repoUrl: 'https://github.com/FlowiseAI/Flowise',
+      type: 'text',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/96d813cd-91e6-41ca-95b3-ea619d6c462c/' +
+        'width=300/00008-112793962.jpeg',
+      methods: Flow_RM,
+      arguments: flowiseArguments,
+      installationType: 'others',
     },
     {
       id: LoLLMS_ID,

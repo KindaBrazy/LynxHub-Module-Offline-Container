@@ -27,20 +27,17 @@ const textPage: PagesData = {
       installationType: 'git',
     },
     {
-      id: SILLYTAVERN_ID,
-      title: 'SillyTavern',
-      description:
-        'SillyTavern provides a single unified interface for many LLM APIs (KoboldAI/CPP, Horde, NovelAI, Ooba, Tabby, OpenAI,' +
-        ' OpenRouter, Claude, Mistral and more), a mobile-friendly layout, Visual Novel Mode, Automatic1111 & ComfyUI API image' +
-        " generation integration, TTS, WorldInfo (lorebooks), customizable UI, auto-translate, more prompt options than you'd" +
-        ' ever want or need, and endless growth potential via third-party extensions.',
-      repoUrl: 'https://github.com/SillyTavern/SillyTavern',
+      id: FLOWISEAI_ID,
+      title: 'Flowise',
+      description: 'Drag & drop UI to build your customized LLM flow',
+      repoUrl: 'https://github.com/FlowiseAI/Flowise',
       type: 'text',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
-      arguments: sillyArguments,
-      methods: SILLYTAVERN_RM,
-      installationType: 'git',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/96d813cd-91e6-41ca-95b3-ea619d6c462c/' +
+        'width=300/00008-112793962.jpeg',
+      methods: Flow_RM,
+      arguments: flowiseArguments,
+      installationType: 'others',
     },
     {
       id: OPEN_WEBUI_ID,
@@ -59,17 +56,20 @@ const textPage: PagesData = {
       arguments: openArguments,
     },
     {
-      id: FLOWISEAI_ID,
-      title: 'Flowise',
-      description: 'Drag & drop UI to build your customized LLM flow',
-      repoUrl: 'https://github.com/FlowiseAI/Flowise',
+      id: SILLYTAVERN_ID,
+      title: 'SillyTavern',
+      description:
+        'SillyTavern provides a single unified interface for many LLM APIs (KoboldAI/CPP, Horde, NovelAI, Ooba, Tabby, OpenAI,' +
+        ' OpenRouter, Claude, Mistral and more), a mobile-friendly layout, Visual Novel Mode, Automatic1111 & ComfyUI API image' +
+        " generation integration, TTS, WorldInfo (lorebooks), customizable UI, auto-translate, more prompt options than you'd" +
+        ' ever want or need, and endless growth potential via third-party extensions.',
+      repoUrl: 'https://github.com/SillyTavern/SillyTavern',
       type: 'text',
       bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/96d813cd-91e6-41ca-95b3-ea619d6c462c/' +
-        'width=300/00008-112793962.jpeg',
-      methods: Flow_RM,
-      arguments: flowiseArguments,
-      installationType: 'others',
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
+      arguments: sillyArguments,
+      methods: SILLYTAVERN_RM,
+      installationType: 'git',
     },
     {
       id: LoLLMS_ID,

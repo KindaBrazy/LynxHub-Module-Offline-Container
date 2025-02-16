@@ -74,12 +74,17 @@ async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
   try {
     const currentVersion = await getPipPackageVersion('open-webui', lynxApi.pty);
     const latestVersion = await getLatestPipPackageVersion('open-webui');
-    if (currentVersion && latestVersion) return compare(currentVersion, latestVersion) === -1;
+    if (currentVersion && latestVersion && compare(currentVersion, latestVersion) === -1) {
+      lynxApi.storage.set('update-available-version-openwebui', latestVersion);
+      return true;
+    }
   } catch (err) {
     console.error('Error checking update for open-webui', err);
+    lynxApi.storage.set('update-available-version-openwebui', undefined);
     return false;
   }
 
+  lynxApi.storage.set('update-available-version-openwebui', undefined);
   return false;
 }
 

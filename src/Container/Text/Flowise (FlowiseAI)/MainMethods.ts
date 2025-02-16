@@ -132,7 +132,13 @@ async function checkUpdate(pty: any): Promise<string | null> {
 
 async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
   const available = await checkUpdate(lynxApi.pty);
-  return !!available;
+  if (available) {
+    lynxApi.storage.set('update-available-version-flowise', available);
+    return true;
+  }
+
+  lynxApi.storage.set('update-available-version-flowise', undefined);
+  return false;
 }
 
 async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {

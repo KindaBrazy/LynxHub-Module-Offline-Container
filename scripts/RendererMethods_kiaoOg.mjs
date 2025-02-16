@@ -16,6 +16,7 @@ const ALLTALK_ID = 'Erew123_SD';
 const TG_ID = 'Oobabooga_TG';
 const SILLYTAVERN_ID = 'SillyTavern_TG';
 const OPEN_WEBUI_ID = 'OpenWebUI_TG';
+const FLOWISEAI_ID = 'FlowiseAI_TG';
 const LoLLMS_ID = 'LoLLMS_TG';
 // Audio Generation
 const TTS_ID = 'Rsxdalv_AG';
@@ -62,13 +63,16 @@ class DescriptionManager {
 }
 function extractGitUrl(url) {
     // Regular expression to match GitHub and GitLab repository URLs with or without protocol
-    const gitRepoRegex = /^(https?:\/\/)?(www\.)?(github|gitlab)\.com\/([^/]+)\/([^/.]+)(?:\.git)?$/;
+    const gitRepoRegex = /^(https?:\/\/)?(www\.)?(github|gitlab)\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/;
     const match = url.match(gitRepoRegex);
     if (!match) {
         throw new Error(`Invalid Git repository URL: ${url}`);
     }
     const [, , , platform, owner, repo] = match;
     return { owner, repo, platform: platform };
+}
+function removeAnsi(str) {
+    return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 }
 const isWin = await isWinOS();
 
@@ -17332,7 +17336,7 @@ function getArgumentType(name, Arguments) {
 function replaceAddress(input) {
     return input.replace(/http:\/\/0\.0\.0\.0:(\d+)/g, 'http://localhost:$1');
 }
-function catchAddress(input) {
+function catchAddress$1(input) {
     const localhostPatterns = [
         /https?:\/\/localhost(?::\d+)?/i,
         /https?:\/\/127\.0\.0\.1(?::\d+)?/i,
@@ -17501,9 +17505,9 @@ const gitmyloArguments = [
     },
 ];
 
-const shellCommand$6 = isWin ? 'call run.bat' : 'bash ./run.sh';
+const shellCommand$7 = isWin ? 'call run.bat' : 'bash ./run.sh';
 const URL$6 = 'https://github.com/gitmylo/audio-webui';
-function parseArgsToString$b(args) {
+function parseArgsToString$c(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -17518,17 +17522,17 @@ function parseArgsToString$b(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$7 : `${shellCommand$7} ${argResult}`;
     return result;
 }
-function parseStringToArgs$b(args) {
+function parseStringToArgs$c(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$6))
+        if (!line.startsWith(shellCommand$7))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$6} `)[1];
+        const clArgs = line.split(`${shellCommand$7} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -17555,18 +17559,18 @@ function parseStringToArgs$b(args) {
     });
     return argResult;
 }
-function startInstall$a(stepper) {
+function startInstall$b(stepper) {
     GitInstaller('Audio Generation', URL$6, stepper);
 }
-async function cardInfo$a(api, callback) {
+async function cardInfo$b(api, callback) {
     return CardInfo(URL$6, '/extensions', api, callback);
 }
 const AG_RM = {
-    catchAddress,
-    parseArgsToString: parseArgsToString$b,
-    parseStringToArgs: parseStringToArgs$b,
-    cardInfo: cardInfo$a,
-    manager: { startInstall: startInstall$a, updater: { updateType: 'git' } },
+    catchAddress: catchAddress$1,
+    parseArgsToString: parseArgsToString$c,
+    parseStringToArgs: parseStringToArgs$c,
+    cardInfo: cardInfo$b,
+    manager: { startInstall: startInstall$b, updater: { updateType: 'git' } },
 };
 
 const comfyArguments = [
@@ -17976,7 +17980,7 @@ const comfyArguments = [
 ];
 
 const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
-function parseArgsToString$a(args) {
+function parseArgsToString$b(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -17994,7 +17998,7 @@ function parseArgsToString$a(args) {
     result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
     return result;
 }
-function parseStringToArgs$a(args) {
+function parseStringToArgs$b(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18043,7 +18047,7 @@ async function fetchExtensionList$4() {
         return [];
     }
 }
-function startInstall$9(stepper) {
+function startInstall$a(stepper) {
     const selectOptions = ['NVIDIA CU126', 'NVIDIA CU124'];
     if (window.osPlatform === 'linux') {
         selectOptions.push('AMD GPUs (Linux only) ROCm 6.2.4');
@@ -18109,16 +18113,16 @@ function startInstall$9(stepper) {
         }
     });
 }
-async function cardInfo$9(api, callback) {
+async function cardInfo$a(api, callback) {
     return CardInfo(COMFYUI_URL, '/custom_nodes', api, callback);
 }
 const COMFYUI_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     fetchExtensionList: fetchExtensionList$4,
-    parseArgsToString: parseArgsToString$a,
-    parseStringToArgs: parseStringToArgs$a,
-    cardInfo: cardInfo$9,
-    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$b,
+    parseStringToArgs: parseStringToArgs$b,
+    cardInfo: cardInfo$a,
+    manager: { startInstall: startInstall$a, updater: { updateType: 'git' } },
 };
 
 const comfyZludaArguments = [
@@ -18552,7 +18556,7 @@ const comfyZludaArguments = [
 ];
 
 const URL$5 = 'https://github.com/patientx/ComfyUI-Zluda';
-function parseArgsToString$9(args) {
+function parseArgsToString$a(args) {
     let result = '@echo off' + '\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18576,7 +18580,7 @@ function parseArgsToString$9(args) {
     result += '\n\n' + 'pause';
     return result;
 }
-function parseStringToArgs$9(args) {
+function parseStringToArgs$a(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18641,7 +18645,7 @@ const customArguments = [
         value: '',
     },
 ];
-function startInstall$8(stepper) {
+function startInstall$9(stepper) {
     stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -18679,16 +18683,16 @@ function startInstall$8(stepper) {
         }
     });
 }
-async function cardInfo$8(api, callback) {
+async function cardInfo$9(api, callback) {
     return CardInfo(URL$5, '/custom_nodes', api, callback);
 }
 const COMFYUI_ZLUDA_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     fetchExtensionList: fetchExtensionList$3,
-    parseArgsToString: parseArgsToString$9,
-    parseStringToArgs: parseStringToArgs$9,
-    cardInfo: cardInfo$8,
-    manager: { startInstall: startInstall$8, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$a,
+    parseStringToArgs: parseStringToArgs$a,
+    cardInfo: cardInfo$9,
+    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
 };
 
 const invokeArguments = [
@@ -19017,11 +19021,11 @@ const invokeArguments = [
     },
 ];
 
-const UPDATE_TIME_KEY$1 = 'update-time-invoke';
+const UPDATE_TIME_KEY$2 = 'update-time-invoke';
 const INSTALLED_VERSION_KEY = 'installed-version-invoke';
 
 const INPUT_ID = 'install_dir';
-function startInstall$7(stepper) {
+function startInstall$8(stepper) {
     stepper.initialSteps(['InvokeAI', 'Get Latest', 'Download', 'Install', 'Directory', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -19088,7 +19092,7 @@ function startInstall$7(stepper) {
         }
     });
 }
-function startUpdate$1(stepper) {
+function startUpdate$2(stepper) {
     stepper.initialSteps(['Checking', 'Downloading', 'Installing', 'Finishing Up']);
     stepper.progressBar(true, 'Checking for the latest version of InvokeAI...');
     stepper.ipc.invoke('get-latest').then((releaseInfo) => {
@@ -19107,7 +19111,7 @@ function startUpdate$1(stepper) {
                         .runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh')
                         .then(() => {
                         const currentDate = new Date();
-                        stepper.storage.set(UPDATE_TIME_KEY$1, currentDate.toLocaleString());
+                        stepper.storage.set(UPDATE_TIME_KEY$2, currentDate.toLocaleString());
                         stepper.storage.set(INSTALLED_VERSION_KEY, releaseInfo.version);
                         stepper.setUpdated();
                         stepper.showFinalStep('success', 'InvokeAI Updated Successfully', `InvokeAI has been successfully updated to version ${releaseInfo.version}. Enjoy!`);
@@ -19120,7 +19124,7 @@ function startUpdate$1(stepper) {
         }
     });
 }
-async function cardInfo$7(api, callback) {
+async function cardInfo$8(api, callback) {
     const dir = api.installationFolder;
     if (!dir)
         return;
@@ -19142,7 +19146,7 @@ async function cardInfo$7(api, callback) {
     api.getFolderCreationTime(dir).then(result => {
         descManager.updateItem(0, 0, result);
     });
-    api.storage.get(UPDATE_TIME_KEY$1).then(result => {
+    api.storage.get(UPDATE_TIME_KEY$2).then(result => {
         descManager.updateItem(0, 1, result);
     });
     api.storage.get(INSTALLED_VERSION_KEY).then(result => {
@@ -19153,8 +19157,8 @@ async function cardInfo$7(api, callback) {
     });
 }
 
-const shellCommand$5 = isWin ? 'call invoke.bat' : 'bash ./invoke.sh';
-function parseArgsToString$8(args) {
+const shellCommand$6 = isWin ? 'call invoke.bat' : 'bash ./invoke.sh';
+function parseArgsToString$9(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -19169,17 +19173,17 @@ function parseArgsToString$8(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$5 : `${shellCommand$5} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
     return result;
 }
-function parseStringToArgs$8(args) {
+function parseStringToArgs$9(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$5))
+        if (!line.startsWith(shellCommand$6))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$5} `)[1];
+        const clArgs = line.split(`${shellCommand$6} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -19207,13 +19211,13 @@ function parseStringToArgs$8(args) {
     return argResult;
 }
 const INVOKE_RM = {
-    catchAddress,
-    parseArgsToString: parseArgsToString$8,
-    parseStringToArgs: parseStringToArgs$8,
-    cardInfo: cardInfo$7,
+    catchAddress: catchAddress$1,
+    parseArgsToString: parseArgsToString$9,
+    parseStringToArgs: parseStringToArgs$9,
+    cardInfo: cardInfo$8,
     manager: {
-        startInstall: startInstall$7,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+        startInstall: startInstall$8,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
     },
 };
 
@@ -19305,9 +19309,9 @@ const bmaltaisArguments = [
     },
 ];
 
-const shellCommand$4 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
+const shellCommand$5 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
 const URL$4 = 'https://github.com/bmaltais/kohya_ss';
-function parseArgsToString$7(args) {
+function parseArgsToString$8(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -19322,17 +19326,17 @@ function parseArgsToString$7(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$5 : `${shellCommand$5} ${argResult}`;
     return result;
 }
-function parseStringToArgs$7(args) {
+function parseStringToArgs$8(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$4))
+        if (!line.startsWith(shellCommand$5))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$4} `)[1];
+        const clArgs = line.split(`${shellCommand$5} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -19359,18 +19363,18 @@ function parseStringToArgs$7(args) {
     });
     return argResult;
 }
-function startInstall$6(stepper) {
+function startInstall$7(stepper) {
     GitInstaller("Kohya's GUI", URL$4, stepper);
 }
-async function cardInfo$6(api, callback) {
+async function cardInfo$7(api, callback) {
     return CardInfo(URL$4, undefined, api, callback);
 }
 const KOHYA_GUI_RM = {
-    catchAddress,
-    parseArgsToString: parseArgsToString$7,
-    parseStringToArgs: parseStringToArgs$7,
-    cardInfo: cardInfo$6,
-    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
+    catchAddress: catchAddress$1,
+    parseArgsToString: parseArgsToString$8,
+    parseStringToArgs: parseStringToArgs$8,
+    cardInfo: cardInfo$7,
+    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
 };
 
 const automatic1111Arguments = [
@@ -20328,7 +20332,7 @@ function getCategoryType$1(name) {
     }
     return undefined;
 }
-function parseArgsToString$6(args) {
+function parseArgsToString$7(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
@@ -20374,7 +20378,7 @@ function checkLinuxArgLine$2(line) {
     }
     return undefined;
 }
-function parseStringToArgs$6(args) {
+function parseStringToArgs$7(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -20471,10 +20475,10 @@ if (commandLineArgsIndex !== -1 && lshqqytigerArguments[commandLineArgsIndex].se
 }
 
 const SdAMD_URL = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
-function startInstall$5(stepper) {
+function startInstall$6(stepper) {
     GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper);
 }
-async function cardInfo$5(api, callback) {
+async function cardInfo$6(api, callback) {
     return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
 function getTypeByCategoryName(category) {
@@ -20509,7 +20513,7 @@ function getCategoryType(name) {
     }
     return undefined;
 }
-function parseArgsToString$5(args) {
+function parseArgsToString$6(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
@@ -20555,7 +20559,7 @@ function checkLinuxArgLine$1(line) {
     }
     return undefined;
 }
-function parseStringToArgs$5(args) {
+function parseStringToArgs$6(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -20614,12 +20618,12 @@ function parseStringToArgs$5(args) {
     return argResult;
 }
 const SD_AMD_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$5,
-    parseStringToArgs: parseStringToArgs$5,
-    cardInfo: cardInfo$5,
-    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$6,
+    parseStringToArgs: parseStringToArgs$6,
+    cardInfo: cardInfo$6,
+    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
 };
 
 const vladmandicArguments = [
@@ -21034,9 +21038,9 @@ const vladmandicArguments = [
     },
 ];
 
-const shellCommand$3 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
+const shellCommand$4 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
 const URL$3 = 'https://github.com/vladmandic/automatic';
-function parseArgsToString$4(args) {
+function parseArgsToString$5(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -21051,17 +21055,17 @@ function parseArgsToString$4(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
     return result;
 }
-function parseStringToArgs$4(args) {
+function parseStringToArgs$5(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$3))
+        if (!line.startsWith(shellCommand$4))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$3} `)[1];
+        const clArgs = line.split(`${shellCommand$4} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -21088,19 +21092,19 @@ function parseStringToArgs$4(args) {
     });
     return argResult;
 }
-function startInstall$4(stepper) {
+function startInstall$5(stepper) {
     GitInstaller('SD Next', URL$3, stepper);
 }
-async function cardInfo$4(api, callback) {
+async function cardInfo$5(api, callback) {
     return CardInfo(URL$3, '/extensions', api, callback);
 }
 const SD_NEXT_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$4,
-    parseStringToArgs: parseStringToArgs$4,
-    cardInfo: cardInfo$4,
-    manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$5,
+    parseStringToArgs: parseStringToArgs$5,
+    cardInfo: cardInfo$5,
+    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
 };
 
 const mcMonkeyArguments = [
@@ -21210,9 +21214,9 @@ const mcMonkeyArguments = [
     },
 ];
 
-const shellCommand$2 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
+const shellCommand$3 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
 const URL$2 = 'https://github.com/mcmonkeyprojects/SwarmUI';
-function parseArgsToString$3(args) {
+function parseArgsToString$4(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -21227,17 +21231,17 @@ function parseArgsToString$3(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
     return result;
 }
-function parseStringToArgs$3(args) {
+function parseStringToArgs$4(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$2))
+        if (!line.startsWith(shellCommand$3))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$2} `)[1];
+        const clArgs = line.split(`${shellCommand$3} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -21293,19 +21297,483 @@ async function fetchExtensionList$1() {
         },
     ];
 }
-function startInstall$3(stepper) {
+function startInstall$4(stepper) {
     GitInstaller('SwarmUI', URL$2, stepper);
 }
-async function cardInfo$3(api, callback) {
+async function cardInfo$4(api, callback) {
     return CardInfo(URL$2, '/src/Extensions', api, callback);
 }
 const SWARM_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     fetchExtensionList: fetchExtensionList$1,
+    parseArgsToString: parseArgsToString$4,
+    parseStringToArgs: parseStringToArgs$4,
+    cardInfo: cardInfo$4,
+    manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
+};
+
+const flowiseArguments = [
+    {
+        category: 'General',
+        sections: [
+            {
+                section: 'Basic Configuration',
+                items: [
+                    {
+                        name: '--PORT',
+                        description: 'The HTTP port Flowise runs on',
+                        type: 'Input',
+                        defaultValue: 3000,
+                    },
+                    {
+                        name: '--CORS_ORIGINS',
+                        description: 'The allowed origins for all cross-origin HTTP calls',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--IFRAME_ORIGINS',
+                        description: 'The allowed origins for iframe src embedding',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--FLOWISE_USERNAME',
+                        description: 'Username to login',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--FLOWISE_PASSWORD',
+                        description: 'Password to login',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--FLOWISE_FILE_SIZE_LIMIT',
+                        description: 'Upload File Size Limit',
+                        type: 'Input',
+                        defaultValue: '50mb',
+                    },
+                ],
+            },
+            {
+                section: 'Logging',
+                items: [
+                    {
+                        name: '--DEBUG',
+                        description: 'Print logs from components',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--LOG_PATH',
+                        description: 'Location where log files are stored',
+                        type: 'Input',
+                        defaultValue: 'your-path/Flowise/logs',
+                    },
+                    {
+                        name: '--LOG_LEVEL',
+                        description: 'Different levels of logs',
+                        type: 'DropDown',
+                        values: ['error', 'info', 'verbose', 'debug'],
+                        defaultValue: 'info',
+                    },
+                    {
+                        name: '--LOG_JSON_SPACES',
+                        description: 'Spaces to beautify JSON logs',
+                        type: 'Input',
+                        defaultValue: 2,
+                    },
+                ],
+            },
+            {
+                section: 'API Keys',
+                items: [
+                    {
+                        name: '--APIKEY_STORAGE_TYPE',
+                        description: 'To store api keys on a JSON file or database. Default is `json`',
+                        type: 'DropDown',
+                        values: ['json', 'db'],
+                        defaultValue: 'json',
+                    },
+                    {
+                        name: '--APIKEY_PATH',
+                        description: 'Location where api keys are saved when `APIKEY_STORAGE_TYPE` is `json`',
+                        type: 'Input',
+                        defaultValue: 'your-path/Flowise/packages/server',
+                    },
+                ],
+            },
+            {
+                section: 'Tool Function Dependencies',
+                items: [
+                    {
+                        name: '--TOOL_FUNCTION_BUILTIN_DEP',
+                        description: 'NodeJS built-in modules to be used for Tool Function',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--TOOL_FUNCTION_EXTERNAL_DEP',
+                        description: 'External modules to be used for Tool Function',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Database',
+        condition: 'DATABASE_TYPE === "sqlite"',
+        sections: [
+            {
+                section: 'SQLite Configuration',
+                items: [
+                    {
+                        name: '--DATABASE_TYPE',
+                        description: 'Type of database to store the flowise data',
+                        type: 'DropDown',
+                        values: ['sqlite', 'mysql', 'postgres'],
+                        defaultValue: 'sqlite',
+                    },
+                    {
+                        name: '--DATABASE_PATH',
+                        description: 'Location where database is saved (When DATABASE_TYPE is sqlite)',
+                        type: 'Input',
+                        defaultValue: 'your-home-dir/.flowise',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Database',
+        condition: 'DATABASE_TYPE !== "sqlite"',
+        sections: [
+            {
+                section: 'Database Configuration',
+                items: [
+                    {
+                        name: '--DATABASE_TYPE',
+                        description: 'Type of database to store the flowise data',
+                        type: 'DropDown',
+                        values: ['sqlite', 'mysql', 'postgres'],
+                        defaultValue: 'sqlite',
+                    },
+                    {
+                        name: '--DATABASE_HOST',
+                        description: 'Host URL or IP address (When DATABASE_TYPE is not sqlite)',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--DATABASE_PORT',
+                        description: 'Database port (When DATABASE_TYPE is not sqlite)',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--DATABASE_USER',
+                        description: 'Database username (When DATABASE_TYPE is not sqlite)',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--DATABASE_PASSWORD',
+                        description: 'Database password (When DATABASE_TYPE is not sqlite)',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--DATABASE_NAME',
+                        description: 'Database name (When DATABASE_TYPE is not sqlite)',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--DATABASE_SSL_KEY_BASE64',
+                        description: 'Database SSL client cert in base64 (takes priority over DATABASE_SSL)',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Postgres Specific',
+                items: [
+                    {
+                        name: '--DATABASE_SSL',
+                        description: 'Database connection overssl (When DATABASE_TYPE is postgre)',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Encryption',
+        sections: [
+            {
+                section: 'Encryption Key',
+                items: [
+                    {
+                        name: '--SECRETKEY_PATH',
+                        description: 'Location where encryption key (used to encrypt/decrypt credentials) is saved',
+                        type: 'Input',
+                        defaultValue: 'your-path/Flowise/packages/server',
+                    },
+                    {
+                        name: '--FLOWISE_SECRETKEY_OVERWRITE',
+                        description: 'Encryption key to be used instead of the key stored in SECRETKEY_PATH',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Telemetry',
+        sections: [
+            {
+                section: 'Telemetry',
+                items: [
+                    {
+                        name: '--DISABLE_FLOWISE_TELEMETRY',
+                        description: 'Turn off telemetry',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Models',
+        sections: [
+            {
+                section: 'Model Configuration',
+                items: [
+                    {
+                        name: '--MODEL_LIST_CONFIG_JSON',
+                        description: 'File path to load list of models from your local config file',
+                        type: 'Input',
+                        defaultValue: '/your_model_list_config_file_path',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Storage',
+        sections: [
+            {
+                section: 'Storage Configuration',
+                items: [
+                    {
+                        name: '--STORAGE_TYPE',
+                        description: 'Type of storage for uploaded files. default is `local`',
+                        type: 'DropDown',
+                        values: ['s3', 'local'],
+                        defaultValue: 'local',
+                    },
+                ],
+            },
+            {
+                section: 'Local Storage',
+                items: [
+                    {
+                        name: '--BLOB_STORAGE_PATH',
+                        description: 'Local folder path where uploaded files are stored when `STORAGE_TYPE` is `local`',
+                        type: 'Input',
+                        defaultValue: 'your-home-dir/.flowise/storage',
+                    },
+                ],
+            },
+            {
+                section: 'S3 Storage',
+                items: [
+                    {
+                        name: '--S3_STORAGE_BUCKET_NAME',
+                        description: 'Bucket name to hold the uploaded files when `STORAGE_TYPE` is `s3`',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--S3_STORAGE_ACCESS_KEY_ID',
+                        description: 'AWS Access Key',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--S3_STORAGE_SECRET_ACCESS_KEY',
+                        description: 'AWS Secret Key',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--S3_STORAGE_REGION',
+                        description: 'Region for S3 bucket',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--S3_ENDPOINT_URL',
+                        description: 'Custom Endpoint for S3',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--S3_FORCE_PATH_STYLE',
+                        description: 'Set this to true to force the request to use path-style addressing',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Nodes',
+        sections: [
+            {
+                section: 'Node Visibility',
+                items: [
+                    {
+                        name: '--SHOW_COMMUNITY_NODES',
+                        description: 'Show nodes created by community',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--DISABLED_NODES',
+                        description: 'Hide nodes from UI (comma separated list of node names)',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const INSTALL_TIME_KEY$1 = 'install-time-flowise';
+const UPDATE_TIME_KEY$1 = 'update-time-flowise';
+const UPDATE_AVAILABLE_KEY$1 = 'update-available-version-flowise';
+const shellCommand$2 = 'npx flowise start';
+function parseArgsToString$3(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, flowiseArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name}=true `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name}="${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name}=${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$3(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand$2))
+            return;
+        const clArgs = line.split(`${shellCommand$2} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        result.forEach((value) => {
+            if (isValidArg(value.name, flowiseArguments)) {
+                if (getArgumentType(value.name, flowiseArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+function startInstall$3(stepper) {
+    stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install Flowise', 'All Done!']);
+    stepper.starterStep({ disableSelectDir: true }).then(() => {
+        stepper.nextStep();
+        stepper.progressBar(true, 'Checking if NPM is installed...');
+        stepper.ipc.invoke('is_npm_available').then((isNpmInstalled) => {
+            if (isNpmInstalled) {
+                stepper.nextStep();
+                stepper.progressBar(true, 'Checking for existing Flowise installation...');
+                stepper.ipc.invoke('is_flowise_installed').then((isFlowInstalled) => {
+                    if (isFlowInstalled) {
+                        stepper.setInstalled();
+                        const currentDate = new Date();
+                        stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                        stepper.showFinalStep('success', "You're All Set!", "Flowise is already installed. You're good to go!");
+                    }
+                    else {
+                        stepper.nextStep();
+                        stepper.executeTerminalCommands('npm i -g flowise').then(() => {
+                            stepper.setInstalled();
+                            const currentDate = new Date();
+                            stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                            stepper.showFinalStep('success', 'Installation Complete!', 'Your Flowise environment is ready. Enjoy!');
+                        });
+                    }
+                });
+            }
+            else {
+                stepper.showFinalStep('error', 'NodeJs is not installed!', 'Flowise need NPM! Please install NodeJs then try again.');
+            }
+        });
+    });
+}
+function startUpdate$1(stepper) {
+    stepper.initialSteps(['Update Flowise', 'Complete Update']);
+    stepper.executeTerminalCommands('npm update flowise').then(() => {
+        const currentDate = new Date();
+        stepper.storage.set(UPDATE_TIME_KEY$1, currentDate.toLocaleString());
+        stepper.setUpdated();
+        stepper.showFinalStep('success', 'Flowise Updated Successfully!', `Flowise has been updated to the latest version. You can now enjoy the new features and improvements.`);
+    });
+}
+async function cardInfo$3(api, callback) {
+    callback.setOpenFolders(undefined);
+    const descManager = new DescriptionManager([
+        {
+            title: 'Installation Data',
+            items: [
+                { label: 'Install Date', result: 'loading' },
+                { label: 'Update Date', result: 'loading' },
+                { label: 'Current Version', result: 'loading' },
+                { label: 'Latest Version', result: 'loading' },
+            ],
+        },
+    ], callback);
+    api.storage.get(INSTALL_TIME_KEY$1).then(result => {
+        descManager.updateItem(0, 0, result);
+    });
+    api.storage.get(UPDATE_TIME_KEY$1).then(result => {
+        descManager.updateItem(0, 1, result);
+    });
+    api.ipc.invoke('current_flowise_version').then(result => {
+        descManager.updateItem(0, 2, result);
+    });
+    api.storage.get(UPDATE_AVAILABLE_KEY$1).then(result => {
+        descManager.updateItem(0, 3, result);
+    });
+}
+function catchAddress(input) {
+    if (input.toLowerCase().includes('listening at')) {
+        const portRegex = /:(\d+)(?!.*\d)/;
+        const match = input.match(portRegex);
+        if (match && match[1]) {
+            return `http://localhost:${match[1]}`;
+        }
+        else {
+            return undefined;
+        }
+    }
+}
+const Flow_RM = {
+    catchAddress,
     parseArgsToString: parseArgsToString$3,
     parseStringToArgs: parseStringToArgs$3,
     cardInfo: cardInfo$3,
-    manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
+    manager: { startInstall: startInstall$3, updater: { updateType: 'stepper', startUpdate: startUpdate$1 } },
 };
 
 // noinspection SpellCheckingInspection
@@ -22854,6 +23322,7 @@ const openArguments = [
 
 const INSTALL_TIME_KEY = 'install-time-openwebui';
 const UPDATE_TIME_KEY = 'update-time-openwebui';
+const UPDATE_AVAILABLE_KEY = 'update-available-version-openwebui';
 function checkLinuxArgLine(line) {
     if (isWin && line.startsWith('set '))
         return 'set';
@@ -22948,7 +23417,7 @@ function startInstall$2(stepper) {
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep();
         stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
-        stepper.ipc.invoke('isInstalled').then((isInstalled) => {
+        stepper.ipc.invoke('is_openwebui_installed').then((isInstalled) => {
             if (isInstalled) {
                 stepper.setInstalled();
                 const currentDate = new Date();
@@ -22985,6 +23454,7 @@ async function cardInfo$2(api, callback) {
                 { label: 'Install Date', result: 'loading' },
                 { label: 'Update Date', result: 'loading' },
                 { label: 'Current Version', result: 'loading' },
+                { label: 'Latest Version', result: 'loading' },
             ],
         },
     ], callback);
@@ -22994,12 +23464,15 @@ async function cardInfo$2(api, callback) {
     api.storage.get(UPDATE_TIME_KEY).then(result => {
         descManager.updateItem(0, 1, result);
     });
-    api.ipc.invoke('current-version').then(result => {
+    api.ipc.invoke('current_openwebui_version').then(result => {
         descManager.updateItem(0, 2, result);
+    });
+    api.storage.get(UPDATE_AVAILABLE_KEY).then(result => {
+        descManager.updateItem(0, 3, result);
     });
 }
 const OPEN_WEBUI_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     cardInfo: cardInfo$2,
     parseStringToArgs: parseStringToArgs$2,
     parseArgsToString: parseArgsToString$2,
@@ -23176,7 +23649,7 @@ async function cardInfo$1(api, callback) {
     return CardInfo(URL$1, undefined, api, callback);
 }
 const SILLYTAVERN_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     parseArgsToString: parseArgsToString$1,
     parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$1,
@@ -24162,7 +24635,7 @@ async function cardInfo(api, callback) {
     return CardInfo(URL, '/extensions', api, callback);
 }
 const TG_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -24170,4 +24643,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { automatic1111Arguments as $, parseArgsToString as A, parseStringToArgs as B, COMFYUI_ID as C, A1_ID as D, SD_FORGE_ID as E, SD_FORGE_AMD_ID as F, SD_NEXT_ID as G, SWARM_ID as H, INSTALLED_VERSION_KEY as I, TTS_ID as J, KOHYA_ID as K, AG_ID as L, SILLYTAVERN_ID as M, SD_UIUX_ID as N, COMFYUI_ZLUDA_ID as O, ONETRAINER_ID as P, INVOKE_ID as Q, ALLTALK_ID as R, SD_AMD_ID as S, TG_ID as T, OPEN_WEBUI_ID as U, LoLLMS_ID as V, CardInfo as W, GitInstaller as X, AG_RM as Y, gitmyloArguments as Z, lodashExports as _, parseStringToArgs$b as a, fetchExtensionList$2 as a0, catchAddress as a1, COMFYUI_RM as a2, comfyArguments as a3, COMFYUI_ZLUDA_RM as a4, comfyZludaArguments as a5, SD_AMD_RM as a6, lshqqytigerArguments as a7, SD_NEXT_RM as a8, vladmandicArguments as a9, SWARM_RM as aa, mcMonkeyArguments as ab, KOHYA_GUI_RM as ac, bmaltaisArguments as ad, INVOKE_RM as ae, invokeArguments as af, TG_RM as ag, oobaboogaArguments as ah, SILLYTAVERN_RM as ai, sillyArguments as aj, openArguments as ak, OPEN_WEBUI_RM as al, parseArgsToString$a as b, commonjsGlobal as c, parseStringToArgs$a as d, parseArgsToString$9 as e, parseStringToArgs$9 as f, getDefaultExportFromCjs as g, extractGitUrl as h, isWin as i, parseArgsToString$8 as j, parseStringToArgs$8 as k, parseArgsToString$7 as l, parseStringToArgs$7 as m, parseArgsToString$6 as n, parseStringToArgs$6 as o, parseArgsToString$b as p, parseArgsToString$5 as q, parseStringToArgs$5 as r, parseArgsToString$4 as s, parseStringToArgs$4 as t, parseArgsToString$3 as u, parseStringToArgs$3 as v, parseArgsToString$2 as w, parseStringToArgs$2 as x, parseArgsToString$1 as y, parseStringToArgs$1 as z };
+export { GitInstaller as $, parseStringToArgs$2 as A, parseArgsToString$1 as B, parseStringToArgs$1 as C, parseArgsToString as D, parseStringToArgs as E, COMFYUI_ID as F, A1_ID as G, SD_FORGE_ID as H, INSTALLED_VERSION_KEY as I, SD_FORGE_AMD_ID as J, SD_NEXT_ID as K, SWARM_ID as L, KOHYA_ID as M, TTS_ID as N, AG_ID as O, SILLYTAVERN_ID as P, SD_UIUX_ID as Q, COMFYUI_ZLUDA_ID as R, SD_AMD_ID as S, TG_ID as T, ONETRAINER_ID as U, INVOKE_ID as V, ALLTALK_ID as W, OPEN_WEBUI_ID as X, FLOWISEAI_ID as Y, LoLLMS_ID as Z, CardInfo as _, parseStringToArgs$c as a, AG_RM as a0, gitmyloArguments as a1, lodashExports as a2, automatic1111Arguments as a3, fetchExtensionList$2 as a4, catchAddress$1 as a5, COMFYUI_RM as a6, comfyArguments as a7, INVOKE_RM as a8, invokeArguments as a9, SD_NEXT_RM as aa, vladmandicArguments as ab, KOHYA_GUI_RM as ac, bmaltaisArguments as ad, COMFYUI_ZLUDA_RM as ae, comfyZludaArguments as af, SD_AMD_RM as ag, lshqqytigerArguments as ah, SWARM_RM as ai, mcMonkeyArguments as aj, TG_RM as ak, oobaboogaArguments as al, flowiseArguments as am, Flow_RM as an, openArguments as ao, OPEN_WEBUI_RM as ap, SILLYTAVERN_RM as aq, sillyArguments as ar, parseArgsToString$b as b, commonjsGlobal as c, parseStringToArgs$b as d, parseArgsToString$a as e, parseStringToArgs$a as f, getDefaultExportFromCjs as g, extractGitUrl as h, isWin as i, parseArgsToString$9 as j, parseStringToArgs$9 as k, parseArgsToString$8 as l, parseStringToArgs$8 as m, parseArgsToString$7 as n, parseStringToArgs$7 as o, parseArgsToString$c as p, parseArgsToString$6 as q, parseStringToArgs$6 as r, parseArgsToString$5 as s, parseStringToArgs$5 as t, parseArgsToString$4 as u, parseStringToArgs$4 as v, removeAnsi as w, parseArgsToString$3 as x, parseStringToArgs$3 as y, parseArgsToString$2 as z };

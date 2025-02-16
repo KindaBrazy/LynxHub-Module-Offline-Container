@@ -1,4 +1,6 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as extractGitUrl, j as parseArgsToString$3, k as parseStringToArgs$3, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as parseArgsToString$9, x as parseStringToArgs$9, y as parseArgsToString$a, z as parseStringToArgs$a, A as parseArgsToString$b, B as parseStringToArgs$b, C as COMFYUI_ID, D as A1_ID, S as SD_AMD_ID, E as SD_FORGE_ID, F as SD_FORGE_AMD_ID, G as SD_NEXT_ID, H as SWARM_ID, K as KOHYA_ID, T as TG_ID, J as TTS_ID, L as AG_ID, M as SILLYTAVERN_ID, N as SD_UIUX_ID, O as COMFYUI_ZLUDA_ID, P as ONETRAINER_ID, Q as INVOKE_ID, R as ALLTALK_ID, U as OPEN_WEBUI_ID, V as LoLLMS_ID } from './RendererMethods_CC0oY2.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as extractGitUrl, j as parseArgsToString$3, k as parseStringToArgs$3, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as removeAnsi, x as parseArgsToString$9, y as parseStringToArgs$9, z as parseArgsToString$a, A as parseStringToArgs$a, B as parseArgsToString$b, C as parseStringToArgs$b, D as parseArgsToString$c, E as parseStringToArgs$c, F as COMFYUI_ID, G as A1_ID, S as SD_AMD_ID, H as SD_FORGE_ID, J as SD_FORGE_AMD_ID, K as SD_NEXT_ID, L as SWARM_ID, M as KOHYA_ID, T as TG_ID, N as TTS_ID, O as AG_ID, P as SILLYTAVERN_ID, Q as SD_UIUX_ID, R as COMFYUI_ZLUDA_ID, U as ONETRAINER_ID, V as INVOKE_ID, W as ALLTALK_ID, X as OPEN_WEBUI_ID, Y as FLOWISEAI_ID, Z as LoLLMS_ID } from './RendererMethods_kiaoOg.mjs';
+import { execSync } from 'node:child_process';
+import { platform as platform$2 } from 'node:os';
 import path from 'node:path';
 import require$$1 from 'util';
 import stream, { Readable } from 'stream';
@@ -6,14 +8,15 @@ import require$$1$1 from 'path';
 import require$$3 from 'http';
 import require$$4 from 'https';
 import require$$0$1 from 'url';
-import require$$6 from 'fs';
+import require$$0$2 from 'fs';
 import require$$4$1 from 'assert';
 import require$$1$2 from 'tty';
-import require$$0$2 from 'os';
+import require$$0$3 from 'os';
 import zlib from 'zlib';
 import { EventEmitter } from 'events';
-import require$$0$3 from 'constants';
-import { platform as platform$2 } from 'node:os';
+import require$$0$4 from 'constants';
+import require$$0$5 from 'child_process';
+import require$$1$3 from 'fs/promises';
 
 function bind(fn, thisArg) {
   return function wrap() {
@@ -12625,7 +12628,7 @@ function requireForm_data () {
 	var http = require$$3;
 	var https = require$$4;
 	var parseUrl = require$$0$1.parse;
-	var fs = require$$6;
+	var fs = require$$0$2;
 	var Stream = stream.Stream;
 	var mime = requireMimeTypes();
 	var asynckit = requireAsynckit();
@@ -15197,7 +15200,7 @@ var hasRequiredSupportsColor;
 function requireSupportsColor () {
 	if (hasRequiredSupportsColor) return supportsColor_1;
 	hasRequiredSupportsColor = 1;
-	const os = require$$0$2;
+	const os = require$$0$3;
 	const tty = require$$1$2;
 	const hasFlag = requireHasFlag();
 
@@ -19026,7 +19029,7 @@ var hasRequiredPolyfills;
 function requirePolyfills () {
 	if (hasRequiredPolyfills) return polyfills;
 	hasRequiredPolyfills = 1;
-	var constants = require$$0$3;
+	var constants = require$$0$4;
 
 	var origCwd = process.cwd;
 	var cwd = null;
@@ -19548,7 +19551,7 @@ var hasRequiredGracefulFs;
 function requireGracefulFs () {
 	if (hasRequiredGracefulFs) return gracefulFs;
 	hasRequiredGracefulFs = 1;
-	var fs = require$$6;
+	var fs = require$$0$2;
 	var polyfills = requirePolyfills();
 	var legacy = requireLegacyStreams();
 	var clone = requireClone();
@@ -20061,48 +20064,89 @@ async function getLatestNonRCReleaseAndAsset(owner, repo, assetNameInclude) {
         return null;
     }
 }
+/**
+ * Gets the highest available PowerShell version on the system.
+ * @returns The major version number of PowerShell, or 0 if PowerShell is not found.
+ */
+function getPowerShellVersion() {
+    const command = '$PSVersionTable.PSVersion.Major';
+    try {
+        // Try PowerShell Core (pwsh.exe) first
+        const pwshVersion = parseInt(execSync(`pwsh.exe -NoProfile -Command "${command}"`, {
+            encoding: 'utf8',
+            stdio: ['pipe', 'pipe', 'ignore'],
+        }).trim(), 10);
+        if (pwshVersion >= 7)
+            return pwshVersion;
+        // Fall back to Windows PowerShell (powershell.exe)
+        const psVersion = parseInt(execSync(`powershell.exe -NoProfile -Command "${command}"`, {
+            encoding: 'utf8',
+            stdio: ['pipe', 'pipe', 'ignore'],
+        }).trim(), 10);
+        return psVersion >= 5 ? psVersion : 0;
+    }
+    catch (err) {
+        console.error('Error determining PowerShell version:', err);
+        return 0;
+    }
+}
+/**
+ * Determines the appropriate shell based on the operating system and PowerShell version.
+ * @returns The shell command to use.
+ */
+function determineShell() {
+    switch (platform$2()) {
+        case 'darwin':
+            return 'zsh';
+        case 'linux':
+            return 'bash';
+        case 'win32':
+        default:
+            return getPowerShellVersion() >= 5 ? 'pwsh.exe' : 'powershell.exe';
+    }
+}
 
 const BAT_FILE_NAME$b = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
-async function getRunCommands$f(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$b, dir, DEFAULT_BATCH_DATA$c);
+const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
+async function getRunCommands$g(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$b, dir, DEFAULT_BATCH_DATA$d);
 }
-const erew123MainMethods = { getRunCommands: getRunCommands$f };
+const Rrew123_MM = { getRunCommands: getRunCommands$g };
 
 const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
-async function getRunCommands$e(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$b);
+const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
+async function getRunCommands$f(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$c);
 }
-async function saveArgs$b(args, cardDir) {
+async function saveArgs$c(args, cardDir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$a, parseArgsToString, cardDir);
 }
-async function readArgs$b(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$b, parseStringToArgs, cardDir);
+async function readArgs$c(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$c, parseStringToArgs, cardDir);
 }
-const gitmyloMainMethods = { getRunCommands: getRunCommands$e, readArgs: readArgs$b, saveArgs: saveArgs$b };
+const Gitmylo_MM = { getRunCommands: getRunCommands$f, readArgs: readArgs$c, saveArgs: saveArgs$c };
 
 const BAT_FILE_NAME$9 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
-async function getRunCommands$d(dir) {
+async function getRunCommands$e(dir) {
     return await utilRunCommands(BAT_FILE_NAME$9, dir);
 }
-const rsxMainMethods = { getRunCommands: getRunCommands$d };
+const Rsx_MM = { getRunCommands: getRunCommands$e };
 
 const BAT_FILE_NAME$8 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
-async function getRunCommands$c(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$8, dir, DEFAULT_BATCH_DATA$a);
+const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+async function getRunCommands$d(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$8, dir, DEFAULT_BATCH_DATA$b);
 }
-async function saveArgs$a(args, cardDir) {
+async function saveArgs$b(args, cardDir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$8, parseArgsToString$1, cardDir);
 }
-async function readArgs$a(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$8, DEFAULT_BATCH_DATA$a, parseStringToArgs$1, cardDir);
+async function readArgs$b(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$8, DEFAULT_BATCH_DATA$b, parseStringToArgs$1, cardDir);
 }
-const comfyMainMethods = { getRunCommands: getRunCommands$c, readArgs: readArgs$a, saveArgs: saveArgs$a };
+const Comfy_MM = { getRunCommands: getRunCommands$d, readArgs: readArgs$b, saveArgs: saveArgs$b };
 
 const BAT_FILE_NAME$7 = 'lynx-user.bat';
-const DEFAULT_BATCH_DATA$9 = '@echo off\n' +
+const DEFAULT_BATCH_DATA$a = '@echo off\n' +
     '\n' +
     'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
     'set VENV_DIR=./venv\n' +
@@ -20111,16 +20155,16 @@ const DEFAULT_BATCH_DATA$9 = '@echo off\n' +
     '\n' +
     '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
     '\npause';
-async function getRunCommands$b(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$9);
+async function getRunCommands$c(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$a);
 }
-async function saveArgs$9(args, cardDir) {
+async function saveArgs$a(args, cardDir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$7, parseArgsToString$2, cardDir);
 }
-async function readArgs$9(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$9, parseStringToArgs$2, cardDir);
+async function readArgs$a(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$a, parseStringToArgs$2, cardDir);
 }
-const comfyZludaMainMethods = { getRunCommands: getRunCommands$b, readArgs: readArgs$9, saveArgs: saveArgs$9 };
+const ComfyZluda_MM = { getRunCommands: getRunCommands$c, readArgs: readArgs$a, saveArgs: saveArgs$a };
 
 var re = {exports: {}};
 
@@ -22778,21 +22822,21 @@ function requireSemver () {
 var semverExports = requireSemver();
 
 const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
-async function getRunCommands$a(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$8);
+const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
+async function getRunCommands$b(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$9);
 }
-async function saveArgs$8(args, cardDir) {
+async function saveArgs$9(args, cardDir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$6, parseArgsToString$3, cardDir);
 }
-async function readArgs$8(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$8, parseStringToArgs$3, cardDir);
+async function readArgs$9(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$9, parseStringToArgs$3, cardDir);
 }
 async function getLatest() {
     const { owner, repo } = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
     return await getLatestNonRCReleaseAndAsset(owner, repo, 'InvokeAI-installer');
 }
-async function updateAvailable$3(lynxApi) {
+async function updateAvailable$4(lynxApi) {
     const installedVersion = lynxApi.storage.get(INSTALLED_VERSION_KEY);
     if (!installedVersion)
         return false;
@@ -22801,88 +22845,684 @@ async function updateAvailable$3(lynxApi) {
         return false;
     return semverExports.compare(installedVersion, latestVersion.version) === -1;
 }
-function mainIpc$1(ipc) {
+function mainIpc$2(ipc) {
     ipc.handle('get-latest', getLatest);
 }
-const invokeMainMethods = { getRunCommands: getRunCommands$a, updateAvailable: updateAvailable$3, mainIpc: mainIpc$1, saveArgs: saveArgs$8, readArgs: readArgs$8 };
+const Invoke_MM = { getRunCommands: getRunCommands$b, updateAvailable: updateAvailable$4, mainIpc: mainIpc$2, saveArgs: saveArgs$9, readArgs: readArgs$9 };
 
 const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
-async function getRunCommands$9(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$7);
+const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
+async function getRunCommands$a(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$8);
 }
-async function saveArgs$7(args, cardDir) {
+async function saveArgs$8(args, cardDir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$5, parseArgsToString$4, cardDir);
 }
-async function readArgs$7(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$7, parseStringToArgs$4, cardDir);
+async function readArgs$8(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$8, parseStringToArgs$4, cardDir);
 }
-const bmaltaisMainMethods = { getRunCommands: getRunCommands$9, readArgs: readArgs$7, saveArgs: saveArgs$7 };
+const Bmaltais_MM = { getRunCommands: getRunCommands$a, readArgs: readArgs$8, saveArgs: saveArgs$8 };
 
 const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
-async function getRunCommands$8(dir) {
+async function getRunCommands$9(dir) {
     return await utilRunCommands(BAT_FILE_NAME$4, dir);
 }
-async function updateAvailable$2(lynxApi) {
+async function updateAvailable$3(lynxApi) {
     return await lynxApi.isPullAvailable;
 }
-const nerogarMainMethods = { getRunCommands: getRunCommands$8, updateAvailable: updateAvailable$2 };
+const Nerogar_MM = { getRunCommands: getRunCommands$9, updateAvailable: updateAvailable$3 };
+
+const CONFIG_FILE$3 = isWin ? 'webui-user.bat' : 'webui-user.sh';
+const EXEC_FILE$1 = isWin ? 'webui-user.bat' : 'webui.sh';
+const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$8(dir) {
+    return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$7);
+}
+async function saveArgs$7(args, cardDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$3, parseArgsToString$5, cardDir);
+}
+async function readArgs$7(cardDir) {
+    return await utilReadArgs(CONFIG_FILE$3, DEFAULT_BATCH_DATA$7, parseStringToArgs$5, cardDir);
+}
+const A1_MM = { getRunCommands: getRunCommands$8, readArgs: readArgs$7, saveArgs: saveArgs$7 };
 
 const CONFIG_FILE$2 = isWin ? 'webui-user.bat' : 'webui-user.sh';
-const EXEC_FILE$1 = isWin ? 'webui-user.bat' : 'webui.sh';
+const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
 const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
 async function getRunCommands$7(dir) {
-    return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$6);
+    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$6);
 }
 async function saveArgs$6(args, cardDir) {
-    return await utilSaveArgs(args, CONFIG_FILE$2, parseArgsToString$5, cardDir);
+    return await utilSaveArgs(args, CONFIG_FILE$2, parseArgsToString$6, cardDir);
 }
 async function readArgs$6(cardDir) {
-    return await utilReadArgs(CONFIG_FILE$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$5, cardDir);
+    return await utilReadArgs(CONFIG_FILE$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$6, cardDir);
 }
-const a1MainMethods = { getRunCommands: getRunCommands$7, readArgs: readArgs$6, saveArgs: saveArgs$6 };
-
-const CONFIG_FILE$1 = isWin ? 'webui-user.bat' : 'webui-user.sh';
-const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
-const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$6(dir) {
-    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$5);
-}
-async function saveArgs$5(args, cardDir) {
-    return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$6, cardDir);
-}
-async function readArgs$5(cardDir) {
-    return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$5, parseStringToArgs$6, cardDir);
-}
-const lsMainMethods = { getRunCommands: getRunCommands$6, readArgs: readArgs$5, saveArgs: saveArgs$5 };
+const Ls_MM = { getRunCommands: getRunCommands$7, readArgs: readArgs$6, saveArgs: saveArgs$6 };
 
 const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
-async function getRunCommands$5(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$4);
+const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
+async function getRunCommands$6(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$5);
 }
-async function saveArgs$4(args, cardDir) {
+async function saveArgs$5(args, cardDir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$3, parseArgsToString$7, cardDir);
 }
-async function readArgs$4(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$4, parseStringToArgs$7, cardDir);
+async function readArgs$5(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$5, parseStringToArgs$7, cardDir);
 }
-const vladMainMethods = { getRunCommands: getRunCommands$5, readArgs: readArgs$4, saveArgs: saveArgs$4 };
+const Vlad_MM = { getRunCommands: getRunCommands$6, readArgs: readArgs$5, saveArgs: saveArgs$5 };
 
 const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$3 = isWin
+const DEFAULT_BATCH_DATA$4 = isWin
     ? '@echo off\n\ncall launch-windows.bat'
     : '#!/bin/bash\n\nbash ./launch-linux.sh';
-async function getRunCommands$4(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$3);
+async function getRunCommands$5(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$4);
 }
-async function saveArgs$3(args, cardDir) {
+async function saveArgs$4(args, cardDir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$2, parseArgsToString$8, cardDir);
 }
-async function readArgs$3(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$3, parseStringToArgs$8, cardDir);
+async function readArgs$4(cardDir) {
+    return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$4, parseStringToArgs$8, cardDir);
 }
-const mcMonkeyMainMethods = { getRunCommands: getRunCommands$4, readArgs: readArgs$3, saveArgs: saveArgs$3 };
+const McMonkey_MM = { getRunCommands: getRunCommands$5, readArgs: readArgs$4, saveArgs: saveArgs$4 };
+
+var treeKill$1;
+var hasRequiredTreeKill;
+
+function requireTreeKill () {
+	if (hasRequiredTreeKill) return treeKill$1;
+	hasRequiredTreeKill = 1;
+
+	var childProcess = require$$0$5;
+	var spawn = childProcess.spawn;
+	var exec = childProcess.exec;
+
+	treeKill$1 = function (pid, signal, callback) {
+	    if (typeof signal === 'function' && callback === undefined) {
+	        callback = signal;
+	        signal = undefined;
+	    }
+
+	    pid = parseInt(pid);
+	    if (Number.isNaN(pid)) {
+	        if (callback) {
+	            return callback(new Error("pid must be a number"));
+	        } else {
+	            throw new Error("pid must be a number");
+	        }
+	    }
+
+	    var tree = {};
+	    var pidsToProcess = {};
+	    tree[pid] = [];
+	    pidsToProcess[pid] = 1;
+
+	    switch (process.platform) {
+	    case 'win32':
+	        exec('taskkill /pid ' + pid + ' /T /F', callback);
+	        break;
+	    case 'darwin':
+	        buildProcessTree(pid, tree, pidsToProcess, function (parentPid) {
+	          return spawn('pgrep', ['-P', parentPid]);
+	        }, function () {
+	            killAll(tree, signal, callback);
+	        });
+	        break;
+	    // case 'sunos':
+	    //     buildProcessTreeSunOS(pid, tree, pidsToProcess, function () {
+	    //         killAll(tree, signal, callback);
+	    //     });
+	    //     break;
+	    default: // Linux
+	        buildProcessTree(pid, tree, pidsToProcess, function (parentPid) {
+	          return spawn('ps', ['-o', 'pid', '--no-headers', '--ppid', parentPid]);
+	        }, function () {
+	            killAll(tree, signal, callback);
+	        });
+	        break;
+	    }
+	};
+
+	function killAll (tree, signal, callback) {
+	    var killed = {};
+	    try {
+	        Object.keys(tree).forEach(function (pid) {
+	            tree[pid].forEach(function (pidpid) {
+	                if (!killed[pidpid]) {
+	                    killPid(pidpid, signal);
+	                    killed[pidpid] = 1;
+	                }
+	            });
+	            if (!killed[pid]) {
+	                killPid(pid, signal);
+	                killed[pid] = 1;
+	            }
+	        });
+	    } catch (err) {
+	        if (callback) {
+	            return callback(err);
+	        } else {
+	            throw err;
+	        }
+	    }
+	    if (callback) {
+	        return callback();
+	    }
+	}
+
+	function killPid(pid, signal) {
+	    try {
+	        process.kill(parseInt(pid, 10), signal);
+	    }
+	    catch (err) {
+	        if (err.code !== 'ESRCH') throw err;
+	    }
+	}
+
+	function buildProcessTree (parentPid, tree, pidsToProcess, spawnChildProcessesList, cb) {
+	    var ps = spawnChildProcessesList(parentPid);
+	    var allData = '';
+	    ps.stdout.on('data', function (data) {
+	        var data = data.toString('ascii');
+	        allData += data;
+	    });
+
+	    var onClose = function (code) {
+	        delete pidsToProcess[parentPid];
+
+	        if (code != 0) {
+	            // no more parent processes
+	            if (Object.keys(pidsToProcess).length == 0) {
+	                cb();
+	            }
+	            return;
+	        }
+
+	        allData.match(/\d+/g).forEach(function (pid) {
+	          pid = parseInt(pid, 10);
+	          tree[parentPid].push(pid);
+	          tree[pid] = [];
+	          pidsToProcess[pid] = 1;
+	          buildProcessTree(pid, tree, pidsToProcess, spawnChildProcessesList, cb);
+	        });
+	    };
+
+	    ps.on('close', onClose);
+	}
+	return treeKill$1;
+}
+
+var treeKillExports = requireTreeKill();
+var treeKill = /*@__PURE__*/getDefaultExportFromCjs(treeKillExports);
+
+var cjs = {};
+
+var posix = {};
+
+var hasRequiredPosix;
+
+function requirePosix () {
+	if (hasRequiredPosix) return posix;
+	hasRequiredPosix = 1;
+	/**
+	 * This is the Posix implementation of isexe, which uses the file
+	 * mode and uid/gid values.
+	 *
+	 * @module
+	 */
+	Object.defineProperty(posix, "__esModule", { value: true });
+	posix.sync = posix.isexe = void 0;
+	const fs_1 = require$$0$2;
+	const promises_1 = require$$1$3;
+	/**
+	 * Determine whether a path is executable according to the mode and
+	 * current (or specified) user and group IDs.
+	 */
+	const isexe = async (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat(await (0, promises_1.stat)(path), options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	posix.isexe = isexe;
+	/**
+	 * Synchronously determine whether a path is executable according to
+	 * the mode and current (or specified) user and group IDs.
+	 */
+	const sync = (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat((0, fs_1.statSync)(path), options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	posix.sync = sync;
+	const checkStat = (stat, options) => stat.isFile() && checkMode(stat, options);
+	const checkMode = (stat, options) => {
+	    const myUid = options.uid ?? process.getuid?.();
+	    const myGroups = options.groups ?? process.getgroups?.() ?? [];
+	    const myGid = options.gid ?? process.getgid?.() ?? myGroups[0];
+	    if (myUid === undefined || myGid === undefined) {
+	        throw new Error('cannot get uid or gid');
+	    }
+	    const groups = new Set([myGid, ...myGroups]);
+	    const mod = stat.mode;
+	    const uid = stat.uid;
+	    const gid = stat.gid;
+	    const u = parseInt('100', 8);
+	    const g = parseInt('010', 8);
+	    const o = parseInt('001', 8);
+	    const ug = u | g;
+	    return !!(mod & o ||
+	        (mod & g && groups.has(gid)) ||
+	        (mod & u && uid === myUid) ||
+	        (mod & ug && myUid === 0));
+	};
+	
+	return posix;
+}
+
+var win32 = {};
+
+var hasRequiredWin32;
+
+function requireWin32 () {
+	if (hasRequiredWin32) return win32;
+	hasRequiredWin32 = 1;
+	/**
+	 * This is the Windows implementation of isexe, which uses the file
+	 * extension and PATHEXT setting.
+	 *
+	 * @module
+	 */
+	Object.defineProperty(win32, "__esModule", { value: true });
+	win32.sync = win32.isexe = void 0;
+	const fs_1 = require$$0$2;
+	const promises_1 = require$$1$3;
+	/**
+	 * Determine whether a path is executable based on the file extension
+	 * and PATHEXT environment variable (or specified pathExt option)
+	 */
+	const isexe = async (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat(await (0, promises_1.stat)(path), path, options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	win32.isexe = isexe;
+	/**
+	 * Synchronously determine whether a path is executable based on the file
+	 * extension and PATHEXT environment variable (or specified pathExt option)
+	 */
+	const sync = (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat((0, fs_1.statSync)(path), path, options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	win32.sync = sync;
+	const checkPathExt = (path, options) => {
+	    const { pathExt = process.env.PATHEXT || '' } = options;
+	    const peSplit = pathExt.split(';');
+	    if (peSplit.indexOf('') !== -1) {
+	        return true;
+	    }
+	    for (let i = 0; i < peSplit.length; i++) {
+	        const p = peSplit[i].toLowerCase();
+	        const ext = path.substring(path.length - p.length).toLowerCase();
+	        if (p && ext === p) {
+	            return true;
+	        }
+	    }
+	    return false;
+	};
+	const checkStat = (stat, path, options) => stat.isFile() && checkPathExt(path, options);
+	
+	return win32;
+}
+
+var options = {};
+
+var hasRequiredOptions;
+
+function requireOptions () {
+	if (hasRequiredOptions) return options;
+	hasRequiredOptions = 1;
+	Object.defineProperty(options, "__esModule", { value: true });
+	
+	return options;
+}
+
+var hasRequiredCjs;
+
+function requireCjs () {
+	if (hasRequiredCjs) return cjs;
+	hasRequiredCjs = 1;
+	(function (exports) {
+		var __createBinding = (cjs && cjs.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    var desc = Object.getOwnPropertyDescriptor(m, k);
+		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+		      desc = { enumerable: true, get: function() { return m[k]; } };
+		    }
+		    Object.defineProperty(o, k2, desc);
+		}) : (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    o[k2] = m[k];
+		}));
+		var __setModuleDefault = (cjs && cjs.__setModuleDefault) || (Object.create ? (function(o, v) {
+		    Object.defineProperty(o, "default", { enumerable: true, value: v });
+		}) : function(o, v) {
+		    o["default"] = v;
+		});
+		var __importStar = (cjs && cjs.__importStar) || function (mod) {
+		    if (mod && mod.__esModule) return mod;
+		    var result = {};
+		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+		    __setModuleDefault(result, mod);
+		    return result;
+		};
+		var __exportStar = (cjs && cjs.__exportStar) || function(m, exports) {
+		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
+		const posix = __importStar(requirePosix());
+		exports.posix = posix;
+		const win32 = __importStar(requireWin32());
+		exports.win32 = win32;
+		__exportStar(requireOptions(), exports);
+		const platform = process.env._ISEXE_TEST_PLATFORM_ || process.platform;
+		const impl = platform === 'win32' ? win32 : posix;
+		/**
+		 * Determine whether a path is executable on the current platform.
+		 */
+		exports.isexe = impl.isexe;
+		/**
+		 * Synchronously determine whether a path is executable on the
+		 * current platform.
+		 */
+		exports.sync = impl.sync;
+		
+	} (cjs));
+	return cjs;
+}
+
+var lib;
+var hasRequiredLib;
+
+function requireLib () {
+	if (hasRequiredLib) return lib;
+	hasRequiredLib = 1;
+	const { isexe, sync: isexeSync } = requireCjs();
+	const { join, delimiter, sep, posix } = require$$1$1;
+
+	const isWindows = process.platform === 'win32';
+
+	// used to check for slashed in commands passed in. always checks for the posix
+	// seperator on all platforms, and checks for the current separator when not on
+	// a posix platform. don't use the isWindows check for this since that is mocked
+	// in tests but we still need the code to actually work when called. that is also
+	// why it is ignored from coverage.
+	/* istanbul ignore next */
+	const rSlash = new RegExp(`[${posix.sep}${sep === posix.sep ? '' : sep}]`.replace(/(\\)/g, '\\$1'));
+	const rRel = new RegExp(`^\\.${rSlash.source}`);
+
+	const getNotFoundError = (cmd) =>
+	  Object.assign(new Error(`not found: ${cmd}`), { code: 'ENOENT' });
+
+	const getPathInfo = (cmd, {
+	  path: optPath = process.env.PATH,
+	  pathExt: optPathExt = process.env.PATHEXT,
+	  delimiter: optDelimiter = delimiter,
+	}) => {
+	  // If it has a slash, then we don't bother searching the pathenv.
+	  // just check the file itself, and that's it.
+	  const pathEnv = cmd.match(rSlash) ? [''] : [
+	    // windows always checks the cwd first
+	    ...(isWindows ? [process.cwd()] : []),
+	    ...(optPath || /* istanbul ignore next: very unusual */ '').split(optDelimiter),
+	  ];
+
+	  if (isWindows) {
+	    const pathExtExe = optPathExt ||
+	      ['.EXE', '.CMD', '.BAT', '.COM'].join(optDelimiter);
+	    const pathExt = pathExtExe.split(optDelimiter).flatMap((item) => [item, item.toLowerCase()]);
+	    if (cmd.includes('.') && pathExt[0] !== '') {
+	      pathExt.unshift('');
+	    }
+	    return { pathEnv, pathExt, pathExtExe }
+	  }
+
+	  return { pathEnv, pathExt: [''] }
+	};
+
+	const getPathPart = (raw, cmd) => {
+	  const pathPart = /^".*"$/.test(raw) ? raw.slice(1, -1) : raw;
+	  const prefix = !pathPart && rRel.test(cmd) ? cmd.slice(0, 2) : '';
+	  return prefix + join(pathPart, cmd)
+	};
+
+	const which = async (cmd, opt = {}) => {
+	  const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+	  const found = [];
+
+	  for (const envPart of pathEnv) {
+	    const p = getPathPart(envPart, cmd);
+
+	    for (const ext of pathExt) {
+	      const withExt = p + ext;
+	      const is = await isexe(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+	      if (is) {
+	        if (!opt.all) {
+	          return withExt
+	        }
+	        found.push(withExt);
+	      }
+	    }
+	  }
+
+	  if (opt.all && found.length) {
+	    return found
+	  }
+
+	  if (opt.nothrow) {
+	    return null
+	  }
+
+	  throw getNotFoundError(cmd)
+	};
+
+	const whichSync = (cmd, opt = {}) => {
+	  const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+	  const found = [];
+
+	  for (const pathEnvPart of pathEnv) {
+	    const p = getPathPart(pathEnvPart, cmd);
+
+	    for (const ext of pathExt) {
+	      const withExt = p + ext;
+	      const is = isexeSync(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+	      if (is) {
+	        if (!opt.all) {
+	          return withExt
+	        }
+	        found.push(withExt);
+	      }
+	    }
+	  }
+
+	  if (opt.all && found.length) {
+	    return found
+	  }
+
+	  if (opt.nothrow) {
+	    return null
+	  }
+
+	  throw getNotFoundError(cmd)
+	};
+
+	lib = which;
+	which.sync = whichSync;
+	return lib;
+}
+
+var libExports = requireLib();
+var which = /*@__PURE__*/getDefaultExportFromCjs(libExports);
+
+const CONFIG_FILE$1 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
+const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
+function getCdCommand$1(dirPath) {
+    const escapedPath = dirPath.replace(/ /g, '\\ ');
+    const quotedPath = `"${dirPath}"`;
+    if (platform$2() === 'win32') {
+        return `cd ${quotedPath}`;
+    }
+    else if (platform$2() === 'linux' || platform$2() === 'darwin') {
+        return `cd ${escapedPath}`;
+    }
+    else {
+        throw new Error(`Unsupported platform: ${platform$2}`);
+    }
+}
+async function getRunCommands$4(_, configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$1));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$3);
+    return [getCdCommand$1(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$3(args, _, configDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$9, configDir);
+}
+async function readArgs$3(_, configDir) {
+    return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$3, parseStringToArgs$9, configDir);
+}
+async function checkInstalled$1(pty) {
+    return new Promise(resolve => {
+        const ptyProcess = pty.spawn(determineShell(), [], { env: process.env });
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(() => {
+            if (pty.pid) {
+                treeKill(pty.pid);
+                if (platform$2() === 'darwin')
+                    pty.kill();
+            }
+            const cleanOutput = removeAnsi(output).trim().replace('npm list -g flowise', '');
+            const isInstalled = /flowise@.+/.test(cleanOutput);
+            resolve(isInstalled);
+        });
+        ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+async function getVersion(pty) {
+    return new Promise(resolve => {
+        const ptyProcess = pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(() => {
+            if (pty.pid) {
+                treeKill(pty.pid);
+                if (platform$2() === 'darwin')
+                    pty.kill();
+            }
+            const match = output.match(/flowise@([\d.]+)/i);
+            if (match && match[1]) {
+                resolve(match[1]);
+            }
+            else {
+                resolve('');
+            }
+        });
+        ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+async function checkUpdate(pty) {
+    return new Promise(resolve => {
+        const ptyProcess = pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data.toString();
+        });
+        ptyProcess.onExit(() => {
+            if (pty.pid) {
+                treeKill(pty.pid);
+                if (platform$2() === 'darwin')
+                    pty.kill();
+            }
+            const lines = removeAnsi(output).split(LINE_ENDING);
+            for (const line of lines) {
+                const match = line.match(/flowise\s+([\d.]+)\s+[\d.]+\s+([\d.]+)/i);
+                if (match) {
+                    resolve(match[2]);
+                }
+            }
+            resolve(null);
+        });
+        ptyProcess.write(`npm -g outdated flowise${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+async function updateAvailable$2(lynxApi) {
+    const available = await checkUpdate(lynxApi.pty);
+    if (available) {
+        lynxApi.storage.set('update-available-version-flowise', available);
+        return true;
+    }
+    lynxApi.storage.set('update-available-version-flowise', undefined);
+    return false;
+}
+async function isInstalled$1(lynxApi) {
+    return checkInstalled$1(lynxApi.pty);
+}
+async function isNpmInstalled() {
+    try {
+        await which('npm');
+        return true;
+    }
+    catch {
+        return false;
+    }
+}
+function mainIpc$1(ipc) {
+    ipc.handle('is_flowise_installed', () => checkInstalled$1(ipc.pty));
+    ipc.handle('current_flowise_version', () => getVersion(ipc.pty));
+    ipc.handle('is_npm_available', () => isNpmInstalled());
+}
+const Flow_MM = { updateAvailable: updateAvailable$2, getRunCommands: getRunCommands$4, mainIpc: mainIpc$1, isInstalled: isInstalled$1, saveArgs: saveArgs$3, readArgs: readArgs$3 };
 
 async function getRunCommands$3() {
     return `python app.py ${LINE_ENDING}`;
@@ -22894,13 +23534,17 @@ const LoLLM_MM = { getRunCommands: getRunCommands$3, updateAvailable: updateAvai
 
 async function getPipPackageVersion(packageName, pty) {
     return new Promise(resolve => {
-        const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
-        const ptyProcess = pty.spawn(shell, [], {});
+        const ptyProcess = pty.spawn(determineShell(), [], {});
         let output = '';
         ptyProcess.onData((data) => {
             output += data;
         });
         ptyProcess.onExit(() => {
+            if (pty.pid) {
+                treeKill(pty.pid);
+                if (platform$2() === 'darwin')
+                    pty.kill();
+            }
             const lines = output.split(/\r?\n/);
             const versionLine = lines.find(line => line.toLowerCase().includes('version:'));
             if (versionLine) {
@@ -22967,20 +23611,24 @@ async function getRunCommands$2(_, configDir) {
     return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 async function saveArgs$2(args, _, configDir) {
-    return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString$9, configDir);
+    return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString$a, configDir);
 }
 async function readArgs$2(_, configDir) {
-    return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$9, configDir);
+    return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$a, configDir);
 }
 async function checkInstalled(pty) {
     return new Promise(resolve => {
-        const shell = platform$2() === 'win32' ? 'powershell.exe' : 'bash';
-        const ptyProcess = pty.spawn(shell, [], {});
+        const ptyProcess = pty.spawn(determineShell(), [], {});
         let output = '';
         ptyProcess.onData((data) => {
             output += data;
         });
         ptyProcess.onExit(() => {
+            if (pty.pid) {
+                treeKill(pty.pid);
+                if (platform$2() === 'darwin')
+                    pty.kill();
+            }
             resolve(output.toLowerCase().includes('version:'));
         });
         ptyProcess.write(`pip show open-webui${LINE_ENDING}`);
@@ -22994,20 +23642,24 @@ async function updateAvailable(lynxApi) {
     try {
         const currentVersion = await getPipPackageVersion('open-webui', lynxApi.pty);
         const latestVersion = await getLatestPipPackageVersion('open-webui');
-        if (currentVersion && latestVersion)
-            return semverExports.compare(currentVersion, latestVersion) === -1;
+        if (currentVersion && latestVersion && semverExports.compare(currentVersion, latestVersion) === -1) {
+            lynxApi.storage.set('update-available-version-openwebui', latestVersion);
+            return true;
+        }
     }
     catch (err) {
         console.error('Error checking update for open-webui', err);
+        lynxApi.storage.set('update-available-version-openwebui', undefined);
         return false;
     }
+    lynxApi.storage.set('update-available-version-openwebui', undefined);
     return false;
 }
 function mainIpc(ipc) {
-    ipc.handle('isInstalled', () => checkInstalled(ipc.pty));
-    ipc.handle('current-version', () => getPipPackageVersion('open-webui', ipc.pty));
+    ipc.handle('is_openwebui_installed', () => checkInstalled(ipc.pty));
+    ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
-const openWebUIMainMethods = {
+const OpenWebUI_MM = {
     getRunCommands: getRunCommands$2,
     updateAvailable,
     isInstalled,
@@ -23022,12 +23674,12 @@ async function getRunCommands$1(dir) {
     return await utilRunCommands(BAT_FILE_NAME$1, dir, DEFAULT_BATCH_DATA$1);
 }
 async function saveArgs$1(args, cardDir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$1, parseArgsToString$a, cardDir);
+    return await utilSaveArgs(args, BAT_FILE_NAME$1, parseArgsToString$b, cardDir);
 }
 async function readArgs$1(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$a, cardDir);
+    return await utilReadArgs(BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$b, cardDir);
 }
-const sillyMainMethods = { getRunCommands: getRunCommands$1, readArgs: readArgs$1, saveArgs: saveArgs$1 };
+const Silly_MM = { getRunCommands: getRunCommands$1, readArgs: readArgs$1, saveArgs: saveArgs$1 };
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA = isWin
@@ -23037,32 +23689,33 @@ async function getRunCommands(dir) {
     return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 async function saveArgs(args, cardDir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME, parseArgsToString$b, cardDir);
+    return await utilSaveArgs(args, BAT_FILE_NAME, parseArgsToString$c, cardDir);
 }
 async function readArgs(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs$b, cardDir);
+    return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs$c, cardDir);
 }
-const oobaMainMethods = { getRunCommands, readArgs, saveArgs };
+const Ooba_MM = { getRunCommands, readArgs, saveArgs };
 
 const mainModules = [
-    { id: COMFYUI_ID, methods: comfyMainMethods },
-    { id: A1_ID, methods: a1MainMethods },
-    { id: SD_AMD_ID, methods: lsMainMethods },
-    { id: SD_FORGE_ID, methods: a1MainMethods },
-    { id: SD_FORGE_AMD_ID, methods: a1MainMethods },
-    { id: SD_NEXT_ID, methods: vladMainMethods },
-    { id: SWARM_ID, methods: mcMonkeyMainMethods },
-    { id: KOHYA_ID, methods: bmaltaisMainMethods },
-    { id: TG_ID, methods: oobaMainMethods },
-    { id: TTS_ID, methods: rsxMainMethods },
-    { id: AG_ID, methods: gitmyloMainMethods },
-    { id: SILLYTAVERN_ID, methods: sillyMainMethods },
-    { id: SD_UIUX_ID, methods: a1MainMethods },
-    { id: COMFYUI_ZLUDA_ID, methods: comfyZludaMainMethods },
-    { id: ONETRAINER_ID, methods: nerogarMainMethods },
-    { id: INVOKE_ID, methods: invokeMainMethods },
-    { id: ALLTALK_ID, methods: erew123MainMethods },
-    { id: OPEN_WEBUI_ID, methods: openWebUIMainMethods },
+    { id: COMFYUI_ID, methods: Comfy_MM },
+    { id: A1_ID, methods: A1_MM },
+    { id: SD_AMD_ID, methods: Ls_MM },
+    { id: SD_FORGE_ID, methods: A1_MM },
+    { id: SD_FORGE_AMD_ID, methods: A1_MM },
+    { id: SD_NEXT_ID, methods: Vlad_MM },
+    { id: SWARM_ID, methods: McMonkey_MM },
+    { id: KOHYA_ID, methods: Bmaltais_MM },
+    { id: TG_ID, methods: Ooba_MM },
+    { id: TTS_ID, methods: Rsx_MM },
+    { id: AG_ID, methods: Gitmylo_MM },
+    { id: SILLYTAVERN_ID, methods: Silly_MM },
+    { id: SD_UIUX_ID, methods: A1_MM },
+    { id: COMFYUI_ZLUDA_ID, methods: ComfyZluda_MM },
+    { id: ONETRAINER_ID, methods: Nerogar_MM },
+    { id: INVOKE_ID, methods: Invoke_MM },
+    { id: ALLTALK_ID, methods: Rrew123_MM },
+    { id: OPEN_WEBUI_ID, methods: OpenWebUI_MM },
+    { id: FLOWISEAI_ID, methods: Flow_MM },
     { id: LoLLMS_ID, methods: LoLLM_MM },
 ];
 

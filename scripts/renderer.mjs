@@ -1,4 +1,4 @@
-import { i as isWin, W as CardInfo, X as GitInstaller, J as TTS_ID, Y as AG_RM, Z as gitmyloArguments, L as AG_ID, R as ALLTALK_ID, _ as lodashExports, $ as automatic1111Arguments, o as parseStringToArgs, n as parseArgsToString, a0 as fetchExtensionList, a1 as catchAddress$1, a2 as COMFYUI_RM, a3 as comfyArguments, C as COMFYUI_ID, a4 as COMFYUI_ZLUDA_RM, a5 as comfyZludaArguments, O as COMFYUI_ZLUDA_ID, D as A1_ID, a6 as SD_AMD_RM, a7 as lshqqytigerArguments, S as SD_AMD_ID, E as SD_FORGE_ID, F as SD_FORGE_AMD_ID, a8 as SD_NEXT_RM, a9 as vladmandicArguments, G as SD_NEXT_ID, aa as SWARM_RM, ab as mcMonkeyArguments, H as SWARM_ID, ac as KOHYA_GUI_RM, ad as bmaltaisArguments, K as KOHYA_ID, N as SD_UIUX_ID, P as ONETRAINER_ID, ae as INVOKE_RM, af as invokeArguments, Q as INVOKE_ID, ag as TG_RM, ah as oobaboogaArguments, T as TG_ID, ai as SILLYTAVERN_RM, aj as sillyArguments, M as SILLYTAVERN_ID, ak as openArguments, al as OPEN_WEBUI_RM, U as OPEN_WEBUI_ID, V as LoLLMS_ID } from './RendererMethods_CC0oY2.mjs';
+import { i as isWin, _ as CardInfo, $ as GitInstaller, N as TTS_ID, a0 as AG_RM, a1 as gitmyloArguments, O as AG_ID, W as ALLTALK_ID, a2 as lodashExports, a3 as automatic1111Arguments, o as parseStringToArgs, n as parseArgsToString, a4 as fetchExtensionList, a5 as catchAddress$1, a6 as COMFYUI_RM, a7 as comfyArguments, F as COMFYUI_ID, H as SD_FORGE_ID, a8 as INVOKE_RM, a9 as invokeArguments, V as INVOKE_ID, aa as SD_NEXT_RM, ab as vladmandicArguments, K as SD_NEXT_ID, G as A1_ID, U as ONETRAINER_ID, ac as KOHYA_GUI_RM, ad as bmaltaisArguments, M as KOHYA_ID, ae as COMFYUI_ZLUDA_RM, af as comfyZludaArguments, R as COMFYUI_ZLUDA_ID, ag as SD_AMD_RM, ah as lshqqytigerArguments, S as SD_AMD_ID, J as SD_FORGE_AMD_ID, ai as SWARM_RM, aj as mcMonkeyArguments, L as SWARM_ID, Q as SD_UIUX_ID, ak as TG_RM, al as oobaboogaArguments, T as TG_ID, am as flowiseArguments, an as Flow_RM, Y as FLOWISEAI_ID, ao as openArguments, ap as OPEN_WEBUI_RM, X as OPEN_WEBUI_ID, aq as SILLYTAVERN_RM, ar as sillyArguments, P as SILLYTAVERN_ID, Z as LoLLMS_ID } from './RendererMethods_kiaoOg.mjs';
 
 const URL$2 = 'https://github.com/erew123/alltalk_tts';
 function startInstall$7(stepper) {
@@ -281,17 +281,43 @@ const imagePage = {
             installationType: 'git',
         },
         {
-            id: COMFYUI_ZLUDA_ID,
-            title: 'ComfyUI Zluda',
-            description: 'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
-                ' Now ZLUDA enhanced  for better AMD GPU performance.',
-            repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
-            extensionsDir: '/custom_nodes',
+            id: SD_FORGE_ID,
+            title: 'SD Forge',
+            description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
+                ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
+                'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
+            repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
+            extensionsDir: '/extensions',
             type: 'image',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
-                '/width=300/00023-3290977700.jpeg',
-            arguments: comfyZludaArguments,
-            methods: COMFYUI_ZLUDA_RM,
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/width=300/00004-3953235735.jpeg',
+            arguments: automatic1111Arguments,
+            methods: SD_FORGE_RM,
+            installationType: 'git',
+        },
+        {
+            id: INVOKE_ID,
+            title: 'Invoke AI',
+            description: 'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
+                ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
+                ' and serves as the foundation for multiple commercial products.',
+            repoUrl: 'https://github.com/invoke-ai/InvokeAI',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
+                '/width=300/00002-3715244638.jpeg',
+            arguments: invokeArguments,
+            methods: INVOKE_RM,
+            installationType: 'others',
+        },
+        {
+            id: SD_NEXT_ID,
+            title: 'SD Next',
+            description: 'Advanced Implementation of Stable Diffusion and other Diffusion-based generative image models',
+            repoUrl: 'https://github.com/vladmandic/automatic',
+            extensionsDir: '/extensions',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e396ff35-0cf7-4121-8e69-4dd80b2429fa/width=300/00002-1070114876.jpeg',
+            arguments: vladmandicArguments,
+            methods: SD_NEXT_RM,
             installationType: 'git',
         },
         {
@@ -307,6 +333,43 @@ const imagePage = {
             installationType: 'git',
         },
         {
+            id: ONETRAINER_ID,
+            title: 'OneTrainer',
+            description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
+            repoUrl: 'https://github.com/Nerogar/OneTrainer',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
+                '/width=300/00005-1318253062.jpeg',
+            methods: ONETRAINER_RM,
+            installationType: 'git',
+        },
+        {
+            id: KOHYA_ID,
+            title: "Kohya's GUI",
+            description: "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
+                'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
+            repoUrl: 'https://github.com/bmaltais/kohya_ss',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/db3575cb-162a-4436-b5d0-f9fbf9ed1140/width=300/00002-4073703889.jpeg',
+            arguments: bmaltaisArguments,
+            methods: KOHYA_GUI_RM,
+            installationType: 'git',
+        },
+        {
+            id: COMFYUI_ZLUDA_ID,
+            title: 'ComfyUI Zluda',
+            description: 'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
+                ' Now ZLUDA enhanced  for better AMD GPU performance.',
+            repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
+            extensionsDir: '/custom_nodes',
+            type: 'image',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
+                '/width=300/00023-3290977700.jpeg',
+            arguments: comfyZludaArguments,
+            methods: COMFYUI_ZLUDA_RM,
+            installationType: 'git',
+        },
+        {
             id: SD_AMD_ID,
             title: 'Stable Diffusion AMDGPU',
             description: 'A web interface for Stable Diffusion, implemented using Gradio library.',
@@ -316,20 +379,6 @@ const imagePage = {
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3eaf306e-9edc-46bd-89d0-7f7398068e01/width=300/00002-1900763417.jpeg',
             arguments: lshqqytigerArguments,
             methods: SD_AMD_RM,
-            installationType: 'git',
-        },
-        {
-            id: SD_FORGE_ID,
-            title: 'SD Forge',
-            description: 'Stable Diffusion WebUI Forge is a platform on top of Stable Diffusion WebUI (based on Gradio)' +
-                ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
-                'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
-            repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
-            extensionsDir: '/extensions',
-            type: 'image',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/width=300/00004-3953235735.jpeg',
-            arguments: automatic1111Arguments,
-            methods: SD_FORGE_RM,
             installationType: 'git',
         },
         {
@@ -347,18 +396,6 @@ const imagePage = {
             installationType: 'git',
         },
         {
-            id: SD_NEXT_ID,
-            title: 'SD Next',
-            description: 'Advanced Implementation of Stable Diffusion and other Diffusion-based generative image models',
-            repoUrl: 'https://github.com/vladmandic/automatic',
-            extensionsDir: '/extensions',
-            type: 'image',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e396ff35-0cf7-4121-8e69-4dd80b2429fa/width=300/00002-1070114876.jpeg',
-            arguments: vladmandicArguments,
-            methods: SD_NEXT_RM,
-            installationType: 'git',
-        },
-        {
             id: SWARM_ID,
             title: 'SwarmUI',
             description: 'A Modular AI Image Generation Web-User-Interface, with an emphasis on making powertools ' +
@@ -370,18 +407,6 @@ const imagePage = {
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9dac48c1-20fd-4fb0-b84b-f5f533c5cdc5/width=300/00014-3815479772.jpeg',
             arguments: mcMonkeyArguments,
             methods: SWARM_RM,
-            installationType: 'git',
-        },
-        {
-            id: KOHYA_ID,
-            title: "Kohya's GUI",
-            description: "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
-                'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
-            repoUrl: 'https://github.com/bmaltais/kohya_ss',
-            type: 'image',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/db3575cb-162a-4436-b5d0-f9fbf9ed1140/width=300/00002-4073703889.jpeg',
-            arguments: bmaltaisArguments,
-            methods: KOHYA_GUI_RM,
             installationType: 'git',
         },
         {
@@ -397,31 +422,6 @@ const imagePage = {
             arguments: automatic1111Arguments,
             methods: SD_UIUX_RM,
             installationType: 'git',
-        },
-        {
-            id: ONETRAINER_ID,
-            title: 'OneTrainer',
-            description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
-            repoUrl: 'https://github.com/Nerogar/OneTrainer',
-            type: 'image',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
-                '/width=300/00005-1318253062.jpeg',
-            methods: ONETRAINER_RM,
-            installationType: 'git',
-        },
-        {
-            id: INVOKE_ID,
-            title: 'Invoke AI',
-            description: 'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
-                ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
-                ' and serves as the foundation for multiple commercial products.',
-            repoUrl: 'https://github.com/invoke-ai/InvokeAI',
-            type: 'image',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
-                '/width=300/00002-3715244638.jpeg',
-            arguments: invokeArguments,
-            methods: INVOKE_RM,
-            installationType: 'others',
         },
     ],
 };
@@ -483,18 +483,16 @@ const textPage = {
             installationType: 'git',
         },
         {
-            id: SILLYTAVERN_ID,
-            title: 'SillyTavern',
-            description: 'SillyTavern provides a single unified interface for many LLM APIs (KoboldAI/CPP, Horde, NovelAI, Ooba, Tabby, OpenAI,' +
-                ' OpenRouter, Claude, Mistral and more), a mobile-friendly layout, Visual Novel Mode, Automatic1111 & ComfyUI API image' +
-                " generation integration, TTS, WorldInfo (lorebooks), customizable UI, auto-translate, more prompt options than you'd" +
-                ' ever want or need, and endless growth potential via third-party extensions.',
-            repoUrl: 'https://github.com/SillyTavern/SillyTavern',
+            id: FLOWISEAI_ID,
+            title: 'Flowise',
+            description: 'Drag & drop UI to build your customized LLM flow',
+            repoUrl: 'https://github.com/FlowiseAI/Flowise',
             type: 'text',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
-            arguments: sillyArguments,
-            methods: SILLYTAVERN_RM,
-            installationType: 'git',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/96d813cd-91e6-41ca-95b3-ea619d6c462c/' +
+                'width=300/00008-112793962.jpeg',
+            methods: Flow_RM,
+            arguments: flowiseArguments,
+            installationType: 'others',
         },
         {
             id: OPEN_WEBUI_ID,
@@ -509,6 +507,20 @@ const textPage = {
             methods: OPEN_WEBUI_RM,
             installationType: 'others',
             arguments: openArguments,
+        },
+        {
+            id: SILLYTAVERN_ID,
+            title: 'SillyTavern',
+            description: 'SillyTavern provides a single unified interface for many LLM APIs (KoboldAI/CPP, Horde, NovelAI, Ooba, Tabby, OpenAI,' +
+                ' OpenRouter, Claude, Mistral and more), a mobile-friendly layout, Visual Novel Mode, Automatic1111 & ComfyUI API image' +
+                " generation integration, TTS, WorldInfo (lorebooks), customizable UI, auto-translate, more prompt options than you'd" +
+                ' ever want or need, and endless growth potential via third-party extensions.',
+            repoUrl: 'https://github.com/SillyTavern/SillyTavern',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
+            arguments: sillyArguments,
+            methods: SILLYTAVERN_RM,
+            installationType: 'git',
         },
         {
             id: LoLLMS_ID,

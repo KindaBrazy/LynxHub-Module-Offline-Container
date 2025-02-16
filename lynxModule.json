@@ -5,10 +5,37 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 16,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "9.0.2",
-  "updateDate": "2025-02-11 10:00",
-  "changeLog": "V9.0.2\n\n・Fix (LoLLMs): Fix the information window not showing correct data.\nV9.0.1\n\n・Fix (Open Webui): Removed admin requirement for .webui_secret_key access.\n・Fix (Open Webui): PORT is now passed as an argument instead of an environment variable.\nV9.0.0\n\n・Add Open WebUI integration\n・Add LoLLMs WebUI integration\n・Dynamically fetch InvokeAI latest version for installation and updates\n・Resolve issue with reading and writing InvokeAI arguments",
+  "version": "10.0.0",
+  "updateDate": "2025-02-16 10:10",
+  "changeLog": "V10.0.0\n\n・Add Flowise integration.\n・Display latest version in card info for updatable Open WebUI and Flowise.\n・Reorder cards.\n・Improve handling of terminal commands.\nV9.0.2\n\n・Fix (LoLLMs): Fix the information window not showing correct data.\nV9.0.1\n\n・Fix (Open Webui): Removed admin requirement for .webui_secret_key access.\n・Fix (Open Webui): PORT is now passed as an argument instead of an environment variable.\n",
   "changes": [
+    {
+      "title": "V10.0.0",
+      "items": [
+        {
+          "label": "✨ New",
+          "subitems": [
+            {
+              "label": "Add Flowise integration."
+            },
+            {
+              "label": "Display latest version in card info for updatable Open WebUI and Flowise."
+            }
+          ]
+        },
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Reorder cards"
+            },
+            {
+              "label": "Improve handling of terminal commands (Kill process and Shell detection)"
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V9.0.2",
       "items": [

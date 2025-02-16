@@ -6,7 +6,7 @@ import treeKill from 'tree-kill';
 
 import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
-import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
+import {determineShell, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
@@ -45,8 +45,7 @@ async function readArgs(_?: string, configDir?: string) {
 
 async function checkInstalled(pty: any): Promise<boolean> {
   return new Promise(resolve => {
-    const shell = platform() === 'win32' ? 'powershell.exe' : 'bash';
-    const ptyProcess = pty.spawn(shell, [], {});
+    const ptyProcess = pty.spawn(determineShell(), [], {});
 
     let output = '';
 

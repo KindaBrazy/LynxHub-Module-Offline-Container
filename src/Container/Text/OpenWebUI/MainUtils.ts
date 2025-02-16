@@ -3,12 +3,11 @@ import {platform} from 'node:os';
 import axios from 'axios';
 import treeKill from 'tree-kill';
 
-import {LINE_ENDING} from '../../../Utils/MainUtils';
+import {determineShell, LINE_ENDING} from '../../../Utils/MainUtils';
 
 export async function getPipPackageVersion(packageName: string, pty: any): Promise<string | null> {
   return new Promise(resolve => {
-    const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
-    const ptyProcess = pty.spawn(shell, [], {});
+    const ptyProcess = pty.spawn(determineShell(), [], {});
 
     let output = '';
 

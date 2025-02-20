@@ -56,7 +56,7 @@ async function checkInstalled(pty: any): Promise<boolean> {
     ptyProcess.onExit(() => {
       if (pty.pid) {
         treeKill(pty.pid);
-        if (platform() === 'darwin') pty.kill();
+        pty.kill();
       }
       resolve(output.toLowerCase().includes('version:'));
     });

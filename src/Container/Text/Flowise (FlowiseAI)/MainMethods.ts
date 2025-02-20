@@ -55,7 +55,7 @@ async function checkInstalled(pty: any): Promise<boolean> {
     ptyProcess.onExit(() => {
       if (pty.pid) {
         treeKill(pty.pid);
-        if (platform() === 'darwin') pty.kill();
+        pty.kill();
       }
 
       const cleanOutput = removeAnsi(output).trim().replace('npm list -g flowise', '');
@@ -83,7 +83,7 @@ async function getVersion(pty: any): Promise<string> {
     ptyProcess.onExit(() => {
       if (pty.pid) {
         treeKill(pty.pid);
-        if (platform() === 'darwin') pty.kill();
+        pty.kill();
       }
 
       const match = output.match(/flowise@([\d.]+)/i);
@@ -111,7 +111,7 @@ async function checkUpdate(pty: any): Promise<string | null> {
     ptyProcess.onExit(() => {
       if (pty.pid) {
         treeKill(pty.pid);
-        if (platform() === 'darwin') pty.kill();
+        pty.kill();
       }
 
       const lines = removeAnsi(output).split(LINE_ENDING);

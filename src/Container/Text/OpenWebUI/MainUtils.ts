@@ -16,9 +16,9 @@ export async function getPipPackageVersion(packageName: string, pty: any): Promi
     });
 
     ptyProcess.onExit(() => {
-      if (pty.pid) {
-        treeKill(pty.pid);
-        pty.kill();
+      if (ptyProcess.pid) {
+        treeKill(ptyProcess.pid);
+        ptyProcess.kill();
       }
       const lines = output.split(/\r?\n/);
       const versionLine = lines.find(line => line.toLowerCase().includes('version:'));

@@ -54,9 +54,9 @@ async function checkInstalled(pty: any): Promise<boolean> {
     });
 
     ptyProcess.onExit(() => {
-      if (pty.pid) {
-        treeKill(pty.pid);
-        pty.kill();
+      if (ptyProcess.pid) {
+        treeKill(ptyProcess.pid);
+        ptyProcess.kill();
       }
       resolve(output.toLowerCase().includes('version:'));
     });

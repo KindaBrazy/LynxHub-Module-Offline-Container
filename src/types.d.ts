@@ -7,15 +7,25 @@ export type ExtensionData = {
   stars?: number;
 };
 
+type StorageType = {get: (key: string) => any; set: (key: string, data: any) => void};
+
 export type LynxApiUpdate = {
   isPullAvailable: Promise<boolean>;
-  storage: {get: (key: string) => any; set: (key: string, data: any) => void};
+  storage: StorageType;
+  pty: any;
+};
+
+export type LynxApiUninstall = {
+  installDir?: string;
+  trashDir: (dir: string) => Promise<void>;
+  removeDir: (dir: string) => Promise<void>;
+  storage: StorageType;
   pty: any;
 };
 
 export type LynxApiInstalled = {
   installedDirExistAndWatch: Promise<boolean>;
-  storage: {get: (key: string) => any; set: (key: string, data: any) => void};
+  storage: StorageType;
   pty: any;
 };
 
@@ -23,6 +33,7 @@ export type MainIpcTypes = {
   handle(channel: string, listener: (event: any, ...args: any[]) => any): void;
   on(channel: string, listener: (event: any, ...args: any[]) => void): void;
   send: (channel: string, ...args: any[]) => void;
+  storage: StorageType;
   pty: any;
 };
 
@@ -66,6 +77,7 @@ export type CardMainMethods = {
   mainIpc?: (ipc: MainIpcTypes) => void;
   updateAvailable?: (lynxApi: LynxApiUpdate) => Promise<boolean>;
   isInstalled?: (lynxApi: LynxApiInstalled) => Promise<boolean>;
+  uninstall?: (lynxApi: LynxApiUninstall) => Promise<void>;
 };
 
 export type InstallationMethod = {chosen: 'install' | 'locate'; targetDirectory?: string};
@@ -324,6 +336,8 @@ export type CardData = {
   extensionsDir?: string;
 
   installationType: 'git' | 'others';
+
+  uninstallType?: 'removeFolder' | 'others';
 
   /** Type of AI (Using type for things like discord activity status) */
   type?: 'image' | 'audio' | 'text' | 'unknown';

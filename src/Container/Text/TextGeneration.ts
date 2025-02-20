@@ -53,6 +53,7 @@ const textPage: PagesData = {
         'width=300/00025-4013828223.jpeg',
       methods: OPEN_WEBUI_RM,
       installationType: 'others',
+      uninstallType: 'others',
       arguments: openArguments,
     },
     {

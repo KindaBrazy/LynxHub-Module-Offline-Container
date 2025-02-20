@@ -4,8 +4,15 @@ import path from 'node:path';
 import {compare} from 'semver';
 import treeKill from 'tree-kill';
 
-import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
-import {isWin} from '../../../Utils/CrossUtils';
+import {
+  CardMainMethods,
+  ChosenArgument,
+  LynxApiInstalled,
+  LynxApiUninstall,
+  LynxApiUpdate,
+  MainIpcTypes,
+} from '../../../types';
+import {isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {determineShell, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
@@ -93,6 +100,44 @@ function mainIpc(ipc: MainIpcTypes) {
   ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
 
+async function uninstall(api: LynxApiUninstall): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const ptyProcess = api.pty.spawn(determineShell(), [], {});
+    let output = '';
+
+    ptyProcess.onData((data: any) => {
+      output += data;
+    });
+
+    ptyProcess.onExit(() => {
+      if (ptyProcess.pid) {
+        treeKill(ptyProcess.pid);
+        ptyProcess.kill();
+      }
+
+      const cleanOutput = removeAnsi(output);
+      const lines = cleanOutput.split(LINE_ENDING);
+
+      const successRegex = /Successfully\s+uninstalled\s+open-webui/i;
+      const proceedRegex = /Proceed\s+\(Y\/n\)\?\s*$/i;
+      const uninstallingRegex = /Uninstalling\s+open-webui/i;
+
+      const hasSuccess =
+        lines.some(line => successRegex.test(line)) ||
+        (lines.some(line => uninstallingRegex.test(line)) && lines.some(line => proceedRegex.test(line)));
+
+      if (hasSuccess) {
+        resolve();
+      } else {
+        reject(new Error(`Error uninstalling open-webui.`));
+      }
+    });
+
+    ptyProcess.write(`pip uninstall -y open-webui${LINE_ENDING}`);
+    ptyProcess.write(`exit${LINE_ENDING}`);
+  });
+}
+
 const OpenWebUI_MM: CardMainMethods = {
   getRunCommands,
   updateAvailable,
@@ -100,6 +145,7 @@ const OpenWebUI_MM: CardMainMethods = {
   mainIpc,
   saveArgs,
   readArgs,
+  uninstall,
 };
 
 export default OpenWebUI_MM;

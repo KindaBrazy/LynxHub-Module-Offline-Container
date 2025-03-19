@@ -1,7 +1,7 @@
-import { i as isWin, _ as CardInfo, $ as GitInstaller, N as TTS_ID, a0 as AG_RM, a1 as gitmyloArguments, O as AG_ID, W as ALLTALK_ID, a2 as lodashExports, a3 as automatic1111Arguments, o as parseStringToArgs, n as parseArgsToString, a4 as fetchExtensionList, a5 as catchAddress$1, a6 as COMFYUI_RM, a7 as comfyArguments, F as COMFYUI_ID, H as SD_FORGE_ID, a8 as INVOKE_RM, a9 as invokeArguments, V as INVOKE_ID, aa as SD_NEXT_RM, ab as vladmandicArguments, K as SD_NEXT_ID, G as A1_ID, U as ONETRAINER_ID, ac as KOHYA_GUI_RM, ad as bmaltaisArguments, M as KOHYA_ID, ae as COMFYUI_ZLUDA_RM, af as comfyZludaArguments, R as COMFYUI_ZLUDA_ID, ag as SD_AMD_RM, ah as lshqqytigerArguments, S as SD_AMD_ID, J as SD_FORGE_AMD_ID, ai as SWARM_RM, aj as mcMonkeyArguments, L as SWARM_ID, Q as SD_UIUX_ID, ak as TG_RM, al as oobaboogaArguments, T as TG_ID, am as flowiseArguments, an as Flow_RM, Y as FLOWISEAI_ID, ao as openArguments, ap as OPEN_WEBUI_RM, X as OPEN_WEBUI_ID, aq as SILLYTAVERN_RM, ar as sillyArguments, P as SILLYTAVERN_ID, Z as LoLLMS_ID } from './RendererMethods_kiaoOg.mjs';
+import { i as isWin, $ as CardInfo, a0 as GitInstaller, N as TTS_ID, a1 as AG_RM, a2 as gitmyloArguments, O as AG_ID, W as ALLTALK_ID, a3 as lodashExports, a4 as automatic1111Arguments, o as parseStringToArgs, n as parseArgsToString, a5 as fetchExtensionList, a6 as catchAddress$2, a7 as COMFYUI_RM, a8 as comfyArguments, F as COMFYUI_ID, H as SD_FORGE_ID, a9 as INVOKE_RM, aa as invokeArguments, V as INVOKE_ID, ab as SD_NEXT_RM, ac as vladmandicArguments, K as SD_NEXT_ID, G as A1_ID, U as ONETRAINER_ID, ad as KOHYA_GUI_RM, ae as bmaltaisArguments, M as KOHYA_ID, af as COMFYUI_ZLUDA_RM, ag as comfyZludaArguments, R as COMFYUI_ZLUDA_ID, ah as SD_AMD_RM, ai as lshqqytigerArguments, S as SD_AMD_ID, J as SD_FORGE_AMD_ID, aj as SWARM_RM, ak as mcMonkeyArguments, L as SWARM_ID, Q as SD_UIUX_ID, al as TG_RM, am as oobaboogaArguments, T as TG_ID, an as flowiseArguments, ao as Flow_RM, Y as FLOWISEAI_ID, ap as openArguments, aq as OPEN_WEBUI_RM, X as OPEN_WEBUI_ID, _ as BOLT_DIY_ID, ar as SILLYTAVERN_RM, as as sillyArguments, P as SILLYTAVERN_ID, Z as LoLLMS_ID } from './RendererMethods_B6FpBD.mjs';
 
 const URL$2 = 'https://github.com/erew123/alltalk_tts';
-function startInstall$7(stepper) {
+function startInstall$8(stepper) {
     stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -27,7 +27,7 @@ function startInstall$7(stepper) {
         }
     });
 }
-function startUpdate$1(stepper, dir) {
+function startUpdate$2(stepper, dir) {
     stepper.initialSteps(['Pull Changes', 'Update', 'Finish']);
     if (dir) {
         stepper.executeTerminalCommands('git pull', dir).then(() => {
@@ -42,19 +42,19 @@ function startUpdate$1(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
     }
 }
-async function cardInfo$7(api, callback) {
+async function cardInfo$8(api, callback) {
     return CardInfo(URL$2, undefined, api, callback);
 }
 const ALLTALK_RM = {
-    cardInfo: cardInfo$7,
+    cardInfo: cardInfo$8,
     manager: {
-        startInstall: startInstall$7,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+        startInstall: startInstall$8,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
     },
 };
 
 const URL$1 = 'https://github.com/rsxdalv/tts-generation-webui';
-function catchAddress(input) {
+function catchAddress$1(input) {
     if (input.toLowerCase().includes('Installed Packages'.toLowerCase())) {
         return 'http://127.0.0.1:7770';
     }
@@ -62,16 +62,16 @@ function catchAddress(input) {
         return undefined;
     }
 }
-function startInstall$6(stepper) {
+function startInstall$7(stepper) {
     GitInstaller('Text to Speech', URL$1, stepper);
 }
-async function cardInfo$6(api, callback) {
+async function cardInfo$7(api, callback) {
     return CardInfo(URL$1, '/extensions', api, callback);
 }
 const TTS_RM = {
-    catchAddress,
-    cardInfo: cardInfo$6,
-    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
+    catchAddress: catchAddress$1,
+    cardInfo: cardInfo$7,
+    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
 };
 
 const audioPage = {
@@ -119,7 +119,7 @@ const audioPage = {
 };
 
 const URL = 'https://github.com/Nerogar/OneTrainer';
-function startInstall$5(stepper) {
+function startInstall$6(stepper) {
     stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -145,7 +145,7 @@ function startInstall$5(stepper) {
         }
     });
 }
-function startUpdate(stepper, dir) {
+function startUpdate$1(stepper, dir) {
     stepper.initialSteps(['Update', 'Finish']);
     if (dir) {
         stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
@@ -157,14 +157,14 @@ function startUpdate(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update OneTrainer');
     }
 }
-async function cardInfo$5(api, callback) {
+async function cardInfo$6(api, callback) {
     return CardInfo(URL, undefined, api, callback);
 }
 const ONETRAINER_RM = {
-    cardInfo: cardInfo$5,
+    cardInfo: cardInfo$6,
     manager: {
-        startInstall: startInstall$5,
-        updater: { updateType: 'stepper', startUpdate },
+        startInstall: startInstall$6,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
     },
 };
 
@@ -201,14 +201,30 @@ if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsInde
 }
 
 const A1_URL = 'https://github.com/AUTOMATIC1111/stable-diffusion-webui';
-function startInstall$4(stepper) {
+function startInstall$5(stepper) {
     GitInstaller('Automatic1111', A1_URL, stepper);
 }
-async function cardInfo$4(api, callback) {
+async function cardInfo$5(api, callback) {
     return CardInfo(A1_URL, '/extensions', api, callback);
 }
 const A1_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
+    fetchExtensionList,
+    parseArgsToString,
+    parseStringToArgs,
+    cardInfo: cardInfo$5,
+    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
+};
+
+const SD_FORGE_URL = 'https://github.com/lllyasviel/stable-diffusion-webui-forge';
+function startInstall$4(stepper) {
+    GitInstaller('SD Forge', SD_FORGE_URL, stepper);
+}
+async function cardInfo$4(api, callback) {
+    return CardInfo(SD_FORGE_URL, '/extensions', api, callback);
+}
+const SD_FORGE_RM = {
+    catchAddress: catchAddress$2,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -216,15 +232,15 @@ const A1_RM = {
     manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
 };
 
-const SD_FORGE_URL = 'https://github.com/lllyasviel/stable-diffusion-webui-forge';
+const SdAMD_URL$1 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge';
 function startInstall$3(stepper) {
-    GitInstaller('SD Forge', SD_FORGE_URL, stepper);
+    GitInstaller('SD Forge AMDGPU', SdAMD_URL$1, stepper);
 }
 async function cardInfo$3(api, callback) {
-    return CardInfo(SD_FORGE_URL, '/extensions', api, callback);
+    return CardInfo(SdAMD_URL$1, 'RendererMethods', api, callback);
 }
-const SD_FORGE_RM = {
-    catchAddress: catchAddress$1,
+const SD_FORGE_AMD_RM = {
+    catchAddress: catchAddress$2,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -232,36 +248,20 @@ const SD_FORGE_RM = {
     manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
 };
 
-const SdAMD_URL$1 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge';
+const SdAMD_URL = 'https://github.com/anapnoe/stable-diffusion-webui-ux';
 function startInstall$2(stepper) {
-    GitInstaller('SD Forge AMDGPU', SdAMD_URL$1, stepper);
+    GitInstaller('SD UI-UX', SdAMD_URL, stepper);
 }
 async function cardInfo$2(api, callback) {
-    return CardInfo(SdAMD_URL$1, 'RendererMethods', api, callback);
+    return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
-const SD_FORGE_AMD_RM = {
-    catchAddress: catchAddress$1,
+const SD_UIUX_RM = {
+    catchAddress: catchAddress$2,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
     cardInfo: cardInfo$2,
     manager: { startInstall: startInstall$2, updater: { updateType: 'git' } },
-};
-
-const SdAMD_URL = 'https://github.com/anapnoe/stable-diffusion-webui-ux';
-function startInstall$1(stepper) {
-    GitInstaller('SD UI-UX', SdAMD_URL, stepper);
-}
-async function cardInfo$1(api, callback) {
-    return CardInfo(SdAMD_URL, '/extensions', api, callback);
-}
-const SD_UIUX_RM = {
-    catchAddress: catchAddress$1,
-    fetchExtensionList,
-    parseArgsToString,
-    parseStringToArgs,
-    cardInfo: cardInfo$1,
-    manager: { startInstall: startInstall$1, updater: { updateType: 'git' } },
 };
 
 const imagePage = {
@@ -426,6 +426,83 @@ const imagePage = {
     ],
 };
 
+const REPO_URL = 'https://github.com/stackblitz-labs/bolt.diy';
+const StarterSteps = ['Start', 'Check NodeJS', 'Bolt.Diy', 'Packages', 'Done!'];
+function startInstall$1(stepper) {
+    const next = () => stepper.nextStep();
+    const progress = (message) => stepper.progressBar(true, message);
+    const checkNode = () => stepper.ipc.invoke('is_nodejs_installed');
+    const installPackages = (dir) => stepper.executeTerminalCommands('npm i', dir);
+    const installBolt = () => {
+        stepper.cloneRepository(REPO_URL).then(dir => {
+            next();
+            installPackages(dir).then(() => {
+                stepper.setInstalled(dir);
+                stepper.showFinalStep('success', 'Installation Complete!', 'Your Bolt.Diy environment is ready. Enjoy!');
+            });
+        });
+    };
+    stepper.initialSteps(StarterSteps);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            next();
+            progress('Checking for NodeJS availability...');
+            checkNode().then(isNodeAvailable => {
+                if (isNodeAvailable) {
+                    next();
+                    installBolt();
+                }
+                else {
+                    stepper.showFinalStep('error', 'NodeJS is not installed!', 'Please install NodeJS LTS and try again.');
+                }
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, REPO_URL).then(isValid => {
+                const title = 'Bolt.Diy';
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', `${title} located successfully!`, `Pre-installed ${title} detected. Installation skipped as your existing setup is ready to use.`);
+                }
+                else {
+                    stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                }
+            });
+        }
+    });
+}
+async function cardInfo$1(api, callback) {
+    return CardInfo(REPO_URL, undefined, api, callback);
+}
+function catchAddress(line) {
+    const addressRegex = 
+    // eslint-disable-next-line max-len
+    /https?:\/\/(?:localhost|\[?[\da-fA-F:]+]?)(?:\s*\x1b\[[0-9;]*m\s*)*(:?\s*(?:\x1b\[[0-9;]*m\s*)*\d+\s*(?:\x1b\[[0-9;]*m\s*)*)?\/?/;
+    const match = line.match(addressRegex);
+    if (match) {
+        let address = match[0];
+        if (address.endsWith('/') && address.length > 8 && address !== 'http://' && address !== 'https://') {
+            address = address.slice(0, -1);
+        }
+        address = address.replace(/\x1b\[[0-9;]*m/g, '');
+        address = address.replace(/\s/g, '');
+        return address;
+    }
+    return undefined;
+}
+function startUpdate(stepper, dir) {
+    stepper.initialSteps(['Updating', 'Completed']);
+    stepper.executeTerminalCommands('git pull && npm i', dir).then(() => {
+        stepper.setUpdated();
+        stepper.showFinalStep('success', 'Bolt.Diy Updated Successfully!', `Bolt.Diy has been updated to the latest version. You can now enjoy the new features and improvements.`);
+    });
+}
+const BOLT_DIY_RM = {
+    catchAddress,
+    cardInfo: cardInfo$1,
+    manager: { startInstall: startInstall$1, updater: { updateType: 'stepper', startUpdate } },
+};
+
 const title = 'LoLLMs';
 const url = 'https://github.com/ParisNeo/lollms-webui';
 function startInstall(stepper) {
@@ -462,7 +539,7 @@ async function cardInfo(api, callback) {
     return CardInfo(url, undefined, api, callback);
 }
 const LoLLM_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     cardInfo,
     manager: { startInstall, updater: { updateType: 'git' } },
 };
@@ -506,7 +583,20 @@ const textPage = {
                 'width=300/00025-4013828223.jpeg',
             methods: OPEN_WEBUI_RM,
             installationType: 'others',
+            uninstallType: 'others',
             arguments: openArguments,
+        },
+        {
+            id: BOLT_DIY_ID,
+            title: 'Bolt.Diy',
+            description: 'Prompt, run, edit, and deploy full-stack web applications using any LLM you want!',
+            repoUrl: 'https://github.com/stackblitz-labs/bolt.diy',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/1c1750b6-e8be-4373-a303-b54b1825f268/' +
+                'width=300/00021-2487204806.jpeg',
+            methods: BOLT_DIY_RM,
+            installationType: 'others',
+            uninstallType: 'removeFolder',
         },
         {
             id: SILLYTAVERN_ID,

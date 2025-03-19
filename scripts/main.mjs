@@ -1,4 +1,4 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as extractGitUrl, j as parseArgsToString$3, k as parseStringToArgs$3, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as removeAnsi, x as parseArgsToString$9, y as parseStringToArgs$9, z as parseArgsToString$a, A as parseStringToArgs$a, B as parseArgsToString$b, C as parseStringToArgs$b, D as parseArgsToString$c, E as parseStringToArgs$c, F as COMFYUI_ID, G as A1_ID, S as SD_AMD_ID, H as SD_FORGE_ID, J as SD_FORGE_AMD_ID, K as SD_NEXT_ID, L as SWARM_ID, M as KOHYA_ID, T as TG_ID, N as TTS_ID, O as AG_ID, P as SILLYTAVERN_ID, Q as SD_UIUX_ID, R as COMFYUI_ZLUDA_ID, U as ONETRAINER_ID, V as INVOKE_ID, W as ALLTALK_ID, X as OPEN_WEBUI_ID, Y as FLOWISEAI_ID, Z as LoLLMS_ID } from './RendererMethods_kiaoOg.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as extractGitUrl, j as parseArgsToString$3, k as parseStringToArgs$3, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as removeAnsi, x as parseArgsToString$9, y as parseStringToArgs$9, z as parseArgsToString$a, A as parseStringToArgs$a, B as parseArgsToString$b, C as parseStringToArgs$b, D as parseArgsToString$c, E as parseStringToArgs$c, F as COMFYUI_ID, G as A1_ID, S as SD_AMD_ID, H as SD_FORGE_ID, J as SD_FORGE_AMD_ID, K as SD_NEXT_ID, L as SWARM_ID, M as KOHYA_ID, T as TG_ID, N as TTS_ID, O as AG_ID, P as SILLYTAVERN_ID, Q as SD_UIUX_ID, R as COMFYUI_ZLUDA_ID, U as ONETRAINER_ID, V as INVOKE_ID, W as ALLTALK_ID, X as OPEN_WEBUI_ID, Y as FLOWISEAI_ID, Z as LoLLMS_ID, _ as BOLT_DIY_ID } from './RendererMethods_B6FpBD.mjs';
 import { execSync } from 'node:child_process';
 import { platform as platform$2 } from 'node:os';
 import path from 'node:path';
@@ -9,14 +9,15 @@ import require$$3 from 'http';
 import require$$4 from 'https';
 import require$$0$1 from 'url';
 import require$$0$2 from 'fs';
+import crypto from 'crypto';
 import require$$4$1 from 'assert';
 import require$$1$2 from 'tty';
 import require$$0$3 from 'os';
 import zlib from 'zlib';
 import { EventEmitter } from 'events';
 import require$$0$4 from 'constants';
-import require$$0$5 from 'child_process';
 import require$$1$3 from 'fs/promises';
+import require$$0$5 from 'child_process';
 
 function bind(fn, thisArg) {
   return function wrap() {
@@ -624,26 +625,6 @@ const toFiniteNumber = (value, defaultValue) => {
   return value != null && Number.isFinite(value = +value) ? value : defaultValue;
 };
 
-const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
-
-const DIGIT = '0123456789';
-
-const ALPHABET = {
-  DIGIT,
-  ALPHA,
-  ALPHA_DIGIT: ALPHA + ALPHA.toUpperCase() + DIGIT
-};
-
-const generateString = (size = 16, alphabet = ALPHABET.ALPHA_DIGIT) => {
-  let str = '';
-  const {length} = alphabet;
-  while (size--) {
-    str += alphabet[Math.random() * length|0];
-  }
-
-  return str;
-};
-
 /**
  * If the thing is a FormData object, return true, otherwise return false.
  *
@@ -771,8 +752,6 @@ var utils$1 = {
   findKey,
   global: _global,
   isContextDefined,
-  ALPHABET,
-  generateString,
   isSpecCompliantForm,
   toJSONObject,
   isAsyncFn,
@@ -12597,6 +12576,1081 @@ function requireAsynckit () {
 	return asynckit;
 }
 
+var esObjectAtoms;
+var hasRequiredEsObjectAtoms;
+
+function requireEsObjectAtoms () {
+	if (hasRequiredEsObjectAtoms) return esObjectAtoms;
+	hasRequiredEsObjectAtoms = 1;
+
+	/** @type {import('.')} */
+	esObjectAtoms = Object;
+	return esObjectAtoms;
+}
+
+var esErrors;
+var hasRequiredEsErrors;
+
+function requireEsErrors () {
+	if (hasRequiredEsErrors) return esErrors;
+	hasRequiredEsErrors = 1;
+
+	/** @type {import('.')} */
+	esErrors = Error;
+	return esErrors;
+}
+
+var _eval;
+var hasRequired_eval;
+
+function require_eval () {
+	if (hasRequired_eval) return _eval;
+	hasRequired_eval = 1;
+
+	/** @type {import('./eval')} */
+	_eval = EvalError;
+	return _eval;
+}
+
+var range$1;
+var hasRequiredRange$1;
+
+function requireRange$1 () {
+	if (hasRequiredRange$1) return range$1;
+	hasRequiredRange$1 = 1;
+
+	/** @type {import('./range')} */
+	range$1 = RangeError;
+	return range$1;
+}
+
+var ref;
+var hasRequiredRef;
+
+function requireRef () {
+	if (hasRequiredRef) return ref;
+	hasRequiredRef = 1;
+
+	/** @type {import('./ref')} */
+	ref = ReferenceError;
+	return ref;
+}
+
+var syntax;
+var hasRequiredSyntax;
+
+function requireSyntax () {
+	if (hasRequiredSyntax) return syntax;
+	hasRequiredSyntax = 1;
+
+	/** @type {import('./syntax')} */
+	syntax = SyntaxError;
+	return syntax;
+}
+
+var type;
+var hasRequiredType;
+
+function requireType () {
+	if (hasRequiredType) return type;
+	hasRequiredType = 1;
+
+	/** @type {import('./type')} */
+	type = TypeError;
+	return type;
+}
+
+var uri;
+var hasRequiredUri;
+
+function requireUri () {
+	if (hasRequiredUri) return uri;
+	hasRequiredUri = 1;
+
+	/** @type {import('./uri')} */
+	uri = URIError;
+	return uri;
+}
+
+var abs;
+var hasRequiredAbs;
+
+function requireAbs () {
+	if (hasRequiredAbs) return abs;
+	hasRequiredAbs = 1;
+
+	/** @type {import('./abs')} */
+	abs = Math.abs;
+	return abs;
+}
+
+var floor;
+var hasRequiredFloor;
+
+function requireFloor () {
+	if (hasRequiredFloor) return floor;
+	hasRequiredFloor = 1;
+
+	/** @type {import('./floor')} */
+	floor = Math.floor;
+	return floor;
+}
+
+var max;
+var hasRequiredMax;
+
+function requireMax () {
+	if (hasRequiredMax) return max;
+	hasRequiredMax = 1;
+
+	/** @type {import('./max')} */
+	max = Math.max;
+	return max;
+}
+
+var min;
+var hasRequiredMin;
+
+function requireMin () {
+	if (hasRequiredMin) return min;
+	hasRequiredMin = 1;
+
+	/** @type {import('./min')} */
+	min = Math.min;
+	return min;
+}
+
+var pow;
+var hasRequiredPow;
+
+function requirePow () {
+	if (hasRequiredPow) return pow;
+	hasRequiredPow = 1;
+
+	/** @type {import('./pow')} */
+	pow = Math.pow;
+	return pow;
+}
+
+var round;
+var hasRequiredRound;
+
+function requireRound () {
+	if (hasRequiredRound) return round;
+	hasRequiredRound = 1;
+
+	/** @type {import('./round')} */
+	round = Math.round;
+	return round;
+}
+
+var _isNaN;
+var hasRequired_isNaN;
+
+function require_isNaN () {
+	if (hasRequired_isNaN) return _isNaN;
+	hasRequired_isNaN = 1;
+
+	/** @type {import('./isNaN')} */
+	_isNaN = Number.isNaN || function isNaN(a) {
+		return a !== a;
+	};
+	return _isNaN;
+}
+
+var sign;
+var hasRequiredSign;
+
+function requireSign () {
+	if (hasRequiredSign) return sign;
+	hasRequiredSign = 1;
+
+	var $isNaN = /*@__PURE__*/ require_isNaN();
+
+	/** @type {import('./sign')} */
+	sign = function sign(number) {
+		if ($isNaN(number) || number === 0) {
+			return number;
+		}
+		return number < 0 ? -1 : 1;
+	};
+	return sign;
+}
+
+var gOPD;
+var hasRequiredGOPD;
+
+function requireGOPD () {
+	if (hasRequiredGOPD) return gOPD;
+	hasRequiredGOPD = 1;
+
+	/** @type {import('./gOPD')} */
+	gOPD = Object.getOwnPropertyDescriptor;
+	return gOPD;
+}
+
+var gopd;
+var hasRequiredGopd;
+
+function requireGopd () {
+	if (hasRequiredGopd) return gopd;
+	hasRequiredGopd = 1;
+
+	/** @type {import('.')} */
+	var $gOPD = /*@__PURE__*/ requireGOPD();
+
+	if ($gOPD) {
+		try {
+			$gOPD([], 'length');
+		} catch (e) {
+			// IE 8 has a broken gOPD
+			$gOPD = null;
+		}
+	}
+
+	gopd = $gOPD;
+	return gopd;
+}
+
+var esDefineProperty;
+var hasRequiredEsDefineProperty;
+
+function requireEsDefineProperty () {
+	if (hasRequiredEsDefineProperty) return esDefineProperty;
+	hasRequiredEsDefineProperty = 1;
+
+	/** @type {import('.')} */
+	var $defineProperty = Object.defineProperty || false;
+	if ($defineProperty) {
+		try {
+			$defineProperty({}, 'a', { value: 1 });
+		} catch (e) {
+			// IE 8 has a broken defineProperty
+			$defineProperty = false;
+		}
+	}
+
+	esDefineProperty = $defineProperty;
+	return esDefineProperty;
+}
+
+var shams$1;
+var hasRequiredShams$1;
+
+function requireShams$1 () {
+	if (hasRequiredShams$1) return shams$1;
+	hasRequiredShams$1 = 1;
+
+	/** @type {import('./shams')} */
+	/* eslint complexity: [2, 18], max-statements: [2, 33] */
+	shams$1 = function hasSymbols() {
+		if (typeof Symbol !== 'function' || typeof Object.getOwnPropertySymbols !== 'function') { return false; }
+		if (typeof Symbol.iterator === 'symbol') { return true; }
+
+		/** @type {{ [k in symbol]?: unknown }} */
+		var obj = {};
+		var sym = Symbol('test');
+		var symObj = Object(sym);
+		if (typeof sym === 'string') { return false; }
+
+		if (Object.prototype.toString.call(sym) !== '[object Symbol]') { return false; }
+		if (Object.prototype.toString.call(symObj) !== '[object Symbol]') { return false; }
+
+		// temp disabled per https://github.com/ljharb/object.assign/issues/17
+		// if (sym instanceof Symbol) { return false; }
+		// temp disabled per https://github.com/WebReflection/get-own-property-symbols/issues/4
+		// if (!(symObj instanceof Symbol)) { return false; }
+
+		// if (typeof Symbol.prototype.toString !== 'function') { return false; }
+		// if (String(sym) !== Symbol.prototype.toString.call(sym)) { return false; }
+
+		var symVal = 42;
+		obj[sym] = symVal;
+		for (var _ in obj) { return false; } // eslint-disable-line no-restricted-syntax, no-unreachable-loop
+		if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
+
+		if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
+
+		var syms = Object.getOwnPropertySymbols(obj);
+		if (syms.length !== 1 || syms[0] !== sym) { return false; }
+
+		if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) { return false; }
+
+		if (typeof Object.getOwnPropertyDescriptor === 'function') {
+			// eslint-disable-next-line no-extra-parens
+			var descriptor = /** @type {PropertyDescriptor} */ (Object.getOwnPropertyDescriptor(obj, sym));
+			if (descriptor.value !== symVal || descriptor.enumerable !== true) { return false; }
+		}
+
+		return true;
+	};
+	return shams$1;
+}
+
+var hasSymbols;
+var hasRequiredHasSymbols;
+
+function requireHasSymbols () {
+	if (hasRequiredHasSymbols) return hasSymbols;
+	hasRequiredHasSymbols = 1;
+
+	var origSymbol = typeof Symbol !== 'undefined' && Symbol;
+	var hasSymbolSham = requireShams$1();
+
+	/** @type {import('.')} */
+	hasSymbols = function hasNativeSymbols() {
+		if (typeof origSymbol !== 'function') { return false; }
+		if (typeof Symbol !== 'function') { return false; }
+		if (typeof origSymbol('foo') !== 'symbol') { return false; }
+		if (typeof Symbol('bar') !== 'symbol') { return false; }
+
+		return hasSymbolSham();
+	};
+	return hasSymbols;
+}
+
+var Reflect_getPrototypeOf;
+var hasRequiredReflect_getPrototypeOf;
+
+function requireReflect_getPrototypeOf () {
+	if (hasRequiredReflect_getPrototypeOf) return Reflect_getPrototypeOf;
+	hasRequiredReflect_getPrototypeOf = 1;
+
+	/** @type {import('./Reflect.getPrototypeOf')} */
+	Reflect_getPrototypeOf = (typeof Reflect !== 'undefined' && Reflect.getPrototypeOf) || null;
+	return Reflect_getPrototypeOf;
+}
+
+var Object_getPrototypeOf;
+var hasRequiredObject_getPrototypeOf;
+
+function requireObject_getPrototypeOf () {
+	if (hasRequiredObject_getPrototypeOf) return Object_getPrototypeOf;
+	hasRequiredObject_getPrototypeOf = 1;
+
+	var $Object = /*@__PURE__*/ requireEsObjectAtoms();
+
+	/** @type {import('./Object.getPrototypeOf')} */
+	Object_getPrototypeOf = $Object.getPrototypeOf || null;
+	return Object_getPrototypeOf;
+}
+
+var implementation;
+var hasRequiredImplementation;
+
+function requireImplementation () {
+	if (hasRequiredImplementation) return implementation;
+	hasRequiredImplementation = 1;
+
+	/* eslint no-invalid-this: 1 */
+
+	var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
+	var toStr = Object.prototype.toString;
+	var max = Math.max;
+	var funcType = '[object Function]';
+
+	var concatty = function concatty(a, b) {
+	    var arr = [];
+
+	    for (var i = 0; i < a.length; i += 1) {
+	        arr[i] = a[i];
+	    }
+	    for (var j = 0; j < b.length; j += 1) {
+	        arr[j + a.length] = b[j];
+	    }
+
+	    return arr;
+	};
+
+	var slicy = function slicy(arrLike, offset) {
+	    var arr = [];
+	    for (var i = offset, j = 0; i < arrLike.length; i += 1, j += 1) {
+	        arr[j] = arrLike[i];
+	    }
+	    return arr;
+	};
+
+	var joiny = function (arr, joiner) {
+	    var str = '';
+	    for (var i = 0; i < arr.length; i += 1) {
+	        str += arr[i];
+	        if (i + 1 < arr.length) {
+	            str += joiner;
+	        }
+	    }
+	    return str;
+	};
+
+	implementation = function bind(that) {
+	    var target = this;
+	    if (typeof target !== 'function' || toStr.apply(target) !== funcType) {
+	        throw new TypeError(ERROR_MESSAGE + target);
+	    }
+	    var args = slicy(arguments, 1);
+
+	    var bound;
+	    var binder = function () {
+	        if (this instanceof bound) {
+	            var result = target.apply(
+	                this,
+	                concatty(args, arguments)
+	            );
+	            if (Object(result) === result) {
+	                return result;
+	            }
+	            return this;
+	        }
+	        return target.apply(
+	            that,
+	            concatty(args, arguments)
+	        );
+
+	    };
+
+	    var boundLength = max(0, target.length - args.length);
+	    var boundArgs = [];
+	    for (var i = 0; i < boundLength; i++) {
+	        boundArgs[i] = '$' + i;
+	    }
+
+	    bound = Function('binder', 'return function (' + joiny(boundArgs, ',') + '){ return binder.apply(this,arguments); }')(binder);
+
+	    if (target.prototype) {
+	        var Empty = function Empty() {};
+	        Empty.prototype = target.prototype;
+	        bound.prototype = new Empty();
+	        Empty.prototype = null;
+	    }
+
+	    return bound;
+	};
+	return implementation;
+}
+
+var functionBind;
+var hasRequiredFunctionBind;
+
+function requireFunctionBind () {
+	if (hasRequiredFunctionBind) return functionBind;
+	hasRequiredFunctionBind = 1;
+
+	var implementation = requireImplementation();
+
+	functionBind = Function.prototype.bind || implementation;
+	return functionBind;
+}
+
+var functionCall;
+var hasRequiredFunctionCall;
+
+function requireFunctionCall () {
+	if (hasRequiredFunctionCall) return functionCall;
+	hasRequiredFunctionCall = 1;
+
+	/** @type {import('./functionCall')} */
+	functionCall = Function.prototype.call;
+	return functionCall;
+}
+
+var functionApply;
+var hasRequiredFunctionApply;
+
+function requireFunctionApply () {
+	if (hasRequiredFunctionApply) return functionApply;
+	hasRequiredFunctionApply = 1;
+
+	/** @type {import('./functionApply')} */
+	functionApply = Function.prototype.apply;
+	return functionApply;
+}
+
+var reflectApply;
+var hasRequiredReflectApply;
+
+function requireReflectApply () {
+	if (hasRequiredReflectApply) return reflectApply;
+	hasRequiredReflectApply = 1;
+
+	/** @type {import('./reflectApply')} */
+	reflectApply = typeof Reflect !== 'undefined' && Reflect && Reflect.apply;
+	return reflectApply;
+}
+
+var actualApply;
+var hasRequiredActualApply;
+
+function requireActualApply () {
+	if (hasRequiredActualApply) return actualApply;
+	hasRequiredActualApply = 1;
+
+	var bind = requireFunctionBind();
+
+	var $apply = requireFunctionApply();
+	var $call = requireFunctionCall();
+	var $reflectApply = requireReflectApply();
+
+	/** @type {import('./actualApply')} */
+	actualApply = $reflectApply || bind.call($call, $apply);
+	return actualApply;
+}
+
+var callBindApplyHelpers;
+var hasRequiredCallBindApplyHelpers;
+
+function requireCallBindApplyHelpers () {
+	if (hasRequiredCallBindApplyHelpers) return callBindApplyHelpers;
+	hasRequiredCallBindApplyHelpers = 1;
+
+	var bind = requireFunctionBind();
+	var $TypeError = /*@__PURE__*/ requireType();
+
+	var $call = requireFunctionCall();
+	var $actualApply = requireActualApply();
+
+	/** @type {(args: [Function, thisArg?: unknown, ...args: unknown[]]) => Function} TODO FIXME, find a way to use import('.') */
+	callBindApplyHelpers = function callBindBasic(args) {
+		if (args.length < 1 || typeof args[0] !== 'function') {
+			throw new $TypeError('a function is required');
+		}
+		return $actualApply(bind, $call, args);
+	};
+	return callBindApplyHelpers;
+}
+
+var get;
+var hasRequiredGet;
+
+function requireGet () {
+	if (hasRequiredGet) return get;
+	hasRequiredGet = 1;
+
+	var callBind = requireCallBindApplyHelpers();
+	var gOPD = /*@__PURE__*/ requireGopd();
+
+	var hasProtoAccessor;
+	try {
+		// eslint-disable-next-line no-extra-parens, no-proto
+		hasProtoAccessor = /** @type {{ __proto__?: typeof Array.prototype }} */ ([]).__proto__ === Array.prototype;
+	} catch (e) {
+		if (!e || typeof e !== 'object' || !('code' in e) || e.code !== 'ERR_PROTO_ACCESS') {
+			throw e;
+		}
+	}
+
+	// eslint-disable-next-line no-extra-parens
+	var desc = !!hasProtoAccessor && gOPD && gOPD(Object.prototype, /** @type {keyof typeof Object.prototype} */ ('__proto__'));
+
+	var $Object = Object;
+	var $getPrototypeOf = $Object.getPrototypeOf;
+
+	/** @type {import('./get')} */
+	get = desc && typeof desc.get === 'function'
+		? callBind([desc.get])
+		: typeof $getPrototypeOf === 'function'
+			? /** @type {import('./get')} */ function getDunder(value) {
+				// eslint-disable-next-line eqeqeq
+				return $getPrototypeOf(value == null ? value : $Object(value));
+			}
+			: false;
+	return get;
+}
+
+var getProto;
+var hasRequiredGetProto;
+
+function requireGetProto () {
+	if (hasRequiredGetProto) return getProto;
+	hasRequiredGetProto = 1;
+
+	var reflectGetProto = requireReflect_getPrototypeOf();
+	var originalGetProto = requireObject_getPrototypeOf();
+
+	var getDunderProto = /*@__PURE__*/ requireGet();
+
+	/** @type {import('.')} */
+	getProto = reflectGetProto
+		? function getProto(O) {
+			// @ts-expect-error TS can't narrow inside a closure, for some reason
+			return reflectGetProto(O);
+		}
+		: originalGetProto
+			? function getProto(O) {
+				if (!O || (typeof O !== 'object' && typeof O !== 'function')) {
+					throw new TypeError('getProto: not an object');
+				}
+				// @ts-expect-error TS can't narrow inside a closure, for some reason
+				return originalGetProto(O);
+			}
+			: getDunderProto
+				? function getProto(O) {
+					// @ts-expect-error TS can't narrow inside a closure, for some reason
+					return getDunderProto(O);
+				}
+				: null;
+	return getProto;
+}
+
+var hasown;
+var hasRequiredHasown;
+
+function requireHasown () {
+	if (hasRequiredHasown) return hasown;
+	hasRequiredHasown = 1;
+
+	var call = Function.prototype.call;
+	var $hasOwn = Object.prototype.hasOwnProperty;
+	var bind = requireFunctionBind();
+
+	/** @type {import('.')} */
+	hasown = bind.call(call, $hasOwn);
+	return hasown;
+}
+
+var getIntrinsic;
+var hasRequiredGetIntrinsic;
+
+function requireGetIntrinsic () {
+	if (hasRequiredGetIntrinsic) return getIntrinsic;
+	hasRequiredGetIntrinsic = 1;
+
+	var undefined$1;
+
+	var $Object = /*@__PURE__*/ requireEsObjectAtoms();
+
+	var $Error = /*@__PURE__*/ requireEsErrors();
+	var $EvalError = /*@__PURE__*/ require_eval();
+	var $RangeError = /*@__PURE__*/ requireRange$1();
+	var $ReferenceError = /*@__PURE__*/ requireRef();
+	var $SyntaxError = /*@__PURE__*/ requireSyntax();
+	var $TypeError = /*@__PURE__*/ requireType();
+	var $URIError = /*@__PURE__*/ requireUri();
+
+	var abs = /*@__PURE__*/ requireAbs();
+	var floor = /*@__PURE__*/ requireFloor();
+	var max = /*@__PURE__*/ requireMax();
+	var min = /*@__PURE__*/ requireMin();
+	var pow = /*@__PURE__*/ requirePow();
+	var round = /*@__PURE__*/ requireRound();
+	var sign = /*@__PURE__*/ requireSign();
+
+	var $Function = Function;
+
+	// eslint-disable-next-line consistent-return
+	var getEvalledConstructor = function (expressionSyntax) {
+		try {
+			return $Function('"use strict"; return (' + expressionSyntax + ').constructor;')();
+		} catch (e) {}
+	};
+
+	var $gOPD = /*@__PURE__*/ requireGopd();
+	var $defineProperty = /*@__PURE__*/ requireEsDefineProperty();
+
+	var throwTypeError = function () {
+		throw new $TypeError();
+	};
+	var ThrowTypeError = $gOPD
+		? (function () {
+			try {
+				// eslint-disable-next-line no-unused-expressions, no-caller, no-restricted-properties
+				arguments.callee; // IE 8 does not throw here
+				return throwTypeError;
+			} catch (calleeThrows) {
+				try {
+					// IE 8 throws on Object.getOwnPropertyDescriptor(arguments, '')
+					return $gOPD(arguments, 'callee').get;
+				} catch (gOPDthrows) {
+					return throwTypeError;
+				}
+			}
+		}())
+		: throwTypeError;
+
+	var hasSymbols = requireHasSymbols()();
+
+	var getProto = requireGetProto();
+	var $ObjectGPO = requireObject_getPrototypeOf();
+	var $ReflectGPO = requireReflect_getPrototypeOf();
+
+	var $apply = requireFunctionApply();
+	var $call = requireFunctionCall();
+
+	var needsEval = {};
+
+	var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined$1 : getProto(Uint8Array);
+
+	var INTRINSICS = {
+		__proto__: null,
+		'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
+		'%Array%': Array,
+		'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
+		'%ArrayIteratorPrototype%': hasSymbols && getProto ? getProto([][Symbol.iterator]()) : undefined$1,
+		'%AsyncFromSyncIteratorPrototype%': undefined$1,
+		'%AsyncFunction%': needsEval,
+		'%AsyncGenerator%': needsEval,
+		'%AsyncGeneratorFunction%': needsEval,
+		'%AsyncIteratorPrototype%': needsEval,
+		'%Atomics%': typeof Atomics === 'undefined' ? undefined$1 : Atomics,
+		'%BigInt%': typeof BigInt === 'undefined' ? undefined$1 : BigInt,
+		'%BigInt64Array%': typeof BigInt64Array === 'undefined' ? undefined$1 : BigInt64Array,
+		'%BigUint64Array%': typeof BigUint64Array === 'undefined' ? undefined$1 : BigUint64Array,
+		'%Boolean%': Boolean,
+		'%DataView%': typeof DataView === 'undefined' ? undefined$1 : DataView,
+		'%Date%': Date,
+		'%decodeURI%': decodeURI,
+		'%decodeURIComponent%': decodeURIComponent,
+		'%encodeURI%': encodeURI,
+		'%encodeURIComponent%': encodeURIComponent,
+		'%Error%': $Error,
+		'%eval%': eval, // eslint-disable-line no-eval
+		'%EvalError%': $EvalError,
+		'%Float16Array%': typeof Float16Array === 'undefined' ? undefined$1 : Float16Array,
+		'%Float32Array%': typeof Float32Array === 'undefined' ? undefined$1 : Float32Array,
+		'%Float64Array%': typeof Float64Array === 'undefined' ? undefined$1 : Float64Array,
+		'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined$1 : FinalizationRegistry,
+		'%Function%': $Function,
+		'%GeneratorFunction%': needsEval,
+		'%Int8Array%': typeof Int8Array === 'undefined' ? undefined$1 : Int8Array,
+		'%Int16Array%': typeof Int16Array === 'undefined' ? undefined$1 : Int16Array,
+		'%Int32Array%': typeof Int32Array === 'undefined' ? undefined$1 : Int32Array,
+		'%isFinite%': isFinite,
+		'%isNaN%': isNaN,
+		'%IteratorPrototype%': hasSymbols && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
+		'%JSON%': typeof JSON === 'object' ? JSON : undefined$1,
+		'%Map%': typeof Map === 'undefined' ? undefined$1 : Map,
+		'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols || !getProto ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
+		'%Math%': Math,
+		'%Number%': Number,
+		'%Object%': $Object,
+		'%Object.getOwnPropertyDescriptor%': $gOPD,
+		'%parseFloat%': parseFloat,
+		'%parseInt%': parseInt,
+		'%Promise%': typeof Promise === 'undefined' ? undefined$1 : Promise,
+		'%Proxy%': typeof Proxy === 'undefined' ? undefined$1 : Proxy,
+		'%RangeError%': $RangeError,
+		'%ReferenceError%': $ReferenceError,
+		'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
+		'%RegExp%': RegExp,
+		'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
+		'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols || !getProto ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
+		'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined$1 : SharedArrayBuffer,
+		'%String%': String,
+		'%StringIteratorPrototype%': hasSymbols && getProto ? getProto(''[Symbol.iterator]()) : undefined$1,
+		'%Symbol%': hasSymbols ? Symbol : undefined$1,
+		'%SyntaxError%': $SyntaxError,
+		'%ThrowTypeError%': ThrowTypeError,
+		'%TypedArray%': TypedArray,
+		'%TypeError%': $TypeError,
+		'%Uint8Array%': typeof Uint8Array === 'undefined' ? undefined$1 : Uint8Array,
+		'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined$1 : Uint8ClampedArray,
+		'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined$1 : Uint16Array,
+		'%Uint32Array%': typeof Uint32Array === 'undefined' ? undefined$1 : Uint32Array,
+		'%URIError%': $URIError,
+		'%WeakMap%': typeof WeakMap === 'undefined' ? undefined$1 : WeakMap,
+		'%WeakRef%': typeof WeakRef === 'undefined' ? undefined$1 : WeakRef,
+		'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet,
+
+		'%Function.prototype.call%': $call,
+		'%Function.prototype.apply%': $apply,
+		'%Object.defineProperty%': $defineProperty,
+		'%Object.getPrototypeOf%': $ObjectGPO,
+		'%Math.abs%': abs,
+		'%Math.floor%': floor,
+		'%Math.max%': max,
+		'%Math.min%': min,
+		'%Math.pow%': pow,
+		'%Math.round%': round,
+		'%Math.sign%': sign,
+		'%Reflect.getPrototypeOf%': $ReflectGPO
+	};
+
+	if (getProto) {
+		try {
+			null.error; // eslint-disable-line no-unused-expressions
+		} catch (e) {
+			// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+			var errorProto = getProto(getProto(e));
+			INTRINSICS['%Error.prototype%'] = errorProto;
+		}
+	}
+
+	var doEval = function doEval(name) {
+		var value;
+		if (name === '%AsyncFunction%') {
+			value = getEvalledConstructor('async function () {}');
+		} else if (name === '%GeneratorFunction%') {
+			value = getEvalledConstructor('function* () {}');
+		} else if (name === '%AsyncGeneratorFunction%') {
+			value = getEvalledConstructor('async function* () {}');
+		} else if (name === '%AsyncGenerator%') {
+			var fn = doEval('%AsyncGeneratorFunction%');
+			if (fn) {
+				value = fn.prototype;
+			}
+		} else if (name === '%AsyncIteratorPrototype%') {
+			var gen = doEval('%AsyncGenerator%');
+			if (gen && getProto) {
+				value = getProto(gen.prototype);
+			}
+		}
+
+		INTRINSICS[name] = value;
+
+		return value;
+	};
+
+	var LEGACY_ALIASES = {
+		__proto__: null,
+		'%ArrayBufferPrototype%': ['ArrayBuffer', 'prototype'],
+		'%ArrayPrototype%': ['Array', 'prototype'],
+		'%ArrayProto_entries%': ['Array', 'prototype', 'entries'],
+		'%ArrayProto_forEach%': ['Array', 'prototype', 'forEach'],
+		'%ArrayProto_keys%': ['Array', 'prototype', 'keys'],
+		'%ArrayProto_values%': ['Array', 'prototype', 'values'],
+		'%AsyncFunctionPrototype%': ['AsyncFunction', 'prototype'],
+		'%AsyncGenerator%': ['AsyncGeneratorFunction', 'prototype'],
+		'%AsyncGeneratorPrototype%': ['AsyncGeneratorFunction', 'prototype', 'prototype'],
+		'%BooleanPrototype%': ['Boolean', 'prototype'],
+		'%DataViewPrototype%': ['DataView', 'prototype'],
+		'%DatePrototype%': ['Date', 'prototype'],
+		'%ErrorPrototype%': ['Error', 'prototype'],
+		'%EvalErrorPrototype%': ['EvalError', 'prototype'],
+		'%Float32ArrayPrototype%': ['Float32Array', 'prototype'],
+		'%Float64ArrayPrototype%': ['Float64Array', 'prototype'],
+		'%FunctionPrototype%': ['Function', 'prototype'],
+		'%Generator%': ['GeneratorFunction', 'prototype'],
+		'%GeneratorPrototype%': ['GeneratorFunction', 'prototype', 'prototype'],
+		'%Int8ArrayPrototype%': ['Int8Array', 'prototype'],
+		'%Int16ArrayPrototype%': ['Int16Array', 'prototype'],
+		'%Int32ArrayPrototype%': ['Int32Array', 'prototype'],
+		'%JSONParse%': ['JSON', 'parse'],
+		'%JSONStringify%': ['JSON', 'stringify'],
+		'%MapPrototype%': ['Map', 'prototype'],
+		'%NumberPrototype%': ['Number', 'prototype'],
+		'%ObjectPrototype%': ['Object', 'prototype'],
+		'%ObjProto_toString%': ['Object', 'prototype', 'toString'],
+		'%ObjProto_valueOf%': ['Object', 'prototype', 'valueOf'],
+		'%PromisePrototype%': ['Promise', 'prototype'],
+		'%PromiseProto_then%': ['Promise', 'prototype', 'then'],
+		'%Promise_all%': ['Promise', 'all'],
+		'%Promise_reject%': ['Promise', 'reject'],
+		'%Promise_resolve%': ['Promise', 'resolve'],
+		'%RangeErrorPrototype%': ['RangeError', 'prototype'],
+		'%ReferenceErrorPrototype%': ['ReferenceError', 'prototype'],
+		'%RegExpPrototype%': ['RegExp', 'prototype'],
+		'%SetPrototype%': ['Set', 'prototype'],
+		'%SharedArrayBufferPrototype%': ['SharedArrayBuffer', 'prototype'],
+		'%StringPrototype%': ['String', 'prototype'],
+		'%SymbolPrototype%': ['Symbol', 'prototype'],
+		'%SyntaxErrorPrototype%': ['SyntaxError', 'prototype'],
+		'%TypedArrayPrototype%': ['TypedArray', 'prototype'],
+		'%TypeErrorPrototype%': ['TypeError', 'prototype'],
+		'%Uint8ArrayPrototype%': ['Uint8Array', 'prototype'],
+		'%Uint8ClampedArrayPrototype%': ['Uint8ClampedArray', 'prototype'],
+		'%Uint16ArrayPrototype%': ['Uint16Array', 'prototype'],
+		'%Uint32ArrayPrototype%': ['Uint32Array', 'prototype'],
+		'%URIErrorPrototype%': ['URIError', 'prototype'],
+		'%WeakMapPrototype%': ['WeakMap', 'prototype'],
+		'%WeakSetPrototype%': ['WeakSet', 'prototype']
+	};
+
+	var bind = requireFunctionBind();
+	var hasOwn = /*@__PURE__*/ requireHasown();
+	var $concat = bind.call($call, Array.prototype.concat);
+	var $spliceApply = bind.call($apply, Array.prototype.splice);
+	var $replace = bind.call($call, String.prototype.replace);
+	var $strSlice = bind.call($call, String.prototype.slice);
+	var $exec = bind.call($call, RegExp.prototype.exec);
+
+	/* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
+	var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
+	var reEscapeChar = /\\(\\)?/g; /** Used to match backslashes in property paths. */
+	var stringToPath = function stringToPath(string) {
+		var first = $strSlice(string, 0, 1);
+		var last = $strSlice(string, -1);
+		if (first === '%' && last !== '%') {
+			throw new $SyntaxError('invalid intrinsic syntax, expected closing `%`');
+		} else if (last === '%' && first !== '%') {
+			throw new $SyntaxError('invalid intrinsic syntax, expected opening `%`');
+		}
+		var result = [];
+		$replace(string, rePropName, function (match, number, quote, subString) {
+			result[result.length] = quote ? $replace(subString, reEscapeChar, '$1') : number || match;
+		});
+		return result;
+	};
+	/* end adaptation */
+
+	var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
+		var intrinsicName = name;
+		var alias;
+		if (hasOwn(LEGACY_ALIASES, intrinsicName)) {
+			alias = LEGACY_ALIASES[intrinsicName];
+			intrinsicName = '%' + alias[0] + '%';
+		}
+
+		if (hasOwn(INTRINSICS, intrinsicName)) {
+			var value = INTRINSICS[intrinsicName];
+			if (value === needsEval) {
+				value = doEval(intrinsicName);
+			}
+			if (typeof value === 'undefined' && !allowMissing) {
+				throw new $TypeError('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
+			}
+
+			return {
+				alias: alias,
+				name: intrinsicName,
+				value: value
+			};
+		}
+
+		throw new $SyntaxError('intrinsic ' + name + ' does not exist!');
+	};
+
+	getIntrinsic = function GetIntrinsic(name, allowMissing) {
+		if (typeof name !== 'string' || name.length === 0) {
+			throw new $TypeError('intrinsic name must be a non-empty string');
+		}
+		if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
+			throw new $TypeError('"allowMissing" argument must be a boolean');
+		}
+
+		if ($exec(/^%?[^%]*%?$/, name) === null) {
+			throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+		}
+		var parts = stringToPath(name);
+		var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
+
+		var intrinsic = getBaseIntrinsic('%' + intrinsicBaseName + '%', allowMissing);
+		var intrinsicRealName = intrinsic.name;
+		var value = intrinsic.value;
+		var skipFurtherCaching = false;
+
+		var alias = intrinsic.alias;
+		if (alias) {
+			intrinsicBaseName = alias[0];
+			$spliceApply(parts, $concat([0, 1], alias));
+		}
+
+		for (var i = 1, isOwn = true; i < parts.length; i += 1) {
+			var part = parts[i];
+			var first = $strSlice(part, 0, 1);
+			var last = $strSlice(part, -1);
+			if (
+				(
+					(first === '"' || first === "'" || first === '`')
+					|| (last === '"' || last === "'" || last === '`')
+				)
+				&& first !== last
+			) {
+				throw new $SyntaxError('property names with quotes must have matching quotes');
+			}
+			if (part === 'constructor' || !isOwn) {
+				skipFurtherCaching = true;
+			}
+
+			intrinsicBaseName += '.' + part;
+			intrinsicRealName = '%' + intrinsicBaseName + '%';
+
+			if (hasOwn(INTRINSICS, intrinsicRealName)) {
+				value = INTRINSICS[intrinsicRealName];
+			} else if (value != null) {
+				if (!(part in value)) {
+					if (!allowMissing) {
+						throw new $TypeError('base intrinsic for ' + name + ' exists, but the property is not available.');
+					}
+					return void 0;
+				}
+				if ($gOPD && (i + 1) >= parts.length) {
+					var desc = $gOPD(value, part);
+					isOwn = !!desc;
+
+					// By convention, when a data property is converted to an accessor
+					// property to emulate a data property that does not suffer from
+					// the override mistake, that accessor's getter is marked with
+					// an `originalValue` property. Here, when we detect this, we
+					// uphold the illusion by pretending to see that original data
+					// property, i.e., returning the value rather than the getter
+					// itself.
+					if (isOwn && 'get' in desc && !('originalValue' in desc.get)) {
+						value = desc.get;
+					} else {
+						value = value[part];
+					}
+				} else {
+					isOwn = hasOwn(value, part);
+					value = value[part];
+				}
+
+				if (isOwn && !skipFurtherCaching) {
+					INTRINSICS[intrinsicRealName] = value;
+				}
+			}
+		}
+		return value;
+	};
+	return getIntrinsic;
+}
+
+var shams;
+var hasRequiredShams;
+
+function requireShams () {
+	if (hasRequiredShams) return shams;
+	hasRequiredShams = 1;
+
+	var hasSymbols = requireShams$1();
+
+	/** @type {import('.')} */
+	shams = function hasToStringTagShams() {
+		return hasSymbols() && !!Symbol.toStringTag;
+	};
+	return shams;
+}
+
+var esSetTostringtag;
+var hasRequiredEsSetTostringtag;
+
+function requireEsSetTostringtag () {
+	if (hasRequiredEsSetTostringtag) return esSetTostringtag;
+	hasRequiredEsSetTostringtag = 1;
+
+	var GetIntrinsic = /*@__PURE__*/ requireGetIntrinsic();
+
+	var $defineProperty = GetIntrinsic('%Object.defineProperty%', true);
+
+	var hasToStringTag = requireShams()();
+	var hasOwn = /*@__PURE__*/ requireHasown();
+	var $TypeError = /*@__PURE__*/ requireType();
+
+	var toStringTag = hasToStringTag ? Symbol.toStringTag : null;
+
+	/** @type {import('.')} */
+	esSetTostringtag = function setToStringTag(object, value) {
+		var overrideIfSet = arguments.length > 2 && !!arguments[2] && arguments[2].force;
+		var nonConfigurable = arguments.length > 2 && !!arguments[2] && arguments[2].nonConfigurable;
+		if (
+			(typeof overrideIfSet !== 'undefined' && typeof overrideIfSet !== 'boolean')
+			|| (typeof nonConfigurable !== 'undefined' && typeof nonConfigurable !== 'boolean')
+		) {
+			throw new $TypeError('if provided, the `overrideIfSet` and `nonConfigurable` options must be booleans');
+		}
+		if (toStringTag && (overrideIfSet || !hasOwn(object, toStringTag))) {
+			if ($defineProperty) {
+				$defineProperty(object, toStringTag, {
+					configurable: !nonConfigurable,
+					enumerable: false,
+					value: value,
+					writable: false
+				});
+			} else {
+				object[toStringTag] = value; // eslint-disable-line no-param-reassign
+			}
+		}
+	};
+	return esSetTostringtag;
+}
+
 var populate;
 var hasRequiredPopulate;
 
@@ -12632,6 +13686,7 @@ function requireForm_data () {
 	var Stream = stream.Stream;
 	var mime = requireMimeTypes();
 	var asynckit = requireAsynckit();
+	var setToStringTag = /*@__PURE__*/ requireEsSetTostringtag();
 	var populate = requirePopulate();
 
 	// Public API
@@ -12726,7 +13781,7 @@ function requireForm_data () {
 	    FormData.LINE_BREAK.length;
 
 	  // empty or either doesn't have path or not an http response or not a stream
-	  if (!value || ( !value.path && !(value.readable && value.hasOwnProperty('httpVersion')) && !(value instanceof Stream))) {
+	  if (!value || ( !value.path && !(value.readable && Object.prototype.hasOwnProperty.call(value, 'httpVersion')) && !(value instanceof Stream))) {
 	    return;
 	  }
 
@@ -12737,8 +13792,7 @@ function requireForm_data () {
 	};
 
 	FormData.prototype._lengthRetriever = function(value, callback) {
-
-	  if (value.hasOwnProperty('fd')) {
+	  if (Object.prototype.hasOwnProperty.call(value, 'fd')) {
 
 	    // take read range into a account
 	    // `end` = Infinity –> read file till the end
@@ -12773,11 +13827,11 @@ function requireForm_data () {
 	    }
 
 	  // or http response
-	  } else if (value.hasOwnProperty('httpVersion')) {
+	  } else if (Object.prototype.hasOwnProperty.call(value, 'httpVersion')) {
 	    callback(null, +value.headers['content-length']);
 
 	  // or request stream http://github.com/mikeal/request
-	  } else if (value.hasOwnProperty('httpModule')) {
+	  } else if (Object.prototype.hasOwnProperty.call(value, 'httpModule')) {
 	    // wait till response come back
 	    value.on('response', function(response) {
 	      value.pause();
@@ -12817,22 +13871,23 @@ function requireForm_data () {
 
 	  var header;
 	  for (var prop in headers) {
-	    if (!headers.hasOwnProperty(prop)) continue;
-	    header = headers[prop];
+	    if (Object.prototype.hasOwnProperty.call(headers, prop)) {
+	      header = headers[prop];
 
-	    // skip nullish headers.
-	    if (header == null) {
-	      continue;
-	    }
+	      // skip nullish headers.
+	      if (header == null) {
+	        continue;
+	      }
 
-	    // convert all headers to arrays.
-	    if (!Array.isArray(header)) {
-	      header = [header];
-	    }
+	      // convert all headers to arrays.
+	      if (!Array.isArray(header)) {
+	        header = [header];
+	      }
 
-	    // add non-empty headers.
-	    if (header.length) {
-	      contents += prop + ': ' + header.join('; ') + FormData.LINE_BREAK;
+	      // add non-empty headers.
+	      if (header.length) {
+	        contents += prop + ': ' + header.join('; ') + FormData.LINE_BREAK;
+	      }
 	    }
 	  }
 
@@ -12853,7 +13908,7 @@ function requireForm_data () {
 	    // formidable and the browser add a name property
 	    // fs- and request- streams have path property
 	    filename = path.basename(options.filename || value.name || value.path);
-	  } else if (value.readable && value.hasOwnProperty('httpVersion')) {
+	  } else if (value.readable && Object.prototype.hasOwnProperty.call(value, 'httpVersion')) {
 	    // or try http response
 	    filename = path.basename(value.client._httpMessage.path || '');
 	  }
@@ -12881,7 +13936,7 @@ function requireForm_data () {
 	  }
 
 	  // or if it's http-reponse
-	  if (!contentType && value.readable && value.hasOwnProperty('httpVersion')) {
+	  if (!contentType && value.readable && Object.prototype.hasOwnProperty.call(value, 'httpVersion')) {
 	    contentType = value.headers['content-type'];
 	  }
 
@@ -12922,7 +13977,7 @@ function requireForm_data () {
 	  };
 
 	  for (header in userHeaders) {
-	    if (userHeaders.hasOwnProperty(header)) {
+	    if (Object.prototype.hasOwnProperty.call(userHeaders, header)) {
 	      formHeaders[header.toLowerCase()] = userHeaders[header];
 	    }
 	  }
@@ -12943,7 +13998,7 @@ function requireForm_data () {
 	};
 
 	FormData.prototype.getBuffer = function() {
-	  var dataBuffer = new Buffer.alloc( 0 );
+	  var dataBuffer = new Buffer.alloc(0);
 	  var boundary = this.getBoundary();
 
 	  // Create the form content. Add Line breaks to the end of data.
@@ -13123,6 +14178,7 @@ function requireForm_data () {
 	FormData.prototype.toString = function () {
 	  return '[object FormData]';
 	};
+	setToStringTag(FormData, 'FormData');
 	return form_data;
 }
 
@@ -13532,6 +14588,29 @@ var transitionalDefaults = {
 
 var URLSearchParams = require$$0$1.URLSearchParams;
 
+const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
+
+const DIGIT = '0123456789';
+
+const ALPHABET = {
+  DIGIT,
+  ALPHA,
+  ALPHA_DIGIT: ALPHA + ALPHA.toUpperCase() + DIGIT
+};
+
+const generateString = (size = 16, alphabet = ALPHABET.ALPHA_DIGIT) => {
+  let str = '';
+  const {length} = alphabet;
+  const randomValues = new Uint32Array(size);
+  crypto.randomFillSync(randomValues);
+  for (let i = 0; i < size; i++) {
+    str += alphabet[randomValues[i] % length];
+  }
+
+  return str;
+};
+
+
 var platform$1 = {
   isNode: true,
   classes: {
@@ -13539,6 +14618,8 @@ var platform$1 = {
     FormData: FormData$1,
     Blob: typeof Blob !== 'undefined' && Blob || null
   },
+  ALPHABET,
+  generateString,
   protocols: [ 'http', 'https', 'file', 'data' ]
 };
 
@@ -14309,8 +15390,9 @@ function combineURLs(baseURL, relativeURL) {
  *
  * @returns {string} The combined full path
  */
-function buildFullPath(baseURL, requestedURL) {
-  if (baseURL && !isAbsoluteURL(requestedURL)) {
+function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
+  let isRelativeUrl = !isAbsoluteURL(requestedURL);
+  if (baseURL && isRelativeUrl || allowAbsoluteUrls == false) {
     return combineURLs(baseURL, requestedURL);
   }
   return requestedURL;
@@ -14473,7 +15555,7 @@ function requireMs () {
 	 * @api public
 	 */
 
-	ms = function(val, options) {
+	ms = function (val, options) {
 	  options = options || {};
 	  var type = typeof val;
 	  if (type === 'string' && val.length > 0) {
@@ -14786,24 +15868,62 @@ function requireCommon () {
 			createDebug.names = [];
 			createDebug.skips = [];
 
-			let i;
-			const split = (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/);
-			const len = split.length;
+			const split = (typeof namespaces === 'string' ? namespaces : '')
+				.trim()
+				.replace(' ', ',')
+				.split(',')
+				.filter(Boolean);
 
-			for (i = 0; i < len; i++) {
-				if (!split[i]) {
-					// ignore empty strings
-					continue;
-				}
-
-				namespaces = split[i].replace(/\*/g, '.*?');
-
-				if (namespaces[0] === '-') {
-					createDebug.skips.push(new RegExp('^' + namespaces.slice(1) + '$'));
+			for (const ns of split) {
+				if (ns[0] === '-') {
+					createDebug.skips.push(ns.slice(1));
 				} else {
-					createDebug.names.push(new RegExp('^' + namespaces + '$'));
+					createDebug.names.push(ns);
 				}
 			}
+		}
+
+		/**
+		 * Checks if the given string matches a namespace template, honoring
+		 * asterisks as wildcards.
+		 *
+		 * @param {String} search
+		 * @param {String} template
+		 * @return {Boolean}
+		 */
+		function matchesTemplate(search, template) {
+			let searchIndex = 0;
+			let templateIndex = 0;
+			let starIndex = -1;
+			let matchIndex = 0;
+
+			while (searchIndex < search.length) {
+				if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === '*')) {
+					// Match character or proceed with wildcard
+					if (template[templateIndex] === '*') {
+						starIndex = templateIndex;
+						matchIndex = searchIndex;
+						templateIndex++; // Skip the '*'
+					} else {
+						searchIndex++;
+						templateIndex++;
+					}
+				} else if (starIndex !== -1) { // eslint-disable-line no-negated-condition
+					// Backtrack to the last '*' and try to match more characters
+					templateIndex = starIndex + 1;
+					matchIndex++;
+					searchIndex = matchIndex;
+				} else {
+					return false; // No match
+				}
+			}
+
+			// Handle trailing '*' in template
+			while (templateIndex < template.length && template[templateIndex] === '*') {
+				templateIndex++;
+			}
+
+			return templateIndex === template.length;
 		}
 
 		/**
@@ -14814,8 +15934,8 @@ function requireCommon () {
 		*/
 		function disable() {
 			const namespaces = [
-				...createDebug.names.map(toNamespace),
-				...createDebug.skips.map(toNamespace).map(namespace => '-' + namespace)
+				...createDebug.names,
+				...createDebug.skips.map(namespace => '-' + namespace)
 			].join(',');
 			createDebug.enable('');
 			return namespaces;
@@ -14829,39 +15949,19 @@ function requireCommon () {
 		* @api public
 		*/
 		function enabled(name) {
-			if (name[name.length - 1] === '*') {
-				return true;
-			}
-
-			let i;
-			let len;
-
-			for (i = 0, len = createDebug.skips.length; i < len; i++) {
-				if (createDebug.skips[i].test(name)) {
+			for (const skip of createDebug.skips) {
+				if (matchesTemplate(name, skip)) {
 					return false;
 				}
 			}
 
-			for (i = 0, len = createDebug.names.length; i < len; i++) {
-				if (createDebug.names[i].test(name)) {
+			for (const ns of createDebug.names) {
+				if (matchesTemplate(name, ns)) {
 					return true;
 				}
 			}
 
 			return false;
-		}
-
-		/**
-		* Convert regexp to namespace
-		*
-		* @param {RegExp} regxep
-		* @return {String} namespace
-		* @api private
-		*/
-		function toNamespace(regexp) {
-			return regexp.toString()
-				.substring(2, regexp.toString().length - 2)
-				.replace(/\.\*\?$/, '*');
 		}
 
 		/**
@@ -15032,6 +16132,7 @@ function requireBrowser () {
 
 			// Is webkit? http://stackoverflow.com/a/16459606/376773
 			// document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
+			// eslint-disable-next-line no-return-assign
 			return (typeof document !== 'undefined' && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance) ||
 				// Is firebug? http://stackoverflow.com/a/398120/376773
 				(typeof window !== 'undefined' && window.console && (window.console.firebug || (window.console.exception && window.console.table))) ||
@@ -16349,7 +17450,7 @@ function requireFollowRedirects () {
 var followRedirectsExports = requireFollowRedirects();
 var followRedirects = /*@__PURE__*/getDefaultExportFromCjs(followRedirectsExports);
 
-const VERSION$1 = "1.7.9";
+const VERSION$1 = "1.8.3";
 
 function parseProtocol(url) {
   const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
@@ -16555,7 +17656,7 @@ const readBlob = async function* (blob) {
   }
 };
 
-const BOUNDARY_ALPHABET = utils$1.ALPHABET.ALPHA_DIGIT + '-_';
+const BOUNDARY_ALPHABET = platform.ALPHABET.ALPHA_DIGIT + '-_';
 
 const textEncoder = typeof TextEncoder === 'function' ? new TextEncoder() : new require$$1.TextEncoder();
 
@@ -16615,7 +17716,7 @@ const formDataToStream = (form, headersHandler, options) => {
   const {
     tag = 'form-data-boundary',
     size = 25,
-    boundary = tag + '-' + utils$1.generateString(size, BOUNDARY_ALPHABET)
+    boundary = tag + '-' + platform.generateString(size, BOUNDARY_ALPHABET)
   } = options || {};
 
   if(!utils$1.isFormData(form)) {
@@ -17034,7 +18135,7 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
     }
 
     // Parse url
-    const fullPath = buildFullPath(config.baseURL, config.url);
+    const fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
     const parsed = new URL(fullPath, platform.hasBrowserEnv ? platform.origin : undefined);
     const protocol = parsed.protocol || supportedProtocols[0];
 
@@ -17657,7 +18758,7 @@ var resolveConfig = (config) => {
 
   newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
-  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -18563,6 +19664,13 @@ let Axios$1 = class Axios {
       }
     }
 
+    // Set config.allowAbsoluteUrls
+    if (config.allowAbsoluteUrls !== undefined) ; else if (this.defaults.allowAbsoluteUrls !== undefined) {
+      config.allowAbsoluteUrls = this.defaults.allowAbsoluteUrls;
+    } else {
+      config.allowAbsoluteUrls = true;
+    }
+
     validator.assertOptions(config, {
       baseUrl: validators.spelling('baseURL'),
       withXsrfToken: validators.spelling('withXSRFToken')
@@ -18658,7 +19766,7 @@ let Axios$1 = class Axios {
 
   getUri(config) {
     config = mergeConfig$1(this.defaults, config);
-    const fullPath = buildFullPath(config.baseURL, config.url);
+    const fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
     return buildURL(fullPath, config.params, config.paramsSerializer);
   }
 };
@@ -20005,6 +21113,345 @@ function requireGracefulFs () {
 var gracefulFsExports = requireGracefulFs();
 var fs = /*@__PURE__*/getDefaultExportFromCjs(gracefulFsExports);
 
+var cjs = {};
+
+var posix = {};
+
+var hasRequiredPosix;
+
+function requirePosix () {
+	if (hasRequiredPosix) return posix;
+	hasRequiredPosix = 1;
+	/**
+	 * This is the Posix implementation of isexe, which uses the file
+	 * mode and uid/gid values.
+	 *
+	 * @module
+	 */
+	Object.defineProperty(posix, "__esModule", { value: true });
+	posix.sync = posix.isexe = void 0;
+	const fs_1 = require$$0$2;
+	const promises_1 = require$$1$3;
+	/**
+	 * Determine whether a path is executable according to the mode and
+	 * current (or specified) user and group IDs.
+	 */
+	const isexe = async (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat(await (0, promises_1.stat)(path), options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	posix.isexe = isexe;
+	/**
+	 * Synchronously determine whether a path is executable according to
+	 * the mode and current (or specified) user and group IDs.
+	 */
+	const sync = (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat((0, fs_1.statSync)(path), options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	posix.sync = sync;
+	const checkStat = (stat, options) => stat.isFile() && checkMode(stat, options);
+	const checkMode = (stat, options) => {
+	    const myUid = options.uid ?? process.getuid?.();
+	    const myGroups = options.groups ?? process.getgroups?.() ?? [];
+	    const myGid = options.gid ?? process.getgid?.() ?? myGroups[0];
+	    if (myUid === undefined || myGid === undefined) {
+	        throw new Error('cannot get uid or gid');
+	    }
+	    const groups = new Set([myGid, ...myGroups]);
+	    const mod = stat.mode;
+	    const uid = stat.uid;
+	    const gid = stat.gid;
+	    const u = parseInt('100', 8);
+	    const g = parseInt('010', 8);
+	    const o = parseInt('001', 8);
+	    const ug = u | g;
+	    return !!(mod & o ||
+	        (mod & g && groups.has(gid)) ||
+	        (mod & u && uid === myUid) ||
+	        (mod & ug && myUid === 0));
+	};
+	
+	return posix;
+}
+
+var win32 = {};
+
+var hasRequiredWin32;
+
+function requireWin32 () {
+	if (hasRequiredWin32) return win32;
+	hasRequiredWin32 = 1;
+	/**
+	 * This is the Windows implementation of isexe, which uses the file
+	 * extension and PATHEXT setting.
+	 *
+	 * @module
+	 */
+	Object.defineProperty(win32, "__esModule", { value: true });
+	win32.sync = win32.isexe = void 0;
+	const fs_1 = require$$0$2;
+	const promises_1 = require$$1$3;
+	/**
+	 * Determine whether a path is executable based on the file extension
+	 * and PATHEXT environment variable (or specified pathExt option)
+	 */
+	const isexe = async (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat(await (0, promises_1.stat)(path), path, options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	win32.isexe = isexe;
+	/**
+	 * Synchronously determine whether a path is executable based on the file
+	 * extension and PATHEXT environment variable (or specified pathExt option)
+	 */
+	const sync = (path, options = {}) => {
+	    const { ignoreErrors = false } = options;
+	    try {
+	        return checkStat((0, fs_1.statSync)(path), path, options);
+	    }
+	    catch (e) {
+	        const er = e;
+	        if (ignoreErrors || er.code === 'EACCES')
+	            return false;
+	        throw er;
+	    }
+	};
+	win32.sync = sync;
+	const checkPathExt = (path, options) => {
+	    const { pathExt = process.env.PATHEXT || '' } = options;
+	    const peSplit = pathExt.split(';');
+	    if (peSplit.indexOf('') !== -1) {
+	        return true;
+	    }
+	    for (let i = 0; i < peSplit.length; i++) {
+	        const p = peSplit[i].toLowerCase();
+	        const ext = path.substring(path.length - p.length).toLowerCase();
+	        if (p && ext === p) {
+	            return true;
+	        }
+	    }
+	    return false;
+	};
+	const checkStat = (stat, path, options) => stat.isFile() && checkPathExt(path, options);
+	
+	return win32;
+}
+
+var options = {};
+
+var hasRequiredOptions;
+
+function requireOptions () {
+	if (hasRequiredOptions) return options;
+	hasRequiredOptions = 1;
+	Object.defineProperty(options, "__esModule", { value: true });
+	
+	return options;
+}
+
+var hasRequiredCjs;
+
+function requireCjs () {
+	if (hasRequiredCjs) return cjs;
+	hasRequiredCjs = 1;
+	(function (exports) {
+		var __createBinding = (cjs && cjs.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    var desc = Object.getOwnPropertyDescriptor(m, k);
+		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+		      desc = { enumerable: true, get: function() { return m[k]; } };
+		    }
+		    Object.defineProperty(o, k2, desc);
+		}) : (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    o[k2] = m[k];
+		}));
+		var __setModuleDefault = (cjs && cjs.__setModuleDefault) || (Object.create ? (function(o, v) {
+		    Object.defineProperty(o, "default", { enumerable: true, value: v });
+		}) : function(o, v) {
+		    o["default"] = v;
+		});
+		var __importStar = (cjs && cjs.__importStar) || function (mod) {
+		    if (mod && mod.__esModule) return mod;
+		    var result = {};
+		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+		    __setModuleDefault(result, mod);
+		    return result;
+		};
+		var __exportStar = (cjs && cjs.__exportStar) || function(m, exports) {
+		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
+		const posix = __importStar(requirePosix());
+		exports.posix = posix;
+		const win32 = __importStar(requireWin32());
+		exports.win32 = win32;
+		__exportStar(requireOptions(), exports);
+		const platform = process.env._ISEXE_TEST_PLATFORM_ || process.platform;
+		const impl = platform === 'win32' ? win32 : posix;
+		/**
+		 * Determine whether a path is executable on the current platform.
+		 */
+		exports.isexe = impl.isexe;
+		/**
+		 * Synchronously determine whether a path is executable on the
+		 * current platform.
+		 */
+		exports.sync = impl.sync;
+		
+	} (cjs));
+	return cjs;
+}
+
+var lib;
+var hasRequiredLib;
+
+function requireLib () {
+	if (hasRequiredLib) return lib;
+	hasRequiredLib = 1;
+	const { isexe, sync: isexeSync } = requireCjs();
+	const { join, delimiter, sep, posix } = require$$1$1;
+
+	const isWindows = process.platform === 'win32';
+
+	// used to check for slashed in commands passed in. always checks for the posix
+	// seperator on all platforms, and checks for the current separator when not on
+	// a posix platform. don't use the isWindows check for this since that is mocked
+	// in tests but we still need the code to actually work when called. that is also
+	// why it is ignored from coverage.
+	/* istanbul ignore next */
+	const rSlash = new RegExp(`[${posix.sep}${sep === posix.sep ? '' : sep}]`.replace(/(\\)/g, '\\$1'));
+	const rRel = new RegExp(`^\\.${rSlash.source}`);
+
+	const getNotFoundError = (cmd) =>
+	  Object.assign(new Error(`not found: ${cmd}`), { code: 'ENOENT' });
+
+	const getPathInfo = (cmd, {
+	  path: optPath = process.env.PATH,
+	  pathExt: optPathExt = process.env.PATHEXT,
+	  delimiter: optDelimiter = delimiter,
+	}) => {
+	  // If it has a slash, then we don't bother searching the pathenv.
+	  // just check the file itself, and that's it.
+	  const pathEnv = cmd.match(rSlash) ? [''] : [
+	    // windows always checks the cwd first
+	    ...(isWindows ? [process.cwd()] : []),
+	    ...(optPath || /* istanbul ignore next: very unusual */ '').split(optDelimiter),
+	  ];
+
+	  if (isWindows) {
+	    const pathExtExe = optPathExt ||
+	      ['.EXE', '.CMD', '.BAT', '.COM'].join(optDelimiter);
+	    const pathExt = pathExtExe.split(optDelimiter).flatMap((item) => [item, item.toLowerCase()]);
+	    if (cmd.includes('.') && pathExt[0] !== '') {
+	      pathExt.unshift('');
+	    }
+	    return { pathEnv, pathExt, pathExtExe }
+	  }
+
+	  return { pathEnv, pathExt: [''] }
+	};
+
+	const getPathPart = (raw, cmd) => {
+	  const pathPart = /^".*"$/.test(raw) ? raw.slice(1, -1) : raw;
+	  const prefix = !pathPart && rRel.test(cmd) ? cmd.slice(0, 2) : '';
+	  return prefix + join(pathPart, cmd)
+	};
+
+	const which = async (cmd, opt = {}) => {
+	  const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+	  const found = [];
+
+	  for (const envPart of pathEnv) {
+	    const p = getPathPart(envPart, cmd);
+
+	    for (const ext of pathExt) {
+	      const withExt = p + ext;
+	      const is = await isexe(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+	      if (is) {
+	        if (!opt.all) {
+	          return withExt
+	        }
+	        found.push(withExt);
+	      }
+	    }
+	  }
+
+	  if (opt.all && found.length) {
+	    return found
+	  }
+
+	  if (opt.nothrow) {
+	    return null
+	  }
+
+	  throw getNotFoundError(cmd)
+	};
+
+	const whichSync = (cmd, opt = {}) => {
+	  const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+	  const found = [];
+
+	  for (const pathEnvPart of pathEnv) {
+	    const p = getPathPart(pathEnvPart, cmd);
+
+	    for (const ext of pathExt) {
+	      const withExt = p + ext;
+	      const is = isexeSync(withExt, { pathExt: pathExtExe, ignoreErrors: true });
+	      if (is) {
+	        if (!opt.all) {
+	          return withExt
+	        }
+	        found.push(withExt);
+	      }
+	    }
+	  }
+
+	  if (opt.all && found.length) {
+	    return found
+	  }
+
+	  if (opt.nothrow) {
+	    return null
+	  }
+
+	  throw getNotFoundError(cmd)
+	};
+
+	lib = which;
+	which.sync = whichSync;
+	return lib;
+}
+
+var libExports = requireLib();
+var which = /*@__PURE__*/getDefaultExportFromCjs(libExports);
+
 const LINE_ENDING = isWin ? '\r' : '\n';
 async function initBatchFile(path, data) {
     try {
@@ -20105,17 +21552,26 @@ function determineShell() {
             return getPowerShellVersion() >= 5 ? 'pwsh.exe' : 'powershell.exe';
     }
 }
+async function checkWhich(name) {
+    try {
+        await which(name);
+        return true;
+    }
+    catch {
+        return false;
+    }
+}
 
 const BAT_FILE_NAME$b = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
-async function getRunCommands$g(dir) {
+async function getRunCommands$h(dir) {
     return await utilRunCommands(BAT_FILE_NAME$b, dir, DEFAULT_BATCH_DATA$d);
 }
-const Rrew123_MM = { getRunCommands: getRunCommands$g };
+const Rrew123_MM = { getRunCommands: getRunCommands$h };
 
 const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
-async function getRunCommands$f(dir) {
+async function getRunCommands$g(dir) {
     return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$c);
 }
 async function saveArgs$c(args, cardDir) {
@@ -20124,17 +21580,17 @@ async function saveArgs$c(args, cardDir) {
 async function readArgs$c(cardDir) {
     return await utilReadArgs(BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$c, parseStringToArgs, cardDir);
 }
-const Gitmylo_MM = { getRunCommands: getRunCommands$f, readArgs: readArgs$c, saveArgs: saveArgs$c };
+const Gitmylo_MM = { getRunCommands: getRunCommands$g, readArgs: readArgs$c, saveArgs: saveArgs$c };
 
 const BAT_FILE_NAME$9 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
-async function getRunCommands$e(dir) {
+async function getRunCommands$f(dir) {
     return await utilRunCommands(BAT_FILE_NAME$9, dir);
 }
-const Rsx_MM = { getRunCommands: getRunCommands$e };
+const Rsx_MM = { getRunCommands: getRunCommands$f };
 
 const BAT_FILE_NAME$8 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
-async function getRunCommands$d(dir) {
+async function getRunCommands$e(dir) {
     return await utilRunCommands(BAT_FILE_NAME$8, dir, DEFAULT_BATCH_DATA$b);
 }
 async function saveArgs$b(args, cardDir) {
@@ -20143,7 +21599,7 @@ async function saveArgs$b(args, cardDir) {
 async function readArgs$b(cardDir) {
     return await utilReadArgs(BAT_FILE_NAME$8, DEFAULT_BATCH_DATA$b, parseStringToArgs$1, cardDir);
 }
-const Comfy_MM = { getRunCommands: getRunCommands$d, readArgs: readArgs$b, saveArgs: saveArgs$b };
+const Comfy_MM = { getRunCommands: getRunCommands$e, readArgs: readArgs$b, saveArgs: saveArgs$b };
 
 const BAT_FILE_NAME$7 = 'lynx-user.bat';
 const DEFAULT_BATCH_DATA$a = '@echo off\n' +
@@ -20155,7 +21611,7 @@ const DEFAULT_BATCH_DATA$a = '@echo off\n' +
     '\n' +
     '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
     '\npause';
-async function getRunCommands$c(dir) {
+async function getRunCommands$d(dir) {
     return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$a);
 }
 async function saveArgs$a(args, cardDir) {
@@ -20164,7 +21620,7 @@ async function saveArgs$a(args, cardDir) {
 async function readArgs$a(cardDir) {
     return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$a, parseStringToArgs$2, cardDir);
 }
-const ComfyZluda_MM = { getRunCommands: getRunCommands$c, readArgs: readArgs$a, saveArgs: saveArgs$a };
+const ComfyZluda_MM = { getRunCommands: getRunCommands$d, readArgs: readArgs$a, saveArgs: saveArgs$a };
 
 var re = {exports: {}};
 
@@ -22823,7 +24279,7 @@ var semverExports = requireSemver();
 
 const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
-async function getRunCommands$b(dir) {
+async function getRunCommands$c(dir) {
     return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$9);
 }
 async function saveArgs$9(args, cardDir) {
@@ -22836,7 +24292,7 @@ async function getLatest() {
     const { owner, repo } = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
     return await getLatestNonRCReleaseAndAsset(owner, repo, 'InvokeAI-installer');
 }
-async function updateAvailable$4(lynxApi) {
+async function updateAvailable$5(lynxApi) {
     const installedVersion = lynxApi.storage.get(INSTALLED_VERSION_KEY);
     if (!installedVersion)
         return false;
@@ -22845,14 +24301,14 @@ async function updateAvailable$4(lynxApi) {
         return false;
     return semverExports.compare(installedVersion, latestVersion.version) === -1;
 }
-function mainIpc$2(ipc) {
+function mainIpc$3(ipc) {
     ipc.handle('get-latest', getLatest);
 }
-const Invoke_MM = { getRunCommands: getRunCommands$b, updateAvailable: updateAvailable$4, mainIpc: mainIpc$2, saveArgs: saveArgs$9, readArgs: readArgs$9 };
+const Invoke_MM = { getRunCommands: getRunCommands$c, updateAvailable: updateAvailable$5, mainIpc: mainIpc$3, saveArgs: saveArgs$9, readArgs: readArgs$9 };
 
 const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
-async function getRunCommands$a(dir) {
+async function getRunCommands$b(dir) {
     return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$8);
 }
 async function saveArgs$8(args, cardDir) {
@@ -22861,21 +24317,21 @@ async function saveArgs$8(args, cardDir) {
 async function readArgs$8(cardDir) {
     return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$8, parseStringToArgs$4, cardDir);
 }
-const Bmaltais_MM = { getRunCommands: getRunCommands$a, readArgs: readArgs$8, saveArgs: saveArgs$8 };
+const Bmaltais_MM = { getRunCommands: getRunCommands$b, readArgs: readArgs$8, saveArgs: saveArgs$8 };
 
 const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
-async function getRunCommands$9(dir) {
+async function getRunCommands$a(dir) {
     return await utilRunCommands(BAT_FILE_NAME$4, dir);
 }
-async function updateAvailable$3(lynxApi) {
+async function updateAvailable$4(lynxApi) {
     return await lynxApi.isPullAvailable;
 }
-const Nerogar_MM = { getRunCommands: getRunCommands$9, updateAvailable: updateAvailable$3 };
+const Nerogar_MM = { getRunCommands: getRunCommands$a, updateAvailable: updateAvailable$4 };
 
 const CONFIG_FILE$3 = isWin ? 'webui-user.bat' : 'webui-user.sh';
 const EXEC_FILE$1 = isWin ? 'webui-user.bat' : 'webui.sh';
 const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$8(dir) {
+async function getRunCommands$9(dir) {
     return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$7);
 }
 async function saveArgs$7(args, cardDir) {
@@ -22884,12 +24340,12 @@ async function saveArgs$7(args, cardDir) {
 async function readArgs$7(cardDir) {
     return await utilReadArgs(CONFIG_FILE$3, DEFAULT_BATCH_DATA$7, parseStringToArgs$5, cardDir);
 }
-const A1_MM = { getRunCommands: getRunCommands$8, readArgs: readArgs$7, saveArgs: saveArgs$7 };
+const A1_MM = { getRunCommands: getRunCommands$9, readArgs: readArgs$7, saveArgs: saveArgs$7 };
 
 const CONFIG_FILE$2 = isWin ? 'webui-user.bat' : 'webui-user.sh';
 const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
 const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$7(dir) {
+async function getRunCommands$8(dir) {
     return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$6);
 }
 async function saveArgs$6(args, cardDir) {
@@ -22898,11 +24354,11 @@ async function saveArgs$6(args, cardDir) {
 async function readArgs$6(cardDir) {
     return await utilReadArgs(CONFIG_FILE$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$6, cardDir);
 }
-const Ls_MM = { getRunCommands: getRunCommands$7, readArgs: readArgs$6, saveArgs: saveArgs$6 };
+const Ls_MM = { getRunCommands: getRunCommands$8, readArgs: readArgs$6, saveArgs: saveArgs$6 };
 
 const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
-async function getRunCommands$6(dir) {
+async function getRunCommands$7(dir) {
     return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$5);
 }
 async function saveArgs$5(args, cardDir) {
@@ -22911,13 +24367,13 @@ async function saveArgs$5(args, cardDir) {
 async function readArgs$5(cardDir) {
     return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$5, parseStringToArgs$7, cardDir);
 }
-const Vlad_MM = { getRunCommands: getRunCommands$6, readArgs: readArgs$5, saveArgs: saveArgs$5 };
+const Vlad_MM = { getRunCommands: getRunCommands$7, readArgs: readArgs$5, saveArgs: saveArgs$5 };
 
 const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$4 = isWin
     ? '@echo off\n\ncall launch-windows.bat'
     : '#!/bin/bash\n\nbash ./launch-linux.sh';
-async function getRunCommands$5(dir) {
+async function getRunCommands$6(dir) {
     return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$4);
 }
 async function saveArgs$4(args, cardDir) {
@@ -22926,7 +24382,18 @@ async function saveArgs$4(args, cardDir) {
 async function readArgs$4(cardDir) {
     return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$4, parseStringToArgs$8, cardDir);
 }
-const McMonkey_MM = { getRunCommands: getRunCommands$5, readArgs: readArgs$4, saveArgs: saveArgs$4 };
+const McMonkey_MM = { getRunCommands: getRunCommands$6, readArgs: readArgs$4, saveArgs: saveArgs$4 };
+
+async function getRunCommands$5() {
+    return `npm run dev ${LINE_ENDING}`;
+}
+function mainIpc$2(ipc) {
+    ipc.handle('is_nodejs_installed', () => checkWhich('node'));
+}
+async function updateAvailable$3(lynxApi) {
+    return await lynxApi.isPullAvailable;
+}
+const BOLT_DIY_MM = { getRunCommands: getRunCommands$5, mainIpc: mainIpc$2, updateAvailable: updateAvailable$3 };
 
 var treeKill$1;
 var hasRequiredTreeKill;
@@ -23057,345 +24524,6 @@ function requireTreeKill () {
 var treeKillExports = requireTreeKill();
 var treeKill = /*@__PURE__*/getDefaultExportFromCjs(treeKillExports);
 
-var cjs = {};
-
-var posix = {};
-
-var hasRequiredPosix;
-
-function requirePosix () {
-	if (hasRequiredPosix) return posix;
-	hasRequiredPosix = 1;
-	/**
-	 * This is the Posix implementation of isexe, which uses the file
-	 * mode and uid/gid values.
-	 *
-	 * @module
-	 */
-	Object.defineProperty(posix, "__esModule", { value: true });
-	posix.sync = posix.isexe = void 0;
-	const fs_1 = require$$0$2;
-	const promises_1 = require$$1$3;
-	/**
-	 * Determine whether a path is executable according to the mode and
-	 * current (or specified) user and group IDs.
-	 */
-	const isexe = async (path, options = {}) => {
-	    const { ignoreErrors = false } = options;
-	    try {
-	        return checkStat(await (0, promises_1.stat)(path), options);
-	    }
-	    catch (e) {
-	        const er = e;
-	        if (ignoreErrors || er.code === 'EACCES')
-	            return false;
-	        throw er;
-	    }
-	};
-	posix.isexe = isexe;
-	/**
-	 * Synchronously determine whether a path is executable according to
-	 * the mode and current (or specified) user and group IDs.
-	 */
-	const sync = (path, options = {}) => {
-	    const { ignoreErrors = false } = options;
-	    try {
-	        return checkStat((0, fs_1.statSync)(path), options);
-	    }
-	    catch (e) {
-	        const er = e;
-	        if (ignoreErrors || er.code === 'EACCES')
-	            return false;
-	        throw er;
-	    }
-	};
-	posix.sync = sync;
-	const checkStat = (stat, options) => stat.isFile() && checkMode(stat, options);
-	const checkMode = (stat, options) => {
-	    const myUid = options.uid ?? process.getuid?.();
-	    const myGroups = options.groups ?? process.getgroups?.() ?? [];
-	    const myGid = options.gid ?? process.getgid?.() ?? myGroups[0];
-	    if (myUid === undefined || myGid === undefined) {
-	        throw new Error('cannot get uid or gid');
-	    }
-	    const groups = new Set([myGid, ...myGroups]);
-	    const mod = stat.mode;
-	    const uid = stat.uid;
-	    const gid = stat.gid;
-	    const u = parseInt('100', 8);
-	    const g = parseInt('010', 8);
-	    const o = parseInt('001', 8);
-	    const ug = u | g;
-	    return !!(mod & o ||
-	        (mod & g && groups.has(gid)) ||
-	        (mod & u && uid === myUid) ||
-	        (mod & ug && myUid === 0));
-	};
-	
-	return posix;
-}
-
-var win32 = {};
-
-var hasRequiredWin32;
-
-function requireWin32 () {
-	if (hasRequiredWin32) return win32;
-	hasRequiredWin32 = 1;
-	/**
-	 * This is the Windows implementation of isexe, which uses the file
-	 * extension and PATHEXT setting.
-	 *
-	 * @module
-	 */
-	Object.defineProperty(win32, "__esModule", { value: true });
-	win32.sync = win32.isexe = void 0;
-	const fs_1 = require$$0$2;
-	const promises_1 = require$$1$3;
-	/**
-	 * Determine whether a path is executable based on the file extension
-	 * and PATHEXT environment variable (or specified pathExt option)
-	 */
-	const isexe = async (path, options = {}) => {
-	    const { ignoreErrors = false } = options;
-	    try {
-	        return checkStat(await (0, promises_1.stat)(path), path, options);
-	    }
-	    catch (e) {
-	        const er = e;
-	        if (ignoreErrors || er.code === 'EACCES')
-	            return false;
-	        throw er;
-	    }
-	};
-	win32.isexe = isexe;
-	/**
-	 * Synchronously determine whether a path is executable based on the file
-	 * extension and PATHEXT environment variable (or specified pathExt option)
-	 */
-	const sync = (path, options = {}) => {
-	    const { ignoreErrors = false } = options;
-	    try {
-	        return checkStat((0, fs_1.statSync)(path), path, options);
-	    }
-	    catch (e) {
-	        const er = e;
-	        if (ignoreErrors || er.code === 'EACCES')
-	            return false;
-	        throw er;
-	    }
-	};
-	win32.sync = sync;
-	const checkPathExt = (path, options) => {
-	    const { pathExt = process.env.PATHEXT || '' } = options;
-	    const peSplit = pathExt.split(';');
-	    if (peSplit.indexOf('') !== -1) {
-	        return true;
-	    }
-	    for (let i = 0; i < peSplit.length; i++) {
-	        const p = peSplit[i].toLowerCase();
-	        const ext = path.substring(path.length - p.length).toLowerCase();
-	        if (p && ext === p) {
-	            return true;
-	        }
-	    }
-	    return false;
-	};
-	const checkStat = (stat, path, options) => stat.isFile() && checkPathExt(path, options);
-	
-	return win32;
-}
-
-var options = {};
-
-var hasRequiredOptions;
-
-function requireOptions () {
-	if (hasRequiredOptions) return options;
-	hasRequiredOptions = 1;
-	Object.defineProperty(options, "__esModule", { value: true });
-	
-	return options;
-}
-
-var hasRequiredCjs;
-
-function requireCjs () {
-	if (hasRequiredCjs) return cjs;
-	hasRequiredCjs = 1;
-	(function (exports) {
-		var __createBinding = (cjs && cjs.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-		    if (k2 === undefined) k2 = k;
-		    var desc = Object.getOwnPropertyDescriptor(m, k);
-		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-		      desc = { enumerable: true, get: function() { return m[k]; } };
-		    }
-		    Object.defineProperty(o, k2, desc);
-		}) : (function(o, m, k, k2) {
-		    if (k2 === undefined) k2 = k;
-		    o[k2] = m[k];
-		}));
-		var __setModuleDefault = (cjs && cjs.__setModuleDefault) || (Object.create ? (function(o, v) {
-		    Object.defineProperty(o, "default", { enumerable: true, value: v });
-		}) : function(o, v) {
-		    o["default"] = v;
-		});
-		var __importStar = (cjs && cjs.__importStar) || function (mod) {
-		    if (mod && mod.__esModule) return mod;
-		    var result = {};
-		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-		    __setModuleDefault(result, mod);
-		    return result;
-		};
-		var __exportStar = (cjs && cjs.__exportStar) || function(m, exports) {
-		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-		};
-		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
-		const posix = __importStar(requirePosix());
-		exports.posix = posix;
-		const win32 = __importStar(requireWin32());
-		exports.win32 = win32;
-		__exportStar(requireOptions(), exports);
-		const platform = process.env._ISEXE_TEST_PLATFORM_ || process.platform;
-		const impl = platform === 'win32' ? win32 : posix;
-		/**
-		 * Determine whether a path is executable on the current platform.
-		 */
-		exports.isexe = impl.isexe;
-		/**
-		 * Synchronously determine whether a path is executable on the
-		 * current platform.
-		 */
-		exports.sync = impl.sync;
-		
-	} (cjs));
-	return cjs;
-}
-
-var lib;
-var hasRequiredLib;
-
-function requireLib () {
-	if (hasRequiredLib) return lib;
-	hasRequiredLib = 1;
-	const { isexe, sync: isexeSync } = requireCjs();
-	const { join, delimiter, sep, posix } = require$$1$1;
-
-	const isWindows = process.platform === 'win32';
-
-	// used to check for slashed in commands passed in. always checks for the posix
-	// seperator on all platforms, and checks for the current separator when not on
-	// a posix platform. don't use the isWindows check for this since that is mocked
-	// in tests but we still need the code to actually work when called. that is also
-	// why it is ignored from coverage.
-	/* istanbul ignore next */
-	const rSlash = new RegExp(`[${posix.sep}${sep === posix.sep ? '' : sep}]`.replace(/(\\)/g, '\\$1'));
-	const rRel = new RegExp(`^\\.${rSlash.source}`);
-
-	const getNotFoundError = (cmd) =>
-	  Object.assign(new Error(`not found: ${cmd}`), { code: 'ENOENT' });
-
-	const getPathInfo = (cmd, {
-	  path: optPath = process.env.PATH,
-	  pathExt: optPathExt = process.env.PATHEXT,
-	  delimiter: optDelimiter = delimiter,
-	}) => {
-	  // If it has a slash, then we don't bother searching the pathenv.
-	  // just check the file itself, and that's it.
-	  const pathEnv = cmd.match(rSlash) ? [''] : [
-	    // windows always checks the cwd first
-	    ...(isWindows ? [process.cwd()] : []),
-	    ...(optPath || /* istanbul ignore next: very unusual */ '').split(optDelimiter),
-	  ];
-
-	  if (isWindows) {
-	    const pathExtExe = optPathExt ||
-	      ['.EXE', '.CMD', '.BAT', '.COM'].join(optDelimiter);
-	    const pathExt = pathExtExe.split(optDelimiter).flatMap((item) => [item, item.toLowerCase()]);
-	    if (cmd.includes('.') && pathExt[0] !== '') {
-	      pathExt.unshift('');
-	    }
-	    return { pathEnv, pathExt, pathExtExe }
-	  }
-
-	  return { pathEnv, pathExt: [''] }
-	};
-
-	const getPathPart = (raw, cmd) => {
-	  const pathPart = /^".*"$/.test(raw) ? raw.slice(1, -1) : raw;
-	  const prefix = !pathPart && rRel.test(cmd) ? cmd.slice(0, 2) : '';
-	  return prefix + join(pathPart, cmd)
-	};
-
-	const which = async (cmd, opt = {}) => {
-	  const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
-	  const found = [];
-
-	  for (const envPart of pathEnv) {
-	    const p = getPathPart(envPart, cmd);
-
-	    for (const ext of pathExt) {
-	      const withExt = p + ext;
-	      const is = await isexe(withExt, { pathExt: pathExtExe, ignoreErrors: true });
-	      if (is) {
-	        if (!opt.all) {
-	          return withExt
-	        }
-	        found.push(withExt);
-	      }
-	    }
-	  }
-
-	  if (opt.all && found.length) {
-	    return found
-	  }
-
-	  if (opt.nothrow) {
-	    return null
-	  }
-
-	  throw getNotFoundError(cmd)
-	};
-
-	const whichSync = (cmd, opt = {}) => {
-	  const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
-	  const found = [];
-
-	  for (const pathEnvPart of pathEnv) {
-	    const p = getPathPart(pathEnvPart, cmd);
-
-	    for (const ext of pathExt) {
-	      const withExt = p + ext;
-	      const is = isexeSync(withExt, { pathExt: pathExtExe, ignoreErrors: true });
-	      if (is) {
-	        if (!opt.all) {
-	          return withExt
-	        }
-	        found.push(withExt);
-	      }
-	    }
-	  }
-
-	  if (opt.all && found.length) {
-	    return found
-	  }
-
-	  if (opt.nothrow) {
-	    return null
-	  }
-
-	  throw getNotFoundError(cmd)
-	};
-
-	lib = which;
-	which.sync = whichSync;
-	return lib;
-}
-
-var libExports = requireLib();
-var which = /*@__PURE__*/getDefaultExportFromCjs(libExports);
-
 const CONFIG_FILE$1 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
 const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
 function getCdCommand$1(dirPath) {
@@ -23424,7 +24552,7 @@ async function saveArgs$3(args, _, configDir) {
 async function readArgs$3(_, configDir) {
     return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$3, parseStringToArgs$9, configDir);
 }
-async function checkInstalled$1(pty) {
+async function checkInstalled(pty) {
     return new Promise(resolve => {
         const ptyProcess = pty.spawn(determineShell(), [], { env: process.env });
         let output = '';
@@ -23432,10 +24560,9 @@ async function checkInstalled$1(pty) {
             output += data;
         });
         ptyProcess.onExit(() => {
-            if (pty.pid) {
-                treeKill(pty.pid);
-                if (platform$2() === 'darwin')
-                    pty.kill();
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
             }
             const cleanOutput = removeAnsi(output).trim().replace('npm list -g flowise', '');
             const isInstalled = /flowise@.+/.test(cleanOutput);
@@ -23453,10 +24580,9 @@ async function getVersion(pty) {
             output += data;
         });
         ptyProcess.onExit(() => {
-            if (pty.pid) {
-                treeKill(pty.pid);
-                if (platform$2() === 'darwin')
-                    pty.kill();
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
             }
             const match = output.match(/flowise@([\d.]+)/i);
             if (match && match[1]) {
@@ -23478,10 +24604,9 @@ async function checkUpdate(pty) {
             output += data.toString();
         });
         ptyProcess.onExit(() => {
-            if (pty.pid) {
-                treeKill(pty.pid);
-                if (platform$2() === 'darwin')
-                    pty.kill();
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
             }
             const lines = removeAnsi(output).split(LINE_ENDING);
             for (const line of lines) {
@@ -23506,21 +24631,12 @@ async function updateAvailable$2(lynxApi) {
     return false;
 }
 async function isInstalled$1(lynxApi) {
-    return checkInstalled$1(lynxApi.pty);
-}
-async function isNpmInstalled() {
-    try {
-        await which('npm');
-        return true;
-    }
-    catch {
-        return false;
-    }
+    return checkInstalled(lynxApi.pty);
 }
 function mainIpc$1(ipc) {
-    ipc.handle('is_flowise_installed', () => checkInstalled$1(ipc.pty));
+    ipc.handle('is_flowise_installed', () => checkInstalled(ipc.pty));
     ipc.handle('current_flowise_version', () => getVersion(ipc.pty));
-    ipc.handle('is_npm_available', () => isNpmInstalled());
+    ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 const Flow_MM = { updateAvailable: updateAvailable$2, getRunCommands: getRunCommands$4, mainIpc: mainIpc$1, isInstalled: isInstalled$1, saveArgs: saveArgs$3, readArgs: readArgs$3 };
 
@@ -23540,10 +24656,9 @@ async function getPipPackageVersion(packageName, pty) {
             output += data;
         });
         ptyProcess.onExit(() => {
-            if (pty.pid) {
-                treeKill(pty.pid);
-                if (platform$2() === 'darwin')
-                    pty.kill();
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
             }
             const lines = output.split(/\r?\n/);
             const versionLine = lines.find(line => line.toLowerCase().includes('version:'));
@@ -23616,28 +24731,7 @@ async function saveArgs$2(args, _, configDir) {
 async function readArgs$2(_, configDir) {
     return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$a, configDir);
 }
-async function checkInstalled(pty) {
-    return new Promise(resolve => {
-        const ptyProcess = pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(() => {
-            if (pty.pid) {
-                treeKill(pty.pid);
-                if (platform$2() === 'darwin')
-                    pty.kill();
-            }
-            resolve(output.toLowerCase().includes('version:'));
-        });
-        ptyProcess.write(`pip show open-webui${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
-}
-async function isInstalled(lynxApi) {
-    return checkInstalled(lynxApi.pty);
-}
+const isInstalled = () => checkWhich('open-webui');
 async function updateAvailable(lynxApi) {
     try {
         const currentVersion = await getPipPackageVersion('open-webui', lynxApi.pty);
@@ -23656,8 +24750,38 @@ async function updateAvailable(lynxApi) {
     return false;
 }
 function mainIpc(ipc) {
-    ipc.handle('is_openwebui_installed', () => checkInstalled(ipc.pty));
+    ipc.handle('is_openwebui_installed', () => isInstalled());
     ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
+}
+async function uninstall(api) {
+    return new Promise((resolve, reject) => {
+        const ptyProcess = api.pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(() => {
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
+            }
+            const cleanOutput = removeAnsi(output);
+            const lines = cleanOutput.split(LINE_ENDING);
+            const successRegex = /Successfully\s+uninstalled\s+open-webui/i;
+            const proceedRegex = /Proceed\s+\(Y\/n\)\?\s*$/i;
+            const uninstallingRegex = /Uninstalling\s+open-webui/i;
+            const hasSuccess = lines.some(line => successRegex.test(line)) ||
+                (lines.some(line => uninstallingRegex.test(line)) && lines.some(line => proceedRegex.test(line)));
+            if (hasSuccess) {
+                resolve();
+            }
+            else {
+                reject(new Error(`Error uninstalling open-webui.`));
+            }
+        });
+        ptyProcess.write(`pip uninstall -y open-webui${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
 }
 const OpenWebUI_MM = {
     getRunCommands: getRunCommands$2,
@@ -23666,6 +24790,7 @@ const OpenWebUI_MM = {
     mainIpc,
     saveArgs: saveArgs$2,
     readArgs: readArgs$2,
+    uninstall,
 };
 
 const BAT_FILE_NAME$1 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -23717,6 +24842,7 @@ const mainModules = [
     { id: OPEN_WEBUI_ID, methods: OpenWebUI_MM },
     { id: FLOWISEAI_ID, methods: Flow_MM },
     { id: LoLLMS_ID, methods: LoLLM_MM },
+    { id: BOLT_DIY_ID, methods: BOLT_DIY_MM },
 ];
 
 export { mainModules as default };

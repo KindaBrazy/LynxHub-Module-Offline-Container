@@ -35,13 +35,14 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 
 ### 📝 Text Generation
 
-| Developer                                                                                      | Project         | GitHub                                                     |
-|------------------------------------------------------------------------------------------------|-----------------|------------------------------------------------------------|
-| <img height='20' src="https://avatars.githubusercontent.com/u/112222186?s=20&v=4"> Oobabooga   | Text Generation | [Link](https://github.com/oobabooga/text-generation-webui) |
-| <img height='20' src="https://avatars.githubusercontent.com/u/134869877?s=20&v=4"> SillyTavern | SillyTavern     | [Link](https://github.com/SillyTavern/SillyTavern)         |
-| <img height='20' src="https://avatars.githubusercontent.com/u/158137808?s=20&v=4"> Open-WebUI  | Open WebUI      | [Link](https://github.com/open-webui/open-webui)           |
-| <img height='20' src="https://avatars.githubusercontent.com/u/827993?s=20&v=4"> ParisNeo       | LoLLMs          | [Link](https://github.com/ParisNeo/lollms-webui)           |
-| <img height='20' src="https://avatars.githubusercontent.com/u/128289781?s=20&v=4"> FlowiseAI   | Flowise         | [Link](https://github.com/FlowiseAI/Flowise)               |
+| Developer                                                                                          | Project         | GitHub                                                     |
+|----------------------------------------------------------------------------------------------------|-----------------|------------------------------------------------------------|
+| <img height='20' src="https://avatars.githubusercontent.com/u/112222186?s=20&v=4"> Oobabooga       | Text Generation | [Link](https://github.com/oobabooga/text-generation-webui) |
+| <img height='20' src="https://avatars.githubusercontent.com/u/134869877?s=20&v=4"> SillyTavern     | SillyTavern     | [Link](https://github.com/SillyTavern/SillyTavern)         |
+| <img height='20' src="https://avatars.githubusercontent.com/u/158137808?s=20&v=4"> Open-WebUI      | Open WebUI      | [Link](https://github.com/open-webui/open-webui)           |
+| <img height='20' src="https://avatars.githubusercontent.com/u/164069192?s=20&v=4"> StackBlitz Labs | bolt.diy        | [Link](https://github.com/stackblitz-labs/bolt.diy)        |
+| <img height='20' src="https://avatars.githubusercontent.com/u/827993?s=20&v=4"> ParisNeo           | LoLLMs          | [Link](https://github.com/ParisNeo/lollms-webui)           |
+| <img height='20' src="https://avatars.githubusercontent.com/u/128289781?s=20&v=4"> FlowiseAI       | Flowise         | [Link](https://github.com/FlowiseAI/Flowise)               |
 
 ### 🎵 Audio Generation
 
@@ -55,9 +56,9 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 
 | Category         | Number of Modules |
 |------------------|-------------------|
-| **Overall**      | **20**            |
+| **Overall**      | **21**            |
 | Image Generation | 12                |
-| Text Generation  | 5                 |
+| Text Generation  | 6                 |
 | Audio Generation | 3                 |
 
 ## 🛠️ Development

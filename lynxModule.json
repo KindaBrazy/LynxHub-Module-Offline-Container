@@ -5,10 +5,31 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 16,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "10.0.0",
-  "updateDate": "2025-02-16 10:10",
-  "changeLog": "V10.0.0\n\n・Add Flowise integration.\n・Display latest version in card info for updatable Open WebUI and Flowise.\n・Reorder cards.\n・Improve handling of terminal commands.\nV9.0.2\n\n・Fix (LoLLMs): Fix the information window not showing correct data.\nV9.0.1\n\n・Fix (Open Webui): Removed admin requirement for .webui_secret_key access.\n・Fix (Open Webui): PORT is now passed as an argument instead of an environment variable.\n",
+  "version": "11.0.0",
+  "updateDate": "2025-03-19 17:20",
+  "changeLog": "V11.0.0\n\n・Add bolt.diy integration.\n・Faster Open WebUI installation detection. \nV10.0.0\n\n・Add Flowise integration.\n・Display latest version in card info for updatable Open WebUI and Flowise.\n・Reorder cards.\n・Improve handling of terminal commands.\n",
   "changes": [
+    {
+      "title": "V11.0.0",
+      "items": [
+        {
+          "label": "✨ New",
+          "subitems": [
+            {
+              "label": "Add bolt.diy integration."
+            }
+          ]
+        },
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Faster Open WebUI installation detection."
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V10.0.0",
       "items": [

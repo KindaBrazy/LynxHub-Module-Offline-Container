@@ -17,6 +17,7 @@ export const ALLTALK_ID = 'Erew123_SD';
 export const TG_ID = 'Oobabooga_TG';
 export const SILLYTAVERN_ID = 'SillyTavern_TG';
 export const OPEN_WEBUI_ID = 'OpenWebUI_TG';
+export const BOLT_DIY_ID = 'BoltDiy_TG';
 export const FLOWISEAI_ID = 'FlowiseAI_TG';
 export const LoLLMS_ID = 'LoLLMS_TG';
 

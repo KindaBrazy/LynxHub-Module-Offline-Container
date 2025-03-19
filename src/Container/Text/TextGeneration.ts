@@ -1,5 +1,6 @@
-import {FLOWISEAI_ID, LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
+import {BOLT_DIY_ID, FLOWISEAI_ID, LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
 import {PagesData} from '../../types';
+import BOLT_DIY_RM from './BoltDiy (StackblitzLabs)/RendererMethods';
 import flowiseArguments from './Flowise (FlowiseAI)/Arguments';
 import Flow_RM from './Flowise (FlowiseAI)/RendererMethods';
 import LoLLM_RM from './LoLLMs (ParisNeo)/RendererMethods';
@@ -55,6 +56,19 @@ const textPage: PagesData = {
       installationType: 'others',
       uninstallType: 'others',
       arguments: openArguments,
+    },
+    {
+      id: BOLT_DIY_ID,
+      title: 'Bolt.Diy',
+      description: 'Prompt, run, edit, and deploy full-stack web applications using any LLM you want!',
+      repoUrl: 'https://github.com/stackblitz-labs/bolt.diy',
+      type: 'text',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/1c1750b6-e8be-4373-a303-b54b1825f268/' +
+        'width=300/00021-2487204806.jpeg',
+      methods: BOLT_DIY_RM,
+      installationType: 'others',
+      uninstallType: 'removeFolder',
     },
     {
       id: SILLYTAVERN_ID,

@@ -2,11 +2,17 @@ import {platform} from 'node:os';
 import path from 'node:path';
 
 import treeKill from 'tree-kill';
-import which from 'which';
 
 import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
 import {isWin, removeAnsi} from '../../../Utils/CrossUtils';
-import {determineShell, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
+import {
+  checkWhich,
+  determineShell,
+  initBatchFile,
+  LINE_ENDING,
+  utilReadArgs,
+  utilSaveArgs,
+} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
@@ -145,19 +151,10 @@ async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {
   return checkInstalled(lynxApi.pty);
 }
 
-async function isNpmInstalled(): Promise<boolean> {
-  try {
-    await which('npm');
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 function mainIpc(ipc: MainIpcTypes) {
   ipc.handle('is_flowise_installed', () => checkInstalled(ipc.pty));
   ipc.handle('current_flowise_version', () => getVersion(ipc.pty));
-  ipc.handle('is_npm_available', () => isNpmInstalled());
+  ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 
 const Flow_MM: CardMainMethods = {updateAvailable, getRunCommands, mainIpc, isInstalled, saveArgs, readArgs};

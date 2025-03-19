@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import axios, {AxiosResponse} from 'axios';
 import fs from 'graceful-fs';
+import which from 'which';
 
 import {GitHubRelease, ReleaseInfo} from '../Container/Image/InvokeAI/Utils/CrossTypes';
 import {ChosenArgument} from '../types';
@@ -147,5 +148,14 @@ export function determineShell(): string {
     case 'win32':
     default:
       return getPowerShellVersion() >= 5 ? 'pwsh.exe' : 'powershell.exe';
+  }
+}
+
+export async function checkWhich(name: string) {
+  try {
+    await which(name);
+    return true;
+  } catch {
+    return false;
   }
 }

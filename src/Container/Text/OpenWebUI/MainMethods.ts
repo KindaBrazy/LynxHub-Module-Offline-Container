@@ -4,16 +4,16 @@ import path from 'node:path';
 import {compare} from 'semver';
 import treeKill from 'tree-kill';
 
-import {
-  CardMainMethods,
-  ChosenArgument,
-  LynxApiInstalled,
-  LynxApiUninstall,
-  LynxApiUpdate,
-  MainIpcTypes,
-} from '../../../types';
+import {CardMainMethods, ChosenArgument, LynxApiUninstall, LynxApiUpdate, MainIpcTypes} from '../../../types';
 import {isWin, removeAnsi} from '../../../Utils/CrossUtils';
-import {determineShell, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
+import {
+  checkWhich,
+  determineShell,
+  initBatchFile,
+  LINE_ENDING,
+  utilReadArgs,
+  utilSaveArgs,
+} from '../../../Utils/MainUtils';
 import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
@@ -50,32 +50,7 @@ async function readArgs(_?: string, configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function checkInstalled(pty: any): Promise<boolean> {
-  return new Promise(resolve => {
-    const ptyProcess = pty.spawn(determineShell(), [], {});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-      resolve(output.toLowerCase().includes('version:'));
-    });
-
-    ptyProcess.write(`pip show open-webui${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
-async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {
-  return checkInstalled(lynxApi.pty);
-}
+const isInstalled = () => checkWhich('open-webui');
 
 async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
   try {
@@ -96,7 +71,7 @@ async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
 }
 
 function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('is_openwebui_installed', () => checkInstalled(ipc.pty));
+  ipc.handle('is_openwebui_installed', () => isInstalled());
   ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
 

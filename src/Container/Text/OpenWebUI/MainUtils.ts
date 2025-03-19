@@ -1,5 +1,3 @@
-import {platform} from 'node:os';
-
 import axios from 'axios';
 import treeKill from 'tree-kill';
 

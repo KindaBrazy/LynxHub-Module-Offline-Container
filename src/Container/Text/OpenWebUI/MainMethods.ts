@@ -1,11 +1,10 @@
-import {platform} from 'node:os';
 import path from 'node:path';
 
 import {compare} from 'semver';
 import treeKill from 'tree-kill';
 
 import {CardMainMethods, ChosenArgument, LynxApiUninstall, LynxApiUpdate, MainIpcTypes} from '../../../types';
-import {isWin, removeAnsi} from '../../../Utils/CrossUtils';
+import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   checkWhich,
   determineShell,
@@ -19,19 +18,6 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
-
-function getCdCommand(dirPath: string): string {
-  const escapedPath = dirPath.replace(/ /g, '\\ ');
-  const quotedPath = `"${dirPath}"`;
-
-  if (platform() === 'win32') {
-    return `cd ${quotedPath}`;
-  } else if (platform() === 'linux' || platform() === 'darwin') {
-    return `cd ${escapedPath}`;
-  } else {
-    throw new Error(`Unsupported platform: ${platform}`);
-  }
-}
 
 async function getRunCommands(_?: string, configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';

@@ -1,10 +1,9 @@
-import {platform} from 'node:os';
 import path from 'node:path';
 
 import treeKill from 'tree-kill';
 
 import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
-import {isWin, removeAnsi} from '../../../Utils/CrossUtils';
+import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   checkWhich,
   determineShell,
@@ -17,19 +16,6 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
-
-function getCdCommand(dirPath: string): string {
-  const escapedPath = dirPath.replace(/ /g, '\\ ');
-  const quotedPath = `"${dirPath}"`;
-
-  if (platform() === 'win32') {
-    return `cd ${quotedPath}`;
-  } else if (platform() === 'linux' || platform() === 'darwin') {
-    return `cd ${escapedPath}`;
-  } else {
-    throw new Error(`Unsupported platform: ${platform}`);
-  }
-}
 
 async function getRunCommands(_?: string, configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';

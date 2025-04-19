@@ -1,3 +1,5 @@
+import {platform} from 'node:os';
+
 import {CardInfoCallback, CardInfoDescriptions} from '../types';
 
 async function isWinOS(): Promise<boolean> {
@@ -60,3 +62,14 @@ export function removeAnsi(str: string): string {
 }
 
 export const isWin = await isWinOS();
+
+export function getCdCommand(dirPath: string): string {
+  const escapedPath = dirPath.replace(/ /g, '\\ ');
+  const quotedPath = `"${dirPath}"`;
+
+  if (isWin) {
+    return `cd ${quotedPath}`;
+  } else {
+    return `cd ${escapedPath}`;
+  }
+}

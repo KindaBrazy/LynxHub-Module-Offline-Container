@@ -8,12 +8,13 @@ import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   checkWhich,
   determineShell,
+  getLatestPipPackageVersion,
+  getPipPackageVersion,
   initBatchFile,
   LINE_ENDING,
   utilReadArgs,
   utilSaveArgs,
 } from '../../../Utils/MainUtils';
-import {getLatestPipPackageVersion, getPipPackageVersion} from './MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';

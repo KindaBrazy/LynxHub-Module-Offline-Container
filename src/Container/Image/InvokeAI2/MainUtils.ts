@@ -1,9 +1,12 @@
 import {execSync} from 'node:child_process';
+import path from 'node:path';
 
 import axios, {AxiosResponse} from 'axios';
 
-import {getVenvPythonPath} from '../../../Utils/MainUtils';
+import {StorageType} from '../../../types';
+import {getPipPackageVersionCustom, getVenvPythonPath, isVenvDirectory} from '../../../Utils/MainUtils';
 import {GitHubRelease} from '../InvokeAI/Utils/CrossTypes';
+import {INVOKEAI_INSTALL_DIR_KEY} from './Utils_Constants';
 
 export async function invokeGetLatestReleases(owner: string, repo: string): Promise<string[]> {
   try {
@@ -47,4 +50,20 @@ export function invokeValidateInstallation(dir: string): boolean {
     console.warn(`Validation failed: 'invokeai' package not found or error executing Python at ${pythonPath}.`, err);
     return false;
   }
+}
+
+export async function invokeGetCurrentVersion(lynxApi: {storage: StorageType}) {
+  const dir = lynxApi.storage.get(INVOKEAI_INSTALL_DIR_KEY) as string | undefined;
+  if (!dir) return null;
+
+  const venvDir = path.join(dir, '.venv');
+
+  const isDir = isVenvDirectory(dir);
+  const isVenvDir = isVenvDirectory(venvDir);
+
+  if (!isDir && !isVenvDir) return null;
+
+  const pythonExe = getVenvPythonPath(isDir ? dir : venvDir);
+
+  return await getPipPackageVersionCustom(pythonExe, 'invokeai');
 }

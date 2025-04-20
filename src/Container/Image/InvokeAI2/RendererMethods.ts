@@ -1,4 +1,5 @@
-import {CardRendererMethods, InstallationStepper} from '../../../types';
+import {CardInfoApi, CardInfoCallback, CardRendererMethods, InstallationStepper} from '../../../types';
+import {DescriptionManager} from '../../../Utils/CrossUtils';
 import {catchAddress} from '../../../Utils/RendererUtils';
 import {
   Invoke_Command_ActivateVenv,
@@ -7,6 +8,7 @@ import {
   Invoke_Command_InstallUV,
   INVOKEAI_INSTALL_DIR_KEY,
   INVOKEAI_INSTALL_TIME_KEY,
+  INVOKEAI_UPDATE_AVAILABLE_KEY,
   INVOKEAI_UPDATE_TIME_KEY,
   invokeGetInputFields,
   invokeGetInputResults,
@@ -92,8 +94,42 @@ function startUpdate(stepper: InstallationStepper, dir?: string) {
   });
 }
 
+async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
+  const dir = api.installationFolder;
+  callback.setOpenFolders(dir ? [dir] : undefined);
+
+  const descManager = new DescriptionManager(
+    [
+      {
+        title: 'Installation Data',
+        items: [
+          {label: 'Install Date', result: 'loading'},
+          {label: 'Update Date', result: 'loading'},
+          {label: 'Current Version', result: 'loading'},
+          {label: 'Latest Version', result: 'loading'},
+        ],
+      },
+    ],
+    callback,
+  );
+
+  api.storage.get(INVOKEAI_INSTALL_TIME_KEY).then(result => {
+    descManager.updateItem(0, 0, result);
+  });
+  api.storage.get(INVOKEAI_UPDATE_TIME_KEY).then(result => {
+    descManager.updateItem(0, 1, result);
+  });
+  api.ipc.invoke('invoke_current_version').then(result => {
+    descManager.updateItem(0, 2, result);
+  });
+  api.storage.get(INVOKEAI_UPDATE_AVAILABLE_KEY).then(result => {
+    descManager.updateItem(0, 3, result);
+  });
+}
+
 const INVOKE_RM: CardRendererMethods = {
   catchAddress,
+  cardInfo,
   manager: {startInstall, updater: {updateType: 'stepper', startUpdate}},
 };
 

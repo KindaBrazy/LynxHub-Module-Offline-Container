@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 
 import {CardInfoApi, CardInfoCallback, CardRendererMethods, ChosenArgument, InstallationStepper} from '../../../types';
-import {DescriptionManager} from '../../../Utils/CrossUtils';
+import {DescriptionManager, getVenvPythonPath, isWin} from '../../../Utils/CrossUtils';
 import {catchAddress} from '../../../Utils/RendererUtils';
 import {
   Invoke_Command_ActivateVenv,
@@ -114,17 +114,26 @@ function startInstall(stepper: InstallationStepper) {
 }
 
 function startUpdate(stepper: InstallationStepper, dir?: string) {
+  if (!dir) return;
+
+  const venvDir = isWin ? `${dir}\\.venv` : `${dir}/.venv`;
+  const pythonPath = getVenvPythonPath(venvDir);
+
   stepper.initialSteps(['Updating', 'Done']);
-  stepper.executeTerminalCommands([Invoke_Command_ActivateVenv, 'pip install --upgrade invokeai'], dir).then(() => {
-    const currentDate = new Date();
-    stepper.storage.set(INVOKEAI_UPDATE_TIME_KEY, currentDate);
-    stepper.setUpdated();
-    stepper.showFinalStep(
-      'success',
-      'InvokeAI Updated Successfully!',
-      `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`,
-    );
-  });
+
+  stepper
+    .executeTerminalCommands(`${isWin ? '&' : '.'} "${pythonPath}" -m pip install --upgrade "invokeai"`, dir)
+    .then(() => {
+      const currentDate = new Date();
+      stepper.storage.set(INVOKEAI_UPDATE_TIME_KEY, currentDate);
+
+      stepper.setUpdated();
+      stepper.showFinalStep(
+        'success',
+        'InvokeAI Updated Successfully!',
+        `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`,
+      );
+    });
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

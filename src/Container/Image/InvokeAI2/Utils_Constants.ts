@@ -20,6 +20,10 @@ export const Invoke_PackageSpec = {
   invokeaiXformers: 'invokeai[xformers]:  Nvidia 20xx series GPU or older',
 };
 
+export const INVOKEAI_INSTALL_TIME_KEY = 'install-time-invokeai';
+export const INVOKEAI_UPDATE_TIME_KEY = 'update-time-invokeai';
+export const INVOKEAI_UPDATE_AVAILABLE_KEY = 'update-version-invokeai';
+
 export const invokeGetInputFields = async (ipc: RendererIpcTypes): Promise<UserInputField[]> => {
   const releases: string[] = await ipc.invoke('invoke_latest_versions');
 

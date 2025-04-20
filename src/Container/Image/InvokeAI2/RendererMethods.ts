@@ -5,6 +5,8 @@ import {
   Invoke_Command_CreateVenv,
   Invoke_Command_InstallPip,
   Invoke_Command_InstallUV,
+  INVOKEAI_INSTALL_TIME_KEY,
+  INVOKEAI_UPDATE_TIME_KEY,
   invokeGetInputFields,
   invokeGetInputResults,
   invokeGetInstallCommand,
@@ -42,6 +44,8 @@ function startInstall(stepper: InstallationStepper) {
                 )
                 .then(() => {
                   stepper.setInstalled(installDirResult);
+                  const currentDate = new Date();
+                  stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
                   stepper.showFinalStep(
                     'success',
                     'InvokeAI Installation Complete.',
@@ -56,6 +60,8 @@ function startInstall(stepper: InstallationStepper) {
       stepper.ipc.invoke('validate_install_dir', targetDirectory).then(isValid => {
         if (isValid) {
           stepper.setInstalled(targetDirectory);
+          const currentDate = new Date();
+          stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
           stepper.showFinalStep('success', 'InvokeAI Environment Found.', 'Location validated successfully.');
         } else {
           stepper.showFinalStep(
@@ -69,6 +75,23 @@ function startInstall(stepper: InstallationStepper) {
   });
 }
 
-const INVOKE_RM: CardRendererMethods = {catchAddress, manager: {startInstall, updater: {updateType: 'stepper'}}};
+function startUpdate(stepper: InstallationStepper, dir?: string) {
+  stepper.initialSteps(['Updating', 'Done']);
+  stepper.executeTerminalCommands([Invoke_Command_ActivateVenv, 'pip install --upgrade invokeai'], dir).then(() => {
+    const currentDate = new Date();
+    stepper.storage.set(INVOKEAI_UPDATE_TIME_KEY, currentDate);
+    stepper.setUpdated();
+    stepper.showFinalStep(
+      'success',
+      'InvokeAI Updated Successfully!',
+      `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`,
+    );
+  });
+}
+
+const INVOKE_RM: CardRendererMethods = {
+  catchAddress,
+  manager: {startInstall, updater: {updateType: 'stepper', startUpdate}},
+};
 
 export default INVOKE_RM;

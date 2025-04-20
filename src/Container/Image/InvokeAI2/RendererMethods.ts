@@ -5,6 +5,7 @@ import {
   Invoke_Command_CreateVenv,
   Invoke_Command_InstallPip,
   Invoke_Command_InstallUV,
+  INVOKEAI_INSTALL_DIR_KEY,
   INVOKEAI_INSTALL_TIME_KEY,
   INVOKEAI_UPDATE_TIME_KEY,
   invokeGetInputFields,
@@ -46,6 +47,7 @@ function startInstall(stepper: InstallationStepper) {
                   stepper.setInstalled(installDirResult);
                   const currentDate = new Date();
                   stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
+                  stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, installDirResult);
                   stepper.showFinalStep(
                     'success',
                     'InvokeAI Installation Complete.',
@@ -62,6 +64,7 @@ function startInstall(stepper: InstallationStepper) {
           stepper.setInstalled(targetDirectory);
           const currentDate = new Date();
           stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
+          stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, targetDirectory);
           stepper.showFinalStep('success', 'InvokeAI Environment Found.', 'Location validated successfully.');
         } else {
           stepper.showFinalStep(

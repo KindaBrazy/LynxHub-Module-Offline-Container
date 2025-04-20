@@ -21,6 +21,7 @@ export const Invoke_PackageSpec = {
 };
 
 export const INVOKEAI_INSTALL_TIME_KEY = 'install-time-invokeai';
+export const INVOKEAI_INSTALL_DIR_KEY = 'install-dir-invokeai';
 export const INVOKEAI_UPDATE_TIME_KEY = 'update-time-invokeai';
 export const INVOKEAI_UPDATE_AVAILABLE_KEY = 'update-version-invokeai';
 

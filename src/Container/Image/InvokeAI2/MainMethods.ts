@@ -2,14 +2,33 @@ import path from 'node:path';
 
 import {compare} from 'semver';
 
-import {CardMainMethods, LynxApiUpdate, MainIpcTypes} from '../../../types';
+import {CardMainMethods, ChosenArgument, LynxApiUpdate, MainIpcTypes} from '../../../types';
 import {extractGitUrl} from '../../../Utils/CrossUtils';
-import {checkWhich, getLatestPipPackageVersion, isVenvDirectory, LINE_ENDING} from '../../../Utils/MainUtils';
+import {
+  checkWhich,
+  getLatestPipPackageVersion,
+  isVenvDirectory,
+  LINE_ENDING,
+  utilReadArgs,
+  utilSaveArgs,
+} from '../../../Utils/MainUtils';
 import {invokeGetCurrentVersion, invokeGetLatestReleases, invokeValidateInstallation} from './MainUtils';
+import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 import {Invoke_Command_ActivateVenv, INVOKEAI_UPDATE_AVAILABLE_KEY} from './Utils_Constants';
+
+const CONFIG_FILE = 'invokeai.yaml';
+const DEFAULT_CONFIG_DATA = 'schema_version: 4.0.2\n\n';
 
 async function getRunCommands(dir?: string): Promise<string | string[]> {
   return [`${Invoke_Command_ActivateVenv}${LINE_ENDING}`, `invokeai-web --root ${dir}${LINE_ENDING}`];
+}
+
+export async function saveArgs(args: ChosenArgument[], dir?: string) {
+  return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, dir);
+}
+
+export async function readArgs(dir?: string) {
+  return await utilReadArgs(CONFIG_FILE, DEFAULT_CONFIG_DATA, parseStringToArgs, dir);
 }
 
 async function mainIpc(ipc: MainIpcTypes) {
@@ -56,6 +75,6 @@ async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
   return false;
 }
 
-const Invoke_MM: CardMainMethods = {getRunCommands, updateAvailable, mainIpc};
+const Invoke_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs, updateAvailable, mainIpc};
 
 export default Invoke_MM;

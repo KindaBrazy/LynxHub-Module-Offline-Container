@@ -1,4 +1,6 @@
-import {CardInfoApi, CardInfoCallback, CardRendererMethods, InstallationStepper} from '../../../types';
+import lodash from 'lodash';
+
+import {CardInfoApi, CardInfoCallback, CardRendererMethods, ChosenArgument, InstallationStepper} from '../../../types';
 import {DescriptionManager} from '../../../Utils/CrossUtils';
 import {catchAddress} from '../../../Utils/RendererUtils';
 import {
@@ -14,6 +16,37 @@ import {
   invokeGetInputResults,
   invokeGetInstallCommand,
 } from './Utils_Constants';
+
+export function parseArgsToString(args: ChosenArgument[]): string {
+  let result: string = 'schema_version: 4.0.2\n\n';
+
+  const argResult: string = args
+    .map(arg => {
+      return `${arg.name}: ${arg.value}`;
+    })
+    .join('\n');
+
+  result += argResult;
+
+  return result;
+}
+
+export function parseStringToArgs(args: string): ChosenArgument[] {
+  const argResult: ChosenArgument[] = [];
+  const lines: string[] = args.split('\n');
+
+  lines.forEach((line: string): void => {
+    if (line.startsWith('schema_version') || line.startsWith('#') || lodash.isEmpty(line.trim())) return;
+
+    const clArgs: string[] = line.split(`: `);
+
+    const [name, value] = clArgs;
+
+    argResult.push({name, value});
+  });
+
+  return argResult;
+}
 
 function startInstall(stepper: InstallationStepper) {
   stepper.initialSteps(['InvokeAI', 'UV', 'Config', 'Install', 'Finish']);
@@ -130,6 +163,8 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
 const INVOKE_RM: CardRendererMethods = {
   catchAddress,
   cardInfo,
+  parseArgsToString,
+  parseStringToArgs,
   manager: {startInstall, updater: {updateType: 'stepper', startUpdate}},
 };
 

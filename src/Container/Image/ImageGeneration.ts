@@ -17,6 +17,7 @@ import comfyArguments from './ComfyUI (comfyanonymous)/Arguments';
 import COMFYUI_RM from './ComfyUI (comfyanonymous)/RendererMethods';
 import comfyZludaArguments from './ComfyUI Zluda (patientx)/Arguments';
 import COMFYUI_ZLUDA_RM from './ComfyUI Zluda (patientx)/RendererMethods';
+import invokeArguments from './InvokeAI2/Arguments';
 import INVOKE_RM from './InvokeAI2/RendererMethods';
 import bmaltaisArguments from './Kohyas GUI (bmaltais)/Arguments';
 import KOHYA_GUI_RM from './Kohyas GUI (bmaltais)/RendererMethods';
@@ -81,6 +82,7 @@ const imagePage: PagesData = {
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
         '/width=300/00002-3715244638.jpeg',
       methods: INVOKE_RM,
+      arguments: invokeArguments,
       installationType: 'others',
     },
     {

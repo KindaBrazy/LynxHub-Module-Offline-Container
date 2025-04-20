@@ -26,7 +26,7 @@ import Gitmylo_MM from './Container/Audio/Audio Generation (gitmylo)/MainMethods
 import Rsx_MM from './Container/Audio/Text to Speech (rsxdalv)/MainMethods';
 import Comfy_MM from './Container/Image/ComfyUI (comfyanonymous)/MainMethods';
 import ComfyZluda_MM from './Container/Image/ComfyUI Zluda (patientx)/MainMethods';
-import Invoke_MM from './Container/Image/InvokeAI2/MainMethods';
+import Invoke_MM from './Container/Image/InvokeAI/MainMethods';
 import Bmaltais_MM from './Container/Image/Kohyas GUI (bmaltais)/MainMethods';
 import Nerogar_MM from './Container/Image/OneTrainer (Nerogar)/MainMethods';
 import A1_MM from './Container/Image/SD (AUTOMATIC1111)/MainMethods';

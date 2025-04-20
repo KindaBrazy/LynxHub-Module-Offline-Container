@@ -1,4 +1,4 @@
-import {execSync} from 'node:child_process';
+import {exec, execSync} from 'node:child_process';
 import {platform} from 'node:os';
 import path, {join} from 'node:path';
 
@@ -189,6 +189,38 @@ export async function getPipPackageVersion(packageName: string, pty: any): Promi
 
     ptyProcess.write(`pip show ${packageName}${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);
+  });
+}
+
+export async function getPipPackageVersionCustom(pythonExePath: string, packageName: string): Promise<string | null> {
+  return new Promise((resolve, reject) => {
+    const command = `"${pythonExePath}" -m pip show ${packageName}`;
+
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        if (stderr && stderr.includes(`Package(s) not found: ${packageName}`)) {
+          resolve(null);
+          return;
+        }
+        reject(`Error getting package info for ${packageName}: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.warn(`stderr when getting package info for ${packageName}: ${stderr}`);
+      }
+
+      const lines = stdout.split('\n');
+      for (const line of lines) {
+        if (line.startsWith('Version:')) {
+          const version = line.replace('Version:', '').trim();
+          resolve(version);
+          return;
+        }
+      }
+
+      console.warn(`Could not find Version in pip show output for ${packageName}`);
+      resolve(null);
+    });
   });
 }
 

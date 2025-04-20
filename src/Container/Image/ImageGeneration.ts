@@ -17,8 +17,7 @@ import comfyArguments from './ComfyUI (comfyanonymous)/Arguments';
 import COMFYUI_RM from './ComfyUI (comfyanonymous)/RendererMethods';
 import comfyZludaArguments from './ComfyUI Zluda (patientx)/Arguments';
 import COMFYUI_ZLUDA_RM from './ComfyUI Zluda (patientx)/RendererMethods';
-import invokeArguments from './InvokeAI/Arguments';
-import INVOKE_RM from './InvokeAI/RendererMethods';
+import INVOKE_RM from './InvokeAI2/RendererMethods';
 import bmaltaisArguments from './Kohyas GUI (bmaltais)/Arguments';
 import KOHYA_GUI_RM from './Kohyas GUI (bmaltais)/RendererMethods';
 import ONETRAINER_RM from './OneTrainer (Nerogar)/RendererMethods';
@@ -71,7 +70,7 @@ const imagePage: PagesData = {
     },
     {
       id: INVOKE_ID,
-      title: 'Invoke AI',
+      title: 'InvokeAI',
       description:
         'Invoke is a leading creative engine built to empower professionals and enthusiasts alike. Generate and create' +
         ' stunning visual media using the latest AI-driven technologies. Invoke offers an industry leading web-based UI,' +
@@ -81,7 +80,6 @@ const imagePage: PagesData = {
       bgUrl:
         'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
         '/width=300/00002-3715244638.jpeg',
-      arguments: invokeArguments,
       methods: INVOKE_RM,
       installationType: 'others',
     },

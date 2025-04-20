@@ -12,9 +12,9 @@ import {
   utilReadArgs,
   utilSaveArgs,
 } from '../../../Utils/MainUtils';
-import {invokeGetCurrentVersion, invokeGetLatestReleases, invokeValidateInstallation} from './MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
-import {Invoke_Command_ActivateVenv, INVOKEAI_UPDATE_AVAILABLE_KEY} from './Utils_Constants';
+import {invokeGetCurrentVersion, invokeGetLatestReleases, invokeValidateInstallation} from './Utils/MainUtils';
+import {Invoke_Command_ActivateVenv, INVOKEAI_UPDATE_AVAILABLE_KEY} from './Utils/Utils_Constants';
 
 const CONFIG_FILE = 'invokeai.yaml';
 const DEFAULT_CONFIG_DATA = 'schema_version: 4.0.2\n\n';

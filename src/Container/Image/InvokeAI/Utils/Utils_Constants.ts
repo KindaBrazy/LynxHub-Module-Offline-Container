@@ -1,5 +1,5 @@
-import {RendererIpcTypes, UserInputField, UserInputResult} from '../../../types';
-import {isWin} from '../../../Utils/CrossUtils';
+import {RendererIpcTypes, UserInputField, UserInputResult} from '../../../../types';
+import {isWin} from '../../../../Utils/CrossUtils';
 
 export const Invoke_Command_CreateVenv: string =
   'uv venv --relocatable --prompt invoke --python 3.12 --python-preference only-managed .venv';

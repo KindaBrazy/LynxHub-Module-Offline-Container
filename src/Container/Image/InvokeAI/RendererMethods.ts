@@ -15,7 +15,7 @@ import {
   invokeGetInputFields,
   invokeGetInputResults,
   invokeGetInstallCommand,
-} from './Utils_Constants';
+} from './Utils/Utils_Constants';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = 'schema_version: 4.0.2\n\n';

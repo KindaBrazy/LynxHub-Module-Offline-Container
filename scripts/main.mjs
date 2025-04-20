@@ -1,7 +1,7 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, p as parseArgsToString, a as parseStringToArgs, b as parseArgsToString$1, d as parseStringToArgs$1, e as parseArgsToString$2, f as parseStringToArgs$2, I as INSTALLED_VERSION_KEY, h as extractGitUrl, j as parseArgsToString$3, k as parseStringToArgs$3, l as parseArgsToString$4, m as parseStringToArgs$4, n as parseArgsToString$5, o as parseStringToArgs$5, q as parseArgsToString$6, r as parseStringToArgs$6, s as parseArgsToString$7, t as parseStringToArgs$7, u as parseArgsToString$8, v as parseStringToArgs$8, w as removeAnsi, x as parseArgsToString$9, y as parseStringToArgs$9, z as parseArgsToString$a, A as parseStringToArgs$a, B as parseArgsToString$b, C as parseStringToArgs$b, D as parseArgsToString$c, E as parseStringToArgs$c, F as COMFYUI_ID, G as A1_ID, S as SD_AMD_ID, H as SD_FORGE_ID, J as SD_FORGE_AMD_ID, K as SD_NEXT_ID, L as SWARM_ID, M as KOHYA_ID, T as TG_ID, N as TTS_ID, O as AG_ID, P as SILLYTAVERN_ID, Q as SD_UIUX_ID, R as COMFYUI_ZLUDA_ID, U as ONETRAINER_ID, V as INVOKE_ID, W as ALLTALK_ID, X as OPEN_WEBUI_ID, Y as FLOWISEAI_ID, Z as LoLLMS_ID, _ as BOLT_DIY_ID } from './RendererMethods_B6FpBD.mjs';
-import { execSync } from 'node:child_process';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, p as parseArgsToString, b as parseStringToArgs, d as parseArgsToString$1, e as parseStringToArgs$1, f as parseArgsToString$2, h as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, j as extractGitUrl, k as INVOKEAI_UPDATE_AVAILABLE_KEY, l as Invoke_Command_ActivateVenv, m as parseArgsToString$3, n as parseStringToArgs$3, o as parseArgsToString$4, q as parseStringToArgs$4, r as parseArgsToString$5, s as parseStringToArgs$5, t as parseArgsToString$6, u as parseStringToArgs$6, v as parseArgsToString$7, w as parseStringToArgs$7, x as parseArgsToString$8, y as parseStringToArgs$8, z as getCdCommand, A as removeAnsi, B as parseArgsToString$9, C as parseStringToArgs$9, D as parseArgsToString$a, E as parseStringToArgs$a, F as parseArgsToString$b, G as parseStringToArgs$b, H as parseArgsToString$c, J as parseStringToArgs$c, K as COMFYUI_ID, L as A1_ID, S as SD_AMD_ID, M as SD_FORGE_ID, N as SD_FORGE_AMD_ID, O as SD_NEXT_ID, P as SWARM_ID, Q as KOHYA_ID, T as TG_ID, R as TTS_ID, U as AG_ID, V as SILLYTAVERN_ID, W as SD_UIUX_ID, X as COMFYUI_ZLUDA_ID, Y as ONETRAINER_ID, Z as INVOKE_ID, _ as ALLTALK_ID, $ as OPEN_WEBUI_ID, a0 as FLOWISEAI_ID, a1 as LoLLMS_ID, a2 as BOLT_DIY_ID } from './RendererMethods_BRTcg3.mjs';
+import { exec, execSync } from 'node:child_process';
 import { platform as platform$2 } from 'node:os';
-import path from 'node:path';
+import path, { join } from 'node:path';
 import require$$1 from 'util';
 import stream, { Readable } from 'stream';
 import require$$1$1 from 'path';
@@ -16,8 +16,8 @@ import require$$0$3 from 'os';
 import zlib from 'zlib';
 import { EventEmitter } from 'events';
 import require$$0$4 from 'constants';
-import require$$1$3 from 'fs/promises';
 import require$$0$5 from 'child_process';
+import require$$1$3 from 'fs/promises';
 
 function bind(fn, thisArg) {
   return function wrap() {
@@ -15392,7 +15392,7 @@ function combineURLs(baseURL, relativeURL) {
  */
 function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
   let isRelativeUrl = !isAbsoluteURL(requestedURL);
-  if (baseURL && isRelativeUrl || allowAbsoluteUrls == false) {
+  if (baseURL && (isRelativeUrl || allowAbsoluteUrls == false)) {
     return combineURLs(baseURL, requestedURL);
   }
   return requestedURL;
@@ -17450,7 +17450,7 @@ function requireFollowRedirects () {
 var followRedirectsExports = requireFollowRedirects();
 var followRedirects = /*@__PURE__*/getDefaultExportFromCjs(followRedirectsExports);
 
-const VERSION$1 = "1.8.3";
+const VERSION$1 = "1.8.4";
 
 function parseProtocol(url) {
   const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
@@ -21113,6 +21113,135 @@ function requireGracefulFs () {
 var gracefulFsExports = requireGracefulFs();
 var fs = /*@__PURE__*/getDefaultExportFromCjs(gracefulFsExports);
 
+var treeKill$1;
+var hasRequiredTreeKill;
+
+function requireTreeKill () {
+	if (hasRequiredTreeKill) return treeKill$1;
+	hasRequiredTreeKill = 1;
+
+	var childProcess = require$$0$5;
+	var spawn = childProcess.spawn;
+	var exec = childProcess.exec;
+
+	treeKill$1 = function (pid, signal, callback) {
+	    if (typeof signal === 'function' && callback === undefined) {
+	        callback = signal;
+	        signal = undefined;
+	    }
+
+	    pid = parseInt(pid);
+	    if (Number.isNaN(pid)) {
+	        if (callback) {
+	            return callback(new Error("pid must be a number"));
+	        } else {
+	            throw new Error("pid must be a number");
+	        }
+	    }
+
+	    var tree = {};
+	    var pidsToProcess = {};
+	    tree[pid] = [];
+	    pidsToProcess[pid] = 1;
+
+	    switch (process.platform) {
+	    case 'win32':
+	        exec('taskkill /pid ' + pid + ' /T /F', callback);
+	        break;
+	    case 'darwin':
+	        buildProcessTree(pid, tree, pidsToProcess, function (parentPid) {
+	          return spawn('pgrep', ['-P', parentPid]);
+	        }, function () {
+	            killAll(tree, signal, callback);
+	        });
+	        break;
+	    // case 'sunos':
+	    //     buildProcessTreeSunOS(pid, tree, pidsToProcess, function () {
+	    //         killAll(tree, signal, callback);
+	    //     });
+	    //     break;
+	    default: // Linux
+	        buildProcessTree(pid, tree, pidsToProcess, function (parentPid) {
+	          return spawn('ps', ['-o', 'pid', '--no-headers', '--ppid', parentPid]);
+	        }, function () {
+	            killAll(tree, signal, callback);
+	        });
+	        break;
+	    }
+	};
+
+	function killAll (tree, signal, callback) {
+	    var killed = {};
+	    try {
+	        Object.keys(tree).forEach(function (pid) {
+	            tree[pid].forEach(function (pidpid) {
+	                if (!killed[pidpid]) {
+	                    killPid(pidpid, signal);
+	                    killed[pidpid] = 1;
+	                }
+	            });
+	            if (!killed[pid]) {
+	                killPid(pid, signal);
+	                killed[pid] = 1;
+	            }
+	        });
+	    } catch (err) {
+	        if (callback) {
+	            return callback(err);
+	        } else {
+	            throw err;
+	        }
+	    }
+	    if (callback) {
+	        return callback();
+	    }
+	}
+
+	function killPid(pid, signal) {
+	    try {
+	        process.kill(parseInt(pid, 10), signal);
+	    }
+	    catch (err) {
+	        if (err.code !== 'ESRCH') throw err;
+	    }
+	}
+
+	function buildProcessTree (parentPid, tree, pidsToProcess, spawnChildProcessesList, cb) {
+	    var ps = spawnChildProcessesList(parentPid);
+	    var allData = '';
+	    ps.stdout.on('data', function (data) {
+	        var data = data.toString('ascii');
+	        allData += data;
+	    });
+
+	    var onClose = function (code) {
+	        delete pidsToProcess[parentPid];
+
+	        if (code != 0) {
+	            // no more parent processes
+	            if (Object.keys(pidsToProcess).length == 0) {
+	                cb();
+	            }
+	            return;
+	        }
+
+	        allData.match(/\d+/g).forEach(function (pid) {
+	          pid = parseInt(pid, 10);
+	          tree[parentPid].push(pid);
+	          tree[pid] = [];
+	          pidsToProcess[pid] = 1;
+	          buildProcessTree(pid, tree, pidsToProcess, spawnChildProcessesList, cb);
+	        });
+	    };
+
+	    ps.on('close', onClose);
+	}
+	return treeKill$1;
+}
+
+var treeKillExports = requireTreeKill();
+var treeKill = /*@__PURE__*/getDefaultExportFromCjs(treeKillExports);
+
 var cjs = {};
 
 var posix = {};
@@ -21484,33 +21613,6 @@ async function utilReadArgs(batFileName, defaultData, parser, cardDir) {
         return [];
     return parser(data);
 }
-async function getLatestNonRCReleaseAndAsset(owner, repo, assetNameInclude) {
-    try {
-        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/releases`, {
-            headers: {
-                Accept: 'application/vnd.github.v3+json',
-            },
-        });
-        const releases = response.data;
-        for (const release of releases) {
-            const tagName = release.tag_name;
-            const isRC = tagName.includes('rc');
-            const isPrerelease = release.prerelease;
-            if (!isRC && !isPrerelease) {
-                const version = tagName.startsWith('v') ? tagName.slice(1) : tagName;
-                const asset = release.assets.find(a => a.name.toLowerCase().includes(assetNameInclude.toLowerCase()));
-                if (asset) {
-                    return { version, downloadUrl: asset.browser_download_url };
-                }
-            }
-        }
-        return null; // No non-RC, non-prerelease release with a matching asset found
-    }
-    catch (error) {
-        console.error('Error fetching releases from GitHub:', error);
-        return null;
-    }
-}
 /**
  * Gets the highest available PowerShell version on the system.
  * @returns The major version number of PowerShell, or 0 if PowerShell is not found.
@@ -21561,48 +21663,147 @@ async function checkWhich(name) {
         return false;
     }
 }
+async function getPipPackageVersion(packageName, pty) {
+    return new Promise(resolve => {
+        const ptyProcess = pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(() => {
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
+            }
+            const lines = output.split(/\r?\n/);
+            const versionLine = lines.find(line => line.toLowerCase().includes('version:'));
+            if (versionLine) {
+                const version = versionLine.split(': ')[1].trim();
+                resolve(version);
+            }
+            else {
+                resolve(null);
+            }
+        });
+        ptyProcess.write(`pip show ${packageName}${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+async function getPipPackageVersionCustom(pythonExePath, packageName) {
+    return new Promise((resolve, reject) => {
+        const command = `"${pythonExePath}" -m pip show ${packageName}`;
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                if (stderr && stderr.includes(`Package(s) not found: ${packageName}`)) {
+                    resolve(null);
+                    return;
+                }
+                reject(`Error getting package info for ${packageName}: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.warn(`stderr when getting package info for ${packageName}: ${stderr}`);
+            }
+            const lines = stdout.split('\n');
+            for (const line of lines) {
+                if (line.startsWith('Version:')) {
+                    const version = line.replace('Version:', '').trim();
+                    resolve(version);
+                    return;
+                }
+            }
+            console.warn(`Could not find Version in pip show output for ${packageName}`);
+            resolve(null);
+        });
+    });
+}
+async function getLatestPipPackageVersion(packageName) {
+    const url = `https://pypi.org/pypi/${packageName}/json`;
+    try {
+        const response = await axios.get(url);
+        const data = response.data;
+        if (data && data.info && data.info.version) {
+            return data.info.version;
+        }
+        else {
+            console.error(`Could not find version information for ${packageName} in the response.`);
+            return null;
+        }
+    }
+    catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 404) {
+                console.error(`Package ${packageName} not found on PyPI.`);
+            }
+            else {
+                console.error(`Error fetching package information for ${packageName}:`, error.message);
+            }
+        }
+        else {
+            console.error(`An unexpected error occurred while fetching package information:`, error);
+        }
+        return null;
+    }
+}
+function isVenvDirectory(dirPath) {
+    try {
+        if (!gracefulFsExports.existsSync(dirPath)) {
+            return false;
+        }
+        const pythonExePath = getVenvPythonPath(dirPath);
+        if (!gracefulFsExports.existsSync(pythonExePath)) {
+            return false;
+        }
+        const libPath = join(dirPath, 'lib');
+        return gracefulFsExports.existsSync(libPath);
+    }
+    catch (err) {
+        console.error(`Error checking if directory is a venv: ${err}`);
+        return false;
+    }
+}
 
-const BAT_FILE_NAME$b = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
+const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
 async function getRunCommands$h(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$b, dir, DEFAULT_BATCH_DATA$d);
+    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$c);
 }
 const Rrew123_MM = { getRunCommands: getRunCommands$h };
 
-const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
+const BAT_FILE_NAME$9 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
 async function getRunCommands$g(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$c);
+    return await utilRunCommands(BAT_FILE_NAME$9, dir, DEFAULT_BATCH_DATA$b);
 }
 async function saveArgs$c(args, cardDir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$a, parseArgsToString, cardDir);
+    return await utilSaveArgs(args, BAT_FILE_NAME$9, parseArgsToString, cardDir);
 }
 async function readArgs$c(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$a, DEFAULT_BATCH_DATA$c, parseStringToArgs, cardDir);
+    return await utilReadArgs(BAT_FILE_NAME$9, DEFAULT_BATCH_DATA$b, parseStringToArgs, cardDir);
 }
 const Gitmylo_MM = { getRunCommands: getRunCommands$g, readArgs: readArgs$c, saveArgs: saveArgs$c };
 
-const BAT_FILE_NAME$9 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
+const BAT_FILE_NAME$8 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
 async function getRunCommands$f(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$9, dir);
+    return await utilRunCommands(BAT_FILE_NAME$8, dir);
 }
 const Rsx_MM = { getRunCommands: getRunCommands$f };
 
-const BAT_FILE_NAME$8 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+const BAT_FILE_NAME$7 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
 async function getRunCommands$e(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$8, dir, DEFAULT_BATCH_DATA$b);
+    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$a);
 }
 async function saveArgs$b(args, cardDir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$8, parseArgsToString$1, cardDir);
+    return await utilSaveArgs(args, BAT_FILE_NAME$7, parseArgsToString$1, cardDir);
 }
 async function readArgs$b(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$8, DEFAULT_BATCH_DATA$b, parseStringToArgs$1, cardDir);
+    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$a, parseStringToArgs$1, cardDir);
 }
 const Comfy_MM = { getRunCommands: getRunCommands$e, readArgs: readArgs$b, saveArgs: saveArgs$b };
 
-const BAT_FILE_NAME$7 = 'lynx-user.bat';
-const DEFAULT_BATCH_DATA$a = '@echo off\n' +
+const BAT_FILE_NAME$6 = 'lynx-user.bat';
+const DEFAULT_BATCH_DATA$9 = '@echo off\n' +
     '\n' +
     'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
     'set VENV_DIR=./venv\n' +
@@ -21612,13 +21813,13 @@ const DEFAULT_BATCH_DATA$a = '@echo off\n' +
     '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
     '\npause';
 async function getRunCommands$d(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$a);
+    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$9);
 }
 async function saveArgs$a(args, cardDir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$7, parseArgsToString$2, cardDir);
+    return await utilSaveArgs(args, BAT_FILE_NAME$6, parseArgsToString$2, cardDir);
 }
 async function readArgs$a(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$a, parseStringToArgs$2, cardDir);
+    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$9, parseStringToArgs$2, cardDir);
 }
 const ComfyZluda_MM = { getRunCommands: getRunCommands$d, readArgs: readArgs$a, saveArgs: saveArgs$a };
 
@@ -24277,34 +24478,94 @@ function requireSemver () {
 
 var semverExports = requireSemver();
 
-const BAT_FILE_NAME$6 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall invoke.bat' : '#!/bin/bash\n\nbash ./invoke.sh';
+async function invokeGetLatestReleases(owner, repo) {
+    try {
+        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/releases`, {
+            headers: {
+                Accept: 'application/vnd.github.v3+json',
+            },
+        });
+        const releases = response.data;
+        return releases.map(release => {
+            const tagName = release.tag_name;
+            return tagName.startsWith('v') ? tagName.slice(1) : tagName;
+        });
+    }
+    catch (error) {
+        console.error('Error fetching releases from GitHub:', error);
+        return [];
+    }
+}
+function invokeValidateInstallation(dir) {
+    const pythonPath = getVenvPythonPath(dir);
+    if (!pythonPath) {
+        console.error(`Could not find Python executable for directory: ${dir}`);
+        return false;
+    }
+    try {
+        const command = `"${pythonPath}" -c "import invokeai"`;
+        execSync(command, { stdio: 'pipe' });
+        console.log(`Validation successful: 'invokeai' package found using ${pythonPath}`);
+        return true;
+    }
+    catch (err) {
+        console.warn(`Validation failed: 'invokeai' package not found or error executing Python at ${pythonPath}.`, err);
+        return false;
+    }
+}
+async function invokeGetCurrentVersion(lynxApi) {
+    const dir = lynxApi.storage.get(INVOKEAI_INSTALL_DIR_KEY);
+    if (!dir)
+        return null;
+    const venvDir = path.join(dir, '.venv');
+    const isDir = isVenvDirectory(venvDir);
+    if (!isDir)
+        return null;
+    const pythonExe = getVenvPythonPath(venvDir);
+    return await getPipPackageVersionCustom(pythonExe, 'invokeai');
+}
+
+const CONFIG_FILE$4 = 'invokeai.yaml';
+const DEFAULT_CONFIG_DATA = 'schema_version: 4.0.2\n\n';
 async function getRunCommands$c(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$9);
+    return [`${Invoke_Command_ActivateVenv}${LINE_ENDING}`, `invokeai-web --root ${dir}${LINE_ENDING}`];
 }
-async function saveArgs$9(args, cardDir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$6, parseArgsToString$3, cardDir);
+async function saveArgs$9(args, dir) {
+    return await utilSaveArgs(args, CONFIG_FILE$4, parseArgsToString$3, dir);
 }
-async function readArgs$9(cardDir) {
-    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$9, parseStringToArgs$3, cardDir);
+async function readArgs$9(dir) {
+    return await utilReadArgs(CONFIG_FILE$4, DEFAULT_CONFIG_DATA, parseStringToArgs$3, dir);
 }
-async function getLatest() {
-    const { owner, repo } = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
-    return await getLatestNonRCReleaseAndAsset(owner, repo, 'InvokeAI-installer');
+async function mainIpc$3(ipc) {
+    ipc.handle('is_uv_installed', () => {
+        return checkWhich('uv');
+    });
+    ipc.handle('invoke_latest_versions', () => {
+        const { owner, repo } = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
+        return invokeGetLatestReleases(owner, repo);
+    });
+    ipc.handle('invoke_current_version', () => invokeGetCurrentVersion(ipc));
+    ipc.handle('validate_install_dir', (_, dir) => {
+        const venvDir = path.join(dir, '.venv');
+        const isVenvDir = isVenvDirectory(venvDir);
+        if (isVenvDir)
+            return invokeValidateInstallation(dir);
+        return false;
+    });
 }
 async function updateAvailable$5(lynxApi) {
-    const installedVersion = lynxApi.storage.get(INSTALLED_VERSION_KEY);
-    if (!installedVersion)
+    const currentVersion = await invokeGetCurrentVersion(lynxApi);
+    if (!currentVersion)
         return false;
-    const latestVersion = await getLatest();
-    if (!latestVersion)
-        return false;
-    return semverExports.compare(installedVersion, latestVersion.version) === -1;
+    const latestVersion = await getLatestPipPackageVersion('invokeai');
+    if (currentVersion && latestVersion && semverExports.compare(currentVersion, latestVersion) === -1) {
+        lynxApi.storage.set(INVOKEAI_UPDATE_AVAILABLE_KEY, latestVersion);
+        return true;
+    }
+    lynxApi.storage.set(INVOKEAI_UPDATE_AVAILABLE_KEY, undefined);
+    return false;
 }
-function mainIpc$3(ipc) {
-    ipc.handle('get-latest', getLatest);
-}
-const Invoke_MM = { getRunCommands: getRunCommands$c, updateAvailable: updateAvailable$5, mainIpc: mainIpc$3, saveArgs: saveArgs$9, readArgs: readArgs$9 };
+const Invoke_MM = { getRunCommands: getRunCommands$c, readArgs: readArgs$9, saveArgs: saveArgs$9, updateAvailable: updateAvailable$5, mainIpc: mainIpc$3 };
 
 const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
@@ -24395,156 +24656,14 @@ async function updateAvailable$3(lynxApi) {
 }
 const BOLT_DIY_MM = { getRunCommands: getRunCommands$5, mainIpc: mainIpc$2, updateAvailable: updateAvailable$3 };
 
-var treeKill$1;
-var hasRequiredTreeKill;
-
-function requireTreeKill () {
-	if (hasRequiredTreeKill) return treeKill$1;
-	hasRequiredTreeKill = 1;
-
-	var childProcess = require$$0$5;
-	var spawn = childProcess.spawn;
-	var exec = childProcess.exec;
-
-	treeKill$1 = function (pid, signal, callback) {
-	    if (typeof signal === 'function' && callback === undefined) {
-	        callback = signal;
-	        signal = undefined;
-	    }
-
-	    pid = parseInt(pid);
-	    if (Number.isNaN(pid)) {
-	        if (callback) {
-	            return callback(new Error("pid must be a number"));
-	        } else {
-	            throw new Error("pid must be a number");
-	        }
-	    }
-
-	    var tree = {};
-	    var pidsToProcess = {};
-	    tree[pid] = [];
-	    pidsToProcess[pid] = 1;
-
-	    switch (process.platform) {
-	    case 'win32':
-	        exec('taskkill /pid ' + pid + ' /T /F', callback);
-	        break;
-	    case 'darwin':
-	        buildProcessTree(pid, tree, pidsToProcess, function (parentPid) {
-	          return spawn('pgrep', ['-P', parentPid]);
-	        }, function () {
-	            killAll(tree, signal, callback);
-	        });
-	        break;
-	    // case 'sunos':
-	    //     buildProcessTreeSunOS(pid, tree, pidsToProcess, function () {
-	    //         killAll(tree, signal, callback);
-	    //     });
-	    //     break;
-	    default: // Linux
-	        buildProcessTree(pid, tree, pidsToProcess, function (parentPid) {
-	          return spawn('ps', ['-o', 'pid', '--no-headers', '--ppid', parentPid]);
-	        }, function () {
-	            killAll(tree, signal, callback);
-	        });
-	        break;
-	    }
-	};
-
-	function killAll (tree, signal, callback) {
-	    var killed = {};
-	    try {
-	        Object.keys(tree).forEach(function (pid) {
-	            tree[pid].forEach(function (pidpid) {
-	                if (!killed[pidpid]) {
-	                    killPid(pidpid, signal);
-	                    killed[pidpid] = 1;
-	                }
-	            });
-	            if (!killed[pid]) {
-	                killPid(pid, signal);
-	                killed[pid] = 1;
-	            }
-	        });
-	    } catch (err) {
-	        if (callback) {
-	            return callback(err);
-	        } else {
-	            throw err;
-	        }
-	    }
-	    if (callback) {
-	        return callback();
-	    }
-	}
-
-	function killPid(pid, signal) {
-	    try {
-	        process.kill(parseInt(pid, 10), signal);
-	    }
-	    catch (err) {
-	        if (err.code !== 'ESRCH') throw err;
-	    }
-	}
-
-	function buildProcessTree (parentPid, tree, pidsToProcess, spawnChildProcessesList, cb) {
-	    var ps = spawnChildProcessesList(parentPid);
-	    var allData = '';
-	    ps.stdout.on('data', function (data) {
-	        var data = data.toString('ascii');
-	        allData += data;
-	    });
-
-	    var onClose = function (code) {
-	        delete pidsToProcess[parentPid];
-
-	        if (code != 0) {
-	            // no more parent processes
-	            if (Object.keys(pidsToProcess).length == 0) {
-	                cb();
-	            }
-	            return;
-	        }
-
-	        allData.match(/\d+/g).forEach(function (pid) {
-	          pid = parseInt(pid, 10);
-	          tree[parentPid].push(pid);
-	          tree[pid] = [];
-	          pidsToProcess[pid] = 1;
-	          buildProcessTree(pid, tree, pidsToProcess, spawnChildProcessesList, cb);
-	        });
-	    };
-
-	    ps.on('close', onClose);
-	}
-	return treeKill$1;
-}
-
-var treeKillExports = requireTreeKill();
-var treeKill = /*@__PURE__*/getDefaultExportFromCjs(treeKillExports);
-
 const CONFIG_FILE$1 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
 const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
-function getCdCommand$1(dirPath) {
-    const escapedPath = dirPath.replace(/ /g, '\\ ');
-    const quotedPath = `"${dirPath}"`;
-    if (platform$2() === 'win32') {
-        return `cd ${quotedPath}`;
-    }
-    else if (platform$2() === 'linux' || platform$2() === 'darwin') {
-        return `cd ${escapedPath}`;
-    }
-    else {
-        throw new Error(`Unsupported platform: ${platform$2}`);
-    }
-}
 async function getRunCommands$4(_, configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$1));
     await initBatchFile(filePath, DEFAULT_BATCH_DATA$3);
-    return [getCdCommand$1(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 async function saveArgs$3(args, _, configDir) {
     return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$9, configDir);
@@ -24648,76 +24767,8 @@ async function updateAvailable$1(lynxApi) {
 }
 const LoLLM_MM = { getRunCommands: getRunCommands$3, updateAvailable: updateAvailable$1 };
 
-async function getPipPackageVersion(packageName, pty) {
-    return new Promise(resolve => {
-        const ptyProcess = pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(() => {
-            if (ptyProcess.pid) {
-                treeKill(ptyProcess.pid);
-                ptyProcess.kill();
-            }
-            const lines = output.split(/\r?\n/);
-            const versionLine = lines.find(line => line.toLowerCase().includes('version:'));
-            if (versionLine) {
-                const version = versionLine.split(': ')[1].trim();
-                resolve(version);
-            }
-            else {
-                resolve(null);
-            }
-        });
-        ptyProcess.write(`pip show ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
-}
-async function getLatestPipPackageVersion(packageName) {
-    const url = `https://pypi.org/pypi/${packageName}/json`;
-    try {
-        const response = await axios.get(url);
-        const data = response.data;
-        if (data && data.info && data.info.version) {
-            return data.info.version;
-        }
-        else {
-            console.error(`Could not find version information for ${packageName} in the response.`);
-            return null;
-        }
-    }
-    catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response?.status === 404) {
-                console.error(`Package ${packageName} not found on PyPI.`);
-            }
-            else {
-                console.error(`Error fetching package information for ${packageName}:`, error.message);
-            }
-        }
-        else {
-            console.error(`An unexpected error occurred while fetching package information:`, error);
-        }
-        return null;
-    }
-}
-
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
 const DEFAULT_BATCH_DATA$2 = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
-function getCdCommand(dirPath) {
-    const escapedPath = dirPath.replace(/ /g, '\\ ');
-    const quotedPath = `"${dirPath}"`;
-    if (platform$2() === 'win32') {
-        return `cd ${quotedPath}`;
-    }
-    else if (platform$2() === 'linux' || platform$2() === 'darwin') {
-        return `cd ${escapedPath}`;
-    }
-    else {
-        throw new Error(`Unsupported platform: ${platform$2}`);
-    }
-}
 async function getRunCommands$2(_, configDir) {
     if (!configDir)
         return '';

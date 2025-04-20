@@ -5,10 +5,23 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 16,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "11.0.0",
-  "updateDate": "2025-03-19 17:20",
-  "changeLog": "V11.0.0\n\n・Add bolt.diy integration.\n・Faster Open WebUI installation detection. \nV10.0.0\n\n・Add Flowise integration.\n・Display latest version in card info for updatable Open WebUI and Flowise.\n・Reorder cards.\n・Improve handling of terminal commands.\n",
+  "version": "11.1.0",
+  "updateDate": "2025-04-20 14:02",
+  "changeLog": "V11.1.0\n\n・Implement new InvokeAI installation and updating logic. \nV11.0.0\n\n・Add bolt.diy integration.\n・Faster Open WebUI installation detection.",
   "changes": [
+    {
+      "title": "V11.1.0",
+      "items": [
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Implement new InvokeAI installation and updating logic."
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V11.0.0",
       "items": [

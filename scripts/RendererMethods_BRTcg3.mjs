@@ -76,6 +76,19 @@ function removeAnsi(str) {
     return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 }
 const isWin = await isWinOS();
+function getCdCommand(dirPath) {
+    const escapedPath = dirPath.replace(/ /g, '\\ ');
+    const quotedPath = `"${dirPath}"`;
+    if (isWin) {
+        return `cd ${quotedPath}`;
+    }
+    else {
+        return `cd ${escapedPath}`;
+    }
+}
+function getVenvPythonPath(venvPath) {
+    return isWin ? `${venvPath}\\Scripts\\python.exe` : `${venvPath}/bin/python`;
+}
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -83,7 +96,7 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var lodash$1 = {exports: {}};
+var lodash$2 = {exports: {}};
 
 /**
  * @license
@@ -93,12 +106,12 @@ var lodash$1 = {exports: {}};
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
-var lodash = lodash$1.exports;
+var lodash$1 = lodash$2.exports;
 
 var hasRequiredLodash;
 
 function requireLodash () {
-	if (hasRequiredLodash) return lodash$1.exports;
+	if (hasRequiredLodash) return lodash$2.exports;
 	hasRequiredLodash = 1;
 	(function (module, exports) {
 (function() {
@@ -17287,16 +17300,16 @@ function requireLodash () {
 		    // Export to the global object.
 		    root._ = _;
 		  }
-		}.call(lodash)); 
-	} (lodash$1, lodash$1.exports));
-	return lodash$1.exports;
+		}.call(lodash$1)); 
+	} (lodash$2, lodash$2.exports));
+	return lodash$2.exports;
 }
 
 var lodashExports = requireLodash();
-var _ = /*@__PURE__*/getDefaultExportFromCjs(lodashExports);
+var lodash = /*@__PURE__*/getDefaultExportFromCjs(lodashExports);
 
 function isValidArg(name, Arguments) {
-    if (_.isEmpty(name))
+    if (lodash.isEmpty(name))
         return false;
     for (const argument of Arguments) {
         if ('sections' in argument) {
@@ -17313,7 +17326,7 @@ function isValidArg(name, Arguments) {
     return false;
 }
 function getArgumentByName(name, Arguments) {
-    if (_.isEmpty(name))
+    if (lodash.isEmpty(name))
         return undefined;
     for (const argument of Arguments) {
         if ('sections' in argument) {
@@ -17506,7 +17519,7 @@ const gitmyloArguments = [
     },
 ];
 
-const shellCommand$7 = isWin ? 'call run.bat' : 'bash ./run.sh';
+const shellCommand$6 = isWin ? 'call run.bat' : 'bash ./run.sh';
 const URL$6 = 'https://github.com/gitmylo/audio-webui';
 function parseArgsToString$c(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
@@ -17523,17 +17536,17 @@ function parseArgsToString$c(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$7 : `${shellCommand$7} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
     return result;
 }
 function parseStringToArgs$c(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$7))
+        if (!line.startsWith(shellCommand$6))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$7} `)[1];
+        const clArgs = line.split(`${shellCommand$6} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -18696,440 +18709,192 @@ const COMFYUI_ZLUDA_RM = {
     manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
 };
 
-const invokeArguments = [
-    {
-        category: 'Subset Settings',
-        items: [
-            {
-                name: '--root',
-                description: 'Specify the root directory',
-                type: 'Directory',
-            },
-            {
-                name: '--config',
-                description: 'Override the default "invokeai.yaml" file location',
-                type: 'File',
-            },
-        ],
-    },
-    {
-        category: 'Command Line Arguments',
-        items: [
-            {
-                name: 'host',
-                description: 'IP address to bind to. Use 0.0.0.0 to serve to your local network.',
-                type: 'Input',
-                defaultValue: '127.0.0.1',
-            },
-            {
-                name: 'port',
-                description: 'Port to bind to.',
-                type: 'Input',
-                defaultValue: '9090',
-            },
-            {
-                name: 'allow_origins',
-                description: 'Allowed CORS origins.',
-                type: 'Input',
-            },
-            {
-                name: 'allow_credentials',
-                description: 'Allow CORS credentials.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'allow_methods',
-                description: 'Methods allowed for CORS.',
-                type: 'Input',
-                defaultValue: "['*']",
-            },
-            {
-                name: 'allow_headers',
-                description: 'Headers allowed for CORS.',
-                type: 'Input',
-                defaultValue: "['*']",
-            },
-            {
-                name: 'ssl_certfile',
-                description: 'SSL certificate file for HTTPS. See https://www.uvicorn.org/settings/#https.',
-                type: 'File',
-            },
-            {
-                name: 'ssl_keyfile',
-                description: 'SSL key file for HTTPS. See https://www.uvicorn.org/settings/#https.',
-                type: 'File',
-            },
-            {
-                name: 'log_tokenization',
-                description: 'Enable logging of parsed prompt tokens.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'patchmatch',
-                description: 'Enable patchmatch inpaint code.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'models_dir',
-                description: 'Path to the models directory.',
-                type: 'Directory',
-                defaultValue: 'models',
-            },
-            {
-                name: 'convert_cache_dir',
-                description: 'Path to the converted models cache directory (DEPRECATED, but do not delete because it is' +
-                    ' needed for migration from previous versions).',
-                type: 'Directory',
-                defaultValue: 'models/.convert_cache',
-            },
-            {
-                name: 'download_cache_dir',
-                description: 'Path to the directory that contains dynamically downloaded models.',
-                type: 'Directory',
-                defaultValue: 'models/.download_cache',
-            },
-            {
-                name: 'legacy_conf_dir',
-                description: 'Path to directory of legacy checkpoint config files.',
-                type: 'Directory',
-                defaultValue: 'configs',
-            },
-            {
-                name: 'db_dir',
-                description: 'Path to InvokeAI databases directory.',
-                type: 'Directory',
-                defaultValue: 'databases',
-            },
-            {
-                name: 'outputs_dir',
-                description: 'Path to directory for outputs.',
-                type: 'Directory',
-                defaultValue: 'outputs',
-            },
-            {
-                name: 'custom_nodes_dir',
-                description: 'Path to directory for custom nodes.',
-                type: 'Directory',
-                defaultValue: 'nodes',
-            },
-            {
-                name: 'style_presets_dir',
-                description: 'Path to directory for style presets.',
-                type: 'Directory',
-                defaultValue: 'style_presets',
-            },
-            {
-                name: 'log_handlers',
-                description: 'Log handler. Valid options are "console", "file=", "syslog=path|address:host:port", "http=".',
-                type: 'Input',
-                defaultValue: "['console']",
-            },
-            {
-                name: 'log_format',
-                description: 'Log format. Use "plain" for text-only, "color" for colorized output, "legacy" for 2.3-style' +
-                    ' logging and "syslog" for syslog-style.',
-                type: 'DropDown',
-                defaultValue: 'color',
-                values: ['plain', 'color', 'syslog', 'legacy'],
-            },
-            {
-                name: 'log_level',
-                description: 'Emit logging messages at this level or higher.',
-                type: 'DropDown',
-                defaultValue: 'info',
-                values: ['debug', 'info', 'warning', 'error', 'critical'],
-            },
-            {
-                name: 'log_level_network',
-                description: "Log level for network-related messages. 'info' and 'debug' are very verbose.",
-                type: 'DropDown',
-                defaultValue: 'warning',
-                values: ['debug', 'info', 'warning', 'error', 'critical'],
-            },
-            {
-                name: 'log_sql',
-                description: 'Log SQL queries. log_level must be debug for this to do anything. Extremely verbose.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'use_memory_db',
-                description: 'Use in-memory database. Useful for development.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'dev_reload',
-                description: 'Automatically reload when Python sources are changed. Does not reload node definitions.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'profile_graphs',
-                description: 'Enable graph profiling using cProfile.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'profile_prefix',
-                description: 'An optional prefix for profile output files.',
-                type: 'Input',
-            },
-            {
-                name: 'profiles_dir',
-                description: 'Path to profiles output directory.',
-                type: 'Directory',
-                defaultValue: 'profiles',
-            },
-            {
-                name: 'ram',
-                description: 'Maximum memory amount used by memory model cache for rapid switching (GB).',
-                type: 'Input',
-            },
-            {
-                name: 'vram',
-                description: 'Amount of VRAM reserved for model storage (GB).',
-                type: 'Input',
-                defaultValue: '0',
-            },
-            {
-                name: 'lazy_offload',
-                description: 'Keep models in VRAM until their space is needed.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'log_memory_usage',
-                description: 'If True, a memory snapshot will be captured before and after every model cache operation,' +
-                    ' and the result will be logged (at debug level). There is a time cost to capturing the' +
-                    ' memory snapshots, so it is recommended to only enable this feature if you are actively' +
-                    " inspecting the model cache's behaviour.",
-                type: 'CheckBox',
-            },
-            {
-                name: 'device',
-                description: 'Preferred execution device. auto will choose the device depending on the hardware platform' +
-                    ' and the installed torch capabilities.',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'cpu', 'cuda', 'cuda:1', 'mps'],
-            },
-            {
-                name: 'precision',
-                description: 'Floating point precision. float16 will consume half the memory of float32 but produce slightly' +
-                    ' lower-quality images. The auto setting will guess the proper precision based on your video' +
-                    ' card and operating system.',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'float16', 'bfloat16', 'float32'],
-            },
-            {
-                name: 'sequential_guidance',
-                description: 'Whether to calculate guidance in serial instead of in parallel, lowering memory requirements.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'attention_type',
-                description: 'Attention type.',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'normal', 'xformers', 'sliced', 'torch-sdp'],
-            },
-            {
-                name: 'attention_slice_size',
-                description: 'Slice size, valid when attention_type=="sliced".',
-                type: 'DropDown',
-                defaultValue: 'auto',
-                values: ['auto', 'balanced', 'max', '1', '2', '3', '4', '5', '6', '7', '8'],
-            },
-            {
-                name: 'force_tiled_decode',
-                description: 'Whether to enable tiled VAE decode (reduces memory consumption with some performance penalty).',
-                type: 'CheckBox',
-            },
-            {
-                name: 'pil_compress_level',
-                description: 'The compress_level setting of PIL.Image.save(), used for PNG encoding. All settings are lossless.' +
-                    ' 0 = no compression, 1 = fastest with slightly larger filesize, 9 = slowest with smallest filesize.' +
-                    ' 1 is typically the best setting.',
-                type: 'Input',
-                defaultValue: '1',
-            },
-            {
-                name: 'max_queue_size',
-                description: 'Maximum number of items in the session queue.',
-                type: 'Input',
-                defaultValue: '10000',
-            },
-            {
-                name: 'clear_queue_on_startup',
-                description: 'Empties session queue on startup.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'allow_nodes',
-                description: 'List of nodes to allow. Omit to allow all.',
-                type: 'Input',
-            },
-            {
-                name: 'deny_nodes',
-                description: 'List of nodes to deny. Omit to deny none.',
-                type: 'Input',
-            },
-            {
-                name: 'node_cache_size',
-                description: 'How many cached nodes to keep in memory.',
-                type: 'Input',
-                defaultValue: '512',
-            },
-            {
-                name: 'hashing_algorithm',
-                description: "Model hashing algorithm for model installs. 'blake3_multi' is best for SSDs. 'blake3_single'" +
-                    " is best for spinning disk HDDs. 'random' disables hashing, instead assigning a UUID to models." +
-                    " Useful when using a memory db to reduce model installation time, or if you don't care about " +
-                    'storing stable hashes for models. Alternatively, any other hashlib algorithm is accepted, ' +
-                    'though these are not nearly as performant as blake3.',
-                type: 'DropDown',
-                defaultValue: 'blake3_single',
-                values: [
-                    'blake3_multi',
-                    'blake3_single',
-                    'random',
-                    'md5',
-                    'sha1',
-                    'sha224',
-                    'sha256',
-                    'sha384',
-                    'sha512',
-                    'blake2b',
-                    'blake2s',
-                    'sha3_224',
-                    'sha3_256',
-                    'sha3_384',
-                    'sha3_512',
-                    'shake_128',
-                    'shake_256',
-                ],
-            },
-            {
-                name: 'remote_api_tokens',
-                description: 'List of regular expression and token pairs used when downloading models from URLs.' +
-                    ' The download URL is tested against the regex, and if it matches, the token is provided in as a Bearer token.',
-                type: 'Input',
-            },
-            {
-                name: 'scan_models_on_startup',
-                description: 'Scan the models directory on startup, registering orphaned models. This is typically only used' +
-                    ' in conjunction with use_memory_db for testing purposes.',
-                type: 'CheckBox',
-            },
-        ],
-    },
-];
+const Invoke_Command_CreateVenv = 'uv venv --relocatable --prompt invoke --python 3.12 --python-preference only-managed .venv';
+const Invoke_Command_ActivateVenv = isWin ? '.venv\\Scripts\\activate' : 'source .venv/bin/activate';
+const Invoke_Command_InstallPip = 'python -m ensurepip --upgrade';
+const Invoke_Command_InstallUV = isWin
+    ? 'powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"'
+    : 'wget -qO- https://astral.sh/uv/install.sh | sh';
+const Invoke_PyPI = {
+    cu126: 'cu126: Windows or Linux with an Nvidia GPU',
+    rocm: 'rocm6.2.4: Linux with an AMD GPU',
+    cpu: 'cpu: Linux with no GPU',
+};
+const Invoke_PackageSpec = {
+    invokeai: 'invokeai: Nvidia 30xx series GPU or newer, or do not have an Nvidia GPU',
+    invokeaiXformers: 'invokeai[xformers]:  Nvidia 20xx series GPU or older',
+};
+const INVOKEAI_INSTALL_TIME_KEY = 'install-time-invokeai';
+const INVOKEAI_INSTALL_DIR_KEY = 'install-dir-invokeai';
+const INVOKEAI_UPDATE_TIME_KEY = 'update-time-invokeai';
+const INVOKEAI_UPDATE_AVAILABLE_KEY = 'update-version-invokeai';
+const invokeGetInputFields = async (ipc) => {
+    const releases = await ipc.invoke('invoke_latest_versions');
+    return [
+        {
+            label: 'Installation Directory',
+            id: 'install_dir',
+            type: 'directory',
+        },
+        {
+            label: 'InvokeAI Version',
+            id: 'invoke_version',
+            type: 'select',
+            selectOptions: releases,
+        },
+        {
+            label: 'Package Specifier',
+            id: 'package_spec',
+            type: 'select',
+            selectOptions: [Invoke_PackageSpec.invokeai, Invoke_PackageSpec.invokeaiXformers],
+        },
+        {
+            label: 'PyPI',
+            id: 'pypi',
+            type: 'select',
+            selectOptions: [Invoke_PyPI.cu126, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
+        },
+    ];
+};
+const invokeGetInputResults = (items) => {
+    let installDirResult = '';
+    let packageSpecResult = '';
+    let pyPIResult = '';
+    let version = '';
+    items.forEach(item => {
+        if (item.id === 'install_dir') {
+            installDirResult = item.result;
+        }
+        else if (item.id === 'invoke_version') {
+            version = item.result;
+        }
+        else if (item.id === 'package_spec') {
+            switch (item.result) {
+                case Invoke_PackageSpec.invokeaiXformers:
+                    packageSpecResult = 'invokeai[xformers]';
+                    break;
+                case Invoke_PackageSpec.invokeai:
+                default:
+                    packageSpecResult = 'invokeai';
+            }
+        }
+        else if (item.id === 'pypi') {
+            switch (item.result) {
+                case Invoke_PyPI.rocm:
+                    pyPIResult = 'https://download.pytorch.org/whl/rocm6.2.4';
+                    break;
+                case Invoke_PyPI.cu126:
+                    pyPIResult = 'https://download.pytorch.org/whl/cu126';
+                    break;
+                case Invoke_PyPI.cpu:
+                    pyPIResult = 'https://download.pytorch.org/whl/cpu';
+                    break;
+                default:
+                case 'others':
+                    pyPIResult = '';
+                    break;
+            }
+        }
+    });
+    return { installDirResult, version, packageSpecResult, pyPIResult };
+};
+const invokeGetInstallCommand = (items) => {
+    const { version, pyPIResult, packageSpecResult } = invokeGetInputResults(items);
+    const index = pyPIResult ? ` --index=${pyPIResult}` : '';
+    return (`uv pip install ${packageSpecResult}==${version} --python 3.12 ` +
+        `--python-preference only-managed${index} --force-reinstall`);
+};
 
-const UPDATE_TIME_KEY$2 = 'update-time-invoke';
-const INSTALLED_VERSION_KEY = 'installed-version-invoke';
-
-const INPUT_ID = 'install_dir';
+function parseArgsToString$9(args) {
+    let result = 'schema_version: 4.0.2\n\n';
+    const argResult = args
+        .map(arg => {
+        return `${arg.name}: ${arg.value}`;
+    })
+        .join('\n');
+    result += argResult;
+    return result;
+}
+function parseStringToArgs$9(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('schema_version') || line.startsWith('#') || lodash.isEmpty(line.trim()))
+            return;
+        const clArgs = line.split(`: `);
+        const [name, value] = clArgs;
+        argResult.push({ name, value });
+    });
+    return argResult;
+}
 function startInstall$8(stepper) {
-    stepper.initialSteps(['InvokeAI', 'Get Latest', 'Download', 'Install', 'Directory', 'Finish']);
+    stepper.initialSteps(['InvokeAI', 'UV', 'Config', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
             stepper.nextStep();
-            stepper.progressBar(true, 'Getting the latest version of InvokeAI...');
-            stepper.ipc.invoke('get-latest').then((releaseInfo) => {
-                if (releaseInfo) {
-                    const { version, downloadUrl } = releaseInfo;
-                    stepper.initialSteps(['Get Latest', 'InvokeAI', `Download (v${version})`, 'Install', 'Directory', 'Finish']);
+            stepper.progressBar(true, 'Detecting UV installation...');
+            stepper.ipc.invoke('is_uv_installed').then(isUvInstalled => {
+                if (!isUvInstalled) {
+                    stepper.executeTerminalCommands(Invoke_Command_InstallUV).then(() => {
+                        stepper.showFinalStep('success', 'UV Package Manager Installation Complete.', 'Restart your computer and run the installer again to continue installation.');
+                    });
+                }
+                else {
                     stepper.nextStep();
-                    stepper.downloadFileFromUrl(downloadUrl).then(path => {
-                        stepper.utils.decompressFile(path).then(folderPath => {
+                    stepper.progressBar(true, 'Fetching the latest InvokeAI versions...');
+                    invokeGetInputFields(stepper.ipc).then(fields => {
+                        stepper.collectUserInput(fields).then(result => {
+                            const { installDirResult } = invokeGetInputResults(result);
+                            const installCommand = invokeGetInstallCommand(result);
                             stepper.nextStep();
                             stepper
-                                .runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh')
+                                .executeTerminalCommands([Invoke_Command_CreateVenv, Invoke_Command_ActivateVenv, Invoke_Command_InstallPip, installCommand], installDirResult)
                                 .then(() => {
-                                stepper.nextStep();
-                                stepper
-                                    .collectUserInput([
-                                    {
-                                        id: INPUT_ID,
-                                        type: 'directory',
-                                        label: 'Select the directory you chose during the terminal installation step',
-                                    },
-                                ])
-                                    .then(result => {
-                                    const selectedDir = result.find(item => item.id === INPUT_ID);
-                                    if (selectedDir) {
-                                        const finalDir = selectedDir.result;
-                                        stepper.utils.verifyFilesExist(finalDir, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
-                                            if (exist) {
-                                                stepper.setInstalled(finalDir);
-                                                stepper.storage.set(INSTALLED_VERSION_KEY, version);
-                                                stepper.showFinalStep('success', 'InvokeAI Installation Complete', 'All installation steps have been completed successfully.' +
-                                                    ' Your InvokeAI environment is now ready for use.');
-                                            }
-                                            else {
-                                                stepper.showFinalStep('error', 'InvokeAI Installation Failed', 'Unable to validate the installation directory containing InvokeAI. ' +
-                                                    'Please close this window, reopen it, and click "Locate" to select the correct folder.');
-                                            }
-                                        });
-                                    }
-                                });
+                                stepper.setInstalled(installDirResult);
+                                const currentDate = new Date();
+                                stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
+                                stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, installDirResult);
+                                stepper.showFinalStep('success', 'InvokeAI Installation Complete.', 'Your InvokeAI environment is ready. Enjoy!');
                             });
                         });
                     });
                 }
-                else {
-                    stepper.showFinalStep('error', 'Installation Failed!', `Unable to install at this time. Please check your internet connection and try again later.`);
-                }
             });
         }
-        else if (targetDirectory) {
-            stepper.utils.verifyFilesExist(targetDirectory, [isWin ? 'invoke.bat' : 'invoke.sh']).then(exist => {
-                if (exist) {
+        else {
+            stepper.ipc.invoke('validate_install_dir', targetDirectory).then(isValid => {
+                if (isValid) {
                     stepper.setInstalled(targetDirectory);
-                    stepper.showFinalStep('success', 'InvokeAI Located Successfully', 'Pre-installed InvokeAI detected. Installation skipped as your existing setup is ready to use.');
+                    const currentDate = new Date();
+                    stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
+                    stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, targetDirectory);
+                    stepper.showFinalStep('success', 'InvokeAI Environment Found.', 'Location validated successfully.');
                 }
                 else {
-                    stepper.showFinalStep('error', 'Unable to Locate InvokeAI', `Please ensure you have selected the correct folder containing ` +
-                        `InvokeAI with the ${isWin ? 'invoke.bat' : 'invoke.sh'} file.`);
+                    stepper.showFinalStep('error', 'Invalid Environment!', 'Could not find InvokeAI installation in the selected directory.');
                 }
             });
         }
     });
 }
-function startUpdate$2(stepper) {
-    stepper.initialSteps(['Checking', 'Downloading', 'Installing', 'Finishing Up']);
-    stepper.progressBar(true, 'Checking for the latest version of InvokeAI...');
-    stepper.ipc.invoke('get-latest').then((releaseInfo) => {
-        if (releaseInfo) {
-            stepper.initialSteps([
-                'Update Available!',
-                `Downloading (v${releaseInfo.version})`,
-                'Installing',
-                'Finishing Up',
-            ]);
-            stepper.nextStep();
-            stepper.downloadFileFromUrl(releaseInfo.downloadUrl).then(path => {
-                stepper.utils.decompressFile(path).then(folderPath => {
-                    stepper.nextStep();
-                    stepper
-                        .runTerminalScript(`${folderPath}/InvokeAI-Installer`, isWin ? 'install.bat' : 'install.sh')
-                        .then(() => {
-                        const currentDate = new Date();
-                        stepper.storage.set(UPDATE_TIME_KEY$2, currentDate.toLocaleString());
-                        stepper.storage.set(INSTALLED_VERSION_KEY, releaseInfo.version);
-                        stepper.setUpdated();
-                        stepper.showFinalStep('success', 'InvokeAI Updated Successfully', `InvokeAI has been successfully updated to version ${releaseInfo.version}. Enjoy!`);
-                    });
-                });
-            });
-        }
-        else {
-            stepper.showFinalStep('error', 'Update Failed!', `Unable to check for updates at this time. Please check your internet connection and try again later.`);
-        }
+function startUpdate$2(stepper, dir) {
+    if (!dir)
+        return;
+    const venvDir = isWin ? `${dir}\\.venv` : `${dir}/.venv`;
+    const pythonPath = getVenvPythonPath(venvDir);
+    stepper.initialSteps(['Updating', 'Done']);
+    stepper
+        .executeTerminalCommands(`${isWin ? '&' : '.'} "${pythonPath}" -m pip install --upgrade "invokeai"`, dir)
+        .then(() => {
+        const currentDate = new Date();
+        stepper.storage.set(INVOKEAI_UPDATE_TIME_KEY, currentDate);
+        stepper.setUpdated();
+        stepper.showFinalStep('success', 'InvokeAI Updated Successfully!', `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
 async function cardInfo$8(api, callback) {
     const dir = api.installationFolder;
-    if (!dir)
-        return;
-    callback.setOpenFolders([dir]);
+    callback.setOpenFolders(dir ? [dir] : undefined);
     const descManager = new DescriptionManager([
         {
             title: 'Installation Data',
@@ -19137,89 +18902,29 @@ async function cardInfo$8(api, callback) {
                 { label: 'Install Date', result: 'loading' },
                 { label: 'Update Date', result: 'loading' },
                 { label: 'Current Version', result: 'loading' },
+                { label: 'Latest Version', result: 'loading' },
             ],
         },
-        {
-            title: 'Disk Usage',
-            items: [{ label: 'Total', result: 'loading' }],
-        },
     ], callback);
-    api.getFolderCreationTime(dir).then(result => {
+    api.storage.get(INVOKEAI_INSTALL_TIME_KEY).then(result => {
         descManager.updateItem(0, 0, result);
     });
-    api.storage.get(UPDATE_TIME_KEY$2).then(result => {
+    api.storage.get(INVOKEAI_UPDATE_TIME_KEY).then(result => {
         descManager.updateItem(0, 1, result);
     });
-    api.storage.get(INSTALLED_VERSION_KEY).then(result => {
+    api.ipc.invoke('invoke_current_version').then(result => {
         descManager.updateItem(0, 2, result);
     });
-    api.getFolderSize(dir).then(result => {
-        descManager.updateItem(1, 0, formatSize(result));
+    api.storage.get(INVOKEAI_UPDATE_AVAILABLE_KEY).then(result => {
+        descManager.updateItem(0, 3, result);
     });
-}
-
-const shellCommand$6 = isWin ? 'call invoke.bat' : 'bash ./invoke.sh';
-function parseArgsToString$9(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, invokeArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$9(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$6))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$6} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, invokeArguments)) {
-                if (getArgumentType(value.name, invokeArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
 }
 const INVOKE_RM = {
     catchAddress: catchAddress$1,
+    cardInfo: cardInfo$8,
     parseArgsToString: parseArgsToString$9,
     parseStringToArgs: parseStringToArgs$9,
-    cardInfo: cardInfo$8,
-    manager: {
-        startInstall: startInstall$8,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
-    },
+    manager: { startInstall: startInstall$8, updater: { updateType: 'stepper', startUpdate: startUpdate$2 } },
 };
 
 const bmaltaisArguments = [
@@ -24644,4 +24349,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { CardInfo as $, parseStringToArgs$2 as A, parseArgsToString$1 as B, parseStringToArgs$1 as C, parseArgsToString as D, parseStringToArgs as E, COMFYUI_ID as F, A1_ID as G, SD_FORGE_ID as H, INSTALLED_VERSION_KEY as I, SD_FORGE_AMD_ID as J, SD_NEXT_ID as K, SWARM_ID as L, KOHYA_ID as M, TTS_ID as N, AG_ID as O, SILLYTAVERN_ID as P, SD_UIUX_ID as Q, COMFYUI_ZLUDA_ID as R, SD_AMD_ID as S, TG_ID as T, ONETRAINER_ID as U, INVOKE_ID as V, ALLTALK_ID as W, OPEN_WEBUI_ID as X, FLOWISEAI_ID as Y, LoLLMS_ID as Z, BOLT_DIY_ID as _, parseStringToArgs$c as a, GitInstaller as a0, AG_RM as a1, gitmyloArguments as a2, lodashExports as a3, automatic1111Arguments as a4, fetchExtensionList$2 as a5, catchAddress$1 as a6, COMFYUI_RM as a7, comfyArguments as a8, INVOKE_RM as a9, invokeArguments as aa, SD_NEXT_RM as ab, vladmandicArguments as ac, KOHYA_GUI_RM as ad, bmaltaisArguments as ae, COMFYUI_ZLUDA_RM as af, comfyZludaArguments as ag, SD_AMD_RM as ah, lshqqytigerArguments as ai, SWARM_RM as aj, mcMonkeyArguments as ak, TG_RM as al, oobaboogaArguments as am, flowiseArguments as an, Flow_RM as ao, openArguments as ap, OPEN_WEBUI_RM as aq, SILLYTAVERN_RM as ar, sillyArguments as as, parseArgsToString$b as b, commonjsGlobal as c, parseStringToArgs$b as d, parseArgsToString$a as e, parseStringToArgs$a as f, getDefaultExportFromCjs as g, extractGitUrl as h, isWin as i, parseArgsToString$9 as j, parseStringToArgs$9 as k, parseArgsToString$8 as l, parseStringToArgs$8 as m, parseArgsToString$7 as n, parseStringToArgs$7 as o, parseArgsToString$c as p, parseArgsToString$6 as q, parseStringToArgs$6 as r, parseArgsToString$5 as s, parseStringToArgs$5 as t, parseArgsToString$4 as u, parseStringToArgs$4 as v, removeAnsi as w, parseArgsToString$3 as x, parseStringToArgs$3 as y, parseArgsToString$2 as z };
+export { OPEN_WEBUI_ID as $, removeAnsi as A, parseArgsToString$3 as B, parseStringToArgs$3 as C, parseArgsToString$2 as D, parseStringToArgs$2 as E, parseArgsToString$1 as F, parseStringToArgs$1 as G, parseArgsToString as H, INVOKEAI_INSTALL_DIR_KEY as I, parseStringToArgs as J, COMFYUI_ID as K, A1_ID as L, SD_FORGE_ID as M, SD_FORGE_AMD_ID as N, SD_NEXT_ID as O, SWARM_ID as P, KOHYA_ID as Q, TTS_ID as R, SD_AMD_ID as S, TG_ID as T, AG_ID as U, SILLYTAVERN_ID as V, SD_UIUX_ID as W, COMFYUI_ZLUDA_ID as X, ONETRAINER_ID as Y, INVOKE_ID as Z, ALLTALK_ID as _, getVenvPythonPath as a, FLOWISEAI_ID as a0, LoLLMS_ID as a1, BOLT_DIY_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, lodashExports as a7, automatic1111Arguments as a8, fetchExtensionList$2 as a9, catchAddress$1 as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, parseStringToArgs$c as b, commonjsGlobal as c, parseArgsToString$b as d, parseStringToArgs$b as e, parseArgsToString$a as f, getDefaultExportFromCjs as g, parseStringToArgs$a as h, isWin as i, extractGitUrl as j, INVOKEAI_UPDATE_AVAILABLE_KEY as k, Invoke_Command_ActivateVenv as l, parseArgsToString$9 as m, parseStringToArgs$9 as n, parseArgsToString$8 as o, parseArgsToString$c as p, parseStringToArgs$8 as q, parseArgsToString$7 as r, parseStringToArgs$7 as s, parseArgsToString$6 as t, parseStringToArgs$6 as u, parseArgsToString$5 as v, parseStringToArgs$5 as w, parseArgsToString$4 as x, parseStringToArgs$4 as y, getCdCommand as z };

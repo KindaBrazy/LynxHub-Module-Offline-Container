@@ -1,9 +1,10 @@
 import {execSync} from 'node:child_process';
 import {platform} from 'node:os';
-import path from 'node:path';
+import path, {join} from 'node:path';
 
 import axios, {AxiosResponse} from 'axios';
 import fs from 'graceful-fs';
+import {existsSync} from 'graceful-fs';
 import treeKill from 'tree-kill';
 import which from 'which';
 
@@ -213,5 +214,28 @@ export async function getLatestPipPackageVersion(packageName: string): Promise<s
       console.error(`An unexpected error occurred while fetching package information:`, error);
     }
     return null;
+  }
+}
+
+export function getVenvPythonPath(venvPath: string): string {
+  return platform() === 'win32' ? join(venvPath, 'Scripts', 'python.exe') : join(venvPath, 'bin', 'python');
+}
+
+export function isVenvDirectory(dirPath: string): boolean {
+  try {
+    if (!existsSync(dirPath)) {
+      return false;
+    }
+
+    const pythonExePath = getVenvPythonPath(dirPath);
+    if (!existsSync(pythonExePath)) {
+      return false;
+    }
+
+    const libPath = join(dirPath, 'lib');
+    return existsSync(libPath);
+  } catch (err) {
+    console.error(`Error checking if directory is a venv: ${err}`);
+    return false;
   }
 }

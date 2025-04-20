@@ -46,14 +46,9 @@ async function mainIpc(ipc: MainIpcTypes) {
   ipc.handle('validate_install_dir', (_, dir: string) => {
     const venvDir = path.join(dir, '.venv');
 
-    const isDir = isVenvDirectory(dir);
     const isVenvDir = isVenvDirectory(venvDir);
 
-    if (isDir) {
-      return invokeValidateInstallation(dir);
-    } else if (isVenvDir) {
-      return invokeValidateInstallation(venvDir);
-    }
+    if (isVenvDir) return invokeValidateInstallation(dir);
 
     return false;
   });

@@ -57,13 +57,11 @@ export async function invokeGetCurrentVersion(lynxApi: {storage: StorageType}) {
   if (!dir) return null;
 
   const venvDir = path.join(dir, '.venv');
+  const isDir = isVenvDirectory(venvDir);
 
-  const isDir = isVenvDirectory(dir);
-  const isVenvDir = isVenvDirectory(venvDir);
+  if (!isDir) return null;
 
-  if (!isDir && !isVenvDir) return null;
-
-  const pythonExe = getVenvPythonPath(isDir ? dir : venvDir);
+  const pythonExe = getVenvPythonPath(venvDir);
 
   return await getPipPackageVersionCustom(pythonExe, 'invokeai');
 }

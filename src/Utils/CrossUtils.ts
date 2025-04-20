@@ -1,5 +1,3 @@
-import {platform} from 'node:os';
-
 import {CardInfoCallback, CardInfoDescriptions} from '../types';
 
 async function isWinOS(): Promise<boolean> {

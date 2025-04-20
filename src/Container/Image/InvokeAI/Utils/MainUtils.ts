@@ -3,20 +3,9 @@ import path from 'node:path';
 
 import axios, {AxiosResponse} from 'axios';
 
-import {StorageType} from '../../../../types';
+import {GitHubRelease, StorageType} from '../../../../types';
 import {getPipPackageVersionCustom, getVenvPythonPath, isVenvDirectory} from '../../../../Utils/MainUtils';
 import {INVOKEAI_INSTALL_DIR_KEY} from './Utils_Constants';
-
-type GitHubReleaseAsset = {
-  name: string;
-  browser_download_url: string;
-};
-
-type GitHubRelease = {
-  tag_name: string;
-  prerelease: boolean;
-  assets: GitHubReleaseAsset[];
-};
 
 export async function invokeGetLatestReleases(owner: string, repo: string): Promise<string[]> {
   try {

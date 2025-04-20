@@ -4,7 +4,8 @@ import path from 'node:path';
 import axios, {AxiosResponse} from 'axios';
 
 import {GitHubRelease, StorageType} from '../../../../types';
-import {getPipPackageVersionCustom, getVenvPythonPath, isVenvDirectory} from '../../../../Utils/MainUtils';
+import {getVenvPythonPath} from '../../../../Utils/CrossUtils';
+import {getPipPackageVersionCustom, isVenvDirectory} from '../../../../Utils/MainUtils';
 import {INVOKEAI_INSTALL_DIR_KEY} from './Utils_Constants';
 
 export async function invokeGetLatestReleases(owner: string, repo: string): Promise<string[]> {

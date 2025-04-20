@@ -9,7 +9,7 @@ import treeKill from 'tree-kill';
 import which from 'which';
 
 import {ChosenArgument} from '../types';
-import {isWin} from './CrossUtils';
+import {getVenvPythonPath, isWin} from './CrossUtils';
 
 export const LINE_ENDING = isWin ? '\r' : '\n';
 
@@ -206,10 +206,6 @@ export async function getLatestPipPackageVersion(packageName: string): Promise<s
     }
     return null;
   }
-}
-
-export function getVenvPythonPath(venvPath: string): string {
-  return platform() === 'win32' ? join(venvPath, 'Scripts', 'python.exe') : join(venvPath, 'bin', 'python');
 }
 
 export function isVenvDirectory(dirPath: string): boolean {

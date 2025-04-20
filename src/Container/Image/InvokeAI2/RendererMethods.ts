@@ -1,4 +1,5 @@
 import {CardRendererMethods, InstallationStepper} from '../../../types';
+import {catchAddress} from '../../../Utils/RendererUtils';
 import {
   Invoke_Command_ActivateVenv,
   Invoke_Command_CreateVenv,
@@ -68,6 +69,6 @@ function startInstall(stepper: InstallationStepper) {
   });
 }
 
-const INVOKE_RM: CardRendererMethods = {manager: {startInstall, updater: {updateType: 'stepper'}}};
+const INVOKE_RM: CardRendererMethods = {catchAddress, manager: {startInstall, updater: {updateType: 'stepper'}}};
 
 export default INVOKE_RM;

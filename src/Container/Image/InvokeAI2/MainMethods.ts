@@ -2,11 +2,12 @@ import path from 'node:path';
 
 import {CardMainMethods, MainIpcTypes} from '../../../types';
 import {extractGitUrl} from '../../../Utils/CrossUtils';
-import {checkWhich, isVenvDirectory} from '../../../Utils/MainUtils';
+import {checkWhich, isVenvDirectory, LINE_ENDING} from '../../../Utils/MainUtils';
 import {invokeGetLatestReleases, invokeValidateInstallation} from './MainUtils';
+import {Invoke_Command_ActivateVenv} from './Utils_Constants';
 
-async function getRunCommands(): Promise<string | string[]> {
-  return '';
+async function getRunCommands(dir?: string): Promise<string | string[]> {
+  return [`${Invoke_Command_ActivateVenv}${LINE_ENDING}`, `invokeai-web --root ${dir}${LINE_ENDING}`];
 }
 
 async function mainIpc(ipc: MainIpcTypes) {

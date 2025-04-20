@@ -1,6 +1,3 @@
-import {platform} from 'node:os';
-import {join} from 'node:path';
-
 import {CardInfoCallback, CardInfoDescriptions} from '../types';
 
 async function isWinOS(): Promise<boolean> {
@@ -76,5 +73,5 @@ export function getCdCommand(dirPath: string): string {
 }
 
 export function getVenvPythonPath(venvPath: string): string {
-  return isWin ? join(venvPath, 'Scripts', 'python.exe') : join(venvPath, 'bin', 'python');
+  return isWin ? `${venvPath}\\Scripts\\python.exe` : `${venvPath}/bin/python`;
 }

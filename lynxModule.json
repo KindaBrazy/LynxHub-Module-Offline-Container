@@ -5,10 +5,26 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 16,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "11.1.0",
-  "updateDate": "2025-04-20 14:02",
-  "changeLog": "V11.1.0\n\n・Implement new InvokeAI installation and updating logic. \nV11.0.0\n\n・Add bolt.diy integration.\n・Faster Open WebUI installation detection.",
+  "version": "11.2.0",
+  "updateDate": "2025-04-26 14:40",
+  "changeLog": "V11.2.0\n\n・OpenWebUI: Add `GLOBAL_LOG_LEVEL` argument. \n・OpenWebUI: Provide the default `localhost:8080` address if none is detected. \nV11.1.0\n\n・Implement new InvokeAI installation and updating logic. \nV11.0.0\n\n・Add bolt.diy integration.\n・Faster Open WebUI installation detection.",
   "changes": [
+    {
+      "title": "V11.2.0",
+      "items": [
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "OpenWebUI: Add `GLOBAL_LOG_LEVEL` argument."
+            },
+            {
+              "label": "OpenWebUI: Provide the default `localhost:8080` address if none is detected."
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V11.1.0",
       "items": [

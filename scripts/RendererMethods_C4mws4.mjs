@@ -17350,7 +17350,7 @@ function getArgumentType(name, Arguments) {
 function replaceAddress(input) {
     return input.replace(/http:\/\/0\.0\.0\.0:(\d+)/g, 'http://localhost:$1');
 }
-function catchAddress$1(input) {
+function catchAddress$2(input) {
     const localhostPatterns = [
         /https?:\/\/localhost(?::\d+)?/i,
         /https?:\/\/127\.0\.0\.1(?::\d+)?/i,
@@ -17580,7 +17580,7 @@ async function cardInfo$b(api, callback) {
     return CardInfo(URL$6, '/extensions', api, callback);
 }
 const AG_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     parseArgsToString: parseArgsToString$c,
     parseStringToArgs: parseStringToArgs$c,
     cardInfo: cardInfo$b,
@@ -18131,7 +18131,7 @@ async function cardInfo$a(api, callback) {
     return CardInfo(COMFYUI_URL, '/custom_nodes', api, callback);
 }
 const COMFYUI_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$4,
     parseArgsToString: parseArgsToString$b,
     parseStringToArgs: parseStringToArgs$b,
@@ -18701,7 +18701,7 @@ async function cardInfo$9(api, callback) {
     return CardInfo(URL$5, '/custom_nodes', api, callback);
 }
 const COMFYUI_ZLUDA_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$3,
     parseArgsToString: parseArgsToString$a,
     parseStringToArgs: parseStringToArgs$a,
@@ -18920,7 +18920,7 @@ async function cardInfo$8(api, callback) {
     });
 }
 const INVOKE_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     cardInfo: cardInfo$8,
     parseArgsToString: parseArgsToString$9,
     parseStringToArgs: parseStringToArgs$9,
@@ -19076,7 +19076,7 @@ async function cardInfo$7(api, callback) {
     return CardInfo(URL$4, undefined, api, callback);
 }
 const KOHYA_GUI_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     parseArgsToString: parseArgsToString$8,
     parseStringToArgs: parseStringToArgs$8,
     cardInfo: cardInfo$7,
@@ -20324,7 +20324,7 @@ function parseStringToArgs$6(args) {
     return argResult;
 }
 const SD_AMD_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$2,
     parseArgsToString: parseArgsToString$6,
     parseStringToArgs: parseStringToArgs$6,
@@ -20805,7 +20805,7 @@ async function cardInfo$5(api, callback) {
     return CardInfo(URL$3, '/extensions', api, callback);
 }
 const SD_NEXT_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$2,
     parseArgsToString: parseArgsToString$5,
     parseStringToArgs: parseStringToArgs$5,
@@ -21010,7 +21010,7 @@ async function cardInfo$4(api, callback) {
     return CardInfo(URL$2, '/src/Extensions', api, callback);
 }
 const SWARM_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$1,
     parseArgsToString: parseArgsToString$4,
     parseStringToArgs: parseStringToArgs$4,
@@ -21462,7 +21462,7 @@ async function cardInfo$3(api, callback) {
         descManager.updateItem(0, 3, result);
     });
 }
-function catchAddress(input) {
+function catchAddress$1(input) {
     if (input.toLowerCase().includes('listening at')) {
         const portRegex = /:(\d+)(?!.*\d)/;
         const match = input.match(portRegex);
@@ -21475,7 +21475,7 @@ function catchAddress(input) {
     }
 }
 const Flow_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     parseArgsToString: parseArgsToString$3,
     parseStringToArgs: parseStringToArgs$3,
     cardInfo: cardInfo$3,
@@ -21501,6 +21501,14 @@ const openArguments = [
                         name: 'CUSTOM_NAME',
                         description: 'Sets WEBUI_NAME but polls api.openwebui.com for metadata.',
                         type: 'Input',
+                    },
+                    {
+                        name: 'GLOBAL_LOG_LEVEL',
+                        description: 'Configures the root logger in Python, affecting all loggers in Open WebUI' +
+                            ' and potentially some third-party libraries',
+                        type: 'DropDown',
+                        values: ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'],
+                        defaultValue: 'INFO',
                     },
                     {
                         name: 'WEBUI_NAME',
@@ -23177,8 +23185,27 @@ async function cardInfo$2(api, callback) {
         descManager.updateItem(0, 3, result);
     });
 }
+function catchAddress(input) {
+    const localhostPatterns = [
+        /https?:\/\/localhost(?::\d+)?/i,
+        /https?:\/\/127\.0\.0\.1(?::\d+)?/i,
+        /https?:\/\/0\.0\.0\.0(?::\d+)?/i,
+        /https?:\/\/\[::1](?::\d+)?/i,
+        /https?:\/\/(?:[\w-]+\.)*localhost(?::\d+)?/i,
+    ];
+    for (const pattern of localhostPatterns) {
+        const match = input.match(pattern);
+        if (match) {
+            return replaceAddress(match[0]);
+        }
+        else if (input.toLowerCase().includes('started server process')) {
+            return 'http://localhost:8080';
+        }
+    }
+    return undefined;
+}
 const OPEN_WEBUI_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress,
     cardInfo: cardInfo$2,
     parseStringToArgs: parseStringToArgs$2,
     parseArgsToString: parseArgsToString$2,
@@ -23355,7 +23382,7 @@ async function cardInfo$1(api, callback) {
     return CardInfo(URL$1, undefined, api, callback);
 }
 const SILLYTAVERN_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     parseArgsToString: parseArgsToString$1,
     parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$1,
@@ -24341,7 +24368,7 @@ async function cardInfo(api, callback) {
     return CardInfo(URL, '/extensions', api, callback);
 }
 const TG_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -24349,4 +24376,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { OPEN_WEBUI_ID as $, removeAnsi as A, parseArgsToString$3 as B, parseStringToArgs$3 as C, parseArgsToString$2 as D, parseStringToArgs$2 as E, parseArgsToString$1 as F, parseStringToArgs$1 as G, parseArgsToString as H, INVOKEAI_INSTALL_DIR_KEY as I, parseStringToArgs as J, COMFYUI_ID as K, A1_ID as L, SD_FORGE_ID as M, SD_FORGE_AMD_ID as N, SD_NEXT_ID as O, SWARM_ID as P, KOHYA_ID as Q, TTS_ID as R, SD_AMD_ID as S, TG_ID as T, AG_ID as U, SILLYTAVERN_ID as V, SD_UIUX_ID as W, COMFYUI_ZLUDA_ID as X, ONETRAINER_ID as Y, INVOKE_ID as Z, ALLTALK_ID as _, getVenvPythonPath as a, FLOWISEAI_ID as a0, LoLLMS_ID as a1, BOLT_DIY_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, lodashExports as a7, automatic1111Arguments as a8, fetchExtensionList$2 as a9, catchAddress$1 as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, parseStringToArgs$c as b, commonjsGlobal as c, parseArgsToString$b as d, parseStringToArgs$b as e, parseArgsToString$a as f, getDefaultExportFromCjs as g, parseStringToArgs$a as h, isWin as i, extractGitUrl as j, INVOKEAI_UPDATE_AVAILABLE_KEY as k, Invoke_Command_ActivateVenv as l, parseArgsToString$9 as m, parseStringToArgs$9 as n, parseArgsToString$8 as o, parseArgsToString$c as p, parseStringToArgs$8 as q, parseArgsToString$7 as r, parseStringToArgs$7 as s, parseArgsToString$6 as t, parseStringToArgs$6 as u, parseArgsToString$5 as v, parseStringToArgs$5 as w, parseArgsToString$4 as x, parseStringToArgs$4 as y, getCdCommand as z };
+export { OPEN_WEBUI_ID as $, removeAnsi as A, parseArgsToString$3 as B, parseStringToArgs$3 as C, parseArgsToString$2 as D, parseStringToArgs$2 as E, parseArgsToString$1 as F, parseStringToArgs$1 as G, parseArgsToString as H, INVOKEAI_INSTALL_DIR_KEY as I, parseStringToArgs as J, COMFYUI_ID as K, A1_ID as L, SD_FORGE_ID as M, SD_FORGE_AMD_ID as N, SD_NEXT_ID as O, SWARM_ID as P, KOHYA_ID as Q, TTS_ID as R, SD_AMD_ID as S, TG_ID as T, AG_ID as U, SILLYTAVERN_ID as V, SD_UIUX_ID as W, COMFYUI_ZLUDA_ID as X, ONETRAINER_ID as Y, INVOKE_ID as Z, ALLTALK_ID as _, getVenvPythonPath as a, FLOWISEAI_ID as a0, LoLLMS_ID as a1, BOLT_DIY_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, lodashExports as a7, automatic1111Arguments as a8, fetchExtensionList$2 as a9, catchAddress$2 as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, parseStringToArgs$c as b, commonjsGlobal as c, parseArgsToString$b as d, parseStringToArgs$b as e, parseArgsToString$a as f, getDefaultExportFromCjs as g, parseStringToArgs$a as h, isWin as i, extractGitUrl as j, INVOKEAI_UPDATE_AVAILABLE_KEY as k, Invoke_Command_ActivateVenv as l, parseArgsToString$9 as m, parseStringToArgs$9 as n, parseArgsToString$8 as o, parseArgsToString$c as p, parseStringToArgs$8 as q, parseArgsToString$7 as r, parseStringToArgs$7 as s, parseArgsToString$6 as t, parseStringToArgs$6 as u, parseArgsToString$5 as v, parseStringToArgs$5 as w, parseArgsToString$4 as x, parseStringToArgs$4 as y, getCdCommand as z };

@@ -1,4 +1,4 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, p as parseArgsToString, b as parseStringToArgs, d as parseArgsToString$1, e as parseStringToArgs$1, f as parseArgsToString$2, h as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, j as extractGitUrl, k as INVOKEAI_UPDATE_AVAILABLE_KEY, l as Invoke_Command_ActivateVenv, m as parseArgsToString$3, n as parseStringToArgs$3, o as parseArgsToString$4, q as parseStringToArgs$4, r as parseArgsToString$5, s as parseStringToArgs$5, t as parseArgsToString$6, u as parseStringToArgs$6, v as parseArgsToString$7, w as parseStringToArgs$7, x as parseArgsToString$8, y as parseStringToArgs$8, z as getCdCommand, A as removeAnsi, B as parseArgsToString$9, C as parseStringToArgs$9, D as parseArgsToString$a, E as parseStringToArgs$a, F as parseArgsToString$b, G as parseStringToArgs$b, H as parseArgsToString$c, J as parseStringToArgs$c, K as COMFYUI_ID, L as A1_ID, S as SD_AMD_ID, M as SD_FORGE_ID, N as SD_FORGE_AMD_ID, O as SD_NEXT_ID, P as SWARM_ID, Q as KOHYA_ID, T as TG_ID, R as TTS_ID, U as AG_ID, V as SILLYTAVERN_ID, W as SD_UIUX_ID, X as COMFYUI_ZLUDA_ID, Y as ONETRAINER_ID, Z as INVOKE_ID, _ as ALLTALK_ID, $ as OPEN_WEBUI_ID, a0 as FLOWISEAI_ID, a1 as LoLLMS_ID, a2 as BOLT_DIY_ID } from './RendererMethods_BRTcg3.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, p as parseArgsToString, b as parseStringToArgs, d as parseArgsToString$1, e as parseStringToArgs$1, f as parseArgsToString$2, h as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, j as extractGitUrl, k as INVOKEAI_UPDATE_AVAILABLE_KEY, l as Invoke_Command_ActivateVenv, m as parseArgsToString$3, n as parseStringToArgs$3, o as parseArgsToString$4, q as parseStringToArgs$4, r as parseArgsToString$5, s as parseStringToArgs$5, t as parseArgsToString$6, u as parseStringToArgs$6, v as parseArgsToString$7, w as parseStringToArgs$7, x as parseArgsToString$8, y as parseStringToArgs$8, z as getCdCommand, A as removeAnsi, B as parseArgsToString$9, C as parseStringToArgs$9, D as parseArgsToString$a, E as parseStringToArgs$a, F as parseArgsToString$b, G as parseStringToArgs$b, H as parseArgsToString$c, J as parseStringToArgs$c, K as COMFYUI_ID, L as A1_ID, S as SD_AMD_ID, M as SD_FORGE_ID, N as SD_FORGE_AMD_ID, O as SD_NEXT_ID, P as SWARM_ID, Q as KOHYA_ID, T as TG_ID, R as TTS_ID, U as AG_ID, V as SILLYTAVERN_ID, W as SD_UIUX_ID, X as COMFYUI_ZLUDA_ID, Y as ONETRAINER_ID, Z as INVOKE_ID, _ as ALLTALK_ID, $ as OPEN_WEBUI_ID, a0 as FLOWISEAI_ID, a1 as LoLLMS_ID, a2 as BOLT_DIY_ID } from './RendererMethods_C4mws4.mjs';
 import { exec, execSync } from 'node:child_process';
 import { platform as platform$2 } from 'node:os';
 import path, { join } from 'node:path';
@@ -29,6 +29,7 @@ function bind(fn, thisArg) {
 
 const {toString} = Object.prototype;
 const {getPrototypeOf} = Object;
+const {iterator, toStringTag} = Symbol;
 
 const kindOf = (cache => thing => {
     const str = toString.call(thing);
@@ -155,7 +156,7 @@ const isPlainObject = (val) => {
   }
 
   const prototype = getPrototypeOf(val);
-  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(toStringTag in val) && !(iterator in val);
 };
 
 /**
@@ -506,13 +507,13 @@ const isTypedArray = (TypedArray => {
  * @returns {void}
  */
 const forEachEntry = (obj, fn) => {
-  const generator = obj && obj[Symbol.iterator];
+  const generator = obj && obj[iterator];
 
-  const iterator = generator.call(obj);
+  const _iterator = generator.call(obj);
 
   let result;
 
-  while ((result = iterator.next()) && !result.done) {
+  while ((result = _iterator.next()) && !result.done) {
     const pair = result.value;
     fn.call(obj, pair[0], pair[1]);
   }
@@ -633,7 +634,7 @@ const toFiniteNumber = (value, defaultValue) => {
  * @returns {boolean}
  */
 function isSpecCompliantForm(thing) {
-  return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator]);
+  return !!(thing && isFunction(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
 }
 
 const toJSONObject = (obj) => {
@@ -702,6 +703,10 @@ const asap = typeof queueMicrotask !== 'undefined' ?
 
 // *********************
 
+
+const isIterable = (thing) => thing != null && isFunction(thing[iterator]);
+
+
 var utils$1 = {
   isArray,
   isArrayBuffer,
@@ -757,7 +762,8 @@ var utils$1 = {
   isAsyncFn,
   isThenable,
   setImmediate: _setImmediate,
-  asap
+  asap,
+  isIterable
 };
 
 /**
@@ -15083,10 +15089,18 @@ let AxiosHeaders$1 = class AxiosHeaders {
       setHeaders(header, valueOrRewrite);
     } else if(utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
       setHeaders(parseHeaders(header), valueOrRewrite);
-    } else if (utils$1.isHeaders(header)) {
-      for (const [key, value] of header.entries()) {
-        setHeader(value, key, rewrite);
+    } else if (utils$1.isObject(header) && utils$1.isIterable(header)) {
+      let obj = {}, dest, key;
+      for (const entry of header) {
+        if (!utils$1.isArray(entry)) {
+          throw TypeError('Object iterator must return a key-value pair');
+        }
+
+        obj[key = entry[0]] = (dest = obj[key]) ?
+          (utils$1.isArray(dest) ? [...dest, entry[1]] : [dest, entry[1]]) : entry[1];
       }
+
+      setHeaders(obj, valueOrRewrite);
     } else {
       header != null && setHeader(valueOrRewrite, header, rewrite);
     }
@@ -15226,6 +15240,10 @@ let AxiosHeaders$1 = class AxiosHeaders {
 
   toString() {
     return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+  }
+
+  getSetCookie() {
+    return this.get("set-cookie") || [];
   }
 
   get [Symbol.toStringTag]() {
@@ -17450,7 +17468,7 @@ function requireFollowRedirects () {
 var followRedirectsExports = requireFollowRedirects();
 var followRedirects = /*@__PURE__*/getDefaultExportFromCjs(followRedirectsExports);
 
-const VERSION$1 = "1.8.4";
+const VERSION$1 = "1.9.0";
 
 function parseProtocol(url) {
   const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
@@ -17728,7 +17746,7 @@ const formDataToStream = (form, headersHandler, options) => {
   }
 
   const boundaryBytes = textEncoder.encode('--' + boundary + CRLF);
-  const footerBytes = textEncoder.encode('--' + boundary + '--' + CRLF + CRLF);
+  const footerBytes = textEncoder.encode('--' + boundary + '--' + CRLF);
   let contentLength = footerBytes.byteLength;
 
   const parts = Array.from(form.entries()).map(([name, value]) => {
@@ -19321,7 +19339,7 @@ var fetchAdapter = isFetchSupported && (async (config) => {
   } catch (err) {
     unsubscribe && unsubscribe();
 
-    if (err && err.name === 'TypeError' && /fetch/i.test(err.message)) {
+    if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
       throw Object.assign(
         new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request),
         {
@@ -19587,7 +19605,7 @@ const validators = validator.validators;
  */
 let Axios$1 = class Axios {
   constructor(instanceConfig) {
-    this.defaults = instanceConfig;
+    this.defaults = instanceConfig || {};
     this.interceptors = {
       request: new InterceptorManager(),
       response: new InterceptorManager()

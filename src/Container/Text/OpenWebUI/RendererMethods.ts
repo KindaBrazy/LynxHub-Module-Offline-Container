@@ -8,7 +8,7 @@ import {
   InstallationStepper,
 } from '../../../types';
 import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
-import {catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
+import {getArgumentType, isValidArg, removeEscapes, replaceAddress} from '../../../Utils/RendererUtils';
 import openArguments from './Arguments';
 
 const INSTALL_TIME_KEY = 'install-time-openwebui';
@@ -182,6 +182,27 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
   api.storage.get(UPDATE_AVAILABLE_KEY).then(result => {
     descManager.updateItem(0, 3, result);
   });
+}
+
+function catchAddress(input: string): string | undefined {
+  const localhostPatterns = [
+    /https?:\/\/localhost(?::\d+)?/i,
+    /https?:\/\/127\.0\.0\.1(?::\d+)?/i,
+    /https?:\/\/0\.0\.0\.0(?::\d+)?/i,
+    /https?:\/\/\[::1](?::\d+)?/i,
+    /https?:\/\/(?:[\w-]+\.)*localhost(?::\d+)?/i,
+  ];
+
+  for (const pattern of localhostPatterns) {
+    const match = input.match(pattern);
+    if (match) {
+      return replaceAddress(match[0]);
+    } else if (input.toLowerCase().includes('started server process')) {
+      return 'http://localhost:8080';
+    }
+  }
+
+  return undefined;
 }
 
 const OPEN_WEBUI_RM: CardRendererMethods = {

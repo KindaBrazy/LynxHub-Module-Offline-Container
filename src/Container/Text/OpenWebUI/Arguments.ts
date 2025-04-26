@@ -22,6 +22,15 @@ const openArguments: ArgumentsData = [
             type: 'Input',
           },
           {
+            name: 'GLOBAL_LOG_LEVEL',
+            description:
+              'Configures the root logger in Python, affecting all loggers in Open WebUI' +
+              ' and potentially some third-party libraries',
+            type: 'DropDown',
+            values: ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'],
+            defaultValue: 'INFO',
+          },
+          {
             name: 'WEBUI_NAME',
             description: 'Sets the main WebUI name. Appends (Open WebUI) if overridden.',
             type: 'Input',

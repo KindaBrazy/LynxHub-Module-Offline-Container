@@ -24800,7 +24800,10 @@ async function saveArgs$2(args, _, configDir) {
 async function readArgs$2(_, configDir) {
     return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$a, configDir);
 }
-const isInstalled = () => checkWhich('open-webui');
+async function isInstalled(lynxApi) {
+    const result = getPipPackageVersion('open-webui', lynxApi.pty);
+    return !!result;
+}
 async function updateAvailable(lynxApi) {
     try {
         const currentVersion = await getPipPackageVersion('open-webui', lynxApi.pty);
@@ -24819,7 +24822,7 @@ async function updateAvailable(lynxApi) {
     return false;
 }
 function mainIpc(ipc) {
-    ipc.handle('is_openwebui_installed', () => isInstalled());
+    ipc.handle('is_openwebui_installed', () => isInstalled(ipc.pty));
     ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
 async function uninstall(api) {

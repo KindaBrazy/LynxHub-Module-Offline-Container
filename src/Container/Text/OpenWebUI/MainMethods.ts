@@ -3,10 +3,16 @@ import path from 'node:path';
 import {compare} from 'semver';
 import treeKill from 'tree-kill';
 
-import {CardMainMethods, ChosenArgument, LynxApiUninstall, LynxApiUpdate, MainIpcTypes} from '../../../types';
+import {
+  CardMainMethods,
+  ChosenArgument,
+  LynxApiInstalled,
+  LynxApiUninstall,
+  LynxApiUpdate,
+  MainIpcTypes,
+} from '../../../types';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
-  checkWhich,
   determineShell,
   getLatestPipPackageVersion,
   getPipPackageVersion,
@@ -37,7 +43,10 @@ async function readArgs(_?: string, configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-const isInstalled = () => checkWhich('open-webui');
+async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {
+  const result = getPipPackageVersion('open-webui', lynxApi.pty);
+  return !!result;
+}
 
 async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
   try {
@@ -58,7 +67,7 @@ async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
 }
 
 function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('is_openwebui_installed', () => isInstalled());
+  ipc.handle('is_openwebui_installed', () => isInstalled(ipc.pty));
   ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
 }
 

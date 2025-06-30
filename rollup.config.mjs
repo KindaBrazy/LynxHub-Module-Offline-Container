@@ -7,7 +7,7 @@ import typescript from '@rollup/plugin-typescript';
 const config = {
   input: ['module/src/main.ts', 'module/src/renderer.ts'],
   output: {
-    dir: '../module_out/scripts',
+    dir: 'module_out/scripts',
     format: 'es',
     entryFileNames: '[name].mjs',
     chunkFileNames: '[name]_[hash:6].mjs',

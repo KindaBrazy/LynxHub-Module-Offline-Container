@@ -1,8 +1,8 @@
 import {CardInfoCallback, CardInfoDescriptions} from '../types';
 
-async function isWinOS(): Promise<boolean> {
-  let isWin: boolean = true;
+export let isWin: boolean = true;
 
+async function isWinOS(): Promise<boolean> {
   if (typeof window !== 'undefined' && window.osPlatform) {
     isWin = window.osPlatform === 'win32';
   } else if (typeof process !== 'undefined') {
@@ -12,6 +12,8 @@ async function isWinOS(): Promise<boolean> {
 
   return isWin;
 }
+
+isWinOS();
 
 export function formatSize(size: number | undefined): string {
   if (!size) return '0KB';
@@ -58,8 +60,6 @@ export function extractGitUrl(url: string): {owner: string; repo: string; platfo
 export function removeAnsi(str: string): string {
   return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 }
-
-export const isWin = await isWinOS();
 
 export function getCdCommand(dirPath: string): string {
   const escapedPath = dirPath.replace(/ /g, '\\ ');

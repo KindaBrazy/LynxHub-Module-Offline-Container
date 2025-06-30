@@ -1,4 +1,5 @@
 {
+  "$schema": "./lynxModule.schema.json",
   "id": "lynxhub_module_offline_container",
   "title": "Lynx WebUI Container",
   "description": "A comprehensive collection of WebUI modules featuring full support for extensions, arguments and configurations.",

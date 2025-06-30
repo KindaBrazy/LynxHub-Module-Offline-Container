@@ -9,8 +9,16 @@
     "resolveJsonModule": true,
     "lib": [
       "ESNext",
-      "dom"
-    ]
+      "DOM"
+    ],
+    "paths": {
+      "@lynx_module/*": [
+        "./src/*"
+      ],
+      "@lynx_extension/*": [
+        "../extension/src"
+      ]
+    }
   },
   "include": [
     "src/**/*"

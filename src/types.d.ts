@@ -1,3 +1,15 @@
+import {ElectronAPI} from '@electron-toolkit/preload';
+
+import {InstalledCard} from '../../src/cross/StorageTypes';
+
+declare global {
+  interface Window {
+    electron: ElectronAPI;
+    osPlatform: NodeJS.Platform;
+    isPortable: 'win' | 'linux' | null;
+  }
+}
+
 export type AvailablePages = '/imageGenerationPage' | '/textGenerationPage' | '/audioGenerationPage';
 
 export type ExtensionData = {
@@ -9,80 +21,54 @@ export type ExtensionData = {
 
 type StorageType = {get: (key: string) => any; set: (key: string, data: any) => void};
 
-export type LynxApiUpdate = {
-  isPullAvailable: Promise<boolean>;
-  storage: StorageType;
-  pty: any;
-};
-
-export type LynxApiUninstall = {
-  installDir?: string;
-  trashDir: (dir: string) => Promise<void>;
-  removeDir: (dir: string) => Promise<void>;
-  storage: StorageType;
-  pty: any;
-};
-
-export type LynxApiInstalled = {
-  installedDirExistAndWatch: Promise<boolean>;
-  storage: StorageType;
-  pty: any;
-};
-
 export type MainIpcTypes = {
   handle(channel: string, listener: (event: any, ...args: any[]) => any): void;
   on(channel: string, listener: (event: any, ...args: any[]) => void): void;
   send: (channel: string, ...args: any[]) => void;
-  storage: StorageType;
-  pty: any;
 };
 
 /** These methods will be called in the main process */
-export type CardMainMethods = {
+export type CardMainMethodsInitial = (utils: MainModuleUtils) => {
   /** Return commands based on installed directory to be executed with terminal */
-  getRunCommands: (
-    dir?: string,
-    configDir?: string,
-    storage?: {
-      get: (key: string) => any;
-      set: (key: string, data: any) => void;
-    },
-  ) => Promise<string | string[]>;
+  getRunCommands: () => Promise<string | string[]>;
 
   /** Read saved argument from file and return data with the array of type ChosenArgument */
-  readArgs?: (
-    dir?: string,
-    configDir?: string,
-    storage?: {
-      get: (key: string) => any;
-      set: (key: string, data: any) => void;
-    },
-  ) => Promise<ChosenArgument[]>;
+  readArgs?: () => Promise<ChosenArgument[]>;
 
   /** Get user configured arguments and save it to desire file */
-  saveArgs?: (
-    args: ChosenArgument[],
-    cardDir?: string,
-    configDir?: string,
-    storage?: {
-      get: (key: string) => any;
-      set: (key: string, data: any) => void;
-    },
-  ) => Promise<void>;
+  saveArgs?: (args: ChosenArgument[]) => Promise<void>;
+  mainIpc?: () => void;
+  updateAvailable?: () => Promise<boolean>;
+  isInstalled?: (onInstalledDirExist: (card: InstalledCard) => Promise<false | true>) => Promise<boolean>;
+  uninstall?: () => Promise<void>;
+};
 
-  /**
-   * Access to the main process IPC methods.
-   * Use this to send/receive data or messages between the main process and the renderer process.
-   */
-  mainIpc?: (ipc: MainIpcTypes) => void;
-  updateAvailable?: (lynxApi: LynxApiUpdate) => Promise<boolean>;
-  isInstalled?: (lynxApi: LynxApiInstalled) => Promise<boolean>;
-  uninstall?: (lynxApi: LynxApiUninstall) => Promise<void>;
+/** These methods will be called in the main process */
+export type CardMainMethods = () => {
+  /** Return commands based on installed directory to be executed with terminal */
+  getRunCommands: () => Promise<string | string[]>;
+
+  /** Read saved argument from file and return data with the array of type ChosenArgument */
+  readArgs?: () => Promise<ChosenArgument[]>;
+
+  /** Get user configured arguments and save it to desire file */
+  saveArgs?: (args: ChosenArgument[]) => Promise<void>;
+  mainIpc?: () => void;
+  updateAvailable?: () => Promise<boolean>;
+  isInstalled?: (onInstalledDirExist: (card: InstalledCard) => Promise<false | true>) => Promise<boolean>;
+  uninstall?: () => Promise<void>;
 };
 
 export type InstallationMethod = {chosen: 'install' | 'locate'; targetDirectory?: string};
 export type UserInputFieldType = 'checkbox' | 'text-input' | 'select' | 'directory' | 'file';
-export type UserInputField = {id: string; label: string; type: UserInputFieldType; selectOptions?: string[]};
+export type UserInputField = {
+  id: string;
+  label: string;
+  type: UserInputFieldType;
+  selectOptions?: string[];
+  defaultValue?: string | boolean;
+  isRequired?: boolean;
+};
 export type UserInputResult = {id: string; result: string | boolean};
 export type StarterStepOptions = {disableSelectDir?: boolean};
 export type RendererIpcTypes = {
@@ -158,7 +144,7 @@ export type InstallationStepper = {
    * @param inputFields An array of input fields to present to the user.
    * @returns A promise resolving to an array of user input results.
    */
-  collectUserInput: (inputFields: UserInputField[]) => Promise<UserInputResult[]>;
+  collectUserInput: (inputFields: UserInputField[], title?: string) => Promise<UserInputResult[]>;
 
   /** Display the final step of the installation process with a result message.
    * @param resultType The type of result: 'success' or 'error'.
@@ -258,6 +244,14 @@ export type InstallationStepper = {
      * @param path Absolute path to open
      */
     openFileOrFolder: (itemPath: string) => void;
+  };
+
+  showToast: {
+    success: (title: string, timeout?: number) => void;
+    error: (title: string, timeout?: number) => void;
+    warning: (title: string, timeout?: number) => void;
+    info: (title: string, timeout?: number) => void;
+    loading: (title: string, promise: Promise<any>) => void;
   };
 };
 
@@ -419,4 +413,25 @@ export type GitHubRelease = {
 export type ReleaseInfo = {
   version: string;
   downloadUrl: string;
+};
+
+export type MainModuleImportType = {
+  default: (utils: MainModuleUtils) => Promise<MainModules[]>;
+};
+
+export type RendererModuleImportType = {
+  default: CardModules;
+  setCurrentBuild?: (build: number) => void;
+};
+
+export type MainModuleUtils = {
+  storage: StorageType;
+  ipc: MainIpcTypes;
+  pty: any;
+  isPullAvailable: (dir: string) => Promise<boolean>;
+  trashDir: (dir: string) => Promise<void>;
+  removeDir: (dir: string) => Promise<void>;
+  getInstallDir: (id: string) => string | undefined;
+  getConfigDir: () => string | undefined;
+  pullDir: (dir: string, showTaskbarProgress?: boolean) => Promise<void>;
 };

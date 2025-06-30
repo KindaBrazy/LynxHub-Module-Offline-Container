@@ -1,12 +1,6 @@
 {
   "name": "lynxhub_module_offline_container",
-  "mainEntryFile": "./src/main.ts",
-  "rendererEntryFile": "./src/renderer.ts",
   "type": "module",
-  "scripts": {
-    "build": "rimraf scripts && rollup --config",
-    "build:move": "npm run build && node index.js"
-  },
   "dependencies": {
     "axios": "^1.9.0",
     "graceful-fs": "^4.2.11",

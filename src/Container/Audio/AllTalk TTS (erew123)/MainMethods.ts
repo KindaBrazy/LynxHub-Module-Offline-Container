@@ -1,4 +1,5 @@
-import {CardMainMethods} from '../../../types';
+import {ALLTALK_ID} from '../../../Constants';
+import {CardMainMethodsInitial} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilRunCommands} from '../../../Utils/MainUtils';
 
@@ -9,6 +10,12 @@ export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 
-const Rrew123_MM: CardMainMethods = {getRunCommands};
+const Rrew123_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(ALLTALK_ID);
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+  };
+};
 
 export default Rrew123_MM;

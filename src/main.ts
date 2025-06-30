@@ -39,30 +39,30 @@ import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
-import {MainModules} from './types';
+import {MainModules, MainModuleUtils} from './types';
 
-const mainModules: MainModules[] = [
-  {id: COMFYUI_ID, methods: Comfy_MM},
-  {id: A1_ID, methods: A1_MM},
-  {id: SD_AMD_ID, methods: Ls_MM},
-  {id: SD_FORGE_ID, methods: A1_MM},
-  {id: SD_FORGE_AMD_ID, methods: A1_MM},
-  {id: SD_NEXT_ID, methods: Vlad_MM},
-  {id: SWARM_ID, methods: McMonkey_MM},
-  {id: KOHYA_ID, methods: Bmaltais_MM},
-  {id: TG_ID, methods: Ooba_MM},
-  {id: TTS_ID, methods: Rsx_MM},
-  {id: AG_ID, methods: Gitmylo_MM},
-  {id: SILLYTAVERN_ID, methods: Silly_MM},
-  {id: SD_UIUX_ID, methods: A1_MM},
-  {id: COMFYUI_ZLUDA_ID, methods: ComfyZluda_MM},
-  {id: ONETRAINER_ID, methods: Nerogar_MM},
-  {id: INVOKE_ID, methods: Invoke_MM},
-  {id: ALLTALK_ID, methods: Rrew123_MM},
-  {id: OPEN_WEBUI_ID, methods: OpenWebUI_MM},
-  {id: FLOWISEAI_ID, methods: Flow_MM},
-  {id: LoLLMS_ID, methods: LoLLM_MM},
-  {id: BOLT_DIY_ID, methods: BOLT_DIY_MM},
-];
-
-export default mainModules;
+export default async function initialModule(utils: MainModuleUtils): Promise<MainModules[]> {
+  return [
+    {id: COMFYUI_ID, methods: () => Comfy_MM(utils)},
+    {id: A1_ID, methods: () => A1_MM(utils)},
+    {id: SD_AMD_ID, methods: () => Ls_MM(utils)},
+    {id: SD_FORGE_ID, methods: () => A1_MM(utils)},
+    {id: SD_FORGE_AMD_ID, methods: () => A1_MM(utils)},
+    {id: SD_NEXT_ID, methods: () => Vlad_MM(utils)},
+    {id: SWARM_ID, methods: () => McMonkey_MM(utils)},
+    {id: KOHYA_ID, methods: () => Bmaltais_MM(utils)},
+    {id: TG_ID, methods: () => Ooba_MM(utils)},
+    {id: TTS_ID, methods: () => Rsx_MM(utils)},
+    {id: AG_ID, methods: () => Gitmylo_MM(utils)},
+    {id: SILLYTAVERN_ID, methods: () => Silly_MM(utils)},
+    {id: SD_UIUX_ID, methods: () => A1_MM(utils)},
+    {id: COMFYUI_ZLUDA_ID, methods: () => ComfyZluda_MM(utils)},
+    {id: ONETRAINER_ID, methods: () => Nerogar_MM(utils)},
+    {id: INVOKE_ID, methods: () => Invoke_MM(utils)},
+    {id: ALLTALK_ID, methods: () => Rrew123_MM(utils)},
+    {id: OPEN_WEBUI_ID, methods: () => OpenWebUI_MM(utils)},
+    {id: FLOWISEAI_ID, methods: () => Flow_MM(utils)},
+    {id: LoLLMS_ID, methods: () => LoLLM_MM(utils)},
+    {id: BOLT_DIY_ID, methods: () => BOLT_DIY_MM(utils)},
+  ];
+}

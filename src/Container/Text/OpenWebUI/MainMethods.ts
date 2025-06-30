@@ -3,14 +3,8 @@ import path from 'node:path';
 import {compare} from 'semver';
 import treeKill from 'tree-kill';
 
-import {
-  CardMainMethods,
-  ChosenArgument,
-  LynxApiInstalled,
-  LynxApiUninstall,
-  LynxApiUpdate,
-  MainIpcTypes,
-} from '../../../types';
+import {OPEN_WEBUI_ID} from '../../../Constants';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../types';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   determineShell,
@@ -39,41 +33,41 @@ async function saveArgs(args: ChosenArgument[], _?: string, configDir?: string) 
   return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, configDir);
 }
 
-async function readArgs(_?: string, configDir?: string) {
+async function readArgs(configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {
-  const result = getPipPackageVersion('open-webui', lynxApi.pty);
+async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
+  const result = getPipPackageVersion('open-webui', utils.pty);
   return !!result;
 }
 
-async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
+async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   try {
-    const currentVersion = await getPipPackageVersion('open-webui', lynxApi.pty);
+    const currentVersion = await getPipPackageVersion('open-webui', utils.pty);
     const latestVersion = await getLatestPipPackageVersion('open-webui');
     if (currentVersion && latestVersion && compare(currentVersion, latestVersion) === -1) {
-      lynxApi.storage.set('update-available-version-openwebui', latestVersion);
+      utils.storage.set('update-available-version-openwebui', latestVersion);
       return true;
     }
   } catch (err) {
     console.error('Error checking update for open-webui', err);
-    lynxApi.storage.set('update-available-version-openwebui', undefined);
+    utils.storage.set('update-available-version-openwebui', undefined);
     return false;
   }
 
-  lynxApi.storage.set('update-available-version-openwebui', undefined);
+  utils.storage.set('update-available-version-openwebui', undefined);
   return false;
 }
 
-function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('is_openwebui_installed', () => isInstalled(ipc.pty));
-  ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', ipc.pty));
+function mainIpc(utils: MainModuleUtils) {
+  utils.ipc.handle('is_openwebui_installed', () => isInstalled(utils.pty));
+  utils.ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', utils.pty));
 }
 
-async function uninstall(api: LynxApiUninstall): Promise<void> {
+async function uninstall(pty: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const ptyProcess = api.pty.spawn(determineShell(), [], {});
+    const ptyProcess = pty.spawn(determineShell(), [], {});
     let output = '';
 
     ptyProcess.onData((data: any) => {
@@ -109,14 +103,19 @@ async function uninstall(api: LynxApiUninstall): Promise<void> {
   });
 }
 
-const OpenWebUI_MM: CardMainMethods = {
-  getRunCommands,
-  updateAvailable,
-  isInstalled,
-  mainIpc,
-  saveArgs,
-  readArgs,
-  uninstall,
+const OpenWebUI_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(OPEN_WEBUI_ID);
+  const configDir = utils.getConfigDir();
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    updateAvailable: () => updateAvailable(utils),
+    isInstalled: () => isInstalled(utils),
+    mainIpc: () => mainIpc(utils),
+    saveArgs: args => saveArgs(args, installDir),
+    readArgs: () => readArgs(configDir),
+    uninstall: () => uninstall(utils.pty),
+  };
 };
 
 export default OpenWebUI_MM;

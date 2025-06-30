@@ -1,4 +1,5 @@
-import {CardMainMethods, ChosenArgument} from '../../../types';
+import {A1_ID} from '../../../Constants';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './SharedRenderer';
@@ -19,6 +20,14 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const A1_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const A1_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(A1_ID);
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    readArgs: () => readArgs(installDir),
+    saveArgs: args => saveArgs(args, installDir),
+  };
+};
 
 export default A1_MM;

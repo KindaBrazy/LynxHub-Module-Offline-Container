@@ -1,4 +1,5 @@
-import {CardMainMethods, ChosenArgument} from '../../../types';
+import {TG_ID} from '../../../Constants';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
@@ -20,6 +21,14 @@ async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const Ooba_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Ooba_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(TG_ID);
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    readArgs: () => readArgs(installDir),
+    saveArgs: args => saveArgs(args, installDir),
+  };
+};
 
 export default Ooba_MM;

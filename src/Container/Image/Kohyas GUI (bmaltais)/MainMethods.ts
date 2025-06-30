@@ -1,4 +1,5 @@
-import {CardMainMethods, ChosenArgument} from '../../../types';
+import {KOHYA_ID} from '../../../Constants';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
@@ -18,6 +19,14 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const Bmaltais_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Bmaltais_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(KOHYA_ID);
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    readArgs: () => readArgs(installDir),
+    saveArgs: args => saveArgs(args, installDir),
+  };
+};
 
 export default Bmaltais_MM;

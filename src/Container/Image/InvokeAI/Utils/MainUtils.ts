@@ -52,8 +52,8 @@ export function invokeValidateInstallation(dir: string): boolean {
   }
 }
 
-export async function invokeGetCurrentVersion(lynxApi: {storage: StorageType}) {
-  const dir = lynxApi.storage.get(INVOKEAI_INSTALL_DIR_KEY) as string | undefined;
+export async function invokeGetCurrentVersion(storage: StorageType) {
+  const dir = storage.get(INVOKEAI_INSTALL_DIR_KEY) as string | undefined;
   if (!dir) return null;
 
   const venvDir = path.join(dir, '.venv');

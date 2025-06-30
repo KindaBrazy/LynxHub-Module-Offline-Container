@@ -2,7 +2,8 @@ import path from 'node:path';
 
 import {compare} from 'semver';
 
-import {CardMainMethods, ChosenArgument, LynxApiUpdate, MainIpcTypes} from '../../../types';
+import {INVOKE_ID} from '../../../Constants';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../types';
 import {extractGitUrl} from '../../../Utils/CrossUtils';
 import {
   checkWhich,
@@ -31,19 +32,19 @@ export async function readArgs(dir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_CONFIG_DATA, parseStringToArgs, dir);
 }
 
-async function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('is_uv_installed', () => {
+async function mainIpc(utils: MainModuleUtils) {
+  utils.ipc.handle('is_uv_installed', () => {
     return checkWhich('uv');
   });
 
-  ipc.handle('invoke_latest_versions', () => {
+  utils.ipc.handle('invoke_latest_versions', () => {
     const {owner, repo} = extractGitUrl('https://github.com/invoke-ai/InvokeAI');
     return invokeGetLatestReleases(owner, repo);
   });
 
-  ipc.handle('invoke_current_version', () => invokeGetCurrentVersion(ipc));
+  utils.ipc.handle('invoke_current_version', () => invokeGetCurrentVersion(utils.storage));
 
-  ipc.handle('validate_install_dir', (_, dir: string) => {
+  utils.ipc.handle('validate_install_dir', (_, dir: string) => {
     const venvDir = path.join(dir, '.venv');
 
     const isVenvDir = isVenvDirectory(venvDir);
@@ -54,22 +55,32 @@ async function mainIpc(ipc: MainIpcTypes) {
   });
 }
 
-async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
-  const currentVersion = await invokeGetCurrentVersion(lynxApi);
+async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
+  const currentVersion = await invokeGetCurrentVersion(utils.storage);
 
   if (!currentVersion) return false;
 
   const latestVersion = await getLatestPipPackageVersion('invokeai');
 
   if (currentVersion && latestVersion && compare(currentVersion, latestVersion) === -1) {
-    lynxApi.storage.set(INVOKEAI_UPDATE_AVAILABLE_KEY, latestVersion);
+    utils.storage.set(INVOKEAI_UPDATE_AVAILABLE_KEY, latestVersion);
     return true;
   }
 
-  lynxApi.storage.set(INVOKEAI_UPDATE_AVAILABLE_KEY, undefined);
+  utils.storage.set(INVOKEAI_UPDATE_AVAILABLE_KEY, undefined);
   return false;
 }
 
-const Invoke_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs, updateAvailable, mainIpc};
+const Invoke_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(INVOKE_ID);
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    readArgs: () => readArgs(installDir),
+    saveArgs: args => saveArgs(args, installDir),
+    updateAvailable: () => updateAvailable(utils),
+    mainIpc: () => mainIpc(utils),
+  };
+};
 
 export default Invoke_MM;

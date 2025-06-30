@@ -1,18 +1,23 @@
-import {CardMainMethods, LynxApiUpdate, MainIpcTypes} from '../../../types';
+import {BOLT_DIY_ID} from '../../../Constants';
+import {CardMainMethodsInitial, MainModuleUtils} from '../../../types';
 import {checkWhich, LINE_ENDING} from '../../../Utils/MainUtils';
 
 async function getRunCommands(): Promise<string | string[]> {
   return `npm run dev ${LINE_ENDING}`;
 }
 
-function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('is_nodejs_installed', () => checkWhich('node'));
+function mainIpc(utils: MainModuleUtils) {
+  utils.ipc.handle('is_nodejs_installed', () => checkWhich('node'));
 }
 
-async function updateAvailable(lynxApi: LynxApiUpdate) {
-  return await lynxApi.isPullAvailable;
+async function updateAvailable(utils: MainModuleUtils, installDir: string | undefined) {
+  if (!installDir) return false;
+  return await utils.isPullAvailable(installDir);
 }
 
-const BOLT_DIY_MM: CardMainMethods = {getRunCommands, mainIpc, updateAvailable};
+const BOLT_DIY_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(BOLT_DIY_ID);
+  return {getRunCommands, mainIpc: () => mainIpc(utils), updateAvailable: () => updateAvailable(utils, installDir)};
+};
 
 export default BOLT_DIY_MM;

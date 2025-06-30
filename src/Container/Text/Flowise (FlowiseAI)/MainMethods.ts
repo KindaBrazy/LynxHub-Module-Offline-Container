@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import treeKill from 'tree-kill';
 
-import {CardMainMethods, ChosenArgument, LynxApiInstalled, LynxApiUpdate, MainIpcTypes} from '../../../types';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../types';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   checkWhich,
@@ -17,7 +17,7 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 const CONFIG_FILE = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
 
-async function getRunCommands(_?: string, configDir?: string): Promise<string | string[]> {
+async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';
 
   const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
@@ -26,11 +26,11 @@ async function getRunCommands(_?: string, configDir?: string): Promise<string | 
   return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 
-async function saveArgs(args: ChosenArgument[], _?: string, configDir?: string) {
+async function saveArgs(args: ChosenArgument[], configDir?: string) {
   return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, configDir);
 }
 
-async function readArgs(_?: string, configDir?: string) {
+async function readArgs(configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
@@ -122,27 +122,38 @@ async function checkUpdate(pty: any): Promise<string | null> {
   });
 }
 
-async function updateAvailable(lynxApi: LynxApiUpdate): Promise<boolean> {
-  const available = await checkUpdate(lynxApi.pty);
+async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
+  const available = await checkUpdate(utils.pty);
   if (available) {
-    lynxApi.storage.set('update-available-version-flowise', available);
+    utils.storage.set('update-available-version-flowise', available);
     return true;
   }
 
-  lynxApi.storage.set('update-available-version-flowise', undefined);
+  utils.storage.set('update-available-version-flowise', undefined);
   return false;
 }
 
-async function isInstalled(lynxApi: LynxApiInstalled): Promise<boolean> {
-  return checkInstalled(lynxApi.pty);
+async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
+  return checkInstalled(utils.pty);
 }
 
-function mainIpc(ipc: MainIpcTypes) {
-  ipc.handle('is_flowise_installed', () => checkInstalled(ipc.pty));
-  ipc.handle('current_flowise_version', () => getVersion(ipc.pty));
-  ipc.handle('is_npm_available', () => checkWhich('npm'));
+function mainIpc(utils: MainModuleUtils) {
+  utils.ipc.handle('is_flowise_installed', () => checkInstalled(utils.pty));
+  utils.ipc.handle('current_flowise_version', () => getVersion(utils.pty));
+  utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 
-const Flow_MM: CardMainMethods = {updateAvailable, getRunCommands, mainIpc, isInstalled, saveArgs, readArgs};
+const Flow_MM: CardMainMethodsInitial = utils => {
+  const configDir = utils.getConfigDir();
+
+  return {
+    updateAvailable: () => updateAvailable(utils),
+    getRunCommands: () => getRunCommands(configDir),
+    mainIpc: () => mainIpc(utils),
+    isInstalled: () => isInstalled(utils),
+    saveArgs: args => saveArgs(args, configDir),
+    readArgs: () => readArgs(configDir),
+  };
+};
 
 export default Flow_MM;

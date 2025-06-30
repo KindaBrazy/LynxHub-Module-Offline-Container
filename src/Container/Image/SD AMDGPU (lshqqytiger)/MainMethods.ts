@@ -1,4 +1,5 @@
-import {CardMainMethods, ChosenArgument} from '../../../types';
+import {SD_AMD_ID} from '../../../Constants';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
@@ -19,6 +20,14 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const Ls_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const Ls_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(SD_AMD_ID);
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    readArgs: () => readArgs(installDir),
+    saveArgs: args => saveArgs(args, installDir),
+  };
+};
 
 export default Ls_MM;

@@ -1,4 +1,5 @@
-import {CardMainMethods, ChosenArgument} from '../../../types';
+import {COMFYUI_ZLUDA_ID} from '../../../Constants';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../types';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
@@ -26,6 +27,14 @@ export async function readArgs(cardDir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
 }
 
-const ComfyZluda_MM: CardMainMethods = {getRunCommands, readArgs, saveArgs};
+const ComfyZluda_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(COMFYUI_ZLUDA_ID);
+
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    readArgs: () => readArgs(installDir),
+    saveArgs: args => saveArgs(args, installDir),
+  };
+};
 
 export default ComfyZluda_MM;

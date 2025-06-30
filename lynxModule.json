@@ -1,14 +1,28 @@
 {
+  "$schema": "./lynxModule.schema.json",
   "id": "lynxhub_module_offline_container",
   "title": "Lynx WebUI Container",
   "description": "A comprehensive collection of WebUI modules featuring full support for extensions, arguments and configurations.",
   "publishDate": "2024-08-21",
-  "requireAppBuild": 16,
+  "requireAppBuild": 23,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "11.2.1",
-  "updateDate": "2025-05-14 14:21",
-  "changeLog": "V11.2.1\n\n・Fix open-webui installation detection in various environments (e.g., conda). \nV11.2.0\n\n・OpenWebUI: Add `GLOBAL_LOG_LEVEL` argument. \n・OpenWebUI: Provide the default `localhost:8080` address if none is detected. \nV11.1.0\n\n・Implement new InvokeAI installation and updating logic. \nV11.0.0\n\n・Add bolt.diy integration.\n・Faster Open WebUI installation detection.",
+  "version": "11.2.2",
+  "updateDate": "2025-06-30",
+  "changeLog": "V11.2.1\n\n・Fix open-webui installation detection in various environments (e.g., conda).",
   "changes": [
+    {
+      "title": "V11.2.2",
+      "items": [
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Support new LynxHub module API"
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V11.2.1",
       "items": [

@@ -23,8 +23,8 @@ const LoLLMS_ID = 'LoLLMS_TG';
 const TTS_ID = 'Rsxdalv_AG';
 const AG_ID = 'Gitmylo_AG';
 
+let isWin = true;
 async function isWinOS() {
-    let isWin = true;
     if (typeof window !== 'undefined' && window.osPlatform) {
         isWin = window.osPlatform === 'win32';
     }
@@ -34,6 +34,7 @@ async function isWinOS() {
     }
     return isWin;
 }
+isWinOS();
 function formatSize(size) {
     if (!size)
         return '0KB';
@@ -75,7 +76,6 @@ function extractGitUrl(url) {
 function removeAnsi(str) {
     return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 }
-const isWin = await isWinOS();
 function getCdCommand(dirPath) {
     const escapedPath = dirPath.replace(/ /g, '\\ ');
     const quotedPath = `"${dirPath}"`;
@@ -24376,4 +24376,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { OPEN_WEBUI_ID as $, removeAnsi as A, parseArgsToString$3 as B, parseStringToArgs$3 as C, parseArgsToString$2 as D, parseStringToArgs$2 as E, parseArgsToString$1 as F, parseStringToArgs$1 as G, parseArgsToString as H, INVOKEAI_INSTALL_DIR_KEY as I, parseStringToArgs as J, COMFYUI_ID as K, A1_ID as L, SD_FORGE_ID as M, SD_FORGE_AMD_ID as N, SD_NEXT_ID as O, SWARM_ID as P, KOHYA_ID as Q, TTS_ID as R, SD_AMD_ID as S, TG_ID as T, AG_ID as U, SILLYTAVERN_ID as V, SD_UIUX_ID as W, COMFYUI_ZLUDA_ID as X, ONETRAINER_ID as Y, INVOKE_ID as Z, ALLTALK_ID as _, getVenvPythonPath as a, FLOWISEAI_ID as a0, LoLLMS_ID as a1, BOLT_DIY_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, lodashExports as a7, automatic1111Arguments as a8, fetchExtensionList$2 as a9, catchAddress$2 as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, parseStringToArgs$c as b, commonjsGlobal as c, parseArgsToString$b as d, parseStringToArgs$b as e, parseArgsToString$a as f, getDefaultExportFromCjs as g, parseStringToArgs$a as h, isWin as i, extractGitUrl as j, INVOKEAI_UPDATE_AVAILABLE_KEY as k, Invoke_Command_ActivateVenv as l, parseArgsToString$9 as m, parseStringToArgs$9 as n, parseArgsToString$8 as o, parseArgsToString$c as p, parseStringToArgs$8 as q, parseArgsToString$7 as r, parseStringToArgs$7 as s, parseArgsToString$6 as t, parseStringToArgs$6 as u, parseArgsToString$5 as v, parseStringToArgs$5 as w, parseArgsToString$4 as x, parseStringToArgs$4 as y, getCdCommand as z };
+export { SD_FORGE_ID as $, ALLTALK_ID as A, parseArgsToString$5 as B, COMFYUI_ID as C, parseStringToArgs$5 as D, SWARM_ID as E, parseArgsToString$4 as F, parseStringToArgs$4 as G, BOLT_DIY_ID as H, INVOKEAI_INSTALL_DIR_KEY as I, getCdCommand as J, KOHYA_ID as K, removeAnsi as L, parseArgsToString$3 as M, parseStringToArgs$3 as N, ONETRAINER_ID as O, LoLLMS_ID as P, OPEN_WEBUI_ID as Q, parseArgsToString$2 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$2 as U, SILLYTAVERN_ID as V, parseArgsToString$1 as W, parseStringToArgs$1 as X, TG_ID as Y, parseArgsToString as Z, parseStringToArgs as _, getVenvPythonPath as a, SD_FORGE_AMD_ID as a0, SD_UIUX_ID as a1, FLOWISEAI_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, lodashExports as a7, automatic1111Arguments as a8, fetchExtensionList$2 as a9, catchAddress$2 as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, AG_ID as b, commonjsGlobal as c, parseStringToArgs$c as d, parseArgsToString$b as e, parseStringToArgs$b as f, getDefaultExportFromCjs as g, COMFYUI_ZLUDA_ID as h, isWin as i, parseArgsToString$a as j, parseStringToArgs$a as k, INVOKE_ID as l, extractGitUrl as m, INVOKEAI_UPDATE_AVAILABLE_KEY as n, Invoke_Command_ActivateVenv as o, parseArgsToString$c as p, parseArgsToString$9 as q, parseStringToArgs$9 as r, parseArgsToString$8 as s, parseStringToArgs$8 as t, A1_ID as u, parseArgsToString$7 as v, parseStringToArgs$7 as w, parseArgsToString$6 as x, parseStringToArgs$6 as y, SD_NEXT_ID as z };

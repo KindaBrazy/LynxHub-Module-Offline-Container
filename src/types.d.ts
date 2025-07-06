@@ -83,7 +83,7 @@ export type InstallationStepper = {
   initialSteps: (stepTitles: string[]) => void;
 
   /** Advance to the next step in the installation process. */
-  nextStep: () => void;
+  nextStep: () => Promise<void>;
 
   /** Normally the first step (Contain locating or start installation)
    * @return A promise resolving to the user's choice of installation method.

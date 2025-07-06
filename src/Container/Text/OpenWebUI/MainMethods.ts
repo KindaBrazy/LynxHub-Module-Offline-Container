@@ -20,7 +20,7 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
 
-async function getRunCommands(_?: string, configDir?: string): Promise<string | string[]> {
+async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';
 
   const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
@@ -29,7 +29,7 @@ async function getRunCommands(_?: string, configDir?: string): Promise<string | 
   return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 
-async function saveArgs(args: ChosenArgument[], _?: string, configDir?: string) {
+async function saveArgs(args: ChosenArgument[], configDir?: string) {
   return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, configDir);
 }
 
@@ -104,15 +104,14 @@ async function uninstall(pty: any): Promise<void> {
 }
 
 const OpenWebUI_MM: CardMainMethodsInitial = utils => {
-  const installDir = utils.getInstallDir(OPEN_WEBUI_ID);
   const configDir = utils.getConfigDir();
 
   return {
-    getRunCommands: () => getRunCommands(installDir),
+    getRunCommands: () => getRunCommands(configDir),
     updateAvailable: () => updateAvailable(utils),
     isInstalled: () => isInstalled(utils),
     mainIpc: () => mainIpc(utils),
-    saveArgs: args => saveArgs(args, installDir),
+    saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     uninstall: () => uninstall(utils.pty),
   };

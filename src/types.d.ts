@@ -40,7 +40,7 @@ export type CardMainMethodsInitial = (utils: MainModuleUtils) => {
   mainIpc?: () => void;
   updateAvailable?: () => Promise<boolean>;
   isInstalled?: (onInstalledDirExist: (card: InstalledCard) => Promise<false | true>) => Promise<boolean>;
-  uninstall?: () => Promise<void>;
+  uninstall?: (extensionPreCommands: string[]) => Promise<void>;
 };
 
 /** These methods will be called in the main process */
@@ -56,7 +56,7 @@ export type CardMainMethods = () => {
   mainIpc?: () => void;
   updateAvailable?: () => Promise<boolean>;
   isInstalled?: (onInstalledDirExist: (card: InstalledCard) => Promise<false | true>) => Promise<boolean>;
-  uninstall?: () => Promise<void>;
+  uninstall?: (extensionPreCommands: string[]) => Promise<void>;
 };
 
 export type InstallationMethod = {chosen: 'install' | 'locate'; targetDirectory?: string};

@@ -64,7 +64,7 @@ function mainIpc(utils: MainModuleUtils) {
   utils.ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', utils.pty));
 }
 
-async function uninstall(pty: any): Promise<void> {
+async function uninstall(pty: any, extensionPreCommands: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
     const ptyProcess = pty.spawn(determineShell(), [], {});
     let output = '';
@@ -97,6 +97,8 @@ async function uninstall(pty: any): Promise<void> {
       }
     });
 
+    extensionPreCommands.forEach(command => ptyProcess.write(command));
+
     ptyProcess.write(`pip uninstall -y open-webui${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);
   });
@@ -112,7 +114,7 @@ const OpenWebUI_MM: CardMainMethodsInitial = utils => {
     mainIpc: () => mainIpc(utils),
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
-    uninstall: () => uninstall(utils.pty),
+    uninstall: extensionPreCommands => uninstall(utils.pty, extensionPreCommands),
   };
 };
 

@@ -68,14 +68,15 @@ export function GitInstaller(title: string, url: string, stepper: InstallationSt
   stepper.initialSteps([title, 'Clone', 'Finish']);
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
-      stepper.nextStep();
-      stepper.cloneRepository(url).then(dir => {
-        stepper.setInstalled(dir);
-        stepper.showFinalStep(
-          'success',
-          `${title} installation complete!`,
-          `All installation steps completed successfully. Your ${title} environment is now ready for use.`,
-        );
+      stepper.nextStep().then(() => {
+        stepper.cloneRepository(url).then(dir => {
+          stepper.setInstalled(dir);
+          stepper.showFinalStep(
+            'success',
+            `${title} installation complete!`,
+            `All installation steps completed successfully. Your ${title} environment is now ready for use.`,
+          );
+        });
       });
     } else if (targetDirectory) {
       stepper.utils.validateGitRepository(targetDirectory, url).then(isValid => {

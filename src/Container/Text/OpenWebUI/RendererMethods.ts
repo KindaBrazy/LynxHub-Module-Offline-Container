@@ -117,23 +117,29 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 function startInstall(stepper: InstallationStepper) {
   stepper.initialSteps(['Getting Started', 'Detect Existing', 'Install Open WebUI', 'All Done!']);
   stepper.starterStep({disableSelectDir: true}).then(() => {
-    stepper.nextStep();
-    stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
-    stepper.ipc.invoke('is_openwebui_installed').then((isInstalled: boolean) => {
-      if (isInstalled) {
-        stepper.setInstalled();
-        const currentDate = new Date();
-        stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-        stepper.showFinalStep('success', "You're All Set!", "Open WebUI is already installed. You're good to go!");
-      } else {
-        stepper.nextStep();
-        stepper.executeTerminalCommands('pip install open-webui').then(() => {
+    stepper.nextStep().then(() => {
+      stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
+      stepper.ipc.invoke('is_openwebui_installed').then((isInstalled: boolean) => {
+        if (isInstalled) {
           stepper.setInstalled();
           const currentDate = new Date();
           stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-          stepper.showFinalStep('success', 'Installation Complete!', 'Your Open WebUI environment is ready. Enjoy!');
-        });
-      }
+          stepper.showFinalStep('success', "You're All Set!", "Open WebUI is already installed. You're good to go!");
+        } else {
+          stepper.nextStep().then(() => {
+            stepper.executeTerminalCommands('pip install open-webui').then(() => {
+              stepper.setInstalled();
+              const currentDate = new Date();
+              stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
+              stepper.showFinalStep(
+                'success',
+                'Installation Complete!',
+                'Your Open WebUI environment is ready. Enjoy!',
+              );
+            });
+          });
+        }
+      });
     });
   });
 }

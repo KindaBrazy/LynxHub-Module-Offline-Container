@@ -76,35 +76,42 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 function startInstall(stepper: InstallationStepper) {
   stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install Flowise', 'All Done!']);
   stepper.starterStep({disableSelectDir: true}).then(() => {
-    stepper.nextStep();
-    stepper.progressBar(true, 'Checking if NPM is installed...');
-    stepper.ipc.invoke('is_npm_available').then((isNpmInstalled: boolean) => {
-      if (isNpmInstalled) {
-        stepper.nextStep();
-        stepper.progressBar(true, 'Checking for existing Flowise installation...');
-        stepper.ipc.invoke('is_flowise_installed').then((isFlowInstalled: boolean) => {
-          if (isFlowInstalled) {
-            stepper.setInstalled();
-            const currentDate = new Date();
-            stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-            stepper.showFinalStep('success', "You're All Set!", "Flowise is already installed. You're good to go!");
-          } else {
-            stepper.nextStep();
-            stepper.executeTerminalCommands('npm i -g flowise').then(() => {
-              stepper.setInstalled();
-              const currentDate = new Date();
-              stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-              stepper.showFinalStep('success', 'Installation Complete!', 'Your Flowise environment is ready. Enjoy!');
+    stepper.nextStep().then(() => {
+      stepper.progressBar(true, 'Checking if NPM is installed...');
+      stepper.ipc.invoke('is_npm_available').then((isNpmInstalled: boolean) => {
+        if (isNpmInstalled) {
+          stepper.nextStep().then(() => {
+            stepper.progressBar(true, 'Checking for existing Flowise installation...');
+            stepper.ipc.invoke('is_flowise_installed').then((isFlowInstalled: boolean) => {
+              if (isFlowInstalled) {
+                stepper.setInstalled();
+                const currentDate = new Date();
+                stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
+                stepper.showFinalStep('success', "You're All Set!", "Flowise is already installed. You're good to go!");
+              } else {
+                stepper.nextStep().then(() => {
+                  stepper.executeTerminalCommands('npm i -g flowise').then(() => {
+                    stepper.setInstalled();
+                    const currentDate = new Date();
+                    stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
+                    stepper.showFinalStep(
+                      'success',
+                      'Installation Complete!',
+                      'Your Flowise environment is ready. Enjoy!',
+                    );
+                  });
+                });
+              }
             });
-          }
-        });
-      } else {
-        stepper.showFinalStep(
-          'error',
-          'NodeJs is not installed!',
-          'Flowise need NPM! Please install NodeJs then try again.',
-        );
-      }
+          });
+        } else {
+          stepper.showFinalStep(
+            'error',
+            'NodeJs is not installed!',
+            'Flowise need NPM! Please install NodeJs then try again.',
+          );
+        }
+      });
     });
   });
 }

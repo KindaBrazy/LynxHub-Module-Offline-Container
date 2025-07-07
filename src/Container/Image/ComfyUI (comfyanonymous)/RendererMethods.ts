@@ -123,32 +123,36 @@ function startInstall(stepper: InstallationStepper) {
 
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
-      stepper.nextStep();
-      stepper.cloneRepository(COMFYUI_URL).then(dir => {
-        stepper.nextStep();
-        stepper
-          .collectUserInput([
-            {
-              id: 'gpu_type',
-              type: 'select',
-              label: 'Please Select PyTorch Version (Gpu)',
-              selectOptions,
-            },
-          ])
-          .then(result => {
-            stepper.nextStep();
-            stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result as string)).then(() => {
-              stepper.nextStep();
-              stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                stepper.setInstalled(dir);
-                stepper.showFinalStep(
-                  'success',
-                  'ComfyUI installation complete!',
-                  'All installation steps completed successfully. Your ComfyUI environment is now ready for use.',
-                );
+      stepper.nextStep().then(() => {
+        stepper.cloneRepository(COMFYUI_URL).then(dir => {
+          stepper.nextStep().then(() => {
+            stepper
+              .collectUserInput([
+                {
+                  id: 'gpu_type',
+                  type: 'select',
+                  label: 'Please Select PyTorch Version (Gpu)',
+                  selectOptions,
+                },
+              ])
+              .then(result => {
+                stepper.nextStep().then(() => {
+                  stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result as string)).then(() => {
+                    stepper.nextStep().then(() => {
+                      stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                        stepper.setInstalled(dir);
+                        stepper.showFinalStep(
+                          'success',
+                          'ComfyUI installation complete!',
+                          'All installation steps completed successfully. Your ComfyUI environment is now ready for use.',
+                        );
+                      });
+                    });
+                  });
+                });
               });
-            });
           });
+        });
       });
     } else if (targetDirectory) {
       stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {

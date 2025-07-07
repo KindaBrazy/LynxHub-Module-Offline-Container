@@ -119,22 +119,24 @@ function startInstall(stepper: InstallationStepper) {
 
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
-      stepper.nextStep();
-      stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
-        stepper.nextStep();
-        stepper.runTerminalScript(dir, 'install.bat').then(() => {
-          stepper.setInstalled(dir);
-          stepper.postInstall.config({
-            customArguments: {
-              presetName: 'Zluda Config',
-              customArguments,
-            },
+      stepper.nextStep().then(() => {
+        stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
+          stepper.nextStep().then(() => {
+            stepper.runTerminalScript(dir, 'install.bat').then(() => {
+              stepper.setInstalled(dir);
+              stepper.postInstall.config({
+                customArguments: {
+                  presetName: 'Zluda Config',
+                  customArguments,
+                },
+              });
+              stepper.showFinalStep(
+                'success',
+                'ComfyUI-Zluda installation complete!',
+                'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.',
+              );
+            });
           });
-          stepper.showFinalStep(
-            'success',
-            'ComfyUI-Zluda installation complete!',
-            'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.',
-          );
         });
       });
     } else if (targetDirectory) {

@@ -13,10 +13,11 @@ function startInstall(stepper: InstallationStepper) {
   const installPackages = (dir: string) => stepper.executeTerminalCommands('npm i', dir);
   const installBolt = () => {
     stepper.cloneRepository(REPO_URL).then(dir => {
-      next();
-      installPackages(dir).then(() => {
-        stepper.setInstalled(dir);
-        stepper.showFinalStep('success', 'Installation Complete!', 'Your Bolt.Diy environment is ready. Enjoy!');
+      next().then(() => {
+        installPackages(dir).then(() => {
+          stepper.setInstalled(dir);
+          stepper.showFinalStep('success', 'Installation Complete!', 'Your Bolt.Diy environment is ready. Enjoy!');
+        });
       });
     });
   };
@@ -25,15 +26,15 @@ function startInstall(stepper: InstallationStepper) {
 
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
-      next();
-      progress('Checking for NodeJS availability...');
-      checkNode().then(isNodeAvailable => {
-        if (isNodeAvailable) {
-          next();
-          installBolt();
-        } else {
-          stepper.showFinalStep('error', 'NodeJS is not installed!', 'Please install NodeJS LTS and try again.');
-        }
+      next().then(() => {
+        progress('Checking for NodeJS availability...');
+        checkNode().then(isNodeAvailable => {
+          if (isNodeAvailable) {
+            next().then(() => installBolt());
+          } else {
+            stepper.showFinalStep('error', 'NodeJS is not installed!', 'Please install NodeJS LTS and try again.');
+          }
+        });
       });
     } else if (targetDirectory) {
       stepper.utils.validateGitRepository(targetDirectory, REPO_URL).then(isValid => {

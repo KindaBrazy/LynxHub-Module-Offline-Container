@@ -9,16 +9,18 @@ export function startInstall(stepper: InstallationStepper) {
 
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
-      stepper.nextStep();
-      stepper.cloneRepository(URL).then(dir => {
-        stepper.nextStep();
-        stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
-          stepper.setInstalled(dir);
-          stepper.showFinalStep(
-            'success',
-            'OneTrainer installation complete!',
-            'All installation steps completed successfully. Your OneTrainer environment is now ready for use.',
-          );
+      stepper.nextStep().then(() => {
+        stepper.cloneRepository(URL).then(dir => {
+          stepper.nextStep().then(() => {
+            stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
+              stepper.setInstalled(dir);
+              stepper.showFinalStep(
+                'success',
+                'OneTrainer installation complete!',
+                'All installation steps completed successfully. Your OneTrainer environment is now ready for use.',
+              );
+            });
+          });
         });
       });
     } else if (targetDirectory) {

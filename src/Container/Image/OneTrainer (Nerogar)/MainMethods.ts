@@ -9,9 +9,9 @@ async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir);
 }
 
-async function updateAvailable(utils: MainModuleUtils, installDir: string | undefined) {
-  if (!installDir) return false;
-  return await utils.isPullAvailable(installDir);
+async function updateAvailable(utils: MainModuleUtils, dir?: string) {
+  if (!dir) return false;
+  return await utils.isPullAvailable(dir);
 }
 
 const Nerogar_MM: CardMainMethodsInitial = utils => {

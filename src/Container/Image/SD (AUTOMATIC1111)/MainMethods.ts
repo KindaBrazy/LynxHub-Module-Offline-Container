@@ -12,12 +12,12 @@ export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA);
 }
 
-async function saveArgs(args: ChosenArgument[], cardDir?: string) {
-  return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, cardDir);
+async function saveArgs(args: ChosenArgument[], dir?: string) {
+  return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString, dir);
 }
 
-export async function readArgs(cardDir?: string) {
-  return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, cardDir);
+export async function readArgs(dir?: string) {
+  return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, dir);
 }
 
 const A1_MM: CardMainMethodsInitial = utils => {

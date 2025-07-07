@@ -3,7 +3,7 @@ import {isEmpty} from 'lodash';
 import {ArgType, Category, ChosenArgument, DataSection, ExtensionData} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
-import automatic1111Arguments from './Automatic1111Arguments';
+import automatic1111Arguments from './Arguments';
 
 export async function fetchExtensionList(): Promise<ExtensionData[]> {
   try {

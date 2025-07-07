@@ -6,10 +6,10 @@ async function getRunCommands(): Promise<string | string[]> {
   return `python app.py ${LINE_ENDING}`;
 }
 
-async function updateAvailable(utils: MainModuleUtils, installDir: string | undefined) {
-  if (!installDir) return false;
+async function updateAvailable(utils: MainModuleUtils, dir?: string) {
+  if (!dir) return false;
 
-  return await utils.isPullAvailable(installDir);
+  return await utils.isPullAvailable(dir);
 }
 
 const LoLLM_MM: CardMainMethodsInitial = utils => {

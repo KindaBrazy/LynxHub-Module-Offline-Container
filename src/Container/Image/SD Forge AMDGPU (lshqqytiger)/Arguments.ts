@@ -1,7 +1,7 @@
 import {cloneDeep} from 'lodash';
 
 import {ArgumentItem, ArgumentSection, DataSection} from '../../../types';
-import automatic1111Arguments from './Automatic1111Arguments';
+import automatic1111Arguments from '../SD (AUTOMATIC1111)/Arguments';
 
 const lshqqytigerForgeArguments = cloneDeep(automatic1111Arguments);
 

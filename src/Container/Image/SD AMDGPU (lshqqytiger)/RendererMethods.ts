@@ -20,7 +20,7 @@ import {
   removeEscapes,
 } from '../../../Utils/RendererUtils';
 import {fetchExtensionList} from '../SD (AUTOMATIC1111)/SharedRenderer';
-import lshqqytigerArguments from './LshqqytigerArguments';
+import lshqqytigerArguments from './Arguments';
 
 const SdAMD_URL = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
 

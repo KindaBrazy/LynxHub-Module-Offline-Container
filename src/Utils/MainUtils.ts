@@ -8,7 +8,8 @@ import {existsSync} from 'graceful-fs';
 import treeKill from 'tree-kill';
 import which from 'which';
 
-import {ChosenArgument} from '../types';
+import {OPEN_WEBUI_ID} from '../Constants';
+import {ChosenArgument, MainModuleUtils} from '../types';
 import {getVenvPythonPath, isWin} from './CrossUtils';
 
 export const LINE_ENDING = isWin ? '\r' : '\n';
@@ -121,9 +122,9 @@ export async function checkWhich(name: string) {
   }
 }
 
-export async function getPipPackageVersion(packageName: string, pty: any): Promise<string | null> {
+export async function getPipPackageVersion(packageName: string, utils: MainModuleUtils): Promise<string | null> {
   return new Promise(resolve => {
-    const ptyProcess = pty.spawn(determineShell(), [], {});
+    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
 
     let output = '';
 
@@ -145,6 +146,8 @@ export async function getPipPackageVersion(packageName: string, pty: any): Promi
         resolve(null);
       }
     });
+
+    utils.getExtensions_TerminalPreCommands(OPEN_WEBUI_ID).forEach(command => ptyProcess.write(command));
 
     ptyProcess.write(`pip show ${packageName}${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);

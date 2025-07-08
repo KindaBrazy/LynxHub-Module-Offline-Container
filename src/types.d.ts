@@ -40,7 +40,7 @@ export type CardMainMethodsInitial = (utils: MainModuleUtils) => {
   mainIpc?: () => void;
   updateAvailable?: () => Promise<boolean>;
   isInstalled?: (onInstalledDirExist: (card: InstalledCard) => Promise<false | true>) => Promise<boolean>;
-  uninstall?: (extensionPreCommands: string[]) => Promise<void>;
+  uninstall?: () => Promise<void>;
 };
 
 /** These methods will be called in the main process */
@@ -56,7 +56,7 @@ export type CardMainMethods = () => {
   mainIpc?: () => void;
   updateAvailable?: () => Promise<boolean>;
   isInstalled?: (onInstalledDirExist: (card: InstalledCard) => Promise<false | true>) => Promise<boolean>;
-  uninstall?: (extensionPreCommands: string[]) => Promise<void>;
+  uninstall?: () => Promise<void>;
 };
 
 export type InstallationMethod = {chosen: 'install' | 'locate'; targetDirectory?: string};
@@ -434,4 +434,6 @@ export type MainModuleUtils = {
   getInstallDir: (id: string) => string | undefined;
   getConfigDir: () => string | undefined;
   pullDir: (dir: string, showTaskbarProgress?: boolean) => Promise<void>;
+  /** It's best to call and get commands when need to execute (to get latest changed commands) */
+  getExtensions_TerminalPreCommands: (id: string) => string[];
 };

@@ -3,6 +3,7 @@ import path from 'node:path';
 import {compare} from 'semver';
 import treeKill from 'tree-kill';
 
+import {OPEN_WEBUI_ID} from '../../../Constants';
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../types';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
@@ -37,13 +38,13 @@ async function readArgs(configDir?: string) {
 }
 
 async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  const result = getPipPackageVersion('open-webui', utils.pty);
+  const result = getPipPackageVersion('open-webui', utils);
   return !!result;
 }
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   try {
-    const currentVersion = await getPipPackageVersion('open-webui', utils.pty);
+    const currentVersion = await getPipPackageVersion('open-webui', utils);
     const latestVersion = await getLatestPipPackageVersion('open-webui');
     if (currentVersion && latestVersion && compare(currentVersion, latestVersion) === -1) {
       utils.storage.set('update-available-version-openwebui', latestVersion);
@@ -60,13 +61,13 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_openwebui_installed', () => isInstalled(utils.pty));
-  utils.ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', utils.pty));
+  utils.ipc.handle('is_openwebui_installed', () => isInstalled(utils));
+  utils.ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', utils));
 }
 
-async function uninstall(pty: any, extensionPreCommands: string[]): Promise<void> {
+async function uninstall(utils: MainModuleUtils): Promise<void> {
   return new Promise((resolve, reject) => {
-    const ptyProcess = pty.spawn(determineShell(), [], {});
+    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
     let output = '';
 
     ptyProcess.onData((data: any) => {
@@ -97,7 +98,7 @@ async function uninstall(pty: any, extensionPreCommands: string[]): Promise<void
       }
     });
 
-    extensionPreCommands.forEach(command => ptyProcess.write(command));
+    utils.getExtensions_TerminalPreCommands(OPEN_WEBUI_ID).forEach(command => ptyProcess.write(command));
 
     ptyProcess.write(`pip uninstall -y open-webui${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);
@@ -114,7 +115,7 @@ const OpenWebUI_MM: CardMainMethodsInitial = utils => {
     mainIpc: () => mainIpc(utils),
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
-    uninstall: extensionPreCommands => uninstall(utils.pty, extensionPreCommands),
+    uninstall: () => uninstall(utils),
   };
 };
 

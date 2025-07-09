@@ -173,6 +173,8 @@ function catchAddress(input: string): string | undefined {
       return undefined;
     }
   }
+
+  return undefined;
 }
 
 const Flow_RM: CardRendererMethods = {

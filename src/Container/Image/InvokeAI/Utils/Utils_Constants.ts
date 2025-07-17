@@ -33,24 +33,35 @@ export const invokeGetInputFields = async (ipc: RendererIpcTypes): Promise<UserI
       label: 'Installation Directory',
       id: 'install_dir',
       type: 'directory',
+
+      isRequired: true,
     },
     {
       label: 'InvokeAI Version',
       id: 'invoke_version',
       type: 'select',
       selectOptions: releases,
+
+      defaultValue: releases[0],
+      isRequired: true,
     },
     {
       label: 'Package Specifier',
       id: 'package_spec',
       type: 'select',
       selectOptions: [Invoke_PackageSpec.invokeai, Invoke_PackageSpec.invokeaiXformers],
+
+      defaultValue: Invoke_PackageSpec.invokeai,
+      isRequired: true,
     },
     {
       label: 'PyPI',
       id: 'pypi',
       type: 'select',
       selectOptions: [Invoke_PyPI.cu126, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
+
+      defaultValue: Invoke_PyPI.cu126,
+      isRequired: true,
     },
   ];
 };

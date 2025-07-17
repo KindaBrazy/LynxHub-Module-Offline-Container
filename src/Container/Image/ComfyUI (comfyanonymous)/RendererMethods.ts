@@ -133,6 +133,8 @@ function startInstall(stepper: InstallationStepper) {
                   type: 'select',
                   label: 'Please Select PyTorch Version (Gpu)',
                   selectOptions,
+                  defaultValue: selectOptions[0],
+                  isRequired: true,
                 },
               ])
               .then(result => {

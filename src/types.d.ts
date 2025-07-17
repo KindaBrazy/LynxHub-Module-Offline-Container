@@ -246,7 +246,7 @@ export type InstallationStepper = {
     openFileOrFolder: (itemPath: string) => void;
   };
 
-  showToast: {
+  showToast: () => {
     success: (title: string, timeout?: number) => void;
     error: (title: string, timeout?: number) => void;
     warning: (title: string, timeout?: number) => void;

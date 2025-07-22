@@ -1,16 +1,18 @@
-import { i as isWin, a3 as CardInfo, a4 as GitInstaller, T as TTS_ID, a5 as AG_RM, a6 as gitmyloArguments, b as AG_ID, A as ALLTALK_ID, a7 as lodashExports, a8 as automatic1111Arguments, w as parseStringToArgs, v as parseArgsToString, a9 as fetchExtensionList, aa as catchAddress$2, ab as COMFYUI_RM, ac as comfyArguments, C as COMFYUI_ID, $ as SD_FORGE_ID, ad as INVOKE_RM, l as INVOKE_ID, ae as SD_NEXT_RM, af as vladmandicArguments, z as SD_NEXT_ID, u as A1_ID, O as ONETRAINER_ID, ag as KOHYA_GUI_RM, ah as bmaltaisArguments, K as KOHYA_ID, ai as COMFYUI_ZLUDA_RM, aj as comfyZludaArguments, h as COMFYUI_ZLUDA_ID, ak as SD_AMD_RM, al as lshqqytigerArguments, S as SD_AMD_ID, a0 as SD_FORGE_AMD_ID, am as SWARM_RM, an as mcMonkeyArguments, E as SWARM_ID, a1 as SD_UIUX_ID, ao as TG_RM, ap as oobaboogaArguments, Y as TG_ID, aq as flowiseArguments, ar as Flow_RM, a2 as FLOWISEAI_ID, as as openArguments, at as OPEN_WEBUI_RM, Q as OPEN_WEBUI_ID, H as BOLT_DIY_ID, au as SILLYTAVERN_RM, av as sillyArguments, V as SILLYTAVERN_ID, P as LoLLMS_ID } from './RendererMethods_Cgnbzf.mjs';
+import { i as isWin, a3 as CardInfo, a4 as GitInstaller, T as TTS_ID, a5 as AG_RM, a6 as gitmyloArguments, b as AG_ID, A as ALLTALK_ID, x as parseStringToArgs, w as parseArgsToString, a7 as fetchExtensionList, a8 as catchAddress$2, a9 as lodashExports, aa as automatic1111Arguments, ab as COMFYUI_RM, ac as comfyArguments, C as COMFYUI_ID, $ as SD_FORGE_ID, ad as INVOKE_RM, l as INVOKE_ID, ae as SD_NEXT_RM, af as vladmandicArguments, B as SD_NEXT_ID, v as A1_ID, u as ONETRAINER_ID, ag as KOHYA_GUI_RM, ah as bmaltaisArguments, K as KOHYA_ID, ai as COMFYUI_ZLUDA_RM, aj as comfyZludaArguments, h as COMFYUI_ZLUDA_ID, ak as SD_AMD_RM, al as lshqqytigerArguments, S as SD_AMD_ID, a0 as SD_FORGE_AMD_ID, am as SWARM_RM, an as mcMonkeyArguments, F as SWARM_ID, a1 as SD_UIUX_ID, ao as TG_RM, ap as oobaboogaArguments, Y as TG_ID, aq as flowiseArguments, ar as Flow_RM, a2 as FLOWISEAI_ID, as as openArguments, at as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, J as BOLT_DIY_ID, au as SILLYTAVERN_RM, av as sillyArguments, V as SILLYTAVERN_ID, Q as LoLLMS_ID } from './RendererMethods_DDLgWh.mjs';
 
 const URL$2 = 'https://github.com/erew123/alltalk_tts';
 function startInstall$8(stepper) {
     stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(URL$2).then(dir => {
-                stepper.nextStep();
-                stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
-                    stepper.setInstalled(dir);
-                    stepper.showFinalStep('success', 'AllTalk TTS installation complete!', 'All installation steps completed successfully. Your AllTalk TTS environment is now ready for use.');
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(URL$2).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.showFinalStep('success', 'AllTalk TTS installation complete!', 'All installation steps completed successfully. Your AllTalk TTS environment is now ready for use.');
+                        });
+                    });
                 });
             });
         }
@@ -31,10 +33,11 @@ function startUpdate$2(stepper, dir) {
     stepper.initialSteps(['Pull Changes', 'Update', 'Finish']);
     if (dir) {
         stepper.executeTerminalCommands('git pull', dir).then(() => {
-            stepper.nextStep();
-            stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
-                stepper.setUpdated();
-                stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+            stepper.nextStep().then(() => {
+                stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
+                    stepper.setUpdated();
+                    stepper.showFinalStep('success', 'AllTalk TTS Updated Successfully!');
+                });
             });
         });
     }
@@ -483,12 +486,14 @@ function startInstall$6(stepper) {
     stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(URL).then(dir => {
-                stepper.nextStep();
-                stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
-                    stepper.setInstalled(dir);
-                    stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
+                        });
+                    });
                 });
             });
         }
@@ -528,38 +533,6 @@ const ONETRAINER_RM = {
     },
 };
 
-const lshqqytigerForgeArguments = lodashExports.cloneDeep(automatic1111Arguments);
-const lsSpecifArgs = [
-    {
-        description: 'Skip installation of onnxruntime; ONNX and Olive will be unavailable',
-        name: '--skip-ort',
-        type: 'CheckBox',
-    },
-    {
-        description: 'use torch built with cpu',
-        name: '--use-cpu-torch',
-        type: 'CheckBox',
-    },
-    {
-        description: 'use ZLUDA device as torch device',
-        name: '--use-zluda',
-        type: 'CheckBox',
-    },
-    {
-        description: 'override torch version',
-        name: '--override-torch',
-        type: 'Input',
-    },
-];
-const newSection = {
-    section: 'AmdGPU',
-    items: lsSpecifArgs,
-};
-const commandLineArgsIndex = lshqqytigerForgeArguments.findIndex(arg => arg.category === 'Command Line Arguments');
-if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsIndex].sections) {
-    lshqqytigerForgeArguments[commandLineArgsIndex].sections.unshift(newSection);
-}
-
 const A1_URL = 'https://github.com/AUTOMATIC1111/stable-diffusion-webui';
 function startInstall$5(stepper) {
     GitInstaller('Automatic1111', A1_URL, stepper);
@@ -591,6 +564,38 @@ const SD_FORGE_RM = {
     cardInfo: cardInfo$4,
     manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
 };
+
+const lshqqytigerForgeArguments = lodashExports.cloneDeep(automatic1111Arguments);
+const lsSpecifArgs = [
+    {
+        description: 'Skip installation of onnxruntime; ONNX and Olive will be unavailable',
+        name: '--skip-ort',
+        type: 'CheckBox',
+    },
+    {
+        description: 'use torch built with cpu',
+        name: '--use-cpu-torch',
+        type: 'CheckBox',
+    },
+    {
+        description: 'use ZLUDA device as torch device',
+        name: '--use-zluda',
+        type: 'CheckBox',
+    },
+    {
+        description: 'override torch version',
+        name: '--override-torch',
+        type: 'Input',
+    },
+];
+const newSection = {
+    section: 'AmdGPU',
+    items: lsSpecifArgs,
+};
+const commandLineArgsIndex = lshqqytigerForgeArguments.findIndex(arg => arg.category === 'Command Line Arguments');
+if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsIndex].sections) {
+    lshqqytigerForgeArguments[commandLineArgsIndex].sections.unshift(newSection);
+}
 
 const SdAMD_URL$1 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge';
 function startInstall$3(stepper) {
@@ -795,26 +800,27 @@ function startInstall$1(stepper) {
     const installPackages = (dir) => stepper.executeTerminalCommands('npm i', dir);
     const installBolt = () => {
         stepper.cloneRepository(REPO_URL).then(dir => {
-            next();
-            installPackages(dir).then(() => {
-                stepper.setInstalled(dir);
-                stepper.showFinalStep('success', 'Installation Complete!', 'Your Bolt.Diy environment is ready. Enjoy!');
+            next().then(() => {
+                installPackages(dir).then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', 'Installation Complete!', 'Your Bolt.Diy environment is ready. Enjoy!');
+                });
             });
         });
     };
     stepper.initialSteps(StarterSteps);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            next();
-            progress('Checking for NodeJS availability...');
-            checkNode().then(isNodeAvailable => {
-                if (isNodeAvailable) {
-                    next();
-                    installBolt();
-                }
-                else {
-                    stepper.showFinalStep('error', 'NodeJS is not installed!', 'Please install NodeJS LTS and try again.');
-                }
+            next().then(() => {
+                progress('Checking for NodeJS availability...');
+                checkNode().then(isNodeAvailable => {
+                    if (isNodeAvailable) {
+                        next().then(() => installBolt());
+                    }
+                    else {
+                        stepper.showFinalStep('error', 'NodeJS is not installed!', 'Please install NodeJS LTS and try again.');
+                    }
+                });
             });
         }
         else if (targetDirectory) {
@@ -869,14 +875,16 @@ function startInstall(stepper) {
     stepper.initialSteps([title, 'Clone', 'Install', 'Requirements', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(url).then(dir => {
-                stepper.nextStep();
-                stepper.executeTerminalCommands('git submodule update --init --recursive', dir).then(() => {
-                    stepper.executeTerminalCommands('pip install -e .', `${dir}${isWin ? '\\' : '/'}lollms_core`).then(() => {
-                        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                            stepper.setInstalled(dir);
-                            stepper.showFinalStep('success', `${title} installation complete!`, `All installation steps completed successfully. Your ${title} environment is now ready for use.`);
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(url).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper.executeTerminalCommands('git submodule update --init --recursive', dir).then(() => {
+                            stepper.executeTerminalCommands('pip install -e .', `${dir}${isWin ? '\\' : '/'}lollms_core`).then(() => {
+                                stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                                    stepper.setInstalled(dir);
+                                    stepper.showFinalStep('success', `${title} installation complete!`, `All installation steps completed successfully. Your ${title} environment is now ready for use.`);
+                                });
+                            });
                         });
                     });
                 });

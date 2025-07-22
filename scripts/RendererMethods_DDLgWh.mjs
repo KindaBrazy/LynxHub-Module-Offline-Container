@@ -17373,10 +17373,11 @@ function GitInstaller(title, url, stepper) {
     stepper.initialSteps([title, 'Clone', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(url).then(dir => {
-                stepper.setInstalled(dir);
-                stepper.showFinalStep('success', `${title} installation complete!`, `All installation steps completed successfully. Your ${title} environment is now ready for use.`);
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(url).then(dir => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', `${title} installation complete!`, `All installation steps completed successfully. Your ${title} environment is now ready for use.`);
+                });
             });
         }
         else if (targetDirectory) {
@@ -18090,25 +18091,31 @@ function startInstall$a(stepper) {
     stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(COMFYUI_URL).then(dir => {
-                stepper.nextStep();
-                stepper
-                    .collectUserInput([
-                    {
-                        id: 'gpu_type',
-                        type: 'select',
-                        label: 'Please Select PyTorch Version (Gpu)',
-                        selectOptions,
-                    },
-                ])
-                    .then(result => {
-                    stepper.nextStep();
-                    stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result)).then(() => {
-                        stepper.nextStep();
-                        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                            stepper.setInstalled(dir);
-                            stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. Your ComfyUI environment is now ready for use.');
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(COMFYUI_URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper
+                            .collectUserInput([
+                            {
+                                id: 'gpu_type',
+                                type: 'select',
+                                label: 'Please Select PyTorch Version (Gpu)',
+                                selectOptions,
+                                defaultValue: selectOptions[0],
+                                isRequired: true,
+                            },
+                        ])
+                            .then(result => {
+                            stepper.nextStep().then(() => {
+                                stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result)).then(() => {
+                                    stepper.nextStep().then(() => {
+                                        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                                            stepper.setInstalled(dir);
+                                            stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. Your ComfyUI environment is now ready for use.');
+                                        });
+                                    });
+                                });
+                            });
                         });
                     });
                 });
@@ -18663,18 +18670,20 @@ function startInstall$9(stepper) {
     stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
-                stepper.nextStep();
-                stepper.runTerminalScript(dir, 'install.bat').then(() => {
-                    stepper.setInstalled(dir);
-                    stepper.postInstall.config({
-                        customArguments: {
-                            presetName: 'Zluda Config',
-                            customArguments,
-                        },
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper.runTerminalScript(dir, 'install.bat').then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.postInstall.config({
+                                customArguments: {
+                                    presetName: 'Zluda Config',
+                                    customArguments,
+                                },
+                            });
+                            stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
+                        });
                     });
-                    stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
                 });
             });
         }
@@ -18735,24 +18744,31 @@ const invokeGetInputFields = async (ipc) => {
             label: 'Installation Directory',
             id: 'install_dir',
             type: 'directory',
+            isRequired: true,
         },
         {
             label: 'InvokeAI Version',
             id: 'invoke_version',
             type: 'select',
             selectOptions: releases,
+            defaultValue: releases[0],
+            isRequired: true,
         },
         {
             label: 'Package Specifier',
             id: 'package_spec',
             type: 'select',
             selectOptions: [Invoke_PackageSpec.invokeai, Invoke_PackageSpec.invokeaiXformers],
+            defaultValue: Invoke_PackageSpec.invokeai,
+            isRequired: true,
         },
         {
             label: 'PyPI',
             id: 'pypi',
             type: 'select',
             selectOptions: [Invoke_PyPI.cu126, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
+            defaultValue: Invoke_PyPI.cu126,
+            isRequired: true,
         },
     ];
 };
@@ -18831,34 +18847,42 @@ function startInstall$8(stepper) {
     stepper.initialSteps(['InvokeAI', 'UV', 'Config', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
-            stepper.nextStep();
-            stepper.progressBar(true, 'Detecting UV installation...');
-            stepper.ipc.invoke('is_uv_installed').then(isUvInstalled => {
-                if (!isUvInstalled) {
-                    stepper.executeTerminalCommands(Invoke_Command_InstallUV).then(() => {
-                        stepper.showFinalStep('success', 'UV Package Manager Installation Complete.', 'Restart your computer and run the installer again to continue installation.');
-                    });
-                }
-                else {
-                    stepper.nextStep();
-                    stepper.progressBar(true, 'Fetching the latest InvokeAI versions...');
-                    invokeGetInputFields(stepper.ipc).then(fields => {
-                        stepper.collectUserInput(fields).then(result => {
-                            const { installDirResult } = invokeGetInputResults(result);
-                            const installCommand = invokeGetInstallCommand(result);
-                            stepper.nextStep();
-                            stepper
-                                .executeTerminalCommands([Invoke_Command_CreateVenv, Invoke_Command_ActivateVenv, Invoke_Command_InstallPip, installCommand], installDirResult)
-                                .then(() => {
-                                stepper.setInstalled(installDirResult);
-                                const currentDate = new Date();
-                                stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
-                                stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, installDirResult);
-                                stepper.showFinalStep('success', 'InvokeAI Installation Complete.', 'Your InvokeAI environment is ready. Enjoy!');
+            stepper.nextStep().then(() => {
+                stepper.progressBar(true, 'Detecting UV installation...');
+                stepper.ipc.invoke('is_uv_installed').then(isUvInstalled => {
+                    if (!isUvInstalled) {
+                        stepper.executeTerminalCommands(Invoke_Command_InstallUV).then(() => {
+                            stepper.showFinalStep('success', 'UV Package Manager Installation Complete.', 'Restart your computer and run the installer again to continue installation.');
+                        });
+                    }
+                    else {
+                        stepper.nextStep().then(() => {
+                            stepper.progressBar(true, 'Fetching the latest InvokeAI versions...');
+                            invokeGetInputFields(stepper.ipc).then(fields => {
+                                stepper.collectUserInput(fields).then(result => {
+                                    const { installDirResult } = invokeGetInputResults(result);
+                                    const installCommand = invokeGetInstallCommand(result);
+                                    stepper.nextStep().then(() => {
+                                        stepper
+                                            .executeTerminalCommands([
+                                            Invoke_Command_CreateVenv,
+                                            Invoke_Command_ActivateVenv,
+                                            Invoke_Command_InstallPip,
+                                            installCommand,
+                                        ], installDirResult)
+                                            .then(() => {
+                                            stepper.setInstalled(installDirResult);
+                                            const currentDate = new Date();
+                                            stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
+                                            stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, installDirResult);
+                                            stepper.showFinalStep('success', 'InvokeAI Installation Complete.', 'Your InvokeAI environment is ready. Enjoy!');
+                                        });
+                                    });
+                                });
                             });
                         });
-                    });
-                }
+                    }
+                });
             });
         }
         else {
@@ -21397,33 +21421,36 @@ function parseStringToArgs$3(args) {
 function startInstall$3(stepper) {
     stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install Flowise', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
-        stepper.nextStep();
-        stepper.progressBar(true, 'Checking if NPM is installed...');
-        stepper.ipc.invoke('is_npm_available').then((isNpmInstalled) => {
-            if (isNpmInstalled) {
-                stepper.nextStep();
-                stepper.progressBar(true, 'Checking for existing Flowise installation...');
-                stepper.ipc.invoke('is_flowise_installed').then((isFlowInstalled) => {
-                    if (isFlowInstalled) {
-                        stepper.setInstalled();
-                        const currentDate = new Date();
-                        stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
-                        stepper.showFinalStep('success', "You're All Set!", "Flowise is already installed. You're good to go!");
-                    }
-                    else {
-                        stepper.nextStep();
-                        stepper.executeTerminalCommands('npm i -g flowise').then(() => {
-                            stepper.setInstalled();
-                            const currentDate = new Date();
-                            stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
-                            stepper.showFinalStep('success', 'Installation Complete!', 'Your Flowise environment is ready. Enjoy!');
+        stepper.nextStep().then(() => {
+            stepper.progressBar(true, 'Checking if NPM is installed...');
+            stepper.ipc.invoke('is_npm_available').then((isNpmInstalled) => {
+                if (isNpmInstalled) {
+                    stepper.nextStep().then(() => {
+                        stepper.progressBar(true, 'Checking for existing Flowise installation...');
+                        stepper.ipc.invoke('is_flowise_installed').then((isFlowInstalled) => {
+                            if (isFlowInstalled) {
+                                stepper.setInstalled();
+                                const currentDate = new Date();
+                                stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                                stepper.showFinalStep('success', "You're All Set!", "Flowise is already installed. You're good to go!");
+                            }
+                            else {
+                                stepper.nextStep().then(() => {
+                                    stepper.executeTerminalCommands('npm i -g flowise').then(() => {
+                                        stepper.setInstalled();
+                                        const currentDate = new Date();
+                                        stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                                        stepper.showFinalStep('success', 'Installation Complete!', 'Your Flowise environment is ready. Enjoy!');
+                                    });
+                                });
+                            }
                         });
-                    }
-                });
-            }
-            else {
-                stepper.showFinalStep('error', 'NodeJs is not installed!', 'Flowise need NPM! Please install NodeJs then try again.');
-            }
+                    });
+                }
+                else {
+                    stepper.showFinalStep('error', 'NodeJs is not installed!', 'Flowise need NPM! Please install NodeJs then try again.');
+                }
+            });
         });
     });
 }
@@ -21473,6 +21500,7 @@ function catchAddress$1(input) {
             return undefined;
         }
     }
+    return undefined;
 }
 const Flow_RM = {
     catchAddress: catchAddress$1,
@@ -23129,24 +23157,26 @@ function parseStringToArgs$2(args) {
 function startInstall$2(stepper) {
     stepper.initialSteps(['Getting Started', 'Detect Existing', 'Install Open WebUI', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
-        stepper.nextStep();
-        stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
-        stepper.ipc.invoke('is_openwebui_installed').then((isInstalled) => {
-            if (isInstalled) {
-                stepper.setInstalled();
-                const currentDate = new Date();
-                stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-                stepper.showFinalStep('success', "You're All Set!", "Open WebUI is already installed. You're good to go!");
-            }
-            else {
-                stepper.nextStep();
-                stepper.executeTerminalCommands('pip install open-webui').then(() => {
+        stepper.nextStep().then(() => {
+            stepper.progressBar(true, 'Checking for existing Open WebUI installation...');
+            stepper.ipc.invoke('is_openwebui_installed').then((isInstalled) => {
+                if (isInstalled) {
                     stepper.setInstalled();
                     const currentDate = new Date();
                     stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
-                    stepper.showFinalStep('success', 'Installation Complete!', 'Your Open WebUI environment is ready. Enjoy!');
-                });
-            }
+                    stepper.showFinalStep('success', "You're All Set!", "Open WebUI is already installed. You're good to go!");
+                }
+                else {
+                    stepper.nextStep().then(() => {
+                        stepper.executeTerminalCommands('pip install open-webui').then(() => {
+                            stepper.setInstalled();
+                            const currentDate = new Date();
+                            stepper.storage.set(INSTALL_TIME_KEY, currentDate.toLocaleString());
+                            stepper.showFinalStep('success', 'Installation Complete!', 'Your Open WebUI environment is ready. Enjoy!');
+                        });
+                    });
+                }
+            });
         });
     });
 }
@@ -24376,4 +24406,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { SD_FORGE_ID as $, ALLTALK_ID as A, parseArgsToString$5 as B, COMFYUI_ID as C, parseStringToArgs$5 as D, SWARM_ID as E, parseArgsToString$4 as F, parseStringToArgs$4 as G, BOLT_DIY_ID as H, INVOKEAI_INSTALL_DIR_KEY as I, getCdCommand as J, KOHYA_ID as K, removeAnsi as L, parseArgsToString$3 as M, parseStringToArgs$3 as N, ONETRAINER_ID as O, LoLLMS_ID as P, OPEN_WEBUI_ID as Q, parseArgsToString$2 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$2 as U, SILLYTAVERN_ID as V, parseArgsToString$1 as W, parseStringToArgs$1 as X, TG_ID as Y, parseArgsToString as Z, parseStringToArgs as _, getVenvPythonPath as a, SD_FORGE_AMD_ID as a0, SD_UIUX_ID as a1, FLOWISEAI_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, lodashExports as a7, automatic1111Arguments as a8, fetchExtensionList$2 as a9, catchAddress$2 as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, AG_ID as b, commonjsGlobal as c, parseStringToArgs$c as d, parseArgsToString$b as e, parseStringToArgs$b as f, getDefaultExportFromCjs as g, COMFYUI_ZLUDA_ID as h, isWin as i, parseArgsToString$a as j, parseStringToArgs$a as k, INVOKE_ID as l, extractGitUrl as m, INVOKEAI_UPDATE_AVAILABLE_KEY as n, Invoke_Command_ActivateVenv as o, parseArgsToString$c as p, parseArgsToString$9 as q, parseStringToArgs$9 as r, parseArgsToString$8 as s, parseStringToArgs$8 as t, A1_ID as u, parseArgsToString$7 as v, parseStringToArgs$7 as w, parseArgsToString$6 as x, parseStringToArgs$6 as y, SD_NEXT_ID as z };
+export { SD_FORGE_ID as $, ALLTALK_ID as A, SD_NEXT_ID as B, COMFYUI_ID as C, parseArgsToString$5 as D, parseStringToArgs$5 as E, SWARM_ID as F, parseArgsToString$4 as G, parseStringToArgs$4 as H, INVOKEAI_INSTALL_DIR_KEY as I, BOLT_DIY_ID as J, KOHYA_ID as K, getCdCommand as L, removeAnsi as M, parseArgsToString$3 as N, OPEN_WEBUI_ID as O, parseStringToArgs$3 as P, LoLLMS_ID as Q, parseArgsToString$2 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$2 as U, SILLYTAVERN_ID as V, parseArgsToString$1 as W, parseStringToArgs$1 as X, TG_ID as Y, parseArgsToString as Z, parseStringToArgs as _, getVenvPythonPath as a, SD_FORGE_AMD_ID as a0, SD_UIUX_ID as a1, FLOWISEAI_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, fetchExtensionList$2 as a7, catchAddress$2 as a8, lodashExports as a9, automatic1111Arguments as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, AG_ID as b, commonjsGlobal as c, parseStringToArgs$c as d, parseArgsToString$b as e, parseStringToArgs$b as f, getDefaultExportFromCjs as g, COMFYUI_ZLUDA_ID as h, isWin as i, parseArgsToString$a as j, parseStringToArgs$a as k, INVOKE_ID as l, extractGitUrl as m, INVOKEAI_UPDATE_AVAILABLE_KEY as n, Invoke_Command_ActivateVenv as o, parseArgsToString$c as p, parseArgsToString$9 as q, parseStringToArgs$9 as r, parseArgsToString$8 as s, parseStringToArgs$8 as t, ONETRAINER_ID as u, A1_ID as v, parseArgsToString$7 as w, parseStringToArgs$7 as x, parseArgsToString$6 as y, parseStringToArgs$6 as z };

@@ -6,10 +6,25 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 23,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "11.2.2",
-  "updateDate": "2025-06-30",
-  "changeLog": "V11.2.1\n\n・Fix open-webui installation detection in various environments (e.g., conda).",
+  "version": "11.3.0",
+  "updateDate": "2025-07-22",
   "changes": [
+    {
+      "title": "V11.3.0",
+      "items": [
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Support LynxHub V3.1.0"
+            },
+            {
+              "label": "Invoke AI & ComfyUI: Added default values and required to inputs fields"
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V11.2.2",
       "items": [

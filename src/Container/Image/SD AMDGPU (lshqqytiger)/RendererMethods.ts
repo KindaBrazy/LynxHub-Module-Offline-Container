@@ -9,7 +9,7 @@ import {
   ChosenArgument,
   DataSection,
   InstallationStepper,
-} from '../../../types';
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {isWin} from '../../../Utils/CrossUtils';
 import {
   CardInfo,

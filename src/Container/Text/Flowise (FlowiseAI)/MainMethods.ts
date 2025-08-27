@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import treeKill from 'tree-kill';
 
-import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../types';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   checkWhich,

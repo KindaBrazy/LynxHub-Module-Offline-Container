@@ -1,4 +1,9 @@
-import {CardInfoApi, CardInfoCallback, CardRendererMethods, InstallationStepper} from '../../../types';
+import {
+  CardInfoApi,
+  CardInfoCallback,
+  CardRendererMethods,
+  InstallationStepper,
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress} from '../../../Utils/RendererUtils';
 

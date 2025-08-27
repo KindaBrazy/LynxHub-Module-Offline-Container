@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import axios, {AxiosResponse} from 'axios';
 
-import {GitHubRelease, StorageType} from '../../../../types';
+import {GitHubRelease, StorageType} from '../../../../../../src/cross/plugin/ModuleTypes';
 import {getVenvPythonPath} from '../../../../Utils/CrossUtils';
 import {getPipPackageVersionCustom, isVenvDirectory} from '../../../../Utils/MainUtils';
 import {INVOKEAI_INSTALL_DIR_KEY} from './Utils_Constants';

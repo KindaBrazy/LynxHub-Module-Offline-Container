@@ -8,8 +8,8 @@ import {existsSync} from 'graceful-fs';
 import treeKill from 'tree-kill';
 import which from 'which';
 
+import {ChosenArgument, MainModuleUtils} from '../../../src/cross/plugin/ModuleTypes';
 import {OPEN_WEBUI_ID} from '../Constants';
-import {ChosenArgument, MainModuleUtils} from '../types';
 import {getVenvPythonPath, isWin} from './CrossUtils';
 
 export const LINE_ENDING = isWin ? '\r' : '\n';

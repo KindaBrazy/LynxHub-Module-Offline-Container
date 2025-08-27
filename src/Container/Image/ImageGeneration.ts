@@ -1,3 +1,4 @@
+import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
 import {
   A1_ID,
   COMFYUI_ID,
@@ -12,7 +13,6 @@ import {
   SD_UIUX_ID,
   SWARM_ID,
 } from '../../Constants';
-import {PagesData} from '../../types';
 import comfyArguments from './ComfyUI (comfyanonymous)/Arguments';
 import COMFYUI_RM from './ComfyUI (comfyanonymous)/RendererMethods';
 import comfyZludaArguments from './ComfyUI Zluda (patientx)/Arguments';

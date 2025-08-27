@@ -1,5 +1,5 @@
+import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {BOLT_DIY_ID} from '../../../Constants';
-import {CardMainMethodsInitial, MainModuleUtils} from '../../../types';
 import {checkWhich, LINE_ENDING} from '../../../Utils/MainUtils';
 
 async function getRunCommands(): Promise<string | string[]> {

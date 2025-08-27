@@ -1,5 +1,5 @@
+import {CardMainMethodsInitial} from '../../../../../src/cross/plugin/ModuleTypes';
 import {TTS_ID} from '../../../Constants';
-import {CardMainMethodsInitial} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilRunCommands} from '../../../Utils/MainUtils';
 

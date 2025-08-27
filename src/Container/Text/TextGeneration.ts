@@ -1,5 +1,5 @@
+import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
 import {BOLT_DIY_ID, FLOWISEAI_ID, LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
-import {PagesData} from '../../types';
 import BOLT_DIY_RM from './BoltDiy (StackblitzLabs)/RendererMethods';
 import flowiseArguments from './Flowise (FlowiseAI)/Arguments';
 import Flow_RM from './Flowise (FlowiseAI)/RendererMethods';

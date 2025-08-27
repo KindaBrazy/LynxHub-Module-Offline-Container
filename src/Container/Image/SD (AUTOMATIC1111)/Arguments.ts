@@ -1,4 +1,4 @@
-import {ArgumentsData, DataItem, DataSection} from '../../../types';
+import {ArgumentsData, DataItem, DataSection} from '../../../../../src/cross/plugin/ModuleTypes';
 import {isWin} from '../../../Utils/CrossUtils';
 
 const automatic1111Arguments: ArgumentsData = [

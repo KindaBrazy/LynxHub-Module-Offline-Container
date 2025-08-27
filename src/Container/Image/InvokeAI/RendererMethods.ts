@@ -1,6 +1,12 @@
 import lodash from 'lodash';
 
-import {CardInfoApi, CardInfoCallback, CardRendererMethods, ChosenArgument, InstallationStepper} from '../../../types';
+import {
+  CardInfoApi,
+  CardInfoCallback,
+  CardRendererMethods,
+  ChosenArgument,
+  InstallationStepper,
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {DescriptionManager, getVenvPythonPath, isWin} from '../../../Utils/CrossUtils';
 import {catchAddress} from '../../../Utils/RendererUtils';
 import {

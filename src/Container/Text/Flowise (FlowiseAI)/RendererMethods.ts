@@ -7,7 +7,7 @@ import {
   CardRendererMethods,
   ChosenArgument,
   InstallationStepper,
-} from '../../../types';
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
 import flowiseArguments from './Arguments';

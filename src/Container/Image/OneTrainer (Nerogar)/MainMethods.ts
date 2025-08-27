@@ -1,5 +1,5 @@
+import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {ONETRAINER_ID} from '../../../Constants';
-import {CardMainMethodsInitial, MainModuleUtils} from '../../../types';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilRunCommands} from '../../../Utils/MainUtils';
 

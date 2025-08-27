@@ -8,7 +8,7 @@ import {
   ChosenArgument,
   ExtensionData,
   InstallationStepper,
-} from '../../../types';
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, GitInstaller, isValidArg} from '../../../Utils/RendererUtils';
 import mcMonkeyArguments from './Arguments';

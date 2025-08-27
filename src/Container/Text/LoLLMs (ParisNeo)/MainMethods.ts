@@ -1,5 +1,5 @@
+import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {LoLLMS_ID} from '../../../Constants';
-import {CardMainMethodsInitial, MainModuleUtils} from '../../../types';
 import {LINE_ENDING} from '../../../Utils/MainUtils';
 
 async function getRunCommands(): Promise<string | string[]> {

@@ -1,3 +1,4 @@
+import {MainModules, MainModuleUtils} from '../../src/cross/plugin/ModuleTypes';
 import {
   A1_ID,
   AG_ID,
@@ -39,7 +40,6 @@ import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
-import {MainModules, MainModuleUtils} from './types';
 
 export default async function initialModule(utils: MainModuleUtils): Promise<MainModules[]> {
   return [

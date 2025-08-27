@@ -1,6 +1,12 @@
 import {isEmpty} from 'lodash';
 
-import {ArgType, Category, ChosenArgument, DataSection, ExtensionData} from '../../../types';
+import {
+  ArgType,
+  Category,
+  ChosenArgument,
+  DataSection,
+  ExtensionData,
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import automatic1111Arguments from './Arguments';

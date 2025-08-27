@@ -1,4 +1,4 @@
-import {ExtensionData} from '../../../types';
+import {ExtensionData} from '../../../../../src/cross/plugin/ModuleTypes';
 
 export async function fetchExtensionList(): Promise<ExtensionData[]> {
   return [

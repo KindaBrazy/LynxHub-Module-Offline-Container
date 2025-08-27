@@ -2,8 +2,8 @@ import path from 'node:path';
 
 import {compare} from 'semver';
 
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {INVOKE_ID} from '../../../Constants';
-import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../types';
 import {extractGitUrl} from '../../../Utils/CrossUtils';
 import {
   checkWhich,

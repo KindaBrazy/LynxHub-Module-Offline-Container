@@ -1,5 +1,5 @@
+import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
 import {AG_ID, ALLTALK_ID, TTS_ID} from '../../Constants';
-import {PagesData} from '../../types';
 import ALLTALK_RM from './AllTalk TTS (erew123)/RendererMethods';
 import gitmyloArguments from './Audio Generation (gitmylo)/Arguments';
 import AG_RM from './Audio Generation (gitmylo)/RendererMethods';

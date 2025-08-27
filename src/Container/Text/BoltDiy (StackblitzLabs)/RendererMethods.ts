@@ -1,4 +1,9 @@
-import {CardInfoApi, CardInfoCallback, CardRendererMethods, InstallationStepper} from '../../../types';
+import {
+  CardInfoApi,
+  CardInfoCallback,
+  CardRendererMethods,
+  InstallationStepper,
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {CardInfo} from '../../../Utils/RendererUtils';
 
 const REPO_URL = 'https://github.com/stackblitz-labs/bolt.diy';

@@ -1,4 +1,9 @@
-import {CardInfoApi, CardInfoCallback, CardRendererMethods, InstallationStepper} from '../../../types';
+import {
+  CardInfoApi,
+  CardInfoCallback,
+  CardRendererMethods,
+  InstallationStepper,
+} from '../../../../../src/cross/plugin/ModuleTypes';
 import {CardInfo, catchAddress, GitInstaller} from '../../../Utils/RendererUtils';
 import {fetchExtensionList, parseArgsToString, parseStringToArgs} from './SharedRenderer';
 

@@ -4404,7 +4404,7 @@ function requireLodash () {
 		        return symbolToString ? symbolToString.call(value) : '';
 		      }
 		      var result = (value + '');
-		      return (result == '0' && (1 / value) == -Infinity) ? '-0' : result;
+		      return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
 		    }
 
 		    /**
@@ -6927,7 +6927,7 @@ function requireLodash () {
 		        return value;
 		      }
 		      var result = (value + '');
-		      return (result == '0' && (1 / value) == -Infinity) ? '-0' : result;
+		      return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
 		    }
 
 		    /**
@@ -12269,7 +12269,7 @@ function requireLodash () {
 		     * // => false
 		     */
 		    function isSafeInteger(value) {
-		      return isInteger(value) && value >= -9007199254740991 && value <= MAX_SAFE_INTEGER;
+		      return isInteger(value) && value >= -MAX_SAFE_INTEGER && value <= MAX_SAFE_INTEGER;
 		    }
 
 		    /**
@@ -12536,7 +12536,7 @@ function requireLodash () {
 		        return value === 0 ? value : 0;
 		      }
 		      value = toNumber(value);
-		      if (value === INFINITY || value === -Infinity) {
+		      if (value === INFINITY || value === -INFINITY) {
 		        var sign = (value < 0 ? -1 : 1);
 		        return sign * MAX_INTEGER;
 		      }
@@ -12705,7 +12705,7 @@ function requireLodash () {
 		     */
 		    function toSafeInteger(value) {
 		      return value
-		        ? baseClamp(toInteger(value), -9007199254740991, MAX_SAFE_INTEGER)
+		        ? baseClamp(toInteger(value), -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER)
 		        : (value === 0 ? value : 0);
 		    }
 

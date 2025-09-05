@@ -89,10 +89,10 @@ export const invokeGetInputResults = (items: UserInputResult[]) => {
     } else if (item.id === 'pypi') {
       switch (item.result) {
         case Invoke_PyPI.rocm:
-          pyPIResult = 'https://download.pytorch.org/whl/rocm6.2.4';
+          pyPIResult = 'https://download.pytorch.org/whl/rocm6.3';
           break;
         case Invoke_PyPI.cu126:
-          pyPIResult = 'https://download.pytorch.org/whl/cu126';
+          pyPIResult = 'https://download.pytorch.org/whl/cu128';
           break;
         case Invoke_PyPI.cpu:
           pyPIResult = 'https://download.pytorch.org/whl/cpu';

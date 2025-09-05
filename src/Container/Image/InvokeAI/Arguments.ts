@@ -245,11 +245,11 @@ const invokeArguments: ArgumentsData = [
           {
             name: 'device',
             description:
-              'Preferred execution device. auto will choose the device depending on the hardware platform' +
-              ' and the installed torch capabilities.',
+              'Preferred execution device. auto will choose the device depending on the hardware platform,' +
+              ' installed torch capabilities, and supports cuda:N device numbers.',
             type: 'DropDown',
             defaultValue: 'auto',
-            values: ['auto', 'cpu', 'cuda', 'cuda:1', 'mps'],
+            values: ['auto', 'cpu', 'cuda', 'mps', 'cuda:N'],
           },
           {
             name: 'precision',
@@ -369,6 +369,13 @@ const invokeArguments: ArgumentsData = [
             name: 'scan_models_on_startup',
             description:
               'Scan models directory on startup to register orphaned models. Typically only used with use_memory_db for testing.',
+            type: 'CheckBox',
+          },
+          {
+            name: 'unsafe_disable_picklescan',
+            description:
+              'UNSAFE. Disable the picklescan security check during model installation.' +
+              ' Recommended only for development and testing purposes.',
             type: 'CheckBox',
           },
         ],

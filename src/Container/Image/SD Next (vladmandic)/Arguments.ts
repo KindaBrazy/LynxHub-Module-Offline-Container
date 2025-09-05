@@ -22,37 +22,7 @@ const vladmandicArguments: ArgumentsData = [
     category: 'Command Line Arguments',
     sections: [
       {
-        section: 'General',
-        items: [
-          {
-            name: '-h',
-            description: 'Show this help message and exit',
-            type: 'CheckBox',
-          },
-          {
-            name: '--version',
-            description: 'Print version information',
-            type: 'CheckBox',
-          },
-          {
-            name: '--test',
-            description: 'Run test only and exit',
-            type: 'CheckBox',
-          },
-          {
-            name: '--debug',
-            description: 'Run installer with debug logging',
-            type: 'CheckBox',
-          },
-          {
-            name: '--profile',
-            description: 'Run profiler',
-            type: 'CheckBox',
-          },
-        ],
-      },
-      {
-        section: 'Server Configuration',
+        section: 'Configuration',
         items: [
           {
             name: '--config',
@@ -65,27 +35,6 @@ const vladmandicArguments: ArgumentsData = [
             type: 'File',
           },
           {
-            name: '--freeze',
-            description: 'Disable editing settings',
-            type: 'CheckBox',
-          },
-          {
-            name: '--backend',
-            description: 'Force model pipeline type',
-            type: 'DropDown',
-            values: ['original', 'diffusers'],
-          },
-          {
-            name: '--subpath',
-            description: 'Customize the URL subpath for usage with reverse proxy',
-            type: 'Input',
-          },
-        ],
-      },
-      {
-        section: 'Performance & VRAM',
-        items: [
-          {
             name: '--medvram',
             description: 'Split model stages and keep only active part in VRAM',
             type: 'CheckBox',
@@ -96,171 +45,20 @@ const vladmandicArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--use-xformers',
-            description: 'Force use xFormers cross-optimization',
-            type: 'CheckBox',
-          },
-          {
-            name: '--disable-queue',
-            description: 'Disable queues',
+            name: '--freeze',
+            description: 'Disable editing settings',
             type: 'CheckBox',
           },
         ],
       },
       {
-        section: 'Model Loading',
+        section: 'Compute Engine',
         items: [
           {
-            name: '--ckpt',
-            description: 'Path to model checkpoint to load immediately',
-            type: 'File',
-          },
-          {
-            name: '--vae',
-            description: 'Path to VAE checkpoint to load immediately',
-            type: 'File',
-          },
-          {
-            name: '--no-hashing',
-            description: 'Disable hashing of checkpoints',
-            type: 'CheckBox',
-          },
-          {
-            name: '--no-metadata',
-            description: 'Disable reading of metadata from models',
-            type: 'CheckBox',
-          },
-        ],
-      },
-      {
-        section: 'Paths & Directories',
-        items: [
-          {
-            name: '--data-dir',
-            description: 'Base path where all user data is stored',
-            type: 'Directory',
-          },
-          {
-            name: '--models-dir',
-            description: 'Base path where all models are stored',
-            type: 'Directory',
-          },
-          {
-            name: '--allowed-paths',
-            description: 'Add additional paths to paths allowed for web access',
+            name: '--device-id',
+            description: 'Select the default CUDA device to use',
             type: 'Input',
           },
-        ],
-      },
-      {
-        section: 'Security & Access',
-        items: [
-          {
-            name: '--allow-code',
-            description: 'Allow custom script execution',
-            type: 'CheckBox',
-          },
-          {
-            name: '--insecure',
-            description: 'Enable extensions tab regardless of other options',
-            type: 'CheckBox',
-          },
-          {
-            name: '--safe',
-            description: 'Run in safe mode with no user extensions',
-            type: 'CheckBox',
-          },
-          {
-            name: '--auth',
-            description: 'Set access authentication like "user:pwd,user:pwd"',
-            type: 'Input',
-          },
-          {
-            name: '--auth-file',
-            description: 'Set access authentication using file',
-            type: 'File',
-          },
-        ],
-      },
-      {
-        section: 'Network & API',
-        items: [
-          {
-            name: '--listen',
-            description: 'Launch web server using public IP address',
-            type: 'CheckBox',
-          },
-          {
-            name: '--port',
-            description: 'Launch web server with given server port',
-            type: 'Input',
-            defaultValue: 7860,
-          },
-          {
-            name: '--share',
-            description: 'Enable UI accessible through Gradio site',
-            type: 'CheckBox',
-          },
-          {
-            name: '--autolaunch',
-            description: "Open the UI URL in the system's default browser upon launch",
-            type: 'CheckBox',
-          },
-          {
-            name: '--api-only',
-            description: 'Run in API only mode without starting UI',
-            type: 'CheckBox',
-          },
-          {
-            name: '--docs',
-            description: 'Mount API docs',
-            type: 'CheckBox',
-          },
-          {
-            name: '--api-log',
-            description: 'Enable logging of all API requests',
-            type: 'CheckBox',
-          },
-          {
-            name: '--cors-origins',
-            description: 'Allowed CORS origins as comma-separated list',
-            type: 'Input',
-          },
-          {
-            name: '--cors-regex',
-            description: 'Allowed CORS origins as regular expression',
-            type: 'Input',
-          },
-          {
-            name: '--server-name',
-            description: 'Sets hostname of server',
-            type: 'Input',
-          },
-        ],
-      },
-      {
-        section: 'TLS & Certificates',
-        items: [
-          {
-            name: '--tls-keyfile',
-            description: 'Enable TLS and specify key file',
-            type: 'File',
-          },
-          {
-            name: '--tls-certfile',
-            description: 'Enable TLS and specify cert file',
-            type: 'File',
-          },
-          {
-            name: '--tls-selfsign',
-            description: 'Enable TLS with self-signed certificates',
-            type: 'CheckBox',
-          },
-        ],
-      },
-      {
-        section: 'Compute Backend',
-        items: [
           {
             name: '--use-directml',
             description: 'Use DirectML if no compatible GPU is detected',
@@ -291,121 +89,163 @@ const vladmandicArguments: ArgumentsData = [
             description: 'Force use AMD ROCm backend',
             type: 'CheckBox',
           },
+        ],
+      },
+      {
+        section: 'Paths',
+        items: [
           {
-            name: '--use-cpu',
-            description: 'Force use CPU for specified modules',
-            type: 'Input',
-            defaultValue: '[]',
+            name: '--ckpt',
+            description: 'Path to model checkpoint to load immediately',
+            type: 'File',
           },
           {
-            name: '--device-id',
-            description: 'Select the default CUDA device to use',
+            name: '--data-dir',
+            description: 'Base path where all user data is stored',
+            type: 'Directory',
+          },
+          {
+            name: '--models-dir',
+            description: 'Base path where all models are stored',
+            type: 'Directory',
+          },
+          {
+            name: '--extensions-dir',
+            description: 'Base path where all extensions are stored',
+            type: 'Directory',
+          },
+          {
+            name: '--allowed-paths',
+            description: 'Add additional paths to paths allowed for web access',
             type: 'Input',
           },
         ],
       },
       {
-        section: 'Installation & Updates',
+        section: 'Diagnostics',
         items: [
           {
-            name: '--reset',
-            description: 'Reset main repository to latest version',
+            name: '--no-hashing',
+            description: 'Disable hashing of checkpoints',
             type: 'CheckBox',
           },
           {
-            name: '--upgrade',
-            description: 'Upgrade main repository to latest version',
+            name: '--no-metadata',
+            description: 'Disable reading of metadata from models',
             type: 'CheckBox',
           },
           {
-            name: '--requirements',
-            description: 'Force re-check of requirements',
+            name: '--profile',
+            description: 'Run profiler',
             type: 'CheckBox',
           },
           {
-            name: '--reinstall',
-            description: 'Force reinstallation of all requirements',
-            type: 'CheckBox',
+            name: '--monitor',
+            description: 'Run memory monitor',
+            type: 'Input',
+            defaultValue: 0,
           },
           {
-            name: '--reinstall-zluda',
-            description: 'Force reinstallation of ZLUDA',
-            type: 'CheckBox',
-          },
-          {
-            name: '--uv',
-            description: 'Use uv instead of pip to install the packages',
-            type: 'CheckBox',
-          },
-        ],
-      },
-      {
-        section: 'Installation Options',
-        items: [
-          {
-            name: '--quick',
-            description: 'Bypass version checks',
-            type: 'CheckBox',
-          },
-          {
-            name: '--skip-requirements',
-            description: 'Skips checking and installing requirements',
-            type: 'CheckBox',
-          },
-          {
-            name: '--skip-extensions',
-            description: 'Skips running individual extension installers',
-            type: 'CheckBox',
-          },
-          {
-            name: '--skip-git',
-            description: 'Skips running all GIT operations',
-            type: 'CheckBox',
-          },
-          {
-            name: '--skip-torch',
-            description: 'Skips running Torch checks',
-            type: 'CheckBox',
-          },
-          {
-            name: '--skip-all',
-            description: 'Skips running all checks',
-            type: 'CheckBox',
-          },
-          {
-            name: '--skip-env',
-            description: 'Skips setting of env variables during startup',
-            type: 'CheckBox',
+            name: '--status',
+            description: 'Run server is-alive status',
+            type: 'Input',
+            defaultValue: 120,
           },
           {
             name: '--experimental',
             description: 'Allow unsupported versions of libraries',
             type: 'CheckBox',
           },
-          {
-            name: '--ignore',
-            description: 'Ignore any errors and attempt to continue',
-            type: 'CheckBox',
-          },
         ],
       },
       {
-        section: 'UI Customization',
+        section: 'HTTP Server',
         items: [
+          {
+            name: '--listen',
+            description: 'Launch web server using public IP address',
+            type: 'CheckBox',
+          },
+          {
+            name: '--port',
+            description: 'Launch web server with given server port',
+            type: 'Input',
+            defaultValue: 7860,
+          },
+          {
+            name: '--share',
+            description: 'Enable UI accessible through Gradio site',
+            type: 'CheckBox',
+          },
+          {
+            name: '--autolaunch',
+            description: "Open the UI URL in the system's default browser upon launch",
+            type: 'CheckBox',
+          },
+          {
+            name: '--subpath',
+            description: 'Customize the URL subpath for usage with reverse proxy',
+            type: 'Input',
+          },
           {
             name: '--theme',
             description: 'Override UI theme',
             type: 'Input',
           },
-        ],
-      },
-      {
-        section: 'Logging',
-        items: [
           {
-            name: '--log',
-            description: 'Set log file',
+            name: '--locale',
+            description: 'Override UI locale',
+            type: 'Input',
+          },
+          {
+            name: '--server-name',
+            description: 'Sets hostname of server',
+            type: 'Input',
+          },
+          {
+            name: '--insecure',
+            description: 'Enable extensions tab regardless of other options',
+            type: 'CheckBox',
+          },
+          {
+            name: '--auth',
+            description: 'Set access authentication like "user:pwd,user:pwd"',
+            type: 'Input',
+          },
+          {
+            name: '--auth-file',
+            description: 'Set access authentication using file',
             type: 'File',
+          },
+          {
+            name: '--docs',
+            description: 'Mount API docs',
+            type: 'CheckBox',
+          },
+          {
+            name: '--cors-origins',
+            description: 'Allowed CORS origins as comma-separated list',
+            type: 'Input',
+          },
+          {
+            name: '--cors-regex',
+            description: 'Allowed CORS origins as regular expression',
+            type: 'Input',
+          },
+          {
+            name: '--tls-keyfile',
+            description: 'Enable TLS and specify key file',
+            type: 'File',
+          },
+          {
+            name: '--tls-certfile',
+            description: 'Enable TLS and specify cert file',
+            type: 'File',
+          },
+          {
+            name: '--tls-selfsign',
+            description: 'Enable TLS with self-signed certificates',
+            type: 'CheckBox',
           },
         ],
       },

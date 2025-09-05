@@ -250,7 +250,7 @@ const flowiseArguments: ArgumentsData = [
             name: '--STORAGE_TYPE',
             description: 'Type of storage for uploaded files. default is `local`',
             type: 'DropDown',
-            values: ['s3', 'local'],
+            values: ['s3', 'local', 'gcs'],
             defaultValue: 'local',
           },
         ],
@@ -298,6 +298,32 @@ const flowiseArguments: ArgumentsData = [
             name: '--S3_FORCE_PATH_STYLE',
             description: 'Set this to true to force the request to use path-style addressing',
             type: 'CheckBox',
+          },
+        ],
+      },
+      {
+        section: 'GCS Storage',
+        items: [
+          {
+            name: '--GOOGLE_CLOUD_STORAGE_PROJ_ID',
+            description: 'The GCP project id for cloud storage & logging when `STORAGE_TYPE` is `gcs`',
+            type: 'Input',
+          },
+          {
+            name: '--GOOGLE_CLOUD_STORAGE_CREDENTIAL',
+            description: 'The credential key file path when `STORAGE_TYPE` is `gcs`',
+            type: 'Input',
+          },
+          {
+            name: '--GOOGLE_CLOUD_STORAGE_BUCKET_NAME',
+            description: 'Bucket name to hold the uploaded files when `STORAGE_TYPE` is `gcs`',
+            type: 'Input',
+          },
+          {
+            name: '--GOOGLE_CLOUD_UNIFORM_BUCKET_ACCESS',
+            description: 'Enable uniform bucket level access when `STORAGE_TYPE` is `gcs`',
+            type: 'CheckBox',
+            defaultValue: true,
           },
         ],
       },

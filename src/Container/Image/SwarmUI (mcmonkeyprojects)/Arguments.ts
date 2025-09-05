@@ -57,7 +57,7 @@ const mcMonkeyArguments: ArgumentsData = [
       {
         name: '--loglevel',
         description:
-          'Minimum StableSwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
+          'Minimum SwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
           " `None`. 'Info' here is the normal usage data.",
         type: 'DropDown',
         defaultValue: 'Info',
@@ -94,6 +94,13 @@ const mcMonkeyArguments: ArgumentsData = [
       {
         name: '--proxy-region',
         description: 'If specified, sets the proxy (ngrok/cloudflared) region. If unspecified, defaults to closest.',
+        type: 'Input',
+      },
+      {
+        name: '--proxy-added-args',
+        description:
+          'If specified, adds additional args to the proxy launch. Use a `.` as the first symbol (parser hackaround).' +
+          ' For example, `--proxy-added-args ".--my-arg --arg -argy arg"`',
         type: 'Input',
       },
       {

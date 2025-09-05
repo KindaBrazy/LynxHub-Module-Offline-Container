@@ -92,28 +92,29 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  const selectOptions = ['NVIDIA CU126', 'NVIDIA CU124'];
-  if (window.osPlatform === 'linux') {
-    selectOptions.push('AMD GPUs (Linux only) ROCm 6.2.4');
-    selectOptions.push('AMD GPUs (Linux only) ROCm 6.2');
-    selectOptions.push('Intel GPUs (Windows and Linux)');
-  }
-  if (window.osPlatform === 'win32') {
-    selectOptions.push('Intel GPUs (Windows and Linux)');
-  }
+  const selectOptions = [
+    'NVIDIA CU129',
+    'NVIDIA CU129 Nightly',
+    'AMD GPUs (Linux only) ROCm 6.4',
+    'AMD GPUs (Linux only) ROCm 6.4 Nightly',
+    'Intel GPUs (Windows and Linux)',
+    'Intel GPUs Nightly (Windows and Linux)',
+  ];
 
   const getPyTorchInstallCommand = (selectedOption: string) => {
     switch (selectedOption) {
       case 'AMD GPUs (Linux only) ROCm 6.2':
-        return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2';
-      case 'AMD GPUs (Linux only) ROCm 6.2.4':
-        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.2.4';
+        return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
+      case 'AMD GPUs (Linux only) ROCm 6.4 Nightly':
+        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.4';
       case 'Intel GPUs (Windows and Linux)':
+        return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu';
+      case 'Intel GPUs Nightly (Windows and Linux)':
         return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/xpu';
-      case 'NVIDIA CU124':
-        return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
-      case 'NVIDIA CU126':
-        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu126';
+      case 'NVIDIA CU129':
+        return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129';
+      case 'NVIDIA CU129 Nightly':
+        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu129';
       default:
         return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
     }

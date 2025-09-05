@@ -48,11 +48,28 @@ const comfyArguments: ArgumentsData = [
             type: 'Input',
             defaultValue: 100,
           },
+          {
+            name: '--enable-compress-response-body',
+            description: 'Enable compressing response body.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--comfy-api-base',
+            description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
+            type: 'Input',
+            defaultValue: 'https://api.comfy.org',
+          },
         ],
       },
       {
         section: 'Paths',
         items: [
+          {
+            name: '--base-directory',
+            description:
+              'Set the ComfyUI base directory for models, custom_nodes, input, output, temp, and user directories.',
+            type: 'Directory',
+          },
           {
             name: '--extra-model-paths-config',
             description: 'Load one or more extra_model_paths.yaml files.',
@@ -60,22 +77,23 @@ const comfyArguments: ArgumentsData = [
           },
           {
             name: '--output-directory',
-            description: 'Set the ComfyUI output directory.',
+            description: 'Set the ComfyUI output directory. Overrides --base-directory.',
             type: 'Directory',
           },
           {
             name: '--temp-directory',
-            description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory).',
+            description:
+              'Set the ComfyUI temp directory (default is in the ComfyUI directory). Overrides --base-directory.',
             type: 'Directory',
           },
           {
             name: '--input-directory',
-            description: 'Set the ComfyUI input directory.',
+            description: 'Set the ComfyUI input directory. Overrides --base-directory.',
             type: 'Directory',
           },
           {
             name: '--user-directory',
-            description: 'Set the ComfyUI user directory with an absolute path.',
+            description: 'Set the ComfyUI user directory with an absolute path. Overrides --base-directory.',
             type: 'Directory',
           },
         ],
@@ -95,7 +113,12 @@ const comfyArguments: ArgumentsData = [
           },
           {
             name: '--cuda-device',
-            description: 'Set the id of the cuda device this instance will use.',
+            description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
+            type: 'Input',
+          },
+          {
+            name: '--default-device',
+            description: 'Set the id of the default device, all other devices will stay visible.',
             type: 'Input',
           },
           {
@@ -154,6 +177,11 @@ const comfyArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
+            name: '--fp8_e8m0fnu-unet',
+            description: 'Store unet weights in fp8_e8m0fnu.',
+            type: 'CheckBox',
+          },
+          {
             name: '--fp16-vae',
             description: 'Run the VAE in fp16, might cause black images.',
             type: 'CheckBox',
@@ -193,6 +221,11 @@ const comfyArguments: ArgumentsData = [
             description: 'Store text encoder weights in fp32.',
             type: 'CheckBox',
           },
+          {
+            name: '--bf16-text-enc',
+            description: 'Store text encoder weights in bf16.',
+            type: 'CheckBox',
+          },
         ],
       },
       {
@@ -216,6 +249,11 @@ const comfyArguments: ArgumentsData = [
           {
             name: '--disable-ipex-optimize',
             description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
+            type: 'CheckBox',
+          },
+          {
+            name: '--supports-fp8-compute',
+            description: 'ComfyUI will act like if the device supports fp8 compute.',
             type: 'CheckBox',
           },
           {
@@ -243,6 +281,11 @@ const comfyArguments: ArgumentsData = [
             defaultValue: 0,
           },
           {
+            name: '--cache-none',
+            description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
+            type: 'CheckBox',
+          },
+          {
             name: '--use-split-cross-attention',
             description: 'Use the split cross attention optimization. Ignored when xformers is used.',
             type: 'CheckBox',
@@ -263,6 +306,11 @@ const comfyArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
+            name: '--use-flash-attention',
+            description: 'Use FlashAttention.',
+            type: 'CheckBox',
+          },
+          {
             name: '--disable-xformers',
             description: 'Disable xformers.',
             type: 'CheckBox',
@@ -275,6 +323,13 @@ const comfyArguments: ArgumentsData = [
           {
             name: '--dont-upcast-attention',
             description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--force-non-blocking',
+            description:
+              'Force ComfyUI to use non-blocking operations for all applicable tensors.' +
+              ' This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
             type: 'CheckBox',
           },
         ],
@@ -315,6 +370,11 @@ const comfyArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
+            name: '--async-offload',
+            description: 'Use async weight offloading.',
+            type: 'CheckBox',
+          },
+          {
             name: '--disable-smart-memory',
             description:
               'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
@@ -349,6 +409,16 @@ const comfyArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
+            name: '--mmap-torch-files',
+            description: 'Use mmap when loading ckpt/pt files.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--disable-mmap',
+            description: "Don't use mmap when loading safetensors.",
+            type: 'CheckBox',
+          },
+          {
             name: '--dont-print-server',
             description: "Don't print server output.",
             type: 'CheckBox',
@@ -376,6 +446,16 @@ const comfyArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
+            name: '--whitelist-custom-nodes',
+            description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
+            type: 'Input',
+          },
+          {
+            name: '--disable-api-nodes',
+            description: 'Disable loading all api nodes.',
+            type: 'CheckBox',
+          },
+          {
             name: '--multi-user',
             description: 'Enables per-user storage.',
             type: 'CheckBox',
@@ -396,9 +476,10 @@ const comfyArguments: ArgumentsData = [
             name: '--front-end-version',
             description:
               'Specifies the version of the frontend to be used. This command needs internet connectivity' +
-              ' to query and download available frontend implementations from GitHub releases.',
+              ' to query and download available frontend implementations from GitHub releases. The version' +
+              ' string should be in the format of: [repoOwner]/[repoName]@[version]',
             type: 'Input',
-            defaultValue: 'DEFAULT_VERSION_STRING',
+            defaultValue: 'comfyanonymous/ComfyUI@latest',
           },
           {
             name: '--front-end-root',
@@ -409,8 +490,15 @@ const comfyArguments: ArgumentsData = [
           },
           {
             name: '--fast',
-            description: 'Enable some untested and potentially quality deteriorating optimizations.',
+            description:
+              'Enable some untested and potentially quality deteriorating optimizations.' +
+              ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
             type: 'CheckBox',
+          },
+          {
+            name: '--database-url',
+            description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
+            type: 'Input',
           },
         ],
       },

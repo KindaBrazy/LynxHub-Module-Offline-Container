@@ -6,7 +6,7 @@ import {
 } from '../../../../../src/cross/plugin/ModuleTypes';
 import {CardInfo, GitInstaller} from '../../../Utils/RendererUtils';
 
-const URL = 'https://github.com/rsxdalv/tts-generation-webui';
+const URL = 'https://github.com/rsxdalv/TTS-WebUI';
 
 function catchAddress(input: string): string | undefined {
   if (input.toLowerCase().includes('Installed Packages'.toLowerCase())) {

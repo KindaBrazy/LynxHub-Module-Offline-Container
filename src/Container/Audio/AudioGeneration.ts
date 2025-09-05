@@ -14,7 +14,7 @@ const audioPage: PagesData = {
       description:
         'TTS Generation Web UI (Bark, MusicGen + AudioGen, Tortoise, RVC, Vocos,' +
         ' Demucs, SeamlessM4T, MAGNet, StyleTTS2, MMS)',
-      repoUrl: 'https://github.com/rsxdalv/tts-generation-webui',
+      repoUrl: 'https://github.com/rsxdalv/TTS-WebUI',
       type: 'audio',
       extensionsDir: '/extensions',
       bgUrl:

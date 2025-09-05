@@ -14,7 +14,7 @@ import {fetchExtensionList} from '../SD (AUTOMATIC1111)/SharedRenderer';
 import vladmandicArguments from './Arguments';
 
 const shellCommand = isWin ? 'call webui.bat' : 'bash ./webui.sh';
-const URL = 'https://github.com/vladmandic/automatic';
+const URL = 'https://github.com/vladmandic/sdnext';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';

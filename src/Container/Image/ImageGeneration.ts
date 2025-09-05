@@ -89,7 +89,7 @@ const imagePage: PagesData = {
       id: SD_NEXT_ID,
       title: 'SD Next',
       description: 'Advanced Implementation of Stable Diffusion and other Diffusion-based generative image models',
-      repoUrl: 'https://github.com/vladmandic/automatic',
+      repoUrl: 'https://github.com/vladmandic/sdnext',
       extensionsDir: '/extensions',
       type: 'image',
       bgUrl:

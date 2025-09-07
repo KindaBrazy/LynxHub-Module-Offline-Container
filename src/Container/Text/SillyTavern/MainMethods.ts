@@ -1,10 +1,15 @@
+import path from 'node:path';
+
+import fs from 'graceful-fs';
+
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/plugin/ModuleTypes';
 import {SILLYTAVERN_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
-import {parseArgsToString, parseStringToArgs} from './RendererMethods';
+import {initBatchFile, utilRunCommands} from '../../../Utils/MainUtils';
+import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const CONFIG_FILE_NAME = 'config.yml';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\ncall start.bat' : '#!/bin/bash\n\nbash ./start.sh';
 
 async function getRunCommands(dir?: string): Promise<string | string[]> {
@@ -12,11 +17,28 @@ async function getRunCommands(dir?: string): Promise<string | string[]> {
 }
 
 async function saveArgs(args: ChosenArgument[], dir?: string) {
-  return await utilSaveArgs(args, BAT_FILE_NAME, parseArgsToString, dir);
+  if (!dir) return;
+
+  const {commands, configs} = parseArgsToFiles(args);
+
+  const batPath = path.join(dir, BAT_FILE_NAME);
+  const configPath = path.join(dir, CONFIG_FILE_NAME);
+
+  await fs.promises.writeFile(batPath, commands);
+  await fs.promises.writeFile(configPath, configs);
 }
 
 async function readArgs(dir?: string) {
-  return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, dir);
+  if (!dir) return [];
+  const batPath = path.join(dir, BAT_FILE_NAME);
+  const configPath = path.join(dir, CONFIG_FILE_NAME);
+
+  await initBatchFile(batPath, DEFAULT_BATCH_DATA);
+
+  const batData = await fs.promises.readFile(batPath, 'utf-8');
+  const configData = await fs.promises.readFile(configPath, 'utf-8');
+
+  return parseFilesToArgs(batData, configData);
 }
 
 const Silly_MM: CardMainMethodsInitial = utils => {

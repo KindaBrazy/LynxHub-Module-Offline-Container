@@ -171,6 +171,13 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'Set attn_implementation= eager while loading the model.',
             type: 'CheckBox',
           },
+          {
+            name: '--attn-implementation',
+            description: 'Attention implementation. Valid options: sdpa, eager, flash_attention_2.',
+            type: 'DropDown',
+            values: ['sdpa', 'eager', 'flash_attention_2'],
+            defaultValue: 'sdpa',
+          },
         ],
       },
       {
@@ -571,6 +578,11 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'Use the legacy Gradio colors, before the December/2024 update.',
             type: 'CheckBox',
           },
+          {
+            name: '--portable',
+            description: 'Hide features not available in portable mode like training.',
+            type: 'CheckBox',
+          },
         ],
       },
       {
@@ -614,6 +626,16 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'Do not launch the Gradio UI. Useful for launching the API in standalone mode.',
             type: 'CheckBox',
           },
+          {
+            name: '--api-enable-ipv6',
+            description: 'Enable IPv6 for the API',
+            type: 'CheckBox',
+          },
+          {
+            name: '--api-disable-ipv4',
+            description: 'Disable IPv4 for the API',
+            type: 'CheckBox',
+          },
         ],
       },
       {
@@ -623,6 +645,75 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--multimodal-pipeline',
             description: 'The multimodal pipeline to use. Examples: llava-7b, llava-13b.',
             type: 'Input',
+          },
+        ],
+      },
+      {
+        section: 'Context and cache',
+        items: [
+          {
+            name: '--ctx-size',
+            description: 'Context size in tokens.',
+            type: 'Input',
+            defaultValue: '8192',
+          },
+          {
+            name: '--cache-type',
+            description:
+              'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4;' +
+              ' ExLlamaV3 - fp16, q2 to q8 (can specify k_bits and v_bits separately, e.g. q4_q8).',
+            type: 'Input',
+            defaultValue: 'fp16',
+          },
+        ],
+      },
+      {
+        section: 'Speculative decoding',
+        items: [
+          {
+            name: '--model-draft',
+            description: 'Path to the draft model for speculative decoding.',
+            type: 'File',
+          },
+          {
+            name: '--draft-max',
+            description: 'Number of tokens to draft for speculative decoding.',
+            type: 'Input',
+            defaultValue: '4',
+          },
+          {
+            name: '--gpu-layers-draft',
+            description: 'Number of layers to offload to the GPU for the draft model.',
+            type: 'Input',
+            defaultValue: '256',
+          },
+          {
+            name: '--device-draft',
+            description: 'Comma-separated list of devices to use for offloading the draft model. Example: CUDA0,CUDA1',
+            type: 'Input',
+          },
+          {
+            name: '--ctx-size-draft',
+            description: 'Size of the prompt context for the draft model. If 0, uses the same as the main model.',
+            type: 'Input',
+            defaultValue: '0',
+          },
+        ],
+      },
+      {
+        section: 'ExLlamaV3',
+        items: [
+          {
+            name: '--enable-tp',
+            description: 'Enable Tensor Parallelism (TP) to split the model across GPUs.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--tp-backend',
+            description: 'The backend for tensor parallelism. Valid options: native, nccl. Default: native.',
+            type: 'DropDown',
+            values: ['native', 'nccl'],
+            defaultValue: 'native',
           },
         ],
       },

@@ -10,6 +10,7 @@ import {
   INVOKE_ID,
   KOHYA_ID,
   LoLLMS_ID,
+  N8N_ID,
   ONETRAINER_ID,
   OPEN_WEBUI_ID,
   SD_AMD_ID,
@@ -37,6 +38,7 @@ import McMonkey_MM from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethod
 import BOLT_DIY_MM from './Container/Text/BoltDiy (StackblitzLabs)/MainMethods';
 import Flow_MM from './Container/Text/Flowise (FlowiseAI)/MainMethods';
 import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
+import N8N_MM from './Container/Text/N8N/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
@@ -64,5 +66,6 @@ export default async function initialModule(utils: MainModuleUtils): Promise<Mai
     {id: FLOWISEAI_ID, methods: () => Flow_MM(utils)},
     {id: LoLLMS_ID, methods: () => LoLLM_MM(utils)},
     {id: BOLT_DIY_ID, methods: () => BOLT_DIY_MM(utils)},
+    {id: N8N_ID, methods: () => N8N_MM(utils)},
   ];
 }

@@ -1,9 +1,11 @@
 import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
-import {BOLT_DIY_ID, FLOWISEAI_ID, LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
+import {BOLT_DIY_ID, FLOWISEAI_ID, LoLLMS_ID, N8N_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
 import BOLT_DIY_RM from './BoltDiy (StackblitzLabs)/RendererMethods';
 import flowiseArguments from './Flowise (FlowiseAI)/Arguments';
 import Flow_RM from './Flowise (FlowiseAI)/RendererMethods';
 import LoLLM_RM from './LoLLMs (ParisNeo)/RendererMethods';
+import n8nArguments from './N8N/Arguments';
+import N8N_RM from './N8N/RendererMethods';
 import openArguments from './OpenWebUI/Arguments';
 import OPEN_WEBUI_RM from './OpenWebUI/RendererMethods';
 import sillyArguments from './SillyTavern/Arguments';
@@ -56,6 +58,21 @@ const textPage: PagesData = {
       installationType: 'others',
       uninstallType: 'others',
       arguments: openArguments,
+    },
+    {
+      id: N8N_ID,
+      title: 'N8N',
+      description:
+        'Fair-code workflow automation platform with native AI capabilities. ' +
+        'Combine visual building with custom code, self-host or cloud, 400+ integrations.',
+      repoUrl: 'https://github.com/n8n-io/n8n',
+      type: 'text',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/ee2b96df-8dad-4bef-93fb-060f0c03cf0d/' +
+        'width=300/00016-3727992318.jpeg',
+      methods: N8N_RM,
+      installationType: 'others',
+      arguments: n8nArguments,
     },
     {
       id: BOLT_DIY_ID,

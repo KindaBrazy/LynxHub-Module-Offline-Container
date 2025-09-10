@@ -3,6 +3,7 @@ import path from 'node:path';
 import treeKill from 'tree-kill';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
+import {FLOWISEAI_ID, OPEN_WEBUI_ID} from '../../../Constants';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   checkWhich,
@@ -143,6 +144,30 @@ function mainIpc(utils: MainModuleUtils) {
   utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 
+async function uninstall(utils: MainModuleUtils): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
+    let output = '';
+
+    ptyProcess.onData((data: any) => {
+      output += data;
+    });
+
+    ptyProcess.onExit(({exitCode}: {exitCode: number}) => {
+      if (exitCode === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Error uninstalling flowise. Exit Code: ${exitCode}\nOutput:\n${output}`));
+      }
+    });
+
+    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
+
+    ptyProcess.write(`npm -g rm flowise${LINE_ENDING}`);
+    ptyProcess.write(`exit${LINE_ENDING}`);
+  });
+}
+
 const Flow_MM: CardMainMethodsInitial = utils => {
   const configDir = utils.getConfigDir();
 
@@ -153,6 +178,7 @@ const Flow_MM: CardMainMethodsInitial = utils => {
     isInstalled: () => isInstalled(utils),
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
+    uninstall: () => uninstall(utils),
   };
 };
 

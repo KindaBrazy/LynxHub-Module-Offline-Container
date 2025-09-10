@@ -3,6 +3,7 @@ import path from 'node:path';
 import treeKill from 'tree-kill';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
+import {FLOWISEAI_ID, N8N_ID} from '../../../Constants';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {determineShell, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
@@ -135,6 +136,30 @@ function mainIpc(utils: MainModuleUtils) {
   utils.ipc.handle('current_n8n_version', () => getVersion(utils.pty));
 }
 
+async function uninstall(utils: MainModuleUtils): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
+    let output = '';
+
+    ptyProcess.onData((data: any) => {
+      output += data;
+    });
+
+    ptyProcess.onExit(({exitCode}: {exitCode: number}) => {
+      if (exitCode === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Error uninstalling n8n. Exit Code: ${exitCode}\nOutput:\n${output}`));
+      }
+    });
+
+    utils.getExtensions_TerminalPreCommands(N8N_ID).forEach(command => ptyProcess.write(command));
+
+    ptyProcess.write(`npm -g rm n8n${LINE_ENDING}`);
+    ptyProcess.write(`exit${LINE_ENDING}`);
+  });
+}
+
 const N8N_MM: CardMainMethodsInitial = utils => {
   const configDir = utils.getConfigDir();
 
@@ -145,6 +170,7 @@ const N8N_MM: CardMainMethodsInitial = utils => {
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),
+    uninstall: () => uninstall(utils),
   };
 };
 

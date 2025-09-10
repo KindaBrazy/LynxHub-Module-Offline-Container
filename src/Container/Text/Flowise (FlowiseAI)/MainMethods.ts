@@ -35,9 +35,9 @@ async function readArgs(configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function checkInstalled(pty: any): Promise<boolean> {
+async function checkInstalled(utils: MainModuleUtils): Promise<boolean> {
   return new Promise(resolve => {
-    const ptyProcess = pty.spawn(determineShell(), [], {env: process.env});
+    const ptyProcess = utils.pty.spawn(determineShell(), [], {env: process.env});
 
     let output = '';
 
@@ -58,14 +58,16 @@ async function checkInstalled(pty: any): Promise<boolean> {
       resolve(isInstalled);
     });
 
+    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
+
     ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);
   });
 }
 
-async function getVersion(pty: any): Promise<string> {
+async function getVersion(utils: MainModuleUtils): Promise<string> {
   return new Promise(resolve => {
-    const ptyProcess = pty.spawn(determineShell(), [], {});
+    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
 
     let output = '';
 
@@ -87,14 +89,16 @@ async function getVersion(pty: any): Promise<string> {
       }
     });
 
+    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
+
     ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);
   });
 }
 
-async function checkUpdate(pty: any): Promise<string | null> {
+async function checkUpdate(utils: MainModuleUtils): Promise<string | null> {
   return new Promise(resolve => {
-    const ptyProcess = pty.spawn(determineShell(), [], {});
+    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
     let output = '';
 
     ptyProcess.onData((data: any) => {
@@ -118,13 +122,15 @@ async function checkUpdate(pty: any): Promise<string | null> {
       resolve(null);
     });
 
+    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
+
     ptyProcess.write(`npm -g outdated flowise${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);
   });
 }
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
-  const available = await checkUpdate(utils.pty);
+  const available = await checkUpdate(utils);
   if (available) {
     utils.storage.set('update-available-version-flowise', available);
     return true;
@@ -135,12 +141,12 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 }
 
 async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return checkInstalled(utils.pty);
+  return checkInstalled(utils);
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_flowise_installed', () => checkInstalled(utils.pty));
-  utils.ipc.handle('current_flowise_version', () => getVersion(utils.pty));
+  utils.ipc.handle('is_flowise_installed', () => checkInstalled(utils));
+  utils.ipc.handle('current_flowise_version', () => getVersion(utils));
   utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 

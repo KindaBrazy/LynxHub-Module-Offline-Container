@@ -2,9 +2,9 @@
 
 <img height="110" src="resources/lynxhub_icon.png">
 
-# [LynxHub](https://github.com/KindaBrazy/LynxHub) WebUI Container Module
+# [LynxHub](https://github.com/KindaBrazy/LynxHub) Local AI Collection
 
-A comprehensive collection of WebUI modules featuring **full support** for **arguments, extensions and configurations**.
+A collection of local AI tools with **full support** for **arguments**, **configurations**, and **extensions**.
 
 [![GitHub Release][github-release-shield]](https://github.com/KindaBrazy/LynxHub-Module-Offline-Container/releases)
 [![GitHub Release Date][github-release-date-shield]](https://github.com/KindaBrazy/LynxHub-Module-Offline-Container/releases)

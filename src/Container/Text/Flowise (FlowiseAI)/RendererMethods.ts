@@ -118,7 +118,7 @@ function startInstall(stepper: InstallationStepper) {
 
 function startUpdate(stepper: InstallationStepper) {
   stepper.initialSteps(['Update Flowise', 'Complete Update']);
-  stepper.executeTerminalCommands('npm update flowise').then(() => {
+  stepper.executeTerminalCommands('npm -g update flowise').then(() => {
     const currentDate = new Date();
     stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
     stepper.setUpdated();

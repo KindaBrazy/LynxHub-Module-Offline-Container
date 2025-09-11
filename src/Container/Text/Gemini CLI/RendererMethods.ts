@@ -309,7 +309,7 @@ function startInstall(stepper: InstallationStepper) {
 
 function startUpdate(stepper: InstallationStepper) {
   stepper.initialSteps(['Update Gemini Cli', 'Complete Update']);
-  stepper.executeTerminalCommands('npm update @google/gemini-cli').then(() => {
+  stepper.executeTerminalCommands('npm -g update @google/gemini-cli').then(() => {
     const currentDate = new Date();
     stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
     stepper.setUpdated();

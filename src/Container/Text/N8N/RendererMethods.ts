@@ -124,7 +124,7 @@ function startInstall(stepper: InstallationStepper) {
 
 function startUpdate(stepper: InstallationStepper) {
   stepper.initialSteps(['Update N8N', 'Complete Update']);
-  stepper.executeTerminalCommands('npm update n8n').then(() => {
+  stepper.executeTerminalCommands('npm -g update n8n').then(() => {
     const currentDate = new Date();
     stepper.storage.set(UPDATE_TIME_KEY, currentDate.toLocaleString());
     stepper.setUpdated();

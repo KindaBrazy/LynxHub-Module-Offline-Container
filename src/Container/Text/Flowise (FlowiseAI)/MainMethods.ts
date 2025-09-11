@@ -1,20 +1,18 @@
 import path from 'node:path';
 
-import treeKill from 'tree-kill';
-
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {FLOWISEAI_ID} from '../../../Constants';
-import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
+import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
+import {checkWhich, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {
-  checkWhich,
-  determineShell,
-  initBatchFile,
-  LINE_ENDING,
-  utilReadArgs,
-  utilSaveArgs,
-} from '../../../Utils/MainUtils';
+  checkNpmPackageUpdate,
+  getNpmPackageVersion,
+  isNpmPackageInstalled,
+  uninstallNpmPackage,
+} from '../../../Utils/NpmUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
+const PACKAGE_NAME = 'flowise';
 const CONFIG_FILE = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
 
@@ -35,102 +33,8 @@ async function readArgs(configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function checkInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {env: process.env});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const cleanOutput = removeAnsi(output).trim().replace('npm list -g flowise', '');
-
-      const isInstalled = /flowise@.+/.test(cleanOutput);
-
-      resolve(isInstalled);
-    });
-
-    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
-async function getVersion(utils: MainModuleUtils): Promise<string> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const match = output.match(/flowise@([\d.]+)/i);
-      if (match && match[1]) {
-        resolve(match[1]);
-      } else {
-        resolve('');
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
-async function checkUpdate(utils: MainModuleUtils): Promise<string | null> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data.toString();
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const lines = removeAnsi(output).split(LINE_ENDING);
-      for (const line of lines) {
-        const match = line.match(/flowise\s+([\d.]+)\s+[\d.]+\s+([\d.]+)/i);
-        if (match) {
-          resolve(match[2]);
-        }
-      }
-
-      resolve(null);
-    });
-
-    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g outdated flowise${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
-  const available = await checkUpdate(utils);
+  const available = await checkNpmPackageUpdate(FLOWISEAI_ID, PACKAGE_NAME, utils);
   if (available) {
     utils.storage.set('update-available-version-flowise', available);
     return true;
@@ -141,37 +45,13 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 }
 
 async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return checkInstalled(utils);
+  return isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME, utils);
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_flowise_installed', () => checkInstalled(utils));
-  utils.ipc.handle('current_flowise_version', () => getVersion(utils));
+  utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME, utils));
+  utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(FLOWISEAI_ID, PACKAGE_NAME, utils));
   utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
-}
-
-async function uninstall(utils: MainModuleUtils): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(({exitCode}: {exitCode: number}) => {
-      if (exitCode === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Error uninstalling flowise. Exit Code: ${exitCode}\nOutput:\n${output}`));
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(FLOWISEAI_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g rm flowise${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
 }
 
 const Flow_MM: CardMainMethodsInitial = utils => {
@@ -184,7 +64,7 @@ const Flow_MM: CardMainMethodsInitial = utils => {
     isInstalled: () => isInstalled(utils),
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
-    uninstall: () => uninstall(utils),
+    uninstall: () => uninstallNpmPackage(FLOWISEAI_ID, PACKAGE_NAME, utils),
   };
 };
 

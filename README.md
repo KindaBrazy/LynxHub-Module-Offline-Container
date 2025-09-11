@@ -10,7 +10,7 @@ A comprehensive collection of WebUI modules featuring **full support** for **arg
 [![GitHub Release Date][github-release-date-shield]](https://github.com/KindaBrazy/LynxHub-Module-Offline-Container/releases)
 [![GitHub Repo stars][github-repo-stars-shield]](https://github.com/KindaBrazy/LynxHub-Module-Offline-Container)
 
-<img src="resources/screenshot.png">
+<img src="resources/screenshot.jpg">
 
 </div>
 

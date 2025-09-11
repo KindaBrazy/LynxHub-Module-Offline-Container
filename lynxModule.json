@@ -1,8 +1,8 @@
 {
   "$schema": "./lynxModule.schema.json",
   "id": "lynxhub_module_offline_container",
-  "title": "Lynx WebUI Container",
-  "description": "A comprehensive collection of WebUI modules featuring full support for extensions, arguments and configurations.",
+  "title": "Local AI Collection",
+  "description": "A collection of local AI tools with full support for arguments, configurations, and extensions.",
   "publishDate": "2024-08-21",
   "requireAppBuild": 29,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",

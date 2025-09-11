@@ -88,7 +88,7 @@ export async function checkNpmPackageUpdate(
       for (const line of lines) {
         const match = line.match(new RegExp(`${packageName}\\s+[\\d.]+\\s+[\\d.]+\\s+([\\d.]+)`, 'i'));
         if (match) {
-          resolve(match[2]);
+          resolve(match[1]);
         }
       }
 

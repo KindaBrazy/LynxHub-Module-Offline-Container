@@ -1,13 +1,18 @@
 import path from 'node:path';
 
-import treeKill from 'tree-kill';
-
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {N8N_ID} from '../../../Constants';
-import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
-import {determineShell, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
+import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
+import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
+import {
+  checkNpmPackageUpdate,
+  getNpmPackageVersion,
+  isNpmPackageInstalled,
+  uninstallNpmPackage,
+} from '../../../Utils/NpmUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
+const PACKAGE_NAME = 'n8n';
 const CONFIG_FILE = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
 
@@ -28,106 +33,12 @@ async function readArgs(configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function checkInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {env: process.env});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const cleanOutput = removeAnsi(output).trim().replace('npm list -g n8n', '');
-
-      const isInstalled = /n8n@.+/.test(cleanOutput);
-
-      resolve(isInstalled);
-    });
-
-    utils.getExtensions_TerminalPreCommands(N8N_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g n8n${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
 async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return checkInstalled(utils);
-}
-
-async function getVersion(utils: MainModuleUtils): Promise<string> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const match = output.match(/n8n@([\d.]+)/i);
-      if (match && match[1]) {
-        resolve(match[1]);
-      } else {
-        resolve('');
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(N8N_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g n8n${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
-async function checkUpdate(utils: MainModuleUtils): Promise<string | null> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data.toString();
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const lines = removeAnsi(output).split(LINE_ENDING);
-      for (const line of lines) {
-        const match = line.match(/n8n\s+([\d.]+)\s+[\d.]+\s+([\d.]+)/i);
-        if (match) {
-          resolve(match[2]);
-        }
-      }
-
-      resolve(null);
-    });
-
-    utils.getExtensions_TerminalPreCommands(N8N_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g outdated n8n${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+  return isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils);
 }
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
-  const available = await checkUpdate(utils);
+  const available = await checkNpmPackageUpdate(N8N_ID, PACKAGE_NAME, utils);
   if (available) {
     utils.storage.set('update-available-version-n8n', available);
     return true;
@@ -138,32 +49,8 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_n8n_installed', () => checkInstalled(utils));
-  utils.ipc.handle('current_n8n_version', () => getVersion(utils));
-}
-
-async function uninstall(utils: MainModuleUtils): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(({exitCode}: {exitCode: number}) => {
-      if (exitCode === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Error uninstalling n8n. Exit Code: ${exitCode}\nOutput:\n${output}`));
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(N8N_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g rm n8n${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+  utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils));
+  utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(N8N_ID, PACKAGE_NAME, utils));
 }
 
 const N8N_MM: CardMainMethodsInitial = utils => {
@@ -176,7 +63,7 @@ const N8N_MM: CardMainMethodsInitial = utils => {
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),
-    uninstall: () => uninstall(utils),
+    uninstall: () => uninstallNpmPackage(N8N_ID, PACKAGE_NAME, utils),
   };
 };
 

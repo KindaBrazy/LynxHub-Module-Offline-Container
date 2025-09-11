@@ -306,7 +306,22 @@ const geminiCliArguments: ArgumentsData = [
           {
             name: 'ui.theme',
             description: 'The color theme for the UI.',
-            type: 'Input',
+            type: 'DropDown',
+            values: [
+              'ANSI',
+              'ANSI Light',
+              'Atom One',
+              'Ayu',
+              'Ayu Light',
+              'Default',
+              'Default Light',
+              'Dracula',
+              'GitHub',
+              'GitHub Light',
+              'Google Code',
+              'Xcode',
+            ],
+            defaultValue: 'Default',
           },
           {
             name: 'ui.customThemes',

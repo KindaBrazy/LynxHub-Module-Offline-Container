@@ -7,6 +7,7 @@ import {
   COMFYUI_ID,
   COMFYUI_ZLUDA_ID,
   FLOWISEAI_ID,
+  GeminiCli_ID,
   INVOKE_ID,
   KOHYA_ID,
   LoLLMS_ID,
@@ -37,6 +38,7 @@ import Vlad_MM from './Container/Image/SD Next (vladmandic)/MainMethods';
 import McMonkey_MM from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
 import BOLT_DIY_MM from './Container/Text/BoltDiy (StackblitzLabs)/MainMethods';
 import Flow_MM from './Container/Text/Flowise (FlowiseAI)/MainMethods';
+import GeminiCli_MM from './Container/Text/Gemini CLI/MainMethods';
 import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import N8N_MM from './Container/Text/N8N/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
@@ -67,5 +69,6 @@ export default async function initialModule(utils: MainModuleUtils): Promise<Mai
     {id: LoLLMS_ID, methods: () => LoLLM_MM(utils)},
     {id: BOLT_DIY_ID, methods: () => BOLT_DIY_MM(utils)},
     {id: N8N_ID, methods: () => N8N_MM(utils)},
+    {id: GeminiCli_ID, methods: () => GeminiCli_MM(utils)},
   ];
 }

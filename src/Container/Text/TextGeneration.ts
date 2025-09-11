@@ -1,8 +1,19 @@
 import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
-import {BOLT_DIY_ID, FLOWISEAI_ID, LoLLMS_ID, N8N_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
+import {
+  BOLT_DIY_ID,
+  FLOWISEAI_ID,
+  GeminiCli_ID,
+  LoLLMS_ID,
+  N8N_ID,
+  OPEN_WEBUI_ID,
+  SILLYTAVERN_ID,
+  TG_ID,
+} from '../../Constants';
 import BOLT_DIY_RM from './BoltDiy (StackblitzLabs)/RendererMethods';
 import flowiseArguments from './Flowise (FlowiseAI)/Arguments';
 import Flow_RM from './Flowise (FlowiseAI)/RendererMethods';
+import geminiCliArguments from './Gemini CLI/Arguments';
+import GeminiCli_RM from './Gemini CLI/RendererMethods';
 import LoLLM_RM from './LoLLMs (ParisNeo)/RendererMethods';
 import n8nArguments from './N8N/Arguments';
 import N8N_RM from './N8N/RendererMethods';
@@ -16,6 +27,19 @@ import TG_RM from './Text Generation (oobabooga)/RendererMethods';
 const textPage: PagesData = {
   routePath: '/textGenerationPage',
   cards: [
+    {
+      id: GeminiCli_ID,
+      title: 'Gemini CLI',
+      description: 'An open-source AI agent that brings the power of Gemini directly into your terminal.',
+      repoUrl: 'https://github.com/google-gemini/gemini-cli',
+      type: 'text',
+      bgUrl:
+        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/6de40d6e-9b5e-4c41-a0ad-344114f79173/' +
+        'width=300/Gemini_Generated_Image_h5c817h5c817h5c8.jpeg',
+      arguments: geminiCliArguments,
+      methods: GeminiCli_RM,
+      installationType: 'others',
+    },
     {
       id: TG_ID,
       title: 'Text Generation',

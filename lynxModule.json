@@ -6,12 +6,69 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 29,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "11.3.1",
-  "updateDate": "2025-09-04",
+  "version": "12.0.0",
+  "updateDate": "2025-09-11",
   "engines": {
     "moduleApi": "^1.0.0"
   },
   "changes": [
+    {
+      "title": "V12.0.0",
+      "items": [
+        {
+          "label": "✨ New",
+          "subitems": [
+            {
+              "label": "Added n8n integration."
+            },
+            {
+              "label": "Added gemini-cli integration."
+            }
+          ]
+        },
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Updated Arguments and configurations:",
+              "subitems": [
+                {
+                  "label": "ComfyUI, ComfyUI Zluda, InvokeAI, Sd Next, Swarm UI, Flowise AI, Open WebUI, SillyTavern, Oobabooga, "
+                }
+              ]
+            },
+            {
+              "label": "Updated ComfyUI GPU and PyTorch installation options."
+            },
+            {
+              "label": "Updated InvokeAI download URLs for PyTorch ROCm and CUDA versions."
+            },
+            {
+              "label": "Enhanced SillyTavern argument parsing and add YAML configuration support."
+            },
+            {
+              "label": "Added flowise uninstallation."
+            }
+          ]
+        },
+        {
+          "label": "🪲 Bug Fixes",
+          "subitems": [
+            {
+              "label": "Fixed flowise updating and update check."
+            }
+          ]
+        },
+        {
+          "label": "📌 Minor Changes",
+          "subitems": [
+            {
+              "label": "Updated Sd-Next and TTS-Webui repository URL."
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V11.3.1",
       "items": [

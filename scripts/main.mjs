@@ -1,4 +1,4 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, A as ALLTALK_ID, b as AG_ID, p as parseArgsToString, d as parseStringToArgs, T as TTS_ID, C as COMFYUI_ID, e as parseArgsToString$1, f as parseStringToArgs$1, h as COMFYUI_ZLUDA_ID, j as parseArgsToString$2, k as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, l as INVOKE_ID, m as extractGitUrl, n as INVOKEAI_UPDATE_AVAILABLE_KEY, o as Invoke_Command_ActivateVenv, q as parseArgsToString$3, r as parseStringToArgs$3, K as KOHYA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, u as ONETRAINER_ID, v as A1_ID, w as parseArgsToString$5, x as parseStringToArgs$5, S as SD_AMD_ID, y as parseArgsToString$6, z as parseStringToArgs$6, B as SD_NEXT_ID, D as parseArgsToString$7, E as parseStringToArgs$7, F as SWARM_ID, G as parseArgsToString$8, H as parseStringToArgs$8, J as BOLT_DIY_ID, L as getCdCommand, M as removeAnsi, N as parseArgsToString$9, P as parseStringToArgs$9, Q as LoLLMS_ID, R as parseArgsToString$a, U as parseStringToArgs$a, V as SILLYTAVERN_ID, W as parseArgsToString$b, X as parseStringToArgs$b, Y as TG_ID, Z as parseArgsToString$c, _ as parseStringToArgs$c, $ as SD_FORGE_ID, a0 as SD_FORGE_AMD_ID, a1 as SD_UIUX_ID, a2 as FLOWISEAI_ID } from './RendererMethods_ai6e2D.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, A as ALLTALK_ID, b as AG_ID, p as parseArgsToString, d as parseStringToArgs, T as TTS_ID, C as COMFYUI_ID, e as parseArgsToString$1, f as parseStringToArgs$1, h as COMFYUI_ZLUDA_ID, j as parseArgsToString$2, k as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, l as INVOKE_ID, m as extractGitUrl, n as INVOKEAI_UPDATE_AVAILABLE_KEY, o as Invoke_Command_ActivateVenv, q as parseArgsToString$3, r as parseStringToArgs$3, K as KOHYA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, u as ONETRAINER_ID, v as A1_ID, w as parseArgsToString$5, x as parseStringToArgs$5, S as SD_AMD_ID, y as parseArgsToString$6, z as parseStringToArgs$6, B as SD_NEXT_ID, D as parseArgsToString$7, E as parseStringToArgs$7, F as SWARM_ID, G as parseArgsToString$8, H as parseStringToArgs$8, J as BOLT_DIY_ID, L as removeAnsi, M as getCdCommand, N as FLOWISEAI_ID, P as parseArgsToString$9, Q as parseStringToArgs$9, R as parseFilesToArgs, U as parseArgsToFiles, V as GeminiCli_ID, W as LoLLMS_ID, X as N8N_ID, Y as parseArgsToString$a, Z as parseStringToArgs$a, _ as parseArgsToString$b, $ as parseStringToArgs$b, a0 as SILLYTAVERN_ID, a1 as parseArgsToFiles$1, a2 as parseFilesToArgs$1, a3 as TG_ID, a4 as parseArgsToString$c, a5 as parseStringToArgs$c, a6 as SD_FORGE_ID, a7 as SD_FORGE_AMD_ID, a8 as SD_UIUX_ID } from './RendererMethods_DENuaT.mjs';
 import { exec, execSync } from 'node:child_process';
 import { platform as platform$2 } from 'node:os';
 import path, { join } from 'node:path';
@@ -21813,70 +21813,70 @@ function isVenvDirectory(dirPath) {
 }
 
 const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
-async function getRunCommands$h(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$c);
+const DEFAULT_BATCH_DATA$e = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
+async function getRunCommands$j(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$e);
 }
 const Rrew123_MM = utils => {
     const installDir = utils.getInstallDir(ALLTALK_ID);
     return {
-        getRunCommands: () => getRunCommands$h(installDir),
+        getRunCommands: () => getRunCommands$j(installDir),
     };
 };
 
 const BAT_FILE_NAME$9 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
-async function getRunCommands$g(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$9, dir, DEFAULT_BATCH_DATA$b);
+const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
+async function getRunCommands$i(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$9, dir, DEFAULT_BATCH_DATA$d);
 }
-async function saveArgs$c(args, dir) {
+async function saveArgs$e(args, dir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$9, parseArgsToString, dir);
 }
-async function readArgs$c(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$9, DEFAULT_BATCH_DATA$b, parseStringToArgs, dir);
+async function readArgs$e(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$9, DEFAULT_BATCH_DATA$d, parseStringToArgs, dir);
 }
 const Gitmylo_MM = utils => {
     const installDir = utils.getInstallDir(AG_ID);
     return {
-        getRunCommands: () => getRunCommands$g(installDir),
-        readArgs: () => readArgs$c(installDir),
-        saveArgs: args => saveArgs$c(args, installDir),
+        getRunCommands: () => getRunCommands$i(installDir),
+        readArgs: () => readArgs$e(installDir),
+        saveArgs: args => saveArgs$e(args, installDir),
     };
 };
 
 const BAT_FILE_NAME$8 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
-async function getRunCommands$f(dir) {
+async function getRunCommands$h(dir) {
     return await utilRunCommands(BAT_FILE_NAME$8, dir);
 }
 const Rsx_MM = utils => {
     const installDir = utils.getInstallDir(TTS_ID);
     return {
-        getRunCommands: () => getRunCommands$f(installDir),
+        getRunCommands: () => getRunCommands$h(installDir),
     };
 };
 
 const BAT_FILE_NAME$7 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
-async function getRunCommands$e(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$a);
+const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+async function getRunCommands$g(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$c);
 }
-async function saveArgs$b(args, dir) {
+async function saveArgs$d(args, dir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$7, parseArgsToString$1, dir);
 }
-async function readArgs$b(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$a, parseStringToArgs$1, dir);
+async function readArgs$d(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$c, parseStringToArgs$1, dir);
 }
 const Comfy_MM = utils => {
     const installDir = utils.getInstallDir(COMFYUI_ID);
     return {
-        getRunCommands: () => getRunCommands$e(installDir),
-        readArgs: () => readArgs$b(installDir),
-        saveArgs: args => saveArgs$b(args, installDir),
+        getRunCommands: () => getRunCommands$g(installDir),
+        readArgs: () => readArgs$d(installDir),
+        saveArgs: args => saveArgs$d(args, installDir),
     };
 };
 
 const BAT_FILE_NAME$6 = 'lynx-user.bat';
-const DEFAULT_BATCH_DATA$9 = '@echo off\n' +
+const DEFAULT_BATCH_DATA$b = '@echo off\n' +
     '\n' +
     'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
     'set VENV_DIR=./venv\n' +
@@ -21885,21 +21885,21 @@ const DEFAULT_BATCH_DATA$9 = '@echo off\n' +
     '\n' +
     '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
     '\npause';
-async function getRunCommands$d(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$9);
+async function getRunCommands$f(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$b);
 }
-async function saveArgs$a(args, dir) {
+async function saveArgs$c(args, dir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$6, parseArgsToString$2, dir);
 }
-async function readArgs$a(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$9, parseStringToArgs$2, dir);
+async function readArgs$c(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$b, parseStringToArgs$2, dir);
 }
 const ComfyZluda_MM = utils => {
     const installDir = utils.getInstallDir(COMFYUI_ZLUDA_ID);
     return {
-        getRunCommands: () => getRunCommands$d(installDir),
-        readArgs: () => readArgs$a(installDir),
-        saveArgs: args => saveArgs$a(args, installDir),
+        getRunCommands: () => getRunCommands$f(installDir),
+        readArgs: () => readArgs$c(installDir),
+        saveArgs: args => saveArgs$c(args, installDir),
     };
 };
 
@@ -24651,18 +24651,18 @@ async function invokeGetCurrentVersion(storage) {
     return await getPipPackageVersionCustom(pythonExe, 'invokeai');
 }
 
-const CONFIG_FILE$4 = 'invokeai.yaml';
+const CONFIG_FILE$6 = 'invokeai.yaml';
 const DEFAULT_CONFIG_DATA = 'schema_version: 4.0.2\n\n';
-async function getRunCommands$c(dir) {
+async function getRunCommands$e(dir) {
     return [`${Invoke_Command_ActivateVenv}${LINE_ENDING}`, `invokeai-web --root ${dir}${LINE_ENDING}`];
 }
-async function saveArgs$9(args, dir) {
-    return await utilSaveArgs(args, CONFIG_FILE$4, parseArgsToString$3, dir);
+async function saveArgs$b(args, dir) {
+    return await utilSaveArgs(args, CONFIG_FILE$6, parseArgsToString$3, dir);
 }
-async function readArgs$9(dir) {
-    return await utilReadArgs(CONFIG_FILE$4, DEFAULT_CONFIG_DATA, parseStringToArgs$3, dir);
+async function readArgs$b(dir) {
+    return await utilReadArgs(CONFIG_FILE$6, DEFAULT_CONFIG_DATA, parseStringToArgs$3, dir);
 }
-async function mainIpc$3(utils) {
+async function mainIpc$5(utils) {
     utils.ipc.handle('is_uv_installed', () => {
         return checkWhich('uv');
     });
@@ -24679,7 +24679,7 @@ async function mainIpc$3(utils) {
         return false;
     });
 }
-async function updateAvailable$5(utils) {
+async function updateAvailable$7(utils) {
     const currentVersion = await invokeGetCurrentVersion(utils.storage);
     if (!currentVersion)
         return false;
@@ -24694,62 +24694,103 @@ async function updateAvailable$5(utils) {
 const Invoke_MM = utils => {
     const installDir = utils.getInstallDir(INVOKE_ID);
     return {
-        getRunCommands: () => getRunCommands$c(installDir),
-        readArgs: () => readArgs$9(installDir),
-        saveArgs: args => saveArgs$9(args, installDir),
-        updateAvailable: () => updateAvailable$5(utils),
-        mainIpc: () => mainIpc$3(utils),
+        getRunCommands: () => getRunCommands$e(installDir),
+        readArgs: () => readArgs$b(installDir),
+        saveArgs: args => saveArgs$b(args, installDir),
+        updateAvailable: () => updateAvailable$7(utils),
+        mainIpc: () => mainIpc$5(utils),
     };
 };
 
 const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
-async function getRunCommands$b(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$8);
+const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
+async function getRunCommands$d(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$a);
 }
-async function saveArgs$8(args, dir) {
+async function saveArgs$a(args, dir) {
     return await utilSaveArgs(args, BAT_FILE_NAME$5, parseArgsToString$4, dir);
 }
-async function readArgs$8(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$8, parseStringToArgs$4, dir);
+async function readArgs$a(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$a, parseStringToArgs$4, dir);
 }
 const Bmaltais_MM = utils => {
     const installDir = utils.getInstallDir(KOHYA_ID);
     return {
-        getRunCommands: () => getRunCommands$b(installDir),
-        readArgs: () => readArgs$8(installDir),
-        saveArgs: args => saveArgs$8(args, installDir),
+        getRunCommands: () => getRunCommands$d(installDir),
+        readArgs: () => readArgs$a(installDir),
+        saveArgs: args => saveArgs$a(args, installDir),
     };
 };
 
 const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
-async function getRunCommands$a(dir) {
+async function getRunCommands$c(dir) {
     return await utilRunCommands(BAT_FILE_NAME$4, dir);
 }
-async function updateAvailable$4(utils, dir) {
+async function updateAvailable$6(utils, dir) {
     if (!dir)
         return false;
     return await utils.isPullAvailable(dir);
 }
 const Nerogar_MM = utils => {
     const installDir = utils.getInstallDir(ONETRAINER_ID);
-    return { getRunCommands: () => getRunCommands$a(installDir), updateAvailable: () => updateAvailable$4(utils, installDir) };
+    return { getRunCommands: () => getRunCommands$c(installDir), updateAvailable: () => updateAvailable$6(utils, installDir) };
 };
 
-const CONFIG_FILE$3 = isWin ? 'webui-user.bat' : 'webui-user.sh';
+const CONFIG_FILE$5 = isWin ? 'webui-user.bat' : 'webui-user.sh';
 const EXEC_FILE$1 = isWin ? 'webui-user.bat' : 'webui.sh';
-const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$9(dir) {
-    return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$7);
+const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$b(dir) {
+    return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$9);
 }
-async function saveArgs$7(args, dir) {
-    return await utilSaveArgs(args, CONFIG_FILE$3, parseArgsToString$5, dir);
+async function saveArgs$9(args, dir) {
+    return await utilSaveArgs(args, CONFIG_FILE$5, parseArgsToString$5, dir);
 }
-async function readArgs$7(dir) {
-    return await utilReadArgs(CONFIG_FILE$3, DEFAULT_BATCH_DATA$7, parseStringToArgs$5, dir);
+async function readArgs$9(dir) {
+    return await utilReadArgs(CONFIG_FILE$5, DEFAULT_BATCH_DATA$9, parseStringToArgs$5, dir);
 }
 const A1_MM = utils => {
     const installDir = utils.getInstallDir(A1_ID);
+    return {
+        getRunCommands: () => getRunCommands$b(installDir),
+        readArgs: () => readArgs$9(installDir),
+        saveArgs: args => saveArgs$9(args, installDir),
+    };
+};
+
+const CONFIG_FILE$4 = isWin ? 'webui-user.bat' : 'webui-user.sh';
+const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
+const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$a(dir) {
+    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$8);
+}
+async function saveArgs$8(args, dir) {
+    return await utilSaveArgs(args, CONFIG_FILE$4, parseArgsToString$6, dir);
+}
+async function readArgs$8(dir) {
+    return await utilReadArgs(CONFIG_FILE$4, DEFAULT_BATCH_DATA$8, parseStringToArgs$6, dir);
+}
+const Ls_MM = utils => {
+    const installDir = utils.getInstallDir(SD_AMD_ID);
+    return {
+        getRunCommands: () => getRunCommands$a(installDir),
+        readArgs: () => readArgs$8(installDir),
+        saveArgs: args => saveArgs$8(args, installDir),
+    };
+};
+
+const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
+async function getRunCommands$9(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$7);
+}
+async function saveArgs$7(args, dir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$3, parseArgsToString$7, dir);
+}
+async function readArgs$7(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$7, parseStringToArgs$7, dir);
+}
+const Vlad_MM = utils => {
+    const installDir = utils.getInstallDir(SD_NEXT_ID);
     return {
         getRunCommands: () => getRunCommands$9(installDir),
         readArgs: () => readArgs$7(installDir),
@@ -24757,20 +24798,21 @@ const A1_MM = utils => {
     };
 };
 
-const CONFIG_FILE$2 = isWin ? 'webui-user.bat' : 'webui-user.sh';
-const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
-const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$6 = isWin
+    ? '@echo off\n\ncall launch-windows.bat'
+    : '#!/bin/bash\n\nbash ./launch-linux.sh';
 async function getRunCommands$8(dir) {
-    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$6);
+    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$6);
 }
 async function saveArgs$6(args, dir) {
-    return await utilSaveArgs(args, CONFIG_FILE$2, parseArgsToString$6, dir);
+    return await utilSaveArgs(args, BAT_FILE_NAME$2, parseArgsToString$8, dir);
 }
 async function readArgs$6(dir) {
-    return await utilReadArgs(CONFIG_FILE$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$6, dir);
+    return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$8, dir);
 }
-const Ls_MM = utils => {
-    const installDir = utils.getInstallDir(SD_AMD_ID);
+const McMonkey_MM = utils => {
+    const installDir = utils.getInstallDir(SWARM_ID);
     return {
         getRunCommands: () => getRunCommands$8(installDir),
         readArgs: () => readArgs$6(installDir),
@@ -24778,82 +24820,25 @@ const Ls_MM = utils => {
     };
 };
 
-const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
-async function getRunCommands$7(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$5);
-}
-async function saveArgs$5(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$3, parseArgsToString$7, dir);
-}
-async function readArgs$5(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$5, parseStringToArgs$7, dir);
-}
-const Vlad_MM = utils => {
-    const installDir = utils.getInstallDir(SD_NEXT_ID);
-    return {
-        getRunCommands: () => getRunCommands$7(installDir),
-        readArgs: () => readArgs$5(installDir),
-        saveArgs: args => saveArgs$5(args, installDir),
-    };
-};
-
-const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$4 = isWin
-    ? '@echo off\n\ncall launch-windows.bat'
-    : '#!/bin/bash\n\nbash ./launch-linux.sh';
-async function getRunCommands$6(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$4);
-}
-async function saveArgs$4(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$2, parseArgsToString$8, dir);
-}
-async function readArgs$4(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$4, parseStringToArgs$8, dir);
-}
-const McMonkey_MM = utils => {
-    const installDir = utils.getInstallDir(SWARM_ID);
-    return {
-        getRunCommands: () => getRunCommands$6(installDir),
-        readArgs: () => readArgs$4(installDir),
-        saveArgs: args => saveArgs$4(args, installDir),
-    };
-};
-
-async function getRunCommands$5() {
+async function getRunCommands$7() {
     return `npm run dev ${LINE_ENDING}`;
 }
-function mainIpc$2(utils) {
+function mainIpc$4(utils) {
     utils.ipc.handle('is_nodejs_installed', () => checkWhich('node'));
 }
-async function updateAvailable$3(utils, dir) {
+async function updateAvailable$5(utils, dir) {
     if (!dir)
         return false;
     return await utils.isPullAvailable(dir);
 }
 const BOLT_DIY_MM = utils => {
     const installDir = utils.getInstallDir(BOLT_DIY_ID);
-    return { getRunCommands: getRunCommands$5, mainIpc: () => mainIpc$2(utils), updateAvailable: () => updateAvailable$3(utils, installDir) };
+    return { getRunCommands: getRunCommands$7, mainIpc: () => mainIpc$4(utils), updateAvailable: () => updateAvailable$5(utils, installDir) };
 };
 
-const CONFIG_FILE$1 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
-const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
-async function getRunCommands$4(configDir) {
-    if (!configDir)
-        return '';
-    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$1));
-    await initBatchFile(filePath, DEFAULT_BATCH_DATA$3);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
-}
-async function saveArgs$3(args, configDir) {
-    return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$9, configDir);
-}
-async function readArgs$3(configDir) {
-    return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$3, parseStringToArgs$9, configDir);
-}
-async function checkInstalled(pty) {
+async function isNpmPackageInstalled(id, packageName, utils) {
     return new Promise(resolve => {
-        const ptyProcess = pty.spawn(determineShell(), [], { env: process.env });
+        const ptyProcess = utils.pty.spawn(determineShell(), [], { env: process.env });
         let output = '';
         ptyProcess.onData((data) => {
             output += data;
@@ -24863,17 +24848,18 @@ async function checkInstalled(pty) {
                 treeKill(ptyProcess.pid);
                 ptyProcess.kill();
             }
-            const cleanOutput = removeAnsi(output).trim().replace('npm list -g flowise', '');
-            const isInstalled = /flowise@.+/.test(cleanOutput);
+            const cleanOutput = removeAnsi(output).trim().replace(`npm list -g ${packageName}`, '');
+            const isInstalled = new RegExp(`${packageName}@.+`).test(cleanOutput);
             resolve(isInstalled);
         });
-        ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
         ptyProcess.write(`exit${LINE_ENDING}`);
     });
 }
-async function getVersion(pty) {
+async function getNpmPackageVersion(id, packageName, utils) {
     return new Promise(resolve => {
-        const ptyProcess = pty.spawn(determineShell(), [], {});
+        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
         let output = '';
         ptyProcess.onData((data) => {
             output += data;
@@ -24883,7 +24869,7 @@ async function getVersion(pty) {
                 treeKill(ptyProcess.pid);
                 ptyProcess.kill();
             }
-            const match = output.match(/flowise@([\d.]+)/i);
+            const match = output.match(new RegExp(`${packageName}@([\\d.]+)`, 'i'));
             if (match && match[1]) {
                 resolve(match[1]);
             }
@@ -24891,13 +24877,14 @@ async function getVersion(pty) {
                 resolve('');
             }
         });
-        ptyProcess.write(`npm list -g flowise${LINE_ENDING}`);
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
         ptyProcess.write(`exit${LINE_ENDING}`);
     });
 }
-async function checkUpdate(pty) {
+async function checkNpmPackageUpdate(id, packageName, utils) {
     return new Promise(resolve => {
-        const ptyProcess = pty.spawn(determineShell(), [], {});
+        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
         let output = '';
         ptyProcess.onData((data) => {
             output += data.toString();
@@ -24909,19 +24896,57 @@ async function checkUpdate(pty) {
             }
             const lines = removeAnsi(output).split(LINE_ENDING);
             for (const line of lines) {
-                const match = line.match(/flowise\s+([\d.]+)\s+[\d.]+\s+([\d.]+)/i);
+                const match = line.match(new RegExp(`${packageName}\\s+[\\d.]+\\s+[\\d.]+\\s+([\\d.]+)`, 'i'));
                 if (match) {
-                    resolve(match[2]);
+                    resolve(match[1]);
                 }
             }
             resolve(null);
         });
-        ptyProcess.write(`npm -g outdated flowise${LINE_ENDING}`);
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm -g outdated ${packageName}${LINE_ENDING}`);
         ptyProcess.write(`exit${LINE_ENDING}`);
     });
 }
-async function updateAvailable$2(utils) {
-    const available = await checkUpdate(utils.pty);
+async function uninstallNpmPackage(id, packageName, utils) {
+    return new Promise((resolve, reject) => {
+        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(({ exitCode }) => {
+            if (exitCode === 0) {
+                resolve();
+            }
+            else {
+                reject(new Error(`Error uninstalling ${packageName}. Exit Code: ${exitCode}\nOutput:\n${output}`));
+            }
+        });
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm -g rm ${packageName}${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+
+const PACKAGE_NAME$2 = 'flowise';
+const CONFIG_FILE$3 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
+const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
+async function getRunCommands$6(configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$3));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$5);
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$5(args, configDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$3, parseArgsToString$9, configDir);
+}
+async function readArgs$5(configDir) {
+    return await utilReadArgs(CONFIG_FILE$3, DEFAULT_BATCH_DATA$5, parseStringToArgs$9, configDir);
+}
+async function updateAvailable$4(utils) {
+    const available = await checkNpmPackageUpdate(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
     if (available) {
         utils.storage.set('update-available-version-flowise', available);
         return true;
@@ -24929,37 +24954,146 @@ async function updateAvailable$2(utils) {
     utils.storage.set('update-available-version-flowise', undefined);
     return false;
 }
-async function isInstalled$1(utils) {
-    return checkInstalled(utils.pty);
+async function isInstalled$3(utils) {
+    return isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
 }
-function mainIpc$1(utils) {
-    utils.ipc.handle('is_flowise_installed', () => checkInstalled(utils.pty));
-    utils.ipc.handle('current_flowise_version', () => getVersion(utils.pty));
+function mainIpc$3(utils) {
+    utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
+    utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
     utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 const Flow_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
-        updateAvailable: () => updateAvailable$2(utils),
-        getRunCommands: () => getRunCommands$4(configDir),
-        mainIpc: () => mainIpc$1(utils),
-        isInstalled: () => isInstalled$1(utils),
-        saveArgs: args => saveArgs$3(args, configDir),
-        readArgs: () => readArgs$3(configDir),
+        updateAvailable: () => updateAvailable$4(utils),
+        getRunCommands: () => getRunCommands$6(configDir),
+        mainIpc: () => mainIpc$3(utils),
+        isInstalled: () => isInstalled$3(utils),
+        saveArgs: args => saveArgs$5(args, configDir),
+        readArgs: () => readArgs$5(configDir),
+        uninstall: () => uninstallNpmPackage(FLOWISEAI_ID, PACKAGE_NAME$2, utils),
     };
 };
 
-async function getRunCommands$3() {
+const PACKAGE_NAME$1 = '@google/gemini-cli';
+const CONFIG_FILE$2 = isWin ? 'geminiCli_config.bat' : 'geminiCli_config.sh';
+const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
+async function getRunCommands$5(configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$2));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$4);
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$4(args, configDir) {
+    if (!configDir)
+        return;
+    const { scriptData, settingsData } = parseArgsToFiles(args);
+    const scriptPath = path.join(configDir, CONFIG_FILE$2);
+    const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
+    await fs.promises.writeFile(scriptPath, scriptData);
+    if (settingsPath) {
+        try {
+            await fs.promises.writeFile(settingsPath, settingsData);
+        }
+        catch (e) {
+            console.error('Error saving settings.json file for gemini-cli', e);
+        }
+    }
+}
+async function readArgs$4(configDir) {
+    if (!configDir)
+        return [];
+    const scriptPath = path.join(configDir, CONFIG_FILE$2);
+    await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$4);
+    const scriptData = await fs.promises.readFile(scriptPath, 'utf-8');
+    return parseFilesToArgs(scriptData);
+}
+async function isInstalled$2(utils) {
+    return isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils);
+}
+async function updateAvailable$3(utils) {
+    const available = await checkNpmPackageUpdate(GeminiCli_ID, PACKAGE_NAME$1, utils);
+    if (available) {
+        utils.storage.set('update-available-version-geminiCli', available);
+        return true;
+    }
+    utils.storage.set('update-available-version-geminiCli', undefined);
+    return false;
+}
+function mainIpc$2(utils) {
+    utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils));
+    utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(GeminiCli_ID, PACKAGE_NAME$1, utils));
+}
+const GeminiCli_MM = utils => {
+    const configDir = utils.getConfigDir();
+    return {
+        mainIpc: () => mainIpc$2(utils),
+        getRunCommands: () => getRunCommands$5(configDir),
+        isInstalled: () => isInstalled$2(utils),
+        saveArgs: args => saveArgs$4(args, configDir),
+        readArgs: () => readArgs$4(configDir),
+        updateAvailable: () => updateAvailable$3(utils),
+        uninstall: () => uninstallNpmPackage(GeminiCli_ID, PACKAGE_NAME$1, utils),
+    };
+};
+
+async function getRunCommands$4() {
     return `python app.py ${LINE_ENDING}`;
 }
-async function updateAvailable$1(utils, dir) {
+async function updateAvailable$2(utils, dir) {
     if (!dir)
         return false;
     return await utils.isPullAvailable(dir);
 }
 const LoLLM_MM = utils => {
     const installDir = utils.getInstallDir(LoLLMS_ID);
-    return { getRunCommands: getRunCommands$3, updateAvailable: () => updateAvailable$1(utils, installDir) };
+    return { getRunCommands: getRunCommands$4, updateAvailable: () => updateAvailable$2(utils, installDir) };
+};
+
+const PACKAGE_NAME = 'n8n';
+const CONFIG_FILE$1 = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
+const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
+async function getRunCommands$3(configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$1));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$3);
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$3(args, configDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$a, configDir);
+}
+async function readArgs$3(configDir) {
+    return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$3, parseStringToArgs$a, configDir);
+}
+async function isInstalled$1(utils) {
+    return isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils);
+}
+async function updateAvailable$1(utils) {
+    const available = await checkNpmPackageUpdate(N8N_ID, PACKAGE_NAME, utils);
+    if (available) {
+        utils.storage.set('update-available-version-n8n', available);
+        return true;
+    }
+    utils.storage.set('update-available-version-n8n', undefined);
+    return false;
+}
+function mainIpc$1(utils) {
+    utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils));
+    utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(N8N_ID, PACKAGE_NAME, utils));
+}
+const N8N_MM = utils => {
+    const configDir = utils.getConfigDir();
+    return {
+        mainIpc: () => mainIpc$1(utils),
+        getRunCommands: () => getRunCommands$3(configDir),
+        isInstalled: () => isInstalled$1(utils),
+        saveArgs: args => saveArgs$3(args, configDir),
+        readArgs: () => readArgs$3(configDir),
+        updateAvailable: () => updateAvailable$1(utils),
+        uninstall: () => uninstallNpmPackage(N8N_ID, PACKAGE_NAME, utils),
+    };
 };
 
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
@@ -24972,10 +25106,10 @@ async function getRunCommands$2(configDir) {
     return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 async function saveArgs$2(args, configDir) {
-    return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString$a, configDir);
+    return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString$b, configDir);
 }
 async function readArgs$2(configDir) {
-    return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$a, configDir);
+    return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$b, configDir);
 }
 async function isInstalled(utils) {
     const result = getPipPackageVersion('open-webui', utils);
@@ -25047,15 +25181,29 @@ const OpenWebUI_MM = utils => {
 };
 
 const BAT_FILE_NAME$1 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const CONFIG_FILE_NAME = 'config.yml';
 const DEFAULT_BATCH_DATA$1 = isWin ? '@echo off\n\ncall start.bat' : '#!/bin/bash\n\nbash ./start.sh';
 async function getRunCommands$1(dir) {
     return await utilRunCommands(BAT_FILE_NAME$1, dir, DEFAULT_BATCH_DATA$1);
 }
 async function saveArgs$1(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$1, parseArgsToString$b, dir);
+    if (!dir)
+        return;
+    const { commands, configs } = parseArgsToFiles$1(args);
+    const batPath = path.join(dir, BAT_FILE_NAME$1);
+    const configPath = path.join(dir, CONFIG_FILE_NAME);
+    await fs.promises.writeFile(batPath, commands);
+    await fs.promises.writeFile(configPath, configs);
 }
 async function readArgs$1(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$1, DEFAULT_BATCH_DATA$1, parseStringToArgs$b, dir);
+    if (!dir)
+        return [];
+    const batPath = path.join(dir, BAT_FILE_NAME$1);
+    const configPath = path.join(dir, CONFIG_FILE_NAME);
+    await initBatchFile(batPath, DEFAULT_BATCH_DATA$1);
+    const batData = await fs.promises.readFile(batPath, 'utf-8');
+    const configData = await fs.promises.readFile(configPath, 'utf-8');
+    return parseFilesToArgs$1(batData, configData);
 }
 const Silly_MM = utils => {
     const installDir = utils.getInstallDir(SILLYTAVERN_ID);
@@ -25111,6 +25259,8 @@ async function initialModule(utils) {
         { id: FLOWISEAI_ID, methods: () => Flow_MM(utils) },
         { id: LoLLMS_ID, methods: () => LoLLM_MM(utils) },
         { id: BOLT_DIY_ID, methods: () => BOLT_DIY_MM(utils) },
+        { id: N8N_ID, methods: () => N8N_MM(utils) },
+        { id: GeminiCli_ID, methods: () => GeminiCli_MM(utils) },
     ];
 }
 

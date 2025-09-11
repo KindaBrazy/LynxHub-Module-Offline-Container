@@ -19,6 +19,8 @@ const OPEN_WEBUI_ID = 'OpenWebUI_TG';
 const BOLT_DIY_ID = 'BoltDiy_TG';
 const FLOWISEAI_ID = 'FlowiseAI_TG';
 const LoLLMS_ID = 'LoLLMS_TG';
+const N8N_ID = 'N8N_TG';
+const GeminiCli_ID = 'GeminiCli_TG';
 // Audio Generation
 const TTS_ID = 'Rsxdalv_AG';
 const AG_ID = 'Gitmylo_AG';
@@ -17522,7 +17524,7 @@ const gitmyloArguments = [
 
 const shellCommand$6 = isWin ? 'call run.bat' : 'bash ./run.sh';
 const URL$6 = 'https://github.com/gitmylo/audio-webui';
-function parseArgsToString$c(args) {
+function parseArgsToString$e(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -17540,7 +17542,7 @@ function parseArgsToString$c(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
     return result;
 }
-function parseStringToArgs$c(args) {
+function parseStringToArgs$e(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -17574,18 +17576,18 @@ function parseStringToArgs$c(args) {
     });
     return argResult;
 }
-function startInstall$b(stepper) {
+function startInstall$d(stepper) {
     GitInstaller('Audio Generation', URL$6, stepper);
 }
-async function cardInfo$b(api, callback) {
+async function cardInfo$d(api, callback) {
     return CardInfo(URL$6, '/extensions', api, callback);
 }
 const AG_RM = {
     catchAddress: catchAddress$2,
-    parseArgsToString: parseArgsToString$c,
-    parseStringToArgs: parseStringToArgs$c,
-    cardInfo: cardInfo$b,
-    manager: { startInstall: startInstall$b, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$e,
+    parseStringToArgs: parseStringToArgs$e,
+    cardInfo: cardInfo$d,
+    manager: { startInstall: startInstall$d, updater: { updateType: 'git' } },
 };
 
 const comfyArguments = [
@@ -17632,11 +17634,27 @@ const comfyArguments = [
                         type: 'Input',
                         defaultValue: 100,
                     },
+                    {
+                        name: '--enable-compress-response-body',
+                        description: 'Enable compressing response body.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--comfy-api-base',
+                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
+                        type: 'Input',
+                        defaultValue: 'https://api.comfy.org',
+                    },
                 ],
             },
             {
                 section: 'Paths',
                 items: [
+                    {
+                        name: '--base-directory',
+                        description: 'Set the ComfyUI base directory for models, custom_nodes, input, output, temp, and user directories.',
+                        type: 'Directory',
+                    },
                     {
                         name: '--extra-model-paths-config',
                         description: 'Load one or more extra_model_paths.yaml files.',
@@ -17644,22 +17662,22 @@ const comfyArguments = [
                     },
                     {
                         name: '--output-directory',
-                        description: 'Set the ComfyUI output directory.',
+                        description: 'Set the ComfyUI output directory. Overrides --base-directory.',
                         type: 'Directory',
                     },
                     {
                         name: '--temp-directory',
-                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory).',
+                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory). Overrides --base-directory.',
                         type: 'Directory',
                     },
                     {
                         name: '--input-directory',
-                        description: 'Set the ComfyUI input directory.',
+                        description: 'Set the ComfyUI input directory. Overrides --base-directory.',
                         type: 'Directory',
                     },
                     {
                         name: '--user-directory',
-                        description: 'Set the ComfyUI user directory with an absolute path.',
+                        description: 'Set the ComfyUI user directory with an absolute path. Overrides --base-directory.',
                         type: 'Directory',
                     },
                 ],
@@ -17679,7 +17697,12 @@ const comfyArguments = [
                     },
                     {
                         name: '--cuda-device',
-                        description: 'Set the id of the cuda device this instance will use.',
+                        description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--default-device',
+                        description: 'Set the id of the default device, all other devices will stay visible.',
                         type: 'Input',
                     },
                     {
@@ -17738,6 +17761,11 @@ const comfyArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--fp8_e8m0fnu-unet',
+                        description: 'Store unet weights in fp8_e8m0fnu.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--fp16-vae',
                         description: 'Run the VAE in fp16, might cause black images.',
                         type: 'CheckBox',
@@ -17777,6 +17805,11 @@ const comfyArguments = [
                         description: 'Store text encoder weights in fp32.',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--bf16-text-enc',
+                        description: 'Store text encoder weights in bf16.',
+                        type: 'CheckBox',
+                    },
                 ],
             },
             {
@@ -17800,6 +17833,11 @@ const comfyArguments = [
                     {
                         name: '--disable-ipex-optimize',
                         description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--supports-fp8-compute',
+                        description: 'ComfyUI will act like if the device supports fp8 compute.',
                         type: 'CheckBox',
                     },
                     {
@@ -17827,6 +17865,11 @@ const comfyArguments = [
                         defaultValue: 0,
                     },
                     {
+                        name: '--cache-none',
+                        description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--use-split-cross-attention',
                         description: 'Use the split cross attention optimization. Ignored when xformers is used.',
                         type: 'CheckBox',
@@ -17847,6 +17890,11 @@ const comfyArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--use-flash-attention',
+                        description: 'Use FlashAttention.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--disable-xformers',
                         description: 'Disable xformers.',
                         type: 'CheckBox',
@@ -17859,6 +17907,12 @@ const comfyArguments = [
                     {
                         name: '--dont-upcast-attention',
                         description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-non-blocking',
+                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors.' +
+                            ' This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
                         type: 'CheckBox',
                     },
                 ],
@@ -17898,6 +17952,11 @@ const comfyArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--async-offload',
+                        description: 'Use async weight offloading.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--disable-smart-memory',
                         description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
                         type: 'CheckBox',
@@ -17928,6 +17987,16 @@ const comfyArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--mmap-torch-files',
+                        description: 'Use mmap when loading ckpt/pt files.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-mmap',
+                        description: "Don't use mmap when loading safetensors.",
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--dont-print-server',
                         description: "Don't print server output.",
                         type: 'CheckBox',
@@ -17954,6 +18023,16 @@ const comfyArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--whitelist-custom-nodes',
+                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--disable-api-nodes',
+                        description: 'Disable loading all api nodes.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--multi-user',
                         description: 'Enables per-user storage.',
                         type: 'CheckBox',
@@ -17973,9 +18052,10 @@ const comfyArguments = [
                     {
                         name: '--front-end-version',
                         description: 'Specifies the version of the frontend to be used. This command needs internet connectivity' +
-                            ' to query and download available frontend implementations from GitHub releases.',
+                            ' to query and download available frontend implementations from GitHub releases. The version' +
+                            ' string should be in the format of: [repoOwner]/[repoName]@[version]',
                         type: 'Input',
-                        defaultValue: 'DEFAULT_VERSION_STRING',
+                        defaultValue: 'comfyanonymous/ComfyUI@latest',
                     },
                     {
                         name: '--front-end-root',
@@ -17985,8 +18065,14 @@ const comfyArguments = [
                     },
                     {
                         name: '--fast',
-                        description: 'Enable some untested and potentially quality deteriorating optimizations.',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
+                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: '--database-url',
+                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
+                        type: 'Input',
                     },
                 ],
             },
@@ -17995,7 +18081,7 @@ const comfyArguments = [
 ];
 
 const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
-function parseArgsToString$b(args) {
+function parseArgsToString$d(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18013,7 +18099,7 @@ function parseArgsToString$b(args) {
     result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
     return result;
 }
-function parseStringToArgs$b(args) {
+function parseStringToArgs$d(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18062,28 +18148,29 @@ async function fetchExtensionList$4() {
         return [];
     }
 }
-function startInstall$a(stepper) {
-    const selectOptions = ['NVIDIA CU126', 'NVIDIA CU124'];
-    if (window.osPlatform === 'linux') {
-        selectOptions.push('AMD GPUs (Linux only) ROCm 6.2.4');
-        selectOptions.push('AMD GPUs (Linux only) ROCm 6.2');
-        selectOptions.push('Intel GPUs (Windows and Linux)');
-    }
-    if (window.osPlatform === 'win32') {
-        selectOptions.push('Intel GPUs (Windows and Linux)');
-    }
+function startInstall$c(stepper) {
+    const selectOptions = [
+        'NVIDIA CU129',
+        'NVIDIA CU129 Nightly',
+        'AMD GPUs (Linux only) ROCm 6.4',
+        'AMD GPUs (Linux only) ROCm 6.4 Nightly',
+        'Intel GPUs (Windows and Linux)',
+        'Intel GPUs Nightly (Windows and Linux)',
+    ];
     const getPyTorchInstallCommand = (selectedOption) => {
         switch (selectedOption) {
             case 'AMD GPUs (Linux only) ROCm 6.2':
-                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2';
-            case 'AMD GPUs (Linux only) ROCm 6.2.4':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.2.4';
+                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
+            case 'AMD GPUs (Linux only) ROCm 6.4 Nightly':
+                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.4';
             case 'Intel GPUs (Windows and Linux)':
+                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu';
+            case 'Intel GPUs Nightly (Windows and Linux)':
                 return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/xpu';
-            case 'NVIDIA CU124':
-                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
-            case 'NVIDIA CU126':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu126';
+            case 'NVIDIA CU129':
+                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129';
+            case 'NVIDIA CU129 Nightly':
+                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu129';
             default:
                 return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
         }
@@ -18134,16 +18221,16 @@ function startInstall$a(stepper) {
         }
     });
 }
-async function cardInfo$a(api, callback) {
+async function cardInfo$c(api, callback) {
     return CardInfo(COMFYUI_URL, '/custom_nodes', api, callback);
 }
 const COMFYUI_RM = {
     catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$4,
-    parseArgsToString: parseArgsToString$b,
-    parseStringToArgs: parseStringToArgs$b,
-    cardInfo: cardInfo$a,
-    manager: { startInstall: startInstall$a, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$d,
+    parseStringToArgs: parseStringToArgs$d,
+    cardInfo: cardInfo$c,
+    manager: { startInstall: startInstall$c, updater: { updateType: 'git' } },
 };
 
 const comfyZludaArguments = [
@@ -18214,11 +18301,27 @@ const comfyZludaArguments = [
                         type: 'Input',
                         defaultValue: 100,
                     },
+                    {
+                        name: '--enable-compress-response-body',
+                        description: 'Enable compressing response body.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--comfy-api-base',
+                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
+                        type: 'Input',
+                        defaultValue: 'https://api.comfy.org',
+                    },
                 ],
             },
             {
                 section: 'Paths',
                 items: [
+                    {
+                        name: '--base-directory',
+                        description: 'Set the ComfyUI base directory for models, custom_nodes, input, output, temp, and user directories.',
+                        type: 'Directory',
+                    },
                     {
                         name: '--extra-model-paths-config',
                         description: 'Load one or more extra_model_paths.yaml files.',
@@ -18226,22 +18329,22 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--output-directory',
-                        description: 'Set the ComfyUI output directory.',
+                        description: 'Set the ComfyUI output directory. Overrides --base-directory.',
                         type: 'Directory',
                     },
                     {
                         name: '--temp-directory',
-                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory).',
+                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory). Overrides --base-directory.',
                         type: 'Directory',
                     },
                     {
                         name: '--input-directory',
-                        description: 'Set the ComfyUI input directory.',
+                        description: 'Set the ComfyUI input directory. Overrides --base-directory.',
                         type: 'Directory',
                     },
                     {
                         name: '--user-directory',
-                        description: 'Set the ComfyUI user directory with an absolute path.',
+                        description: 'Set the ComfyUI user directory with an absolute path. Overrides --base-directory.',
                         type: 'Directory',
                     },
                 ],
@@ -18261,7 +18364,12 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--cuda-device',
-                        description: 'Set the id of the cuda device this instance will use.',
+                        description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--default-device',
+                        description: 'Set the id of the default device, all other devices will stay visible.',
                         type: 'Input',
                     },
                     {
@@ -18320,6 +18428,11 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--fp8_e8m0fnu-unet',
+                        description: 'Store unet weights in fp8_e8m0fnu.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--fp16-vae',
                         description: 'Run the VAE in fp16, might cause black images.',
                         type: 'CheckBox',
@@ -18359,6 +18472,11 @@ const comfyZludaArguments = [
                         description: 'Store text encoder weights in fp32.',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--bf16-text-enc',
+                        description: 'Store text encoder weights in bf16.',
+                        type: 'CheckBox',
+                    },
                 ],
             },
             {
@@ -18372,7 +18490,7 @@ const comfyZludaArguments = [
                     {
                         name: '--directml',
                         description: 'Use torch-directml.',
-                        type: 'CheckBox',
+                        type: 'Input',
                     },
                     {
                         name: '--oneapi-device-selector',
@@ -18382,6 +18500,11 @@ const comfyZludaArguments = [
                     {
                         name: '--disable-ipex-optimize',
                         description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--supports-fp8-compute',
+                        description: 'ComfyUI will act like if the device supports fp8 compute.',
                         type: 'CheckBox',
                     },
                     {
@@ -18409,6 +18532,11 @@ const comfyZludaArguments = [
                         defaultValue: 0,
                     },
                     {
+                        name: '--cache-none',
+                        description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--use-split-cross-attention',
                         description: 'Use the split cross attention optimization. Ignored when xformers is used.',
                         type: 'CheckBox',
@@ -18429,6 +18557,11 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--use-flash-attention',
+                        description: 'Use FlashAttention.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--disable-xformers',
                         description: 'Disable xformers.',
                         type: 'CheckBox',
@@ -18441,6 +18574,12 @@ const comfyZludaArguments = [
                     {
                         name: '--dont-upcast-attention',
                         description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-non-blocking',
+                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve' +
+                            ' performance on some non-Nvidia systems but can cause issues with some workflows.',
                         type: 'CheckBox',
                     },
                 ],
@@ -18480,6 +18619,11 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--async-offload',
+                        description: 'Use async weight offloading.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--disable-smart-memory',
                         description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
                         type: 'CheckBox',
@@ -18510,6 +18654,16 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--mmap-torch-files',
+                        description: 'Use mmap when loading ckpt/pt files.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-mmap',
+                        description: "Don't use mmap when loading safetensors.",
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--dont-print-server',
                         description: "Don't print server output.",
                         type: 'CheckBox',
@@ -18536,6 +18690,16 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: '--whitelist-custom-nodes',
+                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--disable-api-nodes',
+                        description: 'Disable loading all api nodes.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--multi-user',
                         description: 'Enables per-user storage.',
                         type: 'CheckBox',
@@ -18554,10 +18718,11 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--front-end-version',
-                        description: 'Specifies the version of the frontend to be used. This command needs internet connectivity' +
-                            ' to query and download available frontend implementations from GitHub releases.',
+                        description: 'Specifies the version of the frontend to be used. This command needs internet' +
+                            ' connectivity to query and download available frontend implementations from' +
+                            ' GitHub releases. The version string should be in the format of: [repoOwner]/[repoName]@[version]',
                         type: 'Input',
-                        defaultValue: 'DEFAULT_VERSION_STRING',
+                        defaultValue: 'comfyanonymous/ComfyUI@latest',
                     },
                     {
                         name: '--front-end-root',
@@ -18567,8 +18732,14 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--fast',
-                        description: 'Enable some untested and potentially quality deteriorating optimizations.',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
+                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: '--database-url',
+                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
+                        type: 'Input',
                     },
                 ],
             },
@@ -18577,7 +18748,7 @@ const comfyZludaArguments = [
 ];
 
 const URL$5 = 'https://github.com/patientx/ComfyUI-Zluda';
-function parseArgsToString$a(args) {
+function parseArgsToString$c(args) {
     let result = '@echo off' + '\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18601,7 +18772,7 @@ function parseArgsToString$a(args) {
     result += '\n\n' + 'pause';
     return result;
 }
-function parseStringToArgs$a(args) {
+function parseStringToArgs$c(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18666,7 +18837,7 @@ const customArguments = [
         value: '',
     },
 ];
-function startInstall$9(stepper) {
+function startInstall$b(stepper) {
     stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -18706,16 +18877,16 @@ function startInstall$9(stepper) {
         }
     });
 }
-async function cardInfo$9(api, callback) {
+async function cardInfo$b(api, callback) {
     return CardInfo(URL$5, '/custom_nodes', api, callback);
 }
 const COMFYUI_ZLUDA_RM = {
     catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$3,
-    parseArgsToString: parseArgsToString$a,
-    parseStringToArgs: parseStringToArgs$a,
-    cardInfo: cardInfo$9,
-    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$c,
+    parseStringToArgs: parseStringToArgs$c,
+    cardInfo: cardInfo$b,
+    manager: { startInstall: startInstall$b, updater: { updateType: 'git' } },
 };
 
 const Invoke_Command_CreateVenv = 'uv venv --relocatable --prompt invoke --python 3.12 --python-preference only-managed .venv';
@@ -18797,10 +18968,10 @@ const invokeGetInputResults = (items) => {
         else if (item.id === 'pypi') {
             switch (item.result) {
                 case Invoke_PyPI.rocm:
-                    pyPIResult = 'https://download.pytorch.org/whl/rocm6.2.4';
+                    pyPIResult = 'https://download.pytorch.org/whl/rocm6.3';
                     break;
                 case Invoke_PyPI.cu126:
-                    pyPIResult = 'https://download.pytorch.org/whl/cu126';
+                    pyPIResult = 'https://download.pytorch.org/whl/cu128';
                     break;
                 case Invoke_PyPI.cpu:
                     pyPIResult = 'https://download.pytorch.org/whl/cpu';
@@ -18821,7 +18992,7 @@ const invokeGetInstallCommand = (items) => {
         `--python-preference only-managed${index} --force-reinstall`);
 };
 
-function parseArgsToString$9(args) {
+function parseArgsToString$b(args) {
     let result = 'schema_version: 4.0.2\n\n';
     const argResult = args
         .map(arg => {
@@ -18831,7 +19002,7 @@ function parseArgsToString$9(args) {
     result += argResult;
     return result;
 }
-function parseStringToArgs$9(args) {
+function parseStringToArgs$b(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18843,7 +19014,7 @@ function parseStringToArgs$9(args) {
     });
     return argResult;
 }
-function startInstall$8(stepper) {
+function startInstall$a(stepper) {
     stepper.initialSteps(['InvokeAI', 'UV', 'Config', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -18901,7 +19072,7 @@ function startInstall$8(stepper) {
         }
     });
 }
-function startUpdate$2(stepper, dir) {
+function startUpdate$4(stepper, dir) {
     if (!dir)
         return;
     const venvDir = isWin ? `${dir}\\.venv` : `${dir}/.venv`;
@@ -18916,7 +19087,7 @@ function startUpdate$2(stepper, dir) {
         stepper.showFinalStep('success', 'InvokeAI Updated Successfully!', `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$8(api, callback) {
+async function cardInfo$a(api, callback) {
     const dir = api.installationFolder;
     callback.setOpenFolders(dir ? [dir] : undefined);
     const descManager = new DescriptionManager([
@@ -18945,10 +19116,10 @@ async function cardInfo$8(api, callback) {
 }
 const INVOKE_RM = {
     catchAddress: catchAddress$2,
-    cardInfo: cardInfo$8,
-    parseArgsToString: parseArgsToString$9,
-    parseStringToArgs: parseStringToArgs$9,
-    manager: { startInstall: startInstall$8, updater: { updateType: 'stepper', startUpdate: startUpdate$2 } },
+    cardInfo: cardInfo$a,
+    parseArgsToString: parseArgsToString$b,
+    parseStringToArgs: parseStringToArgs$b,
+    manager: { startInstall: startInstall$a, updater: { updateType: 'stepper', startUpdate: startUpdate$4 } },
 };
 
 const bmaltaisArguments = [
@@ -19041,7 +19212,7 @@ const bmaltaisArguments = [
 
 const shellCommand$5 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
 const URL$4 = 'https://github.com/bmaltais/kohya_ss';
-function parseArgsToString$8(args) {
+function parseArgsToString$a(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -19059,7 +19230,7 @@ function parseArgsToString$8(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$5 : `${shellCommand$5} ${argResult}`;
     return result;
 }
-function parseStringToArgs$8(args) {
+function parseStringToArgs$a(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -19093,18 +19264,18 @@ function parseStringToArgs$8(args) {
     });
     return argResult;
 }
-function startInstall$7(stepper) {
+function startInstall$9(stepper) {
     GitInstaller("Kohya's GUI", URL$4, stepper);
 }
-async function cardInfo$7(api, callback) {
+async function cardInfo$9(api, callback) {
     return CardInfo(URL$4, undefined, api, callback);
 }
 const KOHYA_GUI_RM = {
     catchAddress: catchAddress$2,
-    parseArgsToString: parseArgsToString$8,
-    parseStringToArgs: parseStringToArgs$8,
-    cardInfo: cardInfo$7,
-    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$a,
+    parseStringToArgs: parseStringToArgs$a,
+    cardInfo: cardInfo$9,
+    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
 };
 
 const automatic1111Arguments = [
@@ -20062,7 +20233,7 @@ function getCategoryType$1(name) {
     }
     return undefined;
 }
-function parseArgsToString$7(args) {
+function parseArgsToString$9(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
@@ -20091,7 +20262,7 @@ function parseArgsToString$7(args) {
     result += isWin ? `\ncall webui.bat` : ``;
     return result;
 }
-function checkLinuxArgLine$2(line) {
+function checkLinuxArgLine$4(line) {
     if (isWin && line.startsWith('set '))
         return 'set';
     if (line.startsWith('export '))
@@ -20108,7 +20279,7 @@ function checkLinuxArgLine$2(line) {
     }
     return undefined;
 }
-function parseStringToArgs$7(args) {
+function parseStringToArgs$9(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -20144,7 +20315,7 @@ function parseStringToArgs$7(args) {
             });
         }
         else {
-            const lineType = checkLinuxArgLine$2(line);
+            const lineType = checkLinuxArgLine$4(line);
             if (lineType === 'export' || lineType === 'set') {
                 // If line starts with 'set ' or 'export ', extract the environment variable id and value
                 let [name, value] = line.replace(`${lineType} `, '').split('=');
@@ -20154,7 +20325,7 @@ function parseStringToArgs$7(args) {
                     argResult.push({ name, value });
                 }
             }
-            else if (checkLinuxArgLine$2(line) === 'var') {
+            else if (checkLinuxArgLine$4(line) === 'var') {
                 let [name, value] = line.split('=');
                 name = removeEscapes(name.trim());
                 value = removeEscapes(value.trim());
@@ -20205,10 +20376,10 @@ if (commandLineArgsIndex !== -1 && lshqqytigerArguments[commandLineArgsIndex].se
 }
 
 const SdAMD_URL = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
-function startInstall$6(stepper) {
+function startInstall$8(stepper) {
     GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper);
 }
-async function cardInfo$6(api, callback) {
+async function cardInfo$8(api, callback) {
     return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
 function getTypeByCategoryName(category) {
@@ -20243,7 +20414,7 @@ function getCategoryType(name) {
     }
     return undefined;
 }
-function parseArgsToString$6(args) {
+function parseArgsToString$8(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
@@ -20272,7 +20443,7 @@ function parseArgsToString$6(args) {
     result += isWin ? `\ncall webui.bat` : ``;
     return result;
 }
-function checkLinuxArgLine$1(line) {
+function checkLinuxArgLine$3(line) {
     if (isWin && line.startsWith('set '))
         return 'set';
     if (line.startsWith('export '))
@@ -20289,7 +20460,7 @@ function checkLinuxArgLine$1(line) {
     }
     return undefined;
 }
-function parseStringToArgs$6(args) {
+function parseStringToArgs$8(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -20325,7 +20496,7 @@ function parseStringToArgs$6(args) {
             });
         }
         else {
-            const lineType = checkLinuxArgLine$1(line);
+            const lineType = checkLinuxArgLine$3(line);
             if (lineType === 'export' || lineType === 'set') {
                 // If line starts with 'set ' or 'export ', extract the environment variable id and value
                 let [name, value] = line.replace(`${lineType} `, '').split('=');
@@ -20335,7 +20506,7 @@ function parseStringToArgs$6(args) {
                     argResult.push({ name, value });
                 }
             }
-            else if (checkLinuxArgLine$1(line) === 'var') {
+            else if (checkLinuxArgLine$3(line) === 'var') {
                 let [name, value] = line.split('=');
                 name = removeEscapes(name.trim());
                 value = removeEscapes(value.trim());
@@ -20350,10 +20521,10 @@ function parseStringToArgs$6(args) {
 const SD_AMD_RM = {
     catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$6,
-    parseStringToArgs: parseStringToArgs$6,
-    cardInfo: cardInfo$6,
-    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$8,
+    parseStringToArgs: parseStringToArgs$8,
+    cardInfo: cardInfo$8,
+    manager: { startInstall: startInstall$8, updater: { updateType: 'git' } },
 };
 
 const vladmandicArguments = [
@@ -20377,37 +20548,7 @@ const vladmandicArguments = [
         category: 'Command Line Arguments',
         sections: [
             {
-                section: 'General',
-                items: [
-                    {
-                        name: '-h',
-                        description: 'Show this help message and exit',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--version',
-                        description: 'Print version information',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--test',
-                        description: 'Run test only and exit',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--debug',
-                        description: 'Run installer with debug logging',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--profile',
-                        description: 'Run profiler',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Server Configuration',
+                section: 'Configuration',
                 items: [
                     {
                         name: '--config',
@@ -20420,27 +20561,6 @@ const vladmandicArguments = [
                         type: 'File',
                     },
                     {
-                        name: '--freeze',
-                        description: 'Disable editing settings',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--backend',
-                        description: 'Force model pipeline type',
-                        type: 'DropDown',
-                        values: ['original', 'diffusers'],
-                    },
-                    {
-                        name: '--subpath',
-                        description: 'Customize the URL subpath for usage with reverse proxy',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Performance & VRAM',
-                items: [
-                    {
                         name: '--medvram',
                         description: 'Split model stages and keep only active part in VRAM',
                         type: 'CheckBox',
@@ -20451,171 +20571,20 @@ const vladmandicArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--use-xformers',
-                        description: 'Force use xFormers cross-optimization',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-queue',
-                        description: 'Disable queues',
+                        name: '--freeze',
+                        description: 'Disable editing settings',
                         type: 'CheckBox',
                     },
                 ],
             },
             {
-                section: 'Model Loading',
+                section: 'Compute Engine',
                 items: [
                     {
-                        name: '--ckpt',
-                        description: 'Path to model checkpoint to load immediately',
-                        type: 'File',
-                    },
-                    {
-                        name: '--vae',
-                        description: 'Path to VAE checkpoint to load immediately',
-                        type: 'File',
-                    },
-                    {
-                        name: '--no-hashing',
-                        description: 'Disable hashing of checkpoints',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--no-metadata',
-                        description: 'Disable reading of metadata from models',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Paths & Directories',
-                items: [
-                    {
-                        name: '--data-dir',
-                        description: 'Base path where all user data is stored',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--models-dir',
-                        description: 'Base path where all models are stored',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--allowed-paths',
-                        description: 'Add additional paths to paths allowed for web access',
+                        name: '--device-id',
+                        description: 'Select the default CUDA device to use',
                         type: 'Input',
                     },
-                ],
-            },
-            {
-                section: 'Security & Access',
-                items: [
-                    {
-                        name: '--allow-code',
-                        description: 'Allow custom script execution',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--insecure',
-                        description: 'Enable extensions tab regardless of other options',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--safe',
-                        description: 'Run in safe mode with no user extensions',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--auth',
-                        description: 'Set access authentication like "user:pwd,user:pwd"',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--auth-file',
-                        description: 'Set access authentication using file',
-                        type: 'File',
-                    },
-                ],
-            },
-            {
-                section: 'Network & API',
-                items: [
-                    {
-                        name: '--listen',
-                        description: 'Launch web server using public IP address',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--port',
-                        description: 'Launch web server with given server port',
-                        type: 'Input',
-                        defaultValue: 7860,
-                    },
-                    {
-                        name: '--share',
-                        description: 'Enable UI accessible through Gradio site',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--autolaunch',
-                        description: "Open the UI URL in the system's default browser upon launch",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--api-only',
-                        description: 'Run in API only mode without starting UI',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--docs',
-                        description: 'Mount API docs',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--api-log',
-                        description: 'Enable logging of all API requests',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cors-origins',
-                        description: 'Allowed CORS origins as comma-separated list',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--cors-regex',
-                        description: 'Allowed CORS origins as regular expression',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--server-name',
-                        description: 'Sets hostname of server',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'TLS & Certificates',
-                items: [
-                    {
-                        name: '--tls-keyfile',
-                        description: 'Enable TLS and specify key file',
-                        type: 'File',
-                    },
-                    {
-                        name: '--tls-certfile',
-                        description: 'Enable TLS and specify cert file',
-                        type: 'File',
-                    },
-                    {
-                        name: '--tls-selfsign',
-                        description: 'Enable TLS with self-signed certificates',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Compute Backend',
-                items: [
                     {
                         name: '--use-directml',
                         description: 'Use DirectML if no compatible GPU is detected',
@@ -20646,121 +20615,163 @@ const vladmandicArguments = [
                         description: 'Force use AMD ROCm backend',
                         type: 'CheckBox',
                     },
+                ],
+            },
+            {
+                section: 'Paths',
+                items: [
                     {
-                        name: '--use-cpu',
-                        description: 'Force use CPU for specified modules',
-                        type: 'Input',
-                        defaultValue: '[]',
+                        name: '--ckpt',
+                        description: 'Path to model checkpoint to load immediately',
+                        type: 'File',
                     },
                     {
-                        name: '--device-id',
-                        description: 'Select the default CUDA device to use',
+                        name: '--data-dir',
+                        description: 'Base path where all user data is stored',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--models-dir',
+                        description: 'Base path where all models are stored',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--extensions-dir',
+                        description: 'Base path where all extensions are stored',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--allowed-paths',
+                        description: 'Add additional paths to paths allowed for web access',
                         type: 'Input',
                     },
                 ],
             },
             {
-                section: 'Installation & Updates',
+                section: 'Diagnostics',
                 items: [
                     {
-                        name: '--reset',
-                        description: 'Reset main repository to latest version',
+                        name: '--no-hashing',
+                        description: 'Disable hashing of checkpoints',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--upgrade',
-                        description: 'Upgrade main repository to latest version',
+                        name: '--no-metadata',
+                        description: 'Disable reading of metadata from models',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--requirements',
-                        description: 'Force re-check of requirements',
+                        name: '--profile',
+                        description: 'Run profiler',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--reinstall',
-                        description: 'Force reinstallation of all requirements',
-                        type: 'CheckBox',
+                        name: '--monitor',
+                        description: 'Run memory monitor',
+                        type: 'Input',
+                        defaultValue: 0,
                     },
                     {
-                        name: '--reinstall-zluda',
-                        description: 'Force reinstallation of ZLUDA',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--uv',
-                        description: 'Use uv instead of pip to install the packages',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Installation Options',
-                items: [
-                    {
-                        name: '--quick',
-                        description: 'Bypass version checks',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--skip-requirements',
-                        description: 'Skips checking and installing requirements',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--skip-extensions',
-                        description: 'Skips running individual extension installers',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--skip-git',
-                        description: 'Skips running all GIT operations',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--skip-torch',
-                        description: 'Skips running Torch checks',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--skip-all',
-                        description: 'Skips running all checks',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--skip-env',
-                        description: 'Skips setting of env variables during startup',
-                        type: 'CheckBox',
+                        name: '--status',
+                        description: 'Run server is-alive status',
+                        type: 'Input',
+                        defaultValue: 120,
                     },
                     {
                         name: '--experimental',
                         description: 'Allow unsupported versions of libraries',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--ignore',
-                        description: 'Ignore any errors and attempt to continue',
-                        type: 'CheckBox',
-                    },
                 ],
             },
             {
-                section: 'UI Customization',
+                section: 'HTTP Server',
                 items: [
+                    {
+                        name: '--listen',
+                        description: 'Launch web server using public IP address',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Launch web server with given server port',
+                        type: 'Input',
+                        defaultValue: 7860,
+                    },
+                    {
+                        name: '--share',
+                        description: 'Enable UI accessible through Gradio site',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--autolaunch',
+                        description: "Open the UI URL in the system's default browser upon launch",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--subpath',
+                        description: 'Customize the URL subpath for usage with reverse proxy',
+                        type: 'Input',
+                    },
                     {
                         name: '--theme',
                         description: 'Override UI theme',
                         type: 'Input',
                     },
-                ],
-            },
-            {
-                section: 'Logging',
-                items: [
                     {
-                        name: '--log',
-                        description: 'Set log file',
+                        name: '--locale',
+                        description: 'Override UI locale',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--server-name',
+                        description: 'Sets hostname of server',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--insecure',
+                        description: 'Enable extensions tab regardless of other options',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--auth',
+                        description: 'Set access authentication like "user:pwd,user:pwd"',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--auth-file',
+                        description: 'Set access authentication using file',
                         type: 'File',
+                    },
+                    {
+                        name: '--docs',
+                        description: 'Mount API docs',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cors-origins',
+                        description: 'Allowed CORS origins as comma-separated list',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--cors-regex',
+                        description: 'Allowed CORS origins as regular expression',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--tls-keyfile',
+                        description: 'Enable TLS and specify key file',
+                        type: 'File',
+                    },
+                    {
+                        name: '--tls-certfile',
+                        description: 'Enable TLS and specify cert file',
+                        type: 'File',
+                    },
+                    {
+                        name: '--tls-selfsign',
+                        description: 'Enable TLS with self-signed certificates',
+                        type: 'CheckBox',
                     },
                 ],
             },
@@ -20769,8 +20780,8 @@ const vladmandicArguments = [
 ];
 
 const shellCommand$4 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
-const URL$3 = 'https://github.com/vladmandic/automatic';
-function parseArgsToString$5(args) {
+const URL$3 = 'https://github.com/vladmandic/sdnext';
+function parseArgsToString$7(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -20788,7 +20799,7 @@ function parseArgsToString$5(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
     return result;
 }
-function parseStringToArgs$5(args) {
+function parseStringToArgs$7(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -20822,19 +20833,19 @@ function parseStringToArgs$5(args) {
     });
     return argResult;
 }
-function startInstall$5(stepper) {
+function startInstall$7(stepper) {
     GitInstaller('SD Next', URL$3, stepper);
 }
-async function cardInfo$5(api, callback) {
+async function cardInfo$7(api, callback) {
     return CardInfo(URL$3, '/extensions', api, callback);
 }
 const SD_NEXT_RM = {
     catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$5,
-    parseStringToArgs: parseStringToArgs$5,
-    cardInfo: cardInfo$5,
-    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$7,
+    parseStringToArgs: parseStringToArgs$7,
+    cardInfo: cardInfo$7,
+    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
 };
 
 const mcMonkeyArguments = [
@@ -20889,7 +20900,7 @@ const mcMonkeyArguments = [
             },
             {
                 name: '--loglevel',
-                description: 'Minimum StableSwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
+                description: 'Minimum SwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
                     " `None`. 'Info' here is the normal usage data.",
                 type: 'DropDown',
                 defaultValue: 'Info',
@@ -20925,6 +20936,12 @@ const mcMonkeyArguments = [
                 type: 'Input',
             },
             {
+                name: '--proxy-added-args',
+                description: 'If specified, adds additional args to the proxy launch. Use a `.` as the first symbol (parser hackaround).' +
+                    ' For example, `--proxy-added-args ".--my-arg --arg -argy arg"`',
+                type: 'Input',
+            },
+            {
                 name: '--ngrok-basic-auth',
                 description: 'If specified, sets an ngrok basic-auth requirement to access.',
                 type: 'Input',
@@ -20946,7 +20963,7 @@ const mcMonkeyArguments = [
 
 const shellCommand$3 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
 const URL$2 = 'https://github.com/mcmonkeyprojects/SwarmUI';
-function parseArgsToString$4(args) {
+function parseArgsToString$6(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -20964,7 +20981,7 @@ function parseArgsToString$4(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
     return result;
 }
-function parseStringToArgs$4(args) {
+function parseStringToArgs$6(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -21027,19 +21044,19 @@ async function fetchExtensionList$1() {
         },
     ];
 }
-function startInstall$4(stepper) {
+function startInstall$6(stepper) {
     GitInstaller('SwarmUI', URL$2, stepper);
 }
-async function cardInfo$4(api, callback) {
+async function cardInfo$6(api, callback) {
     return CardInfo(URL$2, '/src/Extensions', api, callback);
 }
 const SWARM_RM = {
     catchAddress: catchAddress$2,
     fetchExtensionList: fetchExtensionList$1,
-    parseArgsToString: parseArgsToString$4,
-    parseStringToArgs: parseStringToArgs$4,
-    cardInfo: cardInfo$4,
-    manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$6,
+    parseStringToArgs: parseStringToArgs$6,
+    cardInfo: cardInfo$6,
+    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
 };
 
 const flowiseArguments = [
@@ -21291,7 +21308,7 @@ const flowiseArguments = [
                         name: '--STORAGE_TYPE',
                         description: 'Type of storage for uploaded files. default is `local`',
                         type: 'DropDown',
-                        values: ['s3', 'local'],
+                        values: ['s3', 'local', 'gcs'],
                         defaultValue: 'local',
                     },
                 ],
@@ -21342,6 +21359,32 @@ const flowiseArguments = [
                     },
                 ],
             },
+            {
+                section: 'GCS Storage',
+                items: [
+                    {
+                        name: '--GOOGLE_CLOUD_STORAGE_PROJ_ID',
+                        description: 'The GCP project id for cloud storage & logging when `STORAGE_TYPE` is `gcs`',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--GOOGLE_CLOUD_STORAGE_CREDENTIAL',
+                        description: 'The credential key file path when `STORAGE_TYPE` is `gcs`',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--GOOGLE_CLOUD_STORAGE_BUCKET_NAME',
+                        description: 'Bucket name to hold the uploaded files when `STORAGE_TYPE` is `gcs`',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--GOOGLE_CLOUD_UNIFORM_BUCKET_ACCESS',
+                        description: 'Enable uniform bucket level access when `STORAGE_TYPE` is `gcs`',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                ],
+            },
         ],
     },
     {
@@ -21366,11 +21409,11 @@ const flowiseArguments = [
     },
 ];
 
-const INSTALL_TIME_KEY$1 = 'install-time-flowise';
-const UPDATE_TIME_KEY$1 = 'update-time-flowise';
-const UPDATE_AVAILABLE_KEY$1 = 'update-available-version-flowise';
+const INSTALL_TIME_KEY$3 = 'install-time-flowise';
+const UPDATE_TIME_KEY$3 = 'update-time-flowise';
+const UPDATE_AVAILABLE_KEY$3 = 'update-available-version-flowise';
 const shellCommand$2 = 'npx flowise start';
-function parseArgsToString$3(args) {
+function parseArgsToString$5(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -21388,7 +21431,7 @@ function parseArgsToString$3(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
     return result;
 }
-function parseStringToArgs$3(args) {
+function parseStringToArgs$5(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -21418,7 +21461,7 @@ function parseStringToArgs$3(args) {
     });
     return argResult;
 }
-function startInstall$3(stepper) {
+function startInstall$5(stepper) {
     stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install Flowise', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -21431,7 +21474,7 @@ function startInstall$3(stepper) {
                             if (isFlowInstalled) {
                                 stepper.setInstalled();
                                 const currentDate = new Date();
-                                stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                                stepper.storage.set(INSTALL_TIME_KEY$3, currentDate.toLocaleString());
                                 stepper.showFinalStep('success', "You're All Set!", "Flowise is already installed. You're good to go!");
                             }
                             else {
@@ -21439,7 +21482,7 @@ function startInstall$3(stepper) {
                                     stepper.executeTerminalCommands('npm i -g flowise').then(() => {
                                         stepper.setInstalled();
                                         const currentDate = new Date();
-                                        stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                                        stepper.storage.set(INSTALL_TIME_KEY$3, currentDate.toLocaleString());
                                         stepper.showFinalStep('success', 'Installation Complete!', 'Your Flowise environment is ready. Enjoy!');
                                     });
                                 });
@@ -21454,16 +21497,16 @@ function startInstall$3(stepper) {
         });
     });
 }
-function startUpdate$1(stepper) {
+function startUpdate$3(stepper) {
     stepper.initialSteps(['Update Flowise', 'Complete Update']);
-    stepper.executeTerminalCommands('npm update flowise').then(() => {
+    stepper.executeTerminalCommands('npm -g update flowise').then(() => {
         const currentDate = new Date();
-        stepper.storage.set(UPDATE_TIME_KEY$1, currentDate.toLocaleString());
+        stepper.storage.set(UPDATE_TIME_KEY$3, currentDate.toLocaleString());
         stepper.setUpdated();
         stepper.showFinalStep('success', 'Flowise Updated Successfully!', `Flowise has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$3(api, callback) {
+async function cardInfo$5(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -21476,16 +21519,16 @@ async function cardInfo$3(api, callback) {
             ],
         },
     ], callback);
-    api.storage.get(INSTALL_TIME_KEY$1).then(result => {
+    api.storage.get(INSTALL_TIME_KEY$3).then(result => {
         descManager.updateItem(0, 0, result);
     });
-    api.storage.get(UPDATE_TIME_KEY$1).then(result => {
+    api.storage.get(UPDATE_TIME_KEY$3).then(result => {
         descManager.updateItem(0, 1, result);
     });
     api.ipc.invoke('current_flowise_version').then(result => {
         descManager.updateItem(0, 2, result);
     });
-    api.storage.get(UPDATE_AVAILABLE_KEY$1).then(result => {
+    api.storage.get(UPDATE_AVAILABLE_KEY$3).then(result => {
         descManager.updateItem(0, 3, result);
     });
 }
@@ -21504,13 +21547,14 @@ function catchAddress$1(input) {
 }
 const Flow_RM = {
     catchAddress: catchAddress$1,
-    parseArgsToString: parseArgsToString$3,
-    parseStringToArgs: parseStringToArgs$3,
-    cardInfo: cardInfo$3,
-    manager: { startInstall: startInstall$3, updater: { updateType: 'stepper', startUpdate: startUpdate$1 } },
+    parseArgsToString: parseArgsToString$5,
+    parseStringToArgs: parseStringToArgs$5,
+    cardInfo: cardInfo$5,
+    manager: { startInstall: startInstall$5, updater: { updateType: 'stepper', startUpdate: startUpdate$3 } },
 };
 
 // noinspection SpellCheckingInspection
+/* eslint max-len: 0 */
 const openArguments = [
     {
         category: 'App/Backend',
@@ -21519,42 +21563,10 @@ const openArguments = [
                 section: 'General',
                 items: [
                     {
-                        name: 'ENV',
-                        description: 'Environment setting.',
-                        type: 'DropDown',
-                        values: ['dev', 'prod'],
-                        defaultValue: 'dev',
-                    },
-                    {
-                        name: 'CUSTOM_NAME',
-                        description: 'Sets WEBUI_NAME but polls api.openwebui.com for metadata.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GLOBAL_LOG_LEVEL',
-                        description: 'Configures the root logger in Python, affecting all loggers in Open WebUI' +
-                            ' and potentially some third-party libraries',
-                        type: 'DropDown',
-                        values: ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'],
-                        defaultValue: 'INFO',
-                    },
-                    {
-                        name: 'WEBUI_NAME',
-                        description: 'Sets the main WebUI name. Appends (Open WebUI) if overridden.',
-                        type: 'Input',
-                        defaultValue: 'Open WebUI',
-                    },
-                    {
                         name: 'WEBUI_URL',
-                        description: 'Specifies the URL where the Open WebUI is reachable. Currently used for search engine support.',
+                        description: 'Specifies the URL where your Open WebUI installation is reachable. Needed for search engine support and OAuth/SSO.',
                         type: 'Input',
                         defaultValue: 'http://localhost:3000',
-                    },
-                    {
-                        name: 'PORT',
-                        description: 'Sets the port to run Open WebUI from.',
-                        type: 'Input',
-                        defaultValue: 8080,
                     },
                     {
                         name: 'ENABLE_SIGNUP',
@@ -21562,49 +21574,20 @@ const openArguments = [
                         type: 'CheckBox',
                     },
                     {
+                        name: 'ENABLE_SIGNUP_PASSWORD_CONFIRMATION',
+                        description: 'If set to True, a "Confirm Password" field is added to the sign-up page to help users avoid typos when creating their password.',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: 'ENABLE_LOGIN_FORM',
-                        description: 'Toggles email, password, sign in and "or" (only when ENABLE_OAUTH_SIGNUP is set to True) elements.',
+                        description: 'Toggles email, password, sign-in and "or" (only when ENABLE_OAUTH_SIGNUP is set to True) elements.',
                         type: 'CheckBox',
                     },
                     {
-                        name: 'ENABLE_REALTIME_CHAT_SAVE',
-                        description: 'When enabled, the system saves each chunk of streamed chat data to the database in real time to ' +
-                            'ensure maximum data persistency. This feature provides robust data recovery and allows accurate ' +
-                            'session tracking. However, the tradeoff is increased latency, as saving to the database introduces ' +
-                            'a delay. Disabling this feature can improve performance and reduce delays, but it risks potential' +
-                            " data loss in the event of a system failure or crash. Use based on your application's requirements" +
-                            ' and acceptable tradeoffs.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_ADMIN_EXPORT',
-                        description: 'Controls whether admin users can export data.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_ADMIN_CHAT_ACCESS',
-                        description: 'Enables admin users to access all chats.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_CHANNELS',
-                        description: 'Enables or disables channel support.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ADMIN_EMAIL',
-                        description: 'Sets the admin email shown by SHOW_ADMIN_DETAILS',
+                        name: 'DEFAULT_LOCALE',
+                        description: 'Sets the default locale for the application.',
                         type: 'Input',
-                    },
-                    {
-                        name: 'SHOW_ADMIN_DETAILS',
-                        description: 'Toggles whether to show admin user details in the interface.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'BYPASS_MODEL_ACCESS_CONTROL',
-                        description: 'Bypasses model access control.',
-                        type: 'CheckBox',
+                        defaultValue: 'en',
                     },
                     {
                         name: 'DEFAULT_MODELS',
@@ -21619,15 +21602,116 @@ const openArguments = [
                         defaultValue: 'pending',
                     },
                     {
-                        name: 'DEFAULT_LOCALE',
-                        description: 'Sets the default locale for the application.',
+                        name: 'PENDING_USER_OVERLAY_TITLE',
+                        description: 'Sets a custom title for the pending user overlay.',
                         type: 'Input',
-                        defaultValue: 'en',
+                    },
+                    {
+                        name: 'PENDING_USER_OVERLAY_CONTENT',
+                        description: 'Sets a custom text content for the pending user overlay.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ENABLE_CHANNELS',
+                        description: 'Enables or disables channel support.',
+                        type: 'CheckBox',
                     },
                     {
                         name: 'WEBHOOK_URL',
                         description: 'Sets a webhook for integration with Discord/Slack/Microsoft Teams.',
                         type: 'Input',
+                    },
+                    {
+                        name: 'ENABLE_ADMIN_EXPORT',
+                        description: 'Controls whether admins can export data, chats and the database in the admin panel. Database exports only work for SQLite databases for now.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ENABLE_ADMIN_CHAT_ACCESS',
+                        description: "Enables admin users to directly access the chats of other users. When disabled, admins can no longer accesss user's chats in the admin panel. If you disable this, consider disabling `ENABLE_ADMIN_EXPORT` too, if you are using SQLite, as the exports also contain user chats.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'BYPASS_ADMIN_ACCESS_CONTROL',
+                        description: 'When disabled, admin users are treated like regular users for workspace access (models, knowledge, prompts and tools) and only see items they have explicit permission to access through the existing access control system. This also applies to the visibility of models in the model selector - admins will be treated as regular users: base models and custom models they do not have explicit permission to access, will be hidden. If set to `True` (Default), admins have access to all created items in the workspace area and all models in the model selector, regardless of access permissions.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ENABLE_USER_WEBHOOKS',
+                        description: 'Enables or disables user webhooks.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'RESPONSE_WATERMARK',
+                        description: 'Sets a custom text that will be included when you copy a message in the chat. E.g. `"This text is AI generated"` -> will add "This text is AI generated" to every message, when copied.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'THREAD_POOL_SIZE',
+                        description: 'Sets the thread pool size for FastAPI/AnyIO blocking calls. By default (when set to `0`) FastAPI/AnyIO use `40` threads. In case of large instances and many concurrent users, it may be needed to increase `THREAD_POOL_SIZE` to prevent blocking.',
+                        type: 'Input',
+                        defaultValue: 0,
+                    },
+                    {
+                        name: 'MODELS_CACHE_TTL',
+                        description: 'Sets the cache time-to-live in seconds for model list responses from OpenAI and Ollama endpoints. This reduces API calls by caching the available models list for the specified duration. Set to empty string to disable caching entirely.',
+                        type: 'Input',
+                        defaultValue: 1,
+                    },
+                    {
+                        name: 'SHOW_ADMIN_DETAILS',
+                        description: 'Toggles whether to show admin user details in the interface.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ADMIN_EMAIL',
+                        description: 'Sets the admin email shown by `SHOW_ADMIN_DETAILS`',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ENV',
+                        description: 'Environment setting.',
+                        type: 'DropDown',
+                        values: ['dev', 'prod'],
+                        defaultValue: 'dev',
+                    },
+                    {
+                        name: 'ENABLE_PERSISTENT_CONFIG',
+                        description: 'If set to `False`, all `PersistentConfig` variables are treated as regular variables.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'CUSTOM_NAME',
+                        description: 'Sets `WEBUI_NAME` but polls **api.openwebui.com** for metadata.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'WEBUI_NAME',
+                        description: 'Sets the main WebUI name. Appends `(Open WebUI)` if overridden.',
+                        type: 'Input',
+                        defaultValue: 'Open WebUI',
+                    },
+                    {
+                        name: 'PORT',
+                        description: 'Sets the port to run Open WebUI from.',
+                        type: 'Input',
+                        defaultValue: 8080,
+                    },
+                    {
+                        name: 'ENABLE_REALTIME_CHAT_SAVE',
+                        description: "When enabled, the system saves each chunk of streamed chat data to the database in real time to ensure maximum data persistency. This feature provides robust data recovery and allows accurate session tracking. However, the tradeoff is increased latency, as saving to the database introduces a delay. Disabling this feature can improve performance and reduce delays, but it risks potential data loss in the event of a system failure or crash. Use based on your application's requirements and acceptable tradeoffs.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'CHAT_RESPONSE_STREAM_DELTA_CHUNK_SIZE',
+                        description: "Sets a system-wide minimum value for the number of tokens to batch together before sending them to the client during a streaming response. This allows an administrator to enforce a baseline level of performance and stability across the entire system by preventing excessively small chunk sizes that can cause high CPU load. The final chunk size used for a response will be the highest value set among this global variable, the model's advanced parameters, or the per-chat settings. The default is 1, which applies no minimum batching at the global level.",
+                        type: 'Input',
+                        defaultValue: 1,
+                    },
+                    {
+                        name: 'BYPASS_MODEL_ACCESS_CONTROL',
+                        description: "Bypasses model access control. When set to `true`, all users (and admins alike) will have access to all models, regardless of the model's privacy setting (Private, Public, Shared with certain groups). This is useful for smaller or individual Open WebUI installations where model access restrictions may not be needed.",
+                        type: 'CheckBox',
                     },
                     {
                         name: 'WEBUI_BUILD_HASH',
@@ -21641,15 +21725,34 @@ const openArguments = [
                         type: 'Input',
                     },
                     {
-                        name: 'JWT_EXPIRES_IN',
-                        description: 'Sets the JWT expiration time in seconds. Valid time units: s, m, h, d, w or -1 for no expiration.',
-                        type: 'Input',
-                        defaultValue: -1,
-                    },
-                    {
                         name: 'USE_CUDA_DOCKER',
                         description: 'Builds the Docker image with NVIDIA CUDA support. Enables GPU acceleration for local Whisper and embeddings.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: 'EXTERNAL_PWA_MANIFEST_URL',
+                        description: 'When defined as a fully qualified URL (e.g., https://path/to/manifest.webmanifest), requests sent to /manifest.json will use the external manifest file. When not defined, the default manifest.json file will be used.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ENABLE_TITLE_GENERATION',
+                        description: 'Enables or disables chat title generation.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'LICENSE_KEY',
+                        description: 'Specifies the license key to use (for Enterprise users only).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'SSL_ASSERT_FINGERPRINT',
+                        description: 'Specifies the SSL assert fingerprint to use.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'DEFAULT_PROMPT_SUGGESTIONS',
+                        description: 'List of prompt suggestions.',
+                        type: 'Input',
                     },
                 ],
             },
@@ -21658,15 +21761,19 @@ const openArguments = [
                 items: [
                     {
                         name: 'AIOHTTP_CLIENT_TIMEOUT',
-                        description: 'Specifies the timeout duration in seconds for the aiohttp client. This impacts' +
-                            ' things such as connections to Ollama and OpenAI endpoints.',
+                        description: 'Specifies the timeout duration in seconds for the AIOHTTP client. This impacts things such as connections to Ollama and OpenAI endpoints.',
                         type: 'Input',
                         defaultValue: 300,
                     },
                     {
+                        name: 'AIOHTTP_CLIENT_TIMEOUT_MODEL_LIST',
+                        description: 'Sets the timeout in seconds for fetching the model list. This can be useful in cases where network latency requires a longer timeout duration to successfully retrieve the model list.',
+                        type: 'Input',
+                        defaultValue: 10,
+                    },
+                    {
                         name: 'AIOHTTP_CLIENT_TIMEOUT_OPENAI_MODEL_LIST',
-                        description: 'Sets the timeout in seconds for fetching the OpenAI model list. This can be useful' +
-                            ' in cases where network latency requires a longer timeout duration to successfully retrieve the model list.',
+                        description: 'Sets the timeout in seconds for fetching the model list. This can be useful in cases where network latency requires a longer timeout duration to successfully retrieve the model list.',
                         type: 'Input',
                     },
                 ],
@@ -21715,8 +21822,7 @@ const openArguments = [
                     },
                     {
                         name: 'OLLAMA_BASE_URLS',
-                        description: 'Configures load-balanced Ollama backend hosts, separated by ;. See OLLAMA_BASE_URL.' +
-                            ' Takes precedence overOLLAMA_BASE_URL.',
+                        description: 'Configures load-balanced Ollama backend hosts, separated by ;. Takes precedence over OLLAMA_BASE_URL.',
                         type: 'Input',
                     },
                     {
@@ -21726,8 +21832,7 @@ const openArguments = [
                     },
                     {
                         name: 'K8S_FLAG',
-                        description: 'If set, assumes Helm chart deployment and sets OLLAMA_BASE_URL' +
-                            ' to http://ollama-service.open-webui.svc.cluster.local:11434',
+                        description: 'If set, assumes Helm chart deployment and sets OLLAMA_BASE_URL to http://ollama-service.open-webui.svc.cluster.local:11434',
                         type: 'CheckBox',
                     },
                 ],
@@ -21773,8 +21878,7 @@ const openArguments = [
                     },
                     {
                         name: 'TASK_MODEL_EXTERNAL',
-                        description: 'The default model to use for tasks such as title and web search query generation when' +
-                            ' using OpenAI-compatible endpoints.',
+                        description: 'The default model to use for tasks such as title and web search query generation when using OpenAI-compatible endpoints.',
                         type: 'Input',
                     },
                     {
@@ -21783,9 +21887,121 @@ const openArguments = [
                         type: 'Input',
                     },
                     {
+                        name: 'ENABLE_FOLLOW_UP_GENERATION',
+                        description: 'Enables or disables follow up generation.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'FOLLOW_UP_GENERATION_PROMPT_TEMPLATE',
+                        description: 'Prompt to use for generating several relevant follow-up questions.',
+                        type: 'Input',
+                    },
+                    {
                         name: 'TOOLS_FUNCTION_CALLING_PROMPT_TEMPLATE',
                         description: 'Prompt to use when calling tools.',
                         type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Code Execution',
+                items: [
+                    {
+                        name: 'ENABLE_CODE_EXECUTION',
+                        description: 'Enables or disables code execution.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'CODE_EXECUTION_ENGINE',
+                        description: 'Specifies the code execution engine to use.',
+                        type: 'Input',
+                        defaultValue: 'pyodide',
+                    },
+                    {
+                        name: 'CODE_EXECUTION_JUPYTER_URL',
+                        description: 'Specifies the Jupyter URL to use for code execution.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_EXECUTION_JUPYTER_AUTH',
+                        description: 'Specifies the Jupyter authentication method to use for code execution.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_EXECUTION_JUPYTER_AUTH_TOKEN',
+                        description: 'Specifies the Jupyter authentication token to use for code execution.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_EXECUTION_JUPYTER_AUTH_PASSWORD',
+                        description: 'Specifies the Jupyter authentication password to use for code execution.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_EXECUTION_JUPYTER_TIMEOUT',
+                        description: 'Specifies the timeout for Jupyter code execution.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Code Interpreter',
+                items: [
+                    {
+                        name: 'ENABLE_CODE_INTERPRETER',
+                        description: 'Enables or disables code interpreter.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_ENGINE',
+                        description: 'Specifies the code interpreter engine to use.',
+                        type: 'Input',
+                        defaultValue: 'pyodide',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_BLACKLISTED_MODULES',
+                        description: 'Specifies a comma-separated list of Python modules that are blacklisted and cannot be imported or used within the code interpreter. This enhances security by preventing access to potentially sensitive or system-level functionalities.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_PROMPT_TEMPLATE',
+                        description: 'Specifies the prompt template to use for code interpreter.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_JUPYTER_URL',
+                        description: 'Specifies the Jupyter URL to use for code interpreter.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_JUPYTER_AUTH',
+                        description: 'Specifies the Jupyter authentication method to use for code interpreter.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_JUPYTER_AUTH_TOKEN',
+                        description: 'Specifies the Jupyter authentication token to use for code interpreter.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_JUPYTER_AUTH_PASSWORD',
+                        description: 'Specifies the Jupyter authentication password to use for code interpreter.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_INTERPRETER_JUPYTER_TIMEOUT',
+                        description: 'Specifies the timeout for the Jupyter code interpreter.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Direct Connections (OpenAPI/MCPO Tool Servers)',
+                items: [
+                    {
+                        name: 'ENABLE_DIRECT_CONNECTIONS',
+                        description: 'Enables or disables direct connections.',
+                        type: 'CheckBox',
                     },
                 ],
             },
@@ -21835,12 +22051,12 @@ const openArguments = [
                 items: [
                     {
                         name: 'ENABLE_TAGS_GENERATION',
-                        description: 'Enables or disables tags generation.',
+                        description: 'Enables or disables tag generation.',
                         type: 'CheckBox',
                     },
                     {
                         name: 'TAGS_GENERATION_PROMPT_TEMPLATE',
-                        description: 'Sets the prompt template for tags generation.',
+                        description: 'Sets the prompt template for tag generation.',
                         type: 'Input',
                     },
                 ],
@@ -21848,6 +22064,11 @@ const openArguments = [
             {
                 section: 'API Key Endpoint Restrictions',
                 items: [
+                    {
+                        name: 'ENABLE_API_KEY',
+                        description: 'Enables API key authentication.',
+                        type: 'CheckBox',
+                    },
                     {
                         name: 'ENABLE_API_KEY_ENDPOINT_RESTRICTIONS',
                         description: 'Enables API key endpoint restrictions for added security and configurability.',
@@ -21858,6 +22079,12 @@ const openArguments = [
                         description: 'Specifies a comma-separated list of allowed API endpoints when API key endpoint restrictions are enabled.',
                         type: 'Input',
                     },
+                    {
+                        name: 'JWT_EXPIRES_IN',
+                        description: 'Sets the JWT expiration time in seconds. Valid time units: `s`, `m`, `h`, `d`, `w` or `-1` for no expiration.',
+                        type: 'Input',
+                        defaultValue: '-1',
+                    },
                 ],
             },
         ],
@@ -21867,35 +22094,36 @@ const openArguments = [
         items: [
             {
                 name: 'ENABLE_FORWARD_USER_INFO_HEADERS',
-                description: 'Forwards user information (name, id, email, and role) as X-headers to OpenAI API.' +
-                    ' If enabled, the following headers are forwarded:\n' +
-                    'X-OpenWebUI-User-Name\n' +
-                    'X-OpenWebUI-User-Id\n' +
-                    'X-OpenWebUI-User-Email\n' +
-                    'X-OpenWebUI-User-Role',
+                description: 'Forwards user information (name, ID, email, role and chat-id) as X-headers to OpenAI API and Ollama API.',
                 type: 'CheckBox',
             },
             {
-                name: 'ENABLE_RAG_LOCAL_WEB_FETCH',
-                description: 'Enables local web fetching for RAG. Enabling this allows Server Side Request' +
-                    ' Forgery attacks against local network resources.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'ENABLE_RAG_WEB_LOADER_SSL_VERIFICATION',
+                name: 'ENABLE_WEB_LOADER_SSL_VERIFICATION',
                 description: 'Bypass SSL Verification for RAG on Websites.',
                 type: 'CheckBox',
             },
             {
                 name: 'WEBUI_SESSION_COOKIE_SAME_SITE',
-                description: 'Sets the SameSite attribute for session cookies.',
+                description: 'Sets the `SameSite` attribute for session cookies.',
                 type: 'DropDown',
                 values: ['lax', 'strict', 'none'],
                 defaultValue: 'lax',
             },
             {
                 name: 'WEBUI_SESSION_COOKIE_SECURE',
-                description: 'Sets the Secure attribute for session cookies if set to True.',
+                description: 'Sets the `Secure` attribute for session cookies if set to `True`.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'WEBUI_AUTH_COOKIE_SAME_SITE',
+                description: 'Sets the `SameSite` attribute for auth cookies.',
+                type: 'DropDown',
+                values: ['lax', 'strict', 'none'],
+                defaultValue: 'lax',
+            },
+            {
+                name: 'WEBUI_AUTH_COOKIE_SECURE',
+                description: 'Sets the `Secure` attribute for auth cookies if set to `True`.',
                 type: 'CheckBox',
             },
             {
@@ -21910,34 +22138,44 @@ const openArguments = [
                 defaultValue: 't0p-s3cr3t',
             },
             {
+                name: 'ENABLE_VERSION_UPDATE_CHECK',
+                description: 'When enabled, the application makes automatic update checks and notifies you about version updates.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'OFFLINE_MODE',
+                description: "Disables Open WebUI's network connections for update checks and automatic model downloads.",
+                type: 'CheckBox',
+            },
+            {
+                name: 'RESET_CONFIG_ON_START',
+                description: 'Resets the `config.json` file on startup.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'SAFE_MODE',
+                description: 'Enables safe mode, which disables potentially unsafe features, deactivating all functions.',
+                type: 'CheckBox',
+            },
+            {
                 name: 'CORS_ALLOW_ORIGIN',
                 description: 'Sets the allowed origins for Cross-Origin Resource Sharing (CORS).',
                 type: 'Input',
                 defaultValue: '*',
             },
             {
+                name: 'CORS_ALLOW_CUSTOM_SCHEME',
+                description: 'Sets a list of further allowed schemes for Cross-Origin Resource Sharing (CORS). Allows you to specify additional custom URL schemes, beyond the standard `http` and `https`, that are permitted as valid origins for Cross-Origin Resource Sharing (CORS).',
+                type: 'Input',
+            },
+            {
                 name: 'RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE',
-                description: 'Determines whether or not to allow custom models defined on the Hub in their own modeling files.',
+                description: 'Determines whether to allow custom models defined on the Hub in their own modeling files.',
                 type: 'CheckBox',
             },
             {
                 name: 'RAG_RERANKING_MODEL_TRUST_REMOTE_CODE',
-                description: 'Determines whether or not to allow custom models defined on the Hub in their own modeling files for reranking.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'OFFLINE_MODE',
-                description: 'Enables or disables offline mode.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'RESET_CONFIG_ON_START',
-                description: 'Resets the config.json file on startup.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'SAFE_MODE',
-                description: 'Enables safe mode, which disables potentially unsafe features, deactivating all functions.',
+                description: 'Determines whether to allow custom models defined on the Hub in their own. modeling files for reranking.',
                 type: 'CheckBox',
             },
             {
@@ -21950,172 +22188,30 @@ const openArguments = [
                 description: 'Toggles automatic update of the reranking model.',
                 type: 'CheckBox',
             },
-            {
-                name: 'WHISPER_MODEL_AUTO_UPDATE',
-                description: 'Toggles automatic update of the Whisper model.',
-                type: 'CheckBox',
-            },
         ],
     },
     {
-        category: 'Retrieval Augmented Generation (RAG)',
+        category: 'Vector Database',
         sections: [
             {
-                section: 'RAG',
+                section: 'General',
                 items: [
                     {
                         name: 'VECTOR_DB',
-                        description: 'Specifies which vector database system to use. This setting determines which vector' +
-                            ' storage system will be used for managing embeddings.',
+                        description: 'Specifies which vector database system to use. This setting determines which vector storage system will be used for managing embeddings.',
                         type: 'DropDown',
-                        values: ['chroma', 'milvus', 'qdrant', 'opensearch', 'pgvector'],
+                        values: [
+                            'chroma',
+                            'elasticsearch',
+                            'milvus',
+                            'opensearch',
+                            'pgvector',
+                            'qdrant',
+                            'pinecone',
+                            's3vector',
+                            'oracle23ai',
+                        ],
                         defaultValue: 'chroma',
-                    },
-                    {
-                        name: 'RAG_EMBEDDING_ENGINE',
-                        description: 'Selects an embedding engine to use for RAG.',
-                        type: 'DropDown',
-                        values: ['', 'ollama', 'openai'],
-                    },
-                    {
-                        name: 'RAG_EMBEDDING_MODEL',
-                        description: 'Sets a model for embeddings. Locally, a Sentence-Transformer model is used.',
-                        type: 'Input',
-                        defaultValue: 'sentence-transformers/all-MiniLM-L6-v2',
-                    },
-                    {
-                        name: 'ENABLE_RAG_HYBRID_SEARCH',
-                        description: 'Enables the use of ensemble search with BM25 + ChromaDB, with reranking using sentence_transformers models.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'CONTENT_EXTRACTION_ENGINE',
-                        description: 'Sets the content extraction engine to use for document ingestion.',
-                        type: 'DropDown',
-                        values: ['', 'tika'],
-                    },
-                    {
-                        name: 'RAG_TOP_K',
-                        description: 'Sets the default number of results to consider when using RAG.',
-                        type: 'Input',
-                        defaultValue: 3,
-                    },
-                    {
-                        name: 'RAG_RELEVANCE_THRESHOLD',
-                        description: 'Sets the relevance threshold to consider for documents when used with reranking.',
-                        type: 'Input',
-                        defaultValue: 0.0,
-                    },
-                    {
-                        name: 'RAG_TEMPLATE',
-                        description: 'Template to use when injecting RAG documents into chat completion',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'RAG_TEXT_SPLITTER',
-                        description: 'Sets the text splitter for RAG models.',
-                        type: 'DropDown',
-                        values: ['character', 'token'],
-                        defaultValue: 'character',
-                    },
-                    {
-                        name: 'TIKTOKEN_CACHE_DIR',
-                        description: 'Sets the directory for TikiToken cache.',
-                        type: 'Input',
-                        defaultValue: '{CACHE_DIR}/tiktoken',
-                    },
-                    {
-                        name: 'TIKTOKEN_ENCODING_NAME',
-                        description: 'Sets the encoding name for TikiToken.',
-                        type: 'Input',
-                        defaultValue: 'cl100k_base',
-                    },
-                    {
-                        name: 'CHUNK_SIZE',
-                        description: 'Sets the document chunk size for embeddings.',
-                        type: 'Input',
-                        defaultValue: 1000,
-                    },
-                    {
-                        name: 'CHUNK_OVERLAP',
-                        description: 'Specifies how much overlap there should be between chunks.',
-                        type: 'Input',
-                        defaultValue: 100,
-                    },
-                    {
-                        name: 'PDF_EXTRACT_IMAGES',
-                        description: 'Extracts images from PDFs using OCR when loading documents.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'RAG_FILE_MAX_SIZE',
-                        description: 'Sets the maximum size of a file that can be uploaded for document ingestion.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'RAG_FILE_MAX_COUNT',
-                        description: 'Sets the maximum number of files that can be uploaded at once for document ingestion.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'RAG_RERANKING_MODEL',
-                        description: 'Sets a model for reranking results. Locally, a Sentence-Transformer model is used.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'RAG_OPENAI_API_BASE_URL',
-                        description: 'Sets the OpenAI base API URL to use for RAG embeddings.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_BASE_URL}',
-                    },
-                    {
-                        name: 'RAG_OPENAI_API_KEY',
-                        description: 'Sets the OpenAI API key to use for RAG embeddings.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_KEY}',
-                    },
-                    {
-                        name: 'RAG_EMBEDDING_OPENAI_BATCH_SIZE',
-                        description: 'Sets the batch size for OpenAI embeddings.',
-                        type: 'Input',
-                        defaultValue: 1,
-                    },
-                    {
-                        name: 'RAG_EMBEDDING_BATCH_SIZE',
-                        description: 'Sets the batch size for embedding in RAG (Retrieval-Augmented Generator) models.',
-                        type: 'Input',
-                        defaultValue: 1,
-                    },
-                    {
-                        name: 'RAG_OLLAMA_API_KEY',
-                        description: 'Sets the API key for Ollama API used in RAG models.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'RAG_OLLAMA_BASE_URL',
-                        description: 'Sets the base URL for Ollama API used in RAG models.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ENABLE_RETRIEVAL_QUERY_GENERATION',
-                        description: 'Enables or disables retrieval query generation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'QUERY_GENERATION_PROMPT_TEMPLATE',
-                        description: 'Sets the prompt template for query generation.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Apache Tika',
-                items: [
-                    {
-                        name: 'TIKA_SERVER_URL',
-                        description: 'Sets the URL for the Apache Tika server.',
-                        type: 'Input',
-                        defaultValue: 'http://localhost:9998',
                     },
                 ],
             },
@@ -22145,7 +22241,7 @@ const openArguments = [
                     },
                     {
                         name: 'CHROMA_HTTP_HEADERS',
-                        description: 'Comma-separated list of HTTP headers to include with every ChromaDB request.',
+                        description: 'A comma-separated list of HTTP headers to include with every ChromaDB request.',
                         type: 'Input',
                     },
                     {
@@ -22155,7 +22251,7 @@ const openArguments = [
                     },
                     {
                         name: 'CHROMA_CLIENT_AUTH_PROVIDER',
-                        description: 'Specifies auth provider for remote ChromaDB Server.',
+                        description: 'Specifies an authentication provider for remote ChromaDB Server.',
                         type: 'Input',
                     },
                     {
@@ -22166,23 +22262,43 @@ const openArguments = [
                 ],
             },
             {
-                section: 'Google Drive',
+                section: 'Elasticsearch',
                 items: [
                     {
-                        name: 'ENABLE_GOOGLE_DRIVE_INTEGRATION',
-                        description: 'Enables or disables Google Drive integration. If set to true, and' +
-                            ' GOOGLE_DRIVE_CLIENT_ID & GOOGLE_DRIVE_API_KEY are both configured,' +
-                            ' Google Drive will appear as an upload option in the chat UI.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'GOOGLE_DRIVE_CLIENT_ID',
-                        description: 'Sets the client ID for Google Drive (client must be configured with Drive API and Picker API enabled).',
+                        name: 'ELASTICSEARCH_API_KEY',
+                        description: 'Specifies the Elasticsearch API key.',
                         type: 'Input',
                     },
                     {
-                        name: 'GOOGLE_DRIVE_API_KEY',
-                        description: 'Sets the API key for Google Drive integration.',
+                        name: 'ELASTICSEARCH_CA_CERTS',
+                        description: 'Specifies the path to the CA certificates for Elasticsearch.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ELASTICSEARCH_CLOUD_ID',
+                        description: 'Specifies the Elasticsearch cloud ID.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ELASTICSEARCH_INDEX_PREFIX',
+                        description: 'Specifies the prefix for the Elasticsearch index.',
+                        type: 'Input',
+                        defaultValue: 'open_webui_collections',
+                    },
+                    {
+                        name: 'ELASTICSEARCH_PASSWORD',
+                        description: 'Specifies the password for Elasticsearch.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ELASTICSEARCH_URL',
+                        description: 'Specifies the URL for the Elasticsearch instance.',
+                        type: 'Input',
+                        defaultValue: 'https://localhost:9200',
+                    },
+                    {
+                        name: 'ELASTICSEARCH_USERNAME',
+                        description: 'Specifies the username for Elasticsearch.',
                         type: 'Input',
                     },
                 ],
@@ -22192,10 +22308,52 @@ const openArguments = [
                 items: [
                     {
                         name: 'MILVUS_URI',
-                        description: 'Specifies the URI for connecting to the Milvus vector database.' +
-                            ' This can point to a local or remote Milvus server based on the deployment configuration.',
+                        description: 'Specifies the URI for connecting to the Milvus vector database. This can point to a local or remote Milvus server based on the deployment configuration.',
                         type: 'Input',
                         defaultValue: '${DATA_DIR}/vector_db/milvus.db',
+                    },
+                    {
+                        name: 'MILVUS_DB',
+                        description: 'Specifies the database to connect to within a Milvus instance.',
+                        type: 'Input',
+                        defaultValue: 'default',
+                    },
+                    {
+                        name: 'MILVUS_TOKEN',
+                        description: 'Specifies an optional connection token for Milvus.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'MILVUS_INDEX_TYPE',
+                        description: 'Specifies the index type to use when creating a new collection in Milvus. `AUTOINDEX` is generally recommended for Milvus standalone. `HNSW` may offer better performance but typically requires a clustered Milvus setup.',
+                        type: 'DropDown',
+                        values: ['AUTOINDEX', 'FLAT', 'IVF_FLAT', 'HNSW'],
+                        defaultValue: 'HNSW',
+                    },
+                    {
+                        name: 'MILVUS_METRIC_TYPE',
+                        description: 'Specifies the metric type for vector similarity search in Milvus.',
+                        type: 'DropDown',
+                        values: ['COSINE', 'IP', 'L2'],
+                        defaultValue: 'COSINE',
+                    },
+                    {
+                        name: 'MILVUS_HNSW_M',
+                        description: 'Specifies the `M` parameter for the HNSW index type in Milvus. This influences the number of bi-directional links created for each new element during construction. Only applicable if `MILVUS_INDEX_TYPE` is `HNSW`.',
+                        type: 'Input',
+                        defaultValue: 16,
+                    },
+                    {
+                        name: 'MILVUS_HNSW_EFCONSTRUCTION',
+                        description: 'Specifies the `efConstruction` parameter for the HNSW index type in Milvus. This influences the size of the dynamic list for the nearest neighbors during index construction. Only applicable if `MILVUS_INDEX_TYPE` is `HNSW`.',
+                        type: 'Input',
+                        defaultValue: 100,
+                    },
+                    {
+                        name: 'MILVUS_IVF_FLAT_NLIST',
+                        description: 'Specifies the `nlist` parameter for the IVF_FLAT index type in Milvus. This is the number of cluster units. Only applicable if `MILVUS_INDEX_TYPE` is `IVF_FLAT`.',
+                        type: 'Input',
+                        defaultValue: 128,
                     },
                 ],
             },
@@ -22238,6 +22396,12 @@ const openArguments = [
                         description: 'Sets the database URL for model storage.',
                         type: 'Input',
                     },
+                    {
+                        name: 'PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH',
+                        description: 'Specifies the maximum vector length for PGVector initialization.',
+                        type: 'Input',
+                        defaultValue: '1536',
+                    },
                 ],
             },
             {
@@ -22253,139 +22417,669 @@ const openArguments = [
                         description: 'Sets the URI for Qdrant.',
                         type: 'Input',
                     },
+                    {
+                        name: 'QDRANT_ON_DISK',
+                        description: 'Enable the usage of memmap(also known as on-disk) storage',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'QDRANT_PREFER_GRPC',
+                        description: 'Use gPRC interface whenever possible.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'QDRANT_GRPC_PORT',
+                        description: 'Sets the gRPC port number for Qdrant.',
+                        type: 'Input',
+                        defaultValue: 6334,
+                    },
+                    {
+                        name: 'QDRANT_TIMEOUT',
+                        description: 'Sets the timeout in seconds for all requests made to the Qdrant server, helping to prevent long-running queries from stalling the application.',
+                        type: 'Input',
+                        defaultValue: 5,
+                    },
+                    {
+                        name: 'QDRANT_HNSW_M',
+                        description: 'Controls the HNSW (Hierarchical Navigable Small World) index construction. In standard mode, this sets the `m` parameter. In multi-tenancy mode, this value is used for the `payload_m` parameter to build indexes on the payload, as the global `m` is disabled for performance, following Qdrant best practices.',
+                        type: 'Input',
+                        defaultValue: 16,
+                    },
+                    {
+                        name: 'ENABLE_QDRANT_MULTITENANCY_MODE',
+                        description: 'Enables multitenancy pattern for Qdrant collections management, which significantly reduces RAM usage and computational overhead by consolidating similar vector data structures. Recommend turn on',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'QDRANT_COLLECTION_PREFIX',
+                        description: 'Sets the prefix for Qdrant collection names. Useful for namespacing or isolating collections, especially in multitenancy mode. Changing this value will cause the application to use a different set of collections in Qdrant. Existing collections with a different prefix will not be affected.',
+                        type: 'Input',
+                        defaultValue: 'open-webui',
+                    },
+                ],
+            },
+            {
+                section: 'Pinecone',
+                items: [
+                    {
+                        name: 'PINECONE_API_KEY',
+                        description: 'Sets the API key used to authenticate with the Pinecone service.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'PINECONE_ENVIRONMENT',
+                        description: 'Specifies the Pinecone environment to connect to (e.g., `us-west1-gcp`, `gcp-starter`, etc.).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'PINECONE_INDEX_NAME',
+                        description: 'Defines the name of the Pinecone index that will be used to store and query vector embeddings.',
+                        type: 'Input',
+                        defaultValue: 'open-webui-index',
+                    },
+                    {
+                        name: 'PINECONE_DIMENSION',
+                        description: 'The dimensionality of the vector embeddings. Must match the dimension expected by the index (commonly 768, 1024, 1536, or 3072 based on model used).',
+                        type: 'Input',
+                        defaultValue: 1536,
+                    },
+                    {
+                        name: 'PINECONE_METRIC',
+                        description: 'Specifies the similarity metric to use for vector comparisons within the Pinecone index.',
+                        type: 'DropDown',
+                        values: ['cosine', 'dotproduct', 'euclidean'],
+                        defaultValue: 'cosine',
+                    },
+                    {
+                        name: 'PINECONE_CLOUD',
+                        description: 'Specifies the cloud provider where the Pinecone index is hosted.',
+                        type: 'DropDown',
+                        values: ['aws', 'gcp', 'azure'],
+                        defaultValue: 'aws',
+                    },
+                ],
+            },
+            {
+                section: 'Oracle 23ai Vector Search (oracle23ai)',
+                items: [
+                    {
+                        name: 'ORACLE_DB_USE_WALLET',
+                        description: 'Determines the connection method to the Oracle Database.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ORACLE_DB_USER',
+                        description: 'Specifies the username used to connect to the Oracle Database.',
+                        type: 'Input',
+                        defaultValue: 'DEMOUSER',
+                    },
+                    {
+                        name: 'ORACLE_DB_PASSWORD',
+                        description: 'Specifies the password for the `ORACLE_DB_USER`.',
+                        type: 'Input',
+                        defaultValue: 'Welcome123456',
+                    },
+                    {
+                        name: 'ORACLE_DB_DSN',
+                        description: 'Defines the Data Source Name for the Oracle Database connection.',
+                        type: 'Input',
+                        defaultValue: 'localhost:1521/FREEPDB1',
+                    },
+                    {
+                        name: 'ORACLE_WALLET_DIR',
+                        description: 'Required when `ORACLE_DB_USE_WALLET` is `true`. Specifies the absolute path to the directory containing the Oracle Cloud Wallet files.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ORACLE_WALLET_PASSWORD',
+                        description: 'Required when `ORACLE_DB_USE_WALLET` is `true`. Specifies the password for the Oracle Cloud Wallet.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ORACLE_VECTOR_LENGTH',
+                        description: 'Sets the expected dimension or length of the vector embeddings stored in the Oracle Database. This must match the embedding model used.',
+                        type: 'Input',
+                        defaultValue: 768,
+                    },
+                    {
+                        name: 'ORACLE_DB_POOL_MIN',
+                        description: 'The minimum number of connections to maintain in the Oracle Database connection pool.',
+                        type: 'Input',
+                        defaultValue: 2,
+                    },
+                    {
+                        name: 'ORACLE_DB_POOL_MAX',
+                        description: 'The maximum number of connections allowed in the Oracle Database connection pool.',
+                        type: 'Input',
+                        defaultValue: 10,
+                    },
+                    {
+                        name: 'ORACLE_DB_POOL_INCREMENT',
+                        description: 'The number of connections to create when the pool needs to grow.',
+                        type: 'Input',
+                        defaultValue: 1,
+                    },
+                ],
+            },
+            {
+                section: 'S3 Vector Bucket',
+                items: [
+                    {
+                        name: 'S3_VECTOR_BUCKET_NAME',
+                        description: 'Specifies the name of the S3 Vector Bucket to store vectors in.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'S3_VECTOR_REGION',
+                        description: 'Specifies the AWS region where the S3 Vector Bucket is hosted.',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'RAG Content Extraction Engine',
+        items: [
+            {
+                name: 'CONTENT_EXTRACTION_ENGINE',
+                description: 'Sets the content extraction engine to use for document ingestion.',
+                type: 'DropDown',
+                values: ['', 'external', 'tika', 'docling', 'document_intelligence', 'mistral_ocr'],
+            },
+            {
+                name: 'MISTRAL_OCR_API_KEY',
+                description: 'Specifies the Mistral OCR API key to use.',
+                type: 'Input',
+            },
+            {
+                name: 'EXTERNAL_DOCUMENT_LOADER_URL',
+                description: 'Sets the URL for the external document loader service.',
+                type: 'Input',
+            },
+            {
+                name: 'EXTERNAL_DOCUMENT_LOADER_API_KEY',
+                description: 'Sets the API key for authenticating with the external document loader service.',
+                type: 'Input',
+            },
+            {
+                name: 'TIKA_SERVER_URL',
+                description: 'Sets the URL for the Apache Tika server.',
+                type: 'Input',
+                defaultValue: 'http://localhost:9998',
+            },
+            {
+                name: 'DOCLING_SERVER_URL',
+                description: 'Specifies the URL for the Docling server. Requires Docling version 1.0.0 or later.',
+                type: 'Input',
+                defaultValue: 'http://docling:5001',
+            },
+            {
+                name: 'DOCLING_OCR_ENGINE',
+                description: 'Specifies the OCR engine used by Docling.',
+                type: 'Input',
+                defaultValue: 'tesseract',
+            },
+            {
+                name: 'DOCLING_OCR_LANG',
+                description: 'Specifies the OCR language(s) to be used with the configured `DOCLING_OCR_ENGINE`.',
+                type: 'Input',
+                defaultValue: 'eng,fra,deu,spa',
+            },
+        ],
+    },
+    {
+        category: 'Retrieval Augmented Generation (RAG)',
+        items: [
+            {
+                name: 'RAG_EMBEDDING_ENGINE',
+                description: 'Selects an embedding engine to use for RAG.',
+                type: 'DropDown',
+                values: ['', 'ollama', 'openai'],
+            },
+            {
+                name: 'RAG_EMBEDDING_MODEL',
+                description: 'Sets a model for embeddings. Locally, a Sentence-Transformer model is used.',
+                type: 'Input',
+                defaultValue: 'sentence-transformers/all-MiniLM-L6-v2',
+            },
+            {
+                name: 'ENABLE_RAG_HYBRID_SEARCH',
+                description: 'Enables the use of ensemble search with `BM25` + `ChromaDB`, with reranking using `sentence_transformers` models.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'RAG_TOP_K',
+                description: 'Sets the default number of results to consider for the embedding when using RAG.',
+                type: 'Input',
+                defaultValue: 3,
+            },
+            {
+                name: 'RAG_TOP_K_RERANKER',
+                description: 'Sets the default number of results to consider for the reranker when using RAG.',
+                type: 'Input',
+                defaultValue: 3,
+            },
+            {
+                name: 'RAG_RELEVANCE_THRESHOLD',
+                description: 'Sets the relevance threshold to consider for documents when used with reranking.',
+                type: 'Input',
+                defaultValue: 0.0,
+            },
+            {
+                name: 'RAG_HYBRID_BM25_WEIGHT',
+                description: 'Sets the weight given to the keyword search (BM25) during hybrid search. 1 means only keyword serach, 0 means only vector search.',
+                type: 'Input',
+                defaultValue: 0.5,
+            },
+            {
+                name: 'RAG_TEMPLATE',
+                description: 'Template to use when injecting RAG documents into chat completion',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_TEXT_SPLITTER',
+                description: 'Sets the text splitter for RAG models.',
+                type: 'DropDown',
+                values: ['character', 'token'],
+                defaultValue: 'character',
+            },
+            {
+                name: 'TIKTOKEN_CACHE_DIR',
+                description: 'Sets the directory for TikToken cache.',
+                type: 'Input',
+                defaultValue: '{CACHE_DIR}/tiktoken',
+            },
+            {
+                name: 'TIKTOKEN_ENCODING_NAME',
+                description: 'Sets the encoding name for TikToken.',
+                type: 'Input',
+                defaultValue: 'cl100k_base',
+            },
+            {
+                name: 'CHUNK_SIZE',
+                description: 'Sets the document chunk size for embeddings.',
+                type: 'Input',
+                defaultValue: 1000,
+            },
+            {
+                name: 'CHUNK_OVERLAP',
+                description: 'Specifies how much overlap there should be between chunks.',
+                type: 'Input',
+                defaultValue: 100,
+            },
+            {
+                name: 'PDF_EXTRACT_IMAGES',
+                description: 'Extracts images from PDFs using OCR when loading documents.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'RAG_FILE_MAX_SIZE',
+                description: 'Sets the maximum size of a file in megabytes that can be uploaded for document ingestion.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_FILE_MAX_COUNT',
+                description: 'Sets the maximum number of files that can be uploaded at once for document ingestion.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_ALLOWED_FILE_EXTENSIONS',
+                description: 'Specifies which file extensions are permitted for upload.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_RERANKING_MODEL',
+                description: 'Sets a model for reranking results. Locally, a Sentence-Transformer model is used.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_OPENAI_API_BASE_URL',
+                description: 'Sets the OpenAI base API URL to use for RAG embeddings.',
+                type: 'Input',
+                defaultValue: '${OPENAI_API_BASE_URL}',
+            },
+            {
+                name: 'RAG_OPENAI_API_KEY',
+                description: 'Sets the OpenAI API key to use for RAG embeddings.',
+                type: 'Input',
+                defaultValue: '${OPENAI_API_KEY}',
+            },
+            {
+                name: 'RAG_EMBEDDING_OPENAI_BATCH_SIZE',
+                description: 'Sets the batch size for OpenAI embeddings.',
+                type: 'Input',
+                defaultValue: 1,
+            },
+            {
+                name: 'RAG_EMBEDDING_BATCH_SIZE',
+                description: 'Sets the batch size for embedding in RAG (Retrieval-Augmented Generator) models.',
+                type: 'Input',
+                defaultValue: 1,
+            },
+            {
+                name: 'RAG_OLLAMA_API_KEY',
+                description: 'Sets the API key for Ollama API used in RAG models.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_OLLAMA_BASE_URL',
+                description: 'Sets the base URL for Ollama API used in RAG models.',
+                type: 'Input',
+            },
+            {
+                name: 'ENABLE_RETRIEVAL_QUERY_GENERATION',
+                description: 'Enables or disables retrieval query generation.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'QUERY_GENERATION_PROMPT_TEMPLATE',
+                description: 'Sets the prompt template for query generation.',
+                type: 'Input',
+            },
+            {
+                name: 'BYPASS_EMBEDDING_AND_RETRIEVAL',
+                description: 'Bypasses the embedding and retrieval process.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'DOCUMENT_INTELLIGENCE_ENDPOINT',
+                description: 'Specifies the endpoint for document intelligence.',
+                type: 'Input',
+            },
+            {
+                name: 'DOCUMENT_INTELLIGENCE_KEY',
+                description: 'Specifies the key for document intelligence.',
+                type: 'Input',
+            },
+            {
+                name: 'ENABLE_RAG_LOCAL_WEB_FETCH',
+                description: 'Enables or disables local web fetch for RAG.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'RAG_EMBEDDING_CONTENT_PREFIX',
+                description: 'Specifies the prefix for the RAG embedding content.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_EMBEDDING_PREFIX_FIELD_NAME',
+                description: 'Specifies the field name for the RAG embedding prefix.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_EMBEDDING_QUERY_PREFIX',
+                description: 'Specifies the prefix for the RAG embedding query.',
+                type: 'Input',
+            },
+            {
+                name: 'RAG_FULL_CONTEXT',
+                description: 'Specifies whether to use the full context for RAG.',
+                type: 'CheckBox',
+            },
+        ],
+        sections: [
+            {
+                section: 'Google Drive',
+                items: [
+                    {
+                        name: 'ENABLE_GOOGLE_DRIVE_INTEGRATION',
+                        description: 'Enables or disables Google Drive integration. If set to true, and `GOOGLE_DRIVE_CLIENT_ID` & `GOOGLE_DRIVE_API_KEY` are both configured, Google Drive will appear as an upload option in the chat UI.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'GOOGLE_DRIVE_CLIENT_ID',
+                        description: 'Sets the client ID for Google Drive (client must be configured with Drive API and Picker API enabled).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GOOGLE_DRIVE_API_KEY',
+                        description: 'Sets the API key for Google Drive integration.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'OneDrive',
+                items: [
+                    {
+                        name: 'ENABLE_ONEDRIVE_INTEGRATION',
+                        description: 'Enables or disables OneDrive integration.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ONEDRIVE_CLIENT_ID',
+                        description: 'Specifies the client ID for OneDrive integration.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ONEDRIVE_SHAREPOINT_URL',
+                        description: 'Specifies the SharePoint site URL for OneDrive integration e.g. https://companyname.sharepoint.com.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ONEDRIVE_SHAREPOINT_TENANT_ID',
+                        description: 'Specifies the SharePoint tenant ID for OneDrive integration.',
+                        type: 'Input',
+                    },
                 ],
             },
         ],
     },
     {
         category: 'Web Search',
+        items: [
+            {
+                name: 'ENABLE_WEB_SEARCH',
+                description: 'Enable web search toggle.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'ENABLE_SEARCH_QUERY_GENERATION',
+                description: 'Enables or disables search query generation.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'WEB_SEARCH_TRUST_ENV',
+                description: 'Enables proxy set by `http_proxy` and `https_proxy` during web search content fetching.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'WEB_SEARCH_RESULT_COUNT',
+                description: 'Maximum number of search results to crawl.',
+                type: 'Input',
+                defaultValue: 3,
+            },
+            {
+                name: 'WEB_LOADER_CONCURRENT_REQUESTS',
+                description: 'Specifies the number of concurrent requests used by the web loader to fetch content from web pages returned by search results. This directly impacts how many pages can be crawled simultaneously.',
+                type: 'Input',
+                defaultValue: 10,
+            },
+            {
+                name: 'WEB_SEARCH_ENGINE',
+                description: 'Specifies the search engine to use.',
+                type: 'DropDown',
+                values: [
+                    'searxng',
+                    'google_pse',
+                    'brave',
+                    'kagi',
+                    'mojeek',
+                    'bocha',
+                    'serpstack',
+                    'serper',
+                    'serply',
+                    'searchapi',
+                    'serpapi',
+                    'duckduckgo',
+                    'tavily',
+                    'jina',
+                    'bing',
+                    'exa',
+                    'perplexity',
+                    'sougou',
+                ],
+            },
+            {
+                name: 'BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL',
+                description: 'Bypasses the web search embedding and retrieval process.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'SEARXNG_QUERY_URL',
+                description: 'The [SearXNG search API](https://docs.searxng.org/dev/search_api.html) URL supporting JSON output. `<query>` is replaced with the search query. Example: `http://searxng.local/search?q=<query>`',
+                type: 'Input',
+            },
+            {
+                name: 'GOOGLE_PSE_API_KEY',
+                description: 'Sets the API key for the Google Programmable Search Engine (PSE) service.',
+                type: 'Input',
+            },
+            {
+                name: 'GOOGLE_PSE_ENGINE_ID',
+                description: 'The engine ID for the Google Programmable Search Engine (PSE) service.',
+                type: 'Input',
+            },
+            {
+                name: 'BRAVE_SEARCH_API_KEY',
+                description: 'Sets the API key for the Brave Search API.',
+                type: 'Input',
+            },
+            {
+                name: 'KAGI_SEARCH_API_KEY',
+                description: 'Sets the API key for Kagi Search API.',
+                type: 'Input',
+            },
+            {
+                name: 'MOJEEK_SEARCH_API_KEY',
+                description: 'Sets the API key for Mojeek Search API.',
+                type: 'Input',
+            },
+            {
+                name: 'SERPSTACK_API_KEY',
+                description: 'Sets the API key for Serpstack search API.',
+                type: 'Input',
+            },
+            {
+                name: 'SERPSTACK_HTTPS',
+                description: 'Configures the use of HTTPS for Serpstack requests. Free tier requests are restricted to HTTP only.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'SERPER_API_KEY',
+                description: 'Sets the API key for Serper search API.',
+                type: 'Input',
+            },
+            {
+                name: 'SERPLY_API_KEY',
+                description: 'Sets the API key for Serply search API.',
+                type: 'Input',
+            },
+            {
+                name: 'SEARCHAPI_API_KEY',
+                description: 'Sets the API key for SearchAPI.',
+                type: 'Input',
+            },
+            {
+                name: 'SEARCHAPI_ENGINE',
+                description: 'Sets the SearchAPI engine.',
+                type: 'Input',
+            },
+            {
+                name: 'TAVILY_API_KEY',
+                description: 'Sets the API key for Tavily search API.',
+                type: 'Input',
+            },
+            {
+                name: 'JINA_API_KEY',
+                description: 'Sets the API key for Jina.',
+                type: 'Input',
+            },
+            {
+                name: 'BING_SEARCH_V7_ENDPOINT',
+                description: 'Sets the endpoint for Bing Search API.',
+                type: 'Input',
+            },
+            {
+                name: 'BING_SEARCH_V7_SUBSCRIPTION_KEY',
+                description: 'Sets the subscription key for Bing Search API.',
+                type: 'Input',
+                defaultValue: 'https://api.bing.microsoft.com/v7.0/search',
+            },
+            {
+                name: 'BOCHA_SEARCH_API_KEY',
+                description: 'Sets the API key for Bocha Search API.',
+                type: 'Input',
+            },
+            {
+                name: 'EXA_API_KEY',
+                description: 'Sets the API key for Exa search API.',
+                type: 'Input',
+            },
+            {
+                name: 'SERPAPI_API_KEY',
+                description: 'Sets the API key for SerpAPI.',
+                type: 'Input',
+            },
+            {
+                name: 'SERPAPI_ENGINE',
+                description: 'Specifies the search engine to use for SerpAPI.',
+                type: 'Input',
+            },
+            {
+                name: 'SOUGOU_API_SID',
+                description: 'Sets the Sogou API SID.',
+                type: 'Input',
+            },
+            {
+                name: 'SOUGOU_API_SK',
+                description: 'Sets the Sogou API SK.',
+                type: 'Input',
+            },
+            {
+                name: 'TAVILY_EXTRACT_DEPTH',
+                description: 'Specifies the extract depth for Tavily search results.',
+                type: 'Input',
+                defaultValue: 'basic',
+            },
+        ],
         sections: [
             {
-                section: 'Web Search',
+                section: 'Web Loader Configuration',
                 items: [
                     {
-                        name: 'ENABLE_RAG_WEB_SEARCH',
-                        description: 'Enable web search toggle',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_SEARCH_QUERY_GENERATION',
-                        description: 'Enables or disables search query generation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'RAG_WEB_SEARCH_RESULT_COUNT',
-                        description: 'Maximum number of search results to crawl.',
-                        type: 'Input',
-                        defaultValue: 3,
-                    },
-                    {
-                        name: 'RAG_WEB_SEARCH_CONCURRENT_REQUESTS',
-                        description: 'Number of concurrent requests to crawl web pages returned from search results.',
-                        type: 'Input',
-                        defaultValue: 10,
-                    },
-                    {
-                        name: 'RAG_WEB_SEARCH_ENGINE',
-                        description: 'Options for search engines',
+                        name: 'WEB_LOADER_ENGINE',
+                        description: 'Specifies the loader to use for retrieving and processing web content.',
                         type: 'DropDown',
-                        values: [
-                            'searxng',
-                            'google_pse',
-                            'brave',
-                            'kagi',
-                            'mojeek',
-                            'serpstack',
-                            'serper',
-                            'serply',
-                            'searchapi',
-                            'duckduckgo',
-                            'tavily',
-                            'jina',
-                            'bing',
-                        ],
+                        values: ['requests', 'playwright'],
+                        defaultValue: 'safe_web',
                     },
                     {
-                        name: 'SEARXNG_QUERY_URL',
-                        description: 'The SearXNG search API URL supporting JSON output. <query> is replaced' +
-                            ' with the search query. Example: http://searxng.local/search?q=<query>',
+                        name: 'PLAYWRIGHT_WS_URL',
+                        description: 'Specifies the WebSocket URI of a remote Playwright browser instance. When set, Open WebUI will use this remote browser instead of installing browser dependencies locally. This is particularly useful in containerized environments where you want to keep the Open WebUI container lightweight and separate browser concerns. Example: `ws://playwright:3000`',
                         type: 'Input',
                     },
                     {
-                        name: 'GOOGLE_PSE_API_KEY',
-                        description: 'Sets the API key for the Google Programmable Search Engine (PSE) service.',
+                        name: 'FIRECRAWL_API_BASE_URL',
+                        description: 'Sets the base URL for Firecrawl API.',
+                        type: 'Input',
+                        defaultValue: 'https://api.firecrawl.dev',
+                    },
+                    {
+                        name: 'FIRECRAWL_API_KEY',
+                        description: 'Sets the API key for Firecrawl API.',
                         type: 'Input',
                     },
                     {
-                        name: 'GOOGLE_PSE_ENGINE_ID',
-                        description: 'The engine ID for the Google Programmable Search Engine (PSE) service.',
+                        name: 'PERPLEXITY_API_KEY',
+                        description: 'Sets the API key for Perplexity API.',
                         type: 'Input',
                     },
                     {
-                        name: 'BRAVE_SEARCH_API_KEY',
-                        description: 'Sets the API key for the Brave Search API.',
+                        name: 'PLAYWRIGHT_TIMEOUT',
+                        description: 'Specifies the timeout for Playwright requests.',
                         type: 'Input',
-                    },
-                    {
-                        name: 'KAGI_SEARCH_API_KEY',
-                        description: 'Sets the API key for Kagi Search API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MOJEEK_SEARCH_API_KEY',
-                        description: 'Sets the API key for Mojeek Search API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'SERPSTACK_API_KEY',
-                        description: 'Sets the API key for Serpstack search API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'SERPSTACK_HTTPS',
-                        description: 'Configures the use of HTTPS for Serpstack requests. Free tier requests are restricted to HTTP only.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'SERPER_API_KEY',
-                        description: 'Sets the API key for Serper search API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'SERPLY_API_KEY',
-                        description: 'Sets the API key for Serply search API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'SEARCHAPI_API_KEY',
-                        description: 'Sets the API key for SearchAPI.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'SEARCHAPI_ENGINE',
-                        description: 'Sets the SearchAPI engine.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'TAVILY_API_KEY',
-                        description: 'Sets the API key for Tavily search API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'JINA_API_KEY',
-                        description: 'Sets the API key for Jina.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'BING_SEARCH_V7_ENDPOINT',
-                        description: 'Sets the endpoint for Bing Search API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'BING_SEARCH_V7_SUBSCRIPTION_KEY',
-                        description: 'Sets the subscription key for Bing Search API.',
-                        type: 'Input',
-                        defaultValue: 'https://api.bing.microsoft.com/v7.0/search',
                     },
                 ],
             },
@@ -22399,7 +23093,7 @@ const openArguments = [
                     },
                     {
                         name: 'YOUTUBE_LOADER_LANGUAGE',
-                        description: 'Sets the language to use for YouTube video loading.',
+                        description: 'Comma-separated list of language codes to try when fetching YouTube video transcriptions, in priority order.',
                         type: 'Input',
                         defaultValue: 'en',
                     },
@@ -22415,7 +23109,7 @@ const openArguments = [
                 items: [
                     {
                         name: 'WHISPER_MODEL',
-                        description: 'Sets the Whisper model to use for Speech-to-Text. The backend used is faster_whisper with quantization to int8.',
+                        description: 'Sets the Whisper model to use for Speech-to-Text. The backend used is faster_whisper with quantization to `int8`.',
                         type: 'Input',
                         defaultValue: 'base',
                     },
@@ -22424,6 +23118,21 @@ const openArguments = [
                         description: 'Specifies the directory to store Whisper model files.',
                         type: 'Input',
                         defaultValue: '${DATA_DIR}/cache/whisper/models',
+                    },
+                    {
+                        name: 'WHISPER_VAD_FILTER',
+                        description: 'Specifies whether to apply a Voice Activity Detection (VAD) filter to Whisper Speech-to-Text.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'WHISPER_MODEL_AUTO_UPDATE',
+                        description: 'Toggles automatic update of the Whisper model.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'WHISPER_LANGUAGE',
+                        description: 'Specifies the ISO 639-1 language Whisper uses for STT (ISO 639-2 for Hawaiian and Cantonese). Whisper predicts the language by default.',
+                        type: 'Input',
                     },
                 ],
             },
@@ -22434,7 +23143,7 @@ const openArguments = [
                         name: 'AUDIO_STT_ENGINE',
                         description: 'Specifies the Speech-to-Text engine to use.',
                         type: 'DropDown',
-                        values: ['', 'openai'],
+                        values: ['', 'openai', 'deepgram', 'azure'],
                     },
                     {
                         name: 'AUDIO_STT_MODEL',
@@ -22453,6 +23162,36 @@ const openArguments = [
                         description: 'Sets the OpenAI API key to use for Speech-to-Text.',
                         type: 'Input',
                         defaultValue: '${OPENAI_API_KEY}',
+                    },
+                ],
+            },
+            {
+                section: 'Speech-to-Text (Azure)',
+                items: [
+                    {
+                        name: 'AUDIO_STT_AZURE_API_KEY',
+                        description: 'Specifies the Azure API key to use for Speech-to-Text.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AUDIO_STT_AZURE_REGION',
+                        description: 'Specifies the Azure region to use for Speech-to-Text.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AUDIO_STT_AZURE_LOCALES',
+                        description: 'Specifies the locales to use for Azure Speech-to-Text.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Speech-to-Text (Deepgram)',
+                items: [
+                    {
+                        name: 'DEEPGRAM_API_KEY',
+                        description: 'Specifies the Deepgram API key to use for Speech-to-Text.',
+                        type: 'Input',
                     },
                 ],
             },
@@ -22476,19 +23215,31 @@ const openArguments = [
                         type: 'Input',
                         defaultValue: 'tts-1',
                     },
+                    {
+                        name: 'AUDIO_TTS_VOICE',
+                        description: 'Sets the OpenAI text-to-speech voice to use.',
+                        type: 'Input',
+                        defaultValue: 'alloy',
+                    },
+                    {
+                        name: 'AUDIO_TTS_SPLIT_ON',
+                        description: 'Sets the OpenAI text-to-speech split on to use.',
+                        type: 'Input',
+                        defaultValue: 'punctuation',
+                    },
                 ],
             },
             {
                 section: 'Azure Text-to-Speech',
                 items: [
                     {
-                        name: 'AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT',
-                        description: 'Sets the output format for Azure Text to Speech.',
+                        name: 'AUDIO_TTS_AZURE_SPEECH_REGION',
+                        description: 'Sets the region for Azure Text to Speech.',
                         type: 'Input',
                     },
                     {
-                        name: 'AUDIO_TTS_AZURE_SPEECH_REGION',
-                        description: 'Sets the region for Azure Text to Speech.',
+                        name: 'AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT',
+                        description: 'Sets the output format for Azure Text to Speech.',
                         type: 'Input',
                     },
                 ],
@@ -22508,18 +23259,6 @@ const openArguments = [
                         type: 'Input',
                         defaultValue: '${OPENAI_API_KEY}',
                     },
-                    {
-                        name: 'AUDIO_TTS_SPLIT_ON',
-                        description: 'Sets the OpenAI text-to-speech split on to use.',
-                        type: 'Input',
-                        defaultValue: 'punctuation',
-                    },
-                    {
-                        name: 'AUDIO_TTS_VOICE',
-                        description: 'Sets the OpenAI text-to-speech voice to use.',
-                        type: 'Input',
-                        defaultValue: 'alloy',
-                    },
                 ],
             },
         ],
@@ -22528,7 +23267,7 @@ const openArguments = [
         category: 'Image Generation',
         sections: [
             {
-                section: 'Image Generation',
+                section: 'General',
                 items: [
                     {
                         name: 'ENABLE_IMAGE_GENERATION',
@@ -22539,12 +23278,17 @@ const openArguments = [
                         name: 'IMAGE_GENERATION_ENGINE',
                         description: 'Specifies the engine to use for image generation.',
                         type: 'DropDown',
-                        values: ['openai', 'comfyui', 'automatic1111'],
+                        values: ['openai', 'comfyui', 'automatic1111', 'gemini'],
                         defaultValue: 'openai',
                     },
                     {
-                        name: 'IMAGE_GENERATION_MODEL',
-                        description: 'Default model to use for image generation',
+                        name: 'ENABLE_IMAGE_PROMPT_GENERATION',
+                        description: 'Enables or disables image prompt generation.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'IMAGE_PROMPT_GENERATION_PROMPT_TEMPLATE',
+                        description: 'Specifies the template to use for generating image prompts.',
                         type: 'Input',
                     },
                     {
@@ -22559,34 +23303,39 @@ const openArguments = [
                         type: 'Input',
                         defaultValue: 50,
                     },
+                    {
+                        name: 'IMAGE_GENERATION_MODEL',
+                        description: 'Default model to use for image generation',
+                        type: 'Input',
+                    },
                 ],
             },
             {
                 section: 'AUTOMATIC1111',
                 items: [
                     {
-                        name: 'AUTOMATIC1111_API_AUTH',
-                        description: 'Sets the Automatic1111 API authentication.',
+                        name: 'AUTOMATIC1111_BASE_URL',
+                        description: "Specifies the URL to AUTOMATIC1111's Stable Diffusion API.",
                         type: 'Input',
                     },
                     {
-                        name: 'AUTOMATIC1111_BASE_URL',
-                        description: "Specifies the URL to Automatic1111's Stable Diffusion API.",
+                        name: 'AUTOMATIC1111_API_AUTH',
+                        description: 'Sets the AUTOMATIC1111 API authentication.',
                         type: 'Input',
                     },
                     {
                         name: 'AUTOMATIC1111_CFG_SCALE',
-                        description: 'Sets the scale for Automatic1111 inference.',
+                        description: 'Sets the scale for AUTOMATIC1111 inference.',
                         type: 'Input',
                     },
                     {
                         name: 'AUTOMATIC1111_SAMPLER',
-                        description: 'Sets the sampler for Automatic1111 inference.',
+                        description: 'Sets the sampler for AUTOMATIC1111 inference.',
                         type: 'Input',
                     },
                     {
                         name: 'AUTOMATIC1111_SCHEDULER',
-                        description: 'Sets the scheduler for Automatic1111 inference.',
+                        description: 'Sets the scheduler for AUTOMATIC1111 inference.',
                         type: 'Input',
                     },
                 ],
@@ -22607,6 +23356,31 @@ const openArguments = [
                     {
                         name: 'COMFYUI_WORKFLOW',
                         description: 'Sets the ComfyUI workflow.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Gemini',
+                items: [
+                    {
+                        name: 'GEMINI_API_BASE_URL',
+                        description: "Specifies the URL to Gemini's API.",
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GEMINI_API_KEY',
+                        description: 'Sets the Gemini API key.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'IMAGES_GEMINI_API_BASE_URL',
+                        description: "Specifies the URL to Gemini's image generation API.",
+                        type: 'Input',
+                    },
+                    {
+                        name: 'IMAGES_GEMINI_API_KEY',
+                        description: 'Sets the Gemini API key for image generation.',
                         type: 'Input',
                     },
                 ],
@@ -22634,34 +23408,176 @@ const openArguments = [
         category: 'OAuth',
         sections: [
             {
-                section: 'OAuth',
+                section: 'General',
                 items: [
                     {
                         name: 'ENABLE_OAUTH_SIGNUP',
-                        description: 'Enables account creation when sighting up via OAuth. Distinct from ENABLE_SIGNUP.',
+                        description: 'Enables account creation when signing up via OAuth. Distinct from `ENABLE_SIGNUP`.',
                         type: 'CheckBox',
                     },
                     {
-                        name: 'ENABLE_API_KEY',
-                        description: 'Enables API key authentication.',
+                        name: 'ENABLE_OAUTH_PERSISTENT_CONFIG',
+                        description: 'Controls whether OAuth-related settings are persisted in the database after the first launch.',
                         type: 'CheckBox',
                     },
                     {
-                        name: 'ENABLE_OAUTH_ROLE_MANAGEMENT',
-                        description: 'Enables role management to oauth delegation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_OAUTH_GROUP_MANAGEMENT',
-                        description: 'Enables or disables OAUTH group management.',
-                        type: 'CheckBox',
+                        name: 'OAUTH_SUB_CLAIM',
+                        description: "Overrides the default claim used to identify a user's unique ID (`sub`) from the OAuth/OIDC provider's user info response. By default, Open WebUI attempts to infer this from the provider's configuration. This variable allows you to explicitly specify which claim to use. For example, if your identity provider uses 'employee_id' as the unique identifier, you would set this variable to 'employee_id'.",
+                        type: 'Input',
                     },
                     {
                         name: 'OAUTH_MERGE_ACCOUNTS_BY_EMAIL',
-                        description: 'If enabled, merges OAuth accounts with existing accounts using the same email address.' +
-                            ' This is considered unsafe as not all OAuth providers will verify email addresses and' +
-                            ' can lead to potential account takeovers.',
+                        description: 'If enabled, merges OAuth accounts with existing accounts using the same email address. This is considered unsafe as not all OAuth providers will verify email addresses and can lead to potential account takeovers.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: 'OAUTH_UPDATE_PICTURE_ON_LOGIN',
+                        description: 'If enabled, updates the local user profile picture with the OAuth-provided picture on login.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'WEBUI_AUTH_TRUSTED_EMAIL_HEADER',
+                        description: 'Defines the trusted request header for authentication. See [SSO docs](/features/sso).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'WEBUI_AUTH_TRUSTED_NAME_HEADER',
+                        description: 'Defines the trusted request header for the username of anyone registering with the `WEBUI_AUTH_TRUSTED_EMAIL_HEADER` header. See [SSO docs](/features/sso).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'WEBUI_AUTH_TRUSTED_GROUPS_HEADER',
+                        description: 'Defines the trusted request header containing a comma-separated list of group memberships for the user when using trusted header authentication. See [SSO docs](/features/sso).',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Google',
+                items: [
+                    {
+                        name: 'GOOGLE_CLIENT_ID',
+                        description: 'Sets the client ID for Google OAuth.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GOOGLE_CLIENT_SECRET',
+                        description: 'Sets the client secret for Google OAuth.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GOOGLE_OAUTH_SCOPE',
+                        description: 'Sets the scope for Google OAuth authentication.',
+                        type: 'Input',
+                        defaultValue: 'openid email profile',
+                    },
+                    {
+                        name: 'GOOGLE_REDIRECT_URI',
+                        description: 'Sets the redirect URI for Google OAuth.',
+                        type: 'Input',
+                        defaultValue: '<backend>/oauth/google/callback',
+                    },
+                ],
+            },
+            {
+                section: 'Microsoft',
+                items: [
+                    {
+                        name: 'MICROSOFT_CLIENT_ID',
+                        description: 'Sets the client ID for Microsoft OAuth.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'MICROSOFT_CLIENT_SECRET',
+                        description: 'Sets the client secret for Microsoft OAuth.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'MICROSOFT_CLIENT_TENANT_ID',
+                        description: 'Sets the tenant ID for Microsoft OAuth.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'MICROSOFT_OAUTH_SCOPE',
+                        description: 'Sets the scope for Microsoft OAuth authentication.',
+                        type: 'Input',
+                        defaultValue: 'openid email profile',
+                    },
+                    {
+                        name: 'MICROSOFT_REDIRECT_URI',
+                        description: 'Sets the redirect URI for Microsoft OAuth.',
+                        type: 'Input',
+                        defaultValue: '<backend>/oauth/microsoft/callback',
+                    },
+                ],
+            },
+            {
+                section: 'GitHub',
+                items: [
+                    {
+                        name: 'GITHUB_CLIENT_ID',
+                        description: 'Sets the client ID for GitHub OAuth.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GITHUB_CLIENT_SECRET',
+                        description: 'Sets the client secret for GitHub OAuth.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GITHUB_CLIENT_SCOPE',
+                        description: 'Specifies the scope for GitHub OAuth authentication.',
+                        type: 'Input',
+                        defaultValue: 'user:email',
+                    },
+                    {
+                        name: 'GITHUB_CLIENT_REDIRECT_URI',
+                        description: 'Sets the redirect URI for GitHub OAuth.',
+                        type: 'Input',
+                        defaultValue: '<backend>/oauth/github/callback',
+                    },
+                ],
+            },
+            {
+                section: 'OpenID (OIDC)',
+                items: [
+                    {
+                        name: 'OAUTH_CLIENT_ID',
+                        description: 'Sets the client ID for OIDC.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OAUTH_CLIENT_SECRET',
+                        description: 'Sets the client secret for OIDC.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OPENID_PROVIDER_URL',
+                        description: 'Path to the `.well-known/openid-configuration` endpoint',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OPENID_REDIRECT_URI',
+                        description: 'Sets the redirect URI for OIDC',
+                        type: 'Input',
+                        defaultValue: '<backend>/oauth/oidc/callback',
+                    },
+                    {
+                        name: 'OAUTH_SCOPES',
+                        description: 'Sets the scope for OIDC authentication. `openid` and `email` are required.',
+                        type: 'Input',
+                        defaultValue: 'openid email profile',
+                    },
+                    {
+                        name: 'OAUTH_CODE_CHALLENGE_METHOD',
+                        description: 'Specifies the code challenge method for OAuth authentication.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OAUTH_PROVIDER_NAME',
+                        description: 'Sets the name for the OIDC provider.',
+                        type: 'Input',
+                        defaultValue: 'SSO',
                     },
                     {
                         name: 'OAUTH_USERNAME_CLAIM',
@@ -22683,27 +23599,25 @@ const openArguments = [
                     },
                     {
                         name: 'OAUTH_GROUP_CLAIM',
-                        description: 'Specifies the group claim for OAUTH authentication.',
+                        description: 'Specifies the group claim for OAuth authentication.',
                         type: 'Input',
                         defaultValue: 'groups',
+                    },
+                    {
+                        name: 'ENABLE_OAUTH_ROLE_MANAGEMENT',
+                        description: 'Enables role management for OAuth delegation.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ENABLE_OAUTH_GROUP_MANAGEMENT',
+                        description: 'Enables or disables OAuth group management.',
+                        type: 'CheckBox',
                     },
                     {
                         name: 'OAUTH_ROLES_CLAIM',
                         description: 'Sets the roles claim to look for in the OIDC token.',
                         type: 'Input',
                         defaultValue: 'roles',
-                    },
-                    {
-                        name: 'OAUTH_SCOPES',
-                        description: 'Sets the scope for OIDC authentication. openid and email are required.',
-                        type: 'Input',
-                        defaultValue: 'openid email profile',
-                    },
-                    {
-                        name: 'OAUTH_ALLOWED_DOMAINS',
-                        description: 'Specifies the allowed domains for OAUTH authentication. (e.g. "example1.com,example2.com").',
-                        type: 'Input',
-                        defaultValue: '*',
                     },
                     {
                         name: 'OAUTH_ALLOWED_ROLES',
@@ -22718,106 +23632,10 @@ const openArguments = [
                         defaultValue: 'admin',
                     },
                     {
-                        name: 'WEBUI_AUTH_TRUSTED_EMAIL_HEADER',
-                        description: 'Defines the trusted request header for authentication. See SSO docs.',
+                        name: 'OAUTH_ALLOWED_DOMAINS',
+                        description: 'Specifies the allowed domains for OAuth authentication. (e.g. "example1.com,example2.com").',
                         type: 'Input',
-                    },
-                    {
-                        name: 'WEBUI_AUTH_TRUSTED_NAME_HEADER',
-                        description: 'Defines the trusted request header for the username of anyone registering with' +
-                            ' the WEBUI_AUTH_TRUSTED_EMAIL_HEADER header. See SSO docs.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Google',
-                items: [
-                    {
-                        name: 'GOOGLE_CLIENT_ID',
-                        description: 'Sets the client ID for Google OAuth',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GOOGLE_CLIENT_SECRET',
-                        description: 'Sets the client secret for Google OAuth',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GOOGLE_OAUTH_SCOPE',
-                        description: 'Sets the scope for Google OAuth authentication.',
-                        type: 'Input',
-                        defaultValue: 'openid email profile',
-                    },
-                    {
-                        name: 'GOOGLE_REDIRECT_URI',
-                        description: 'Sets the redirect URI for Google OAuth',
-                        type: 'Input',
-                        defaultValue: '<backend>/oauth/google/callback',
-                    },
-                ],
-            },
-            {
-                section: 'Microsoft',
-                items: [
-                    {
-                        name: 'MICROSOFT_CLIENT_ID',
-                        description: 'Sets the client ID for Microsoft OAuth',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MICROSOFT_CLIENT_SECRET',
-                        description: 'Sets the client secret for Microsoft OAuth',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MICROSOFT_CLIENT_TENANT_ID',
-                        description: 'Sets the tenant ID for Microsoft OAuth',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MICROSOFT_OAUTH_SCOPE',
-                        description: 'Sets the scope for Microsoft OAuth authentication.',
-                        type: 'Input',
-                        defaultValue: 'openid email profile',
-                    },
-                    {
-                        name: 'MICROSOFT_REDIRECT_URI',
-                        description: 'Sets the redirect URI for Microsoft OAuth',
-                        type: 'Input',
-                        defaultValue: '<backend>/oauth/microsoft/callback',
-                    },
-                ],
-            },
-            {
-                section: 'OpenID (OIDC)',
-                items: [
-                    {
-                        name: 'OAUTH_CLIENT_ID',
-                        description: 'Sets the client ID for OIDC',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OAUTH_CLIENT_SECRET',
-                        description: 'Sets the client secret for OIDC',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OPENID_PROVIDER_URL',
-                        description: 'Path to the .well-known/openid-configuration endpoint',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OAUTH_PROVIDER_NAME',
-                        description: 'Sets the name for the OIDC provider.',
-                        type: 'Input',
-                        defaultValue: 'SSO',
-                    },
-                    {
-                        name: 'OPENID_REDIRECT_URI',
-                        description: 'Sets the redirect URI for OIDC',
-                        type: 'Input',
-                        defaultValue: '<backend>/oauth/oidc/callback',
+                        defaultValue: '*',
                     },
                 ],
             },
@@ -22832,34 +23650,50 @@ const openArguments = [
                 type: 'CheckBox',
             },
             {
-                name: 'LDAP_APP_DN',
-                description: 'Sets the distinguished name for LDAP application.',
+                name: 'LDAP_SERVER_LABEL',
+                description: 'Sets the label of the LDAP server.',
                 type: 'Input',
             },
             {
-                name: 'LDAP_APP_PASSWORD',
-                description: 'Sets the password for LDAP application.',
+                name: 'LDAP_SERVER_HOST',
+                description: 'Sets the hostname of the LDAP server.',
+                type: 'Input',
+                defaultValue: 'localhost',
+            },
+            {
+                name: 'LDAP_SERVER_PORT',
+                description: 'Sets the port number of the LDAP server.',
+                type: 'Input',
+                defaultValue: 389,
+            },
+            {
+                name: 'LDAP_ATTRIBUTE_FOR_MAIL',
+                description: 'Sets the attribute to use as mail for LDAP authentication.',
                 type: 'Input',
             },
             {
                 name: 'LDAP_ATTRIBUTE_FOR_USERNAME',
-                description: 'Sets the attribute to use as username for LDAP authentication.',
+                description: 'Sets the attribute to use as a username for LDAP authentication.',
                 type: 'Input',
             },
             {
-                name: 'LDAP_CA_CERT_FILE',
-                description: 'Sets the path to LDAP CA certificate file.',
+                name: 'LDAP_APP_DN',
+                description: 'Sets the distinguished name for the LDAP application.',
                 type: 'Input',
             },
             {
-                name: 'LDAP_CIPHERS',
-                description: 'Sets the ciphers to use for LDAP connection.',
+                name: 'LDAP_APP_PASSWORD',
+                description: 'Sets the password for the LDAP application.',
                 type: 'Input',
-                defaultValue: 'ALL',
             },
             {
                 name: 'LDAP_SEARCH_BASE',
                 description: 'Sets the base to search for LDAP authentication.',
+                type: 'Input',
+            },
+            {
+                name: 'LDAP_SEARCH_FILTER',
+                description: 'Sets a single filter to use for LDAP search. Alternative to `LDAP_SEARCH_FILTERS`.',
                 type: 'Input',
             },
             {
@@ -22868,76 +23702,221 @@ const openArguments = [
                 type: 'Input',
             },
             {
-                name: 'LDAP_SERVER_HOST',
-                description: 'Sets the hostname of LDAP server.',
-                type: 'Input',
-                defaultValue: 'localhost',
-            },
-            {
-                name: 'LDAP_SERVER_LABEL',
-                description: 'Sets the label of LDAP server.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_SERVER_PORT',
-                description: 'Sets the port number of LDAP server.',
-                type: 'Input',
-                defaultValue: 389,
-            },
-            {
                 name: 'LDAP_USE_TLS',
                 description: 'Enables or disables TLS for LDAP connection.',
                 type: 'CheckBox',
             },
+            {
+                name: 'LDAP_CA_CERT_FILE',
+                description: 'Sets the path to the LDAP CA certificate file.',
+                type: 'Input',
+            },
+            {
+                name: 'LDAP_VALIDATE_CERT',
+                description: 'Sets whether to validate the LDAP CA certificate.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'LDAP_CIPHERS',
+                description: 'Sets the ciphers to use for LDAP connection.',
+                type: 'Input',
+                defaultValue: 'ALL',
+            },
+            {
+                name: 'ENABLE_LDAP_GROUP_MANAGEMENT',
+                description: 'Enables the group management feature.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'ENABLE_LDAP_GROUP_CREATION',
+                description: 'If a group from LDAP does not exist in Open WebUI, it will be created automatically.',
+                type: 'CheckBox',
+            },
+            {
+                name: 'LDAP_ATTRIBUTE_FOR_GROUPS',
+                description: "Specifies the LDAP attribute that contains the user's group memberships. `memberOf` is a standard attribute for this purpose in Active Directory environments.",
+                type: 'Input',
+                defaultValue: 'memberOf',
+            },
         ],
     },
     {
-        category: 'Workspace Permissions',
+        category: 'SCIM',
         items: [
             {
-                name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ACCESS',
-                description: 'Enables or disables user permission to access workspace models.',
+                name: 'SCIM_ENABLED',
+                description: 'Enables or disables SCIM 2.0 (System for Cross-domain Identity Management) support for automated user and group provisioning from identity providers like Okta, Azure AD, and Google Workspace.',
                 type: 'CheckBox',
             },
             {
-                name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ACCESS',
-                description: 'Enables or disables user permission to access workspace knowledge.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ACCESS',
-                description: 'Enables or disables user permission to access workspace prompts.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ACCESS',
-                description: 'Enables or disables user permission to access workspace tools.',
-                type: 'CheckBox',
+                name: 'SCIM_TOKEN',
+                description: 'Sets the bearer token for SCIM authentication. This token must be provided by identity providers when making SCIM API requests. Generate a secure random token (e.g., using `openssl rand -base64 32`) and configure it in both Open WebUI and your identity provider.',
+                type: 'Input',
             },
         ],
     },
     {
-        category: 'Chat Permissions',
-        items: [
+        category: 'User Permissions',
+        sections: [
             {
-                name: 'USER_PERMISSIONS_CHAT_FILE_UPLOAD',
-                description: 'Enables or disables user permission to upload files to chats.',
-                type: 'CheckBox',
+                section: 'Chat Permissions',
+                items: [
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_CONTROLS',
+                        description: 'Acts as a master switch to enable or disable the main "Controls" button and panel in the chat interface. **If this is set to False, users will not see the Controls button, and the granular permissions below will have no effect**.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_VALVES',
+                        description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Valves" section within the chat controls panel.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_SYSTEM_PROMPT',
+                        description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the customizable "System Prompt" section within the chat controls panel, folders and the user settings.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_PARAMS',
+                        description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Advanced Parameters" section within the chat controls panel.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_FILE_UPLOAD',
+                        description: 'Enables or disables user permission to upload files to chats.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_DELETE',
+                        description: 'Enables or disables user permission to delete chats.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_EDIT',
+                        description: 'Enables or disables user permission to edit chats.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_DELETE_MESSAGE',
+                        description: 'Enables or disables user permission to delete individual messages within chats. This provides granular control over message deletion capabilities separate from full chat deletion.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_CONTINUE_RESPONSE',
+                        description: 'Enables or disables user permission to continue AI responses. When disabled, users cannot use the "Continue Response" button, which helps prevent potential system prompt leakage through response continuation manipulation.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_REGENERATE_RESPONSE',
+                        description: 'Enables or disables user permission to regenerate AI responses. Controls access to both the standard regenerate button and the guided regeneration menu.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_RATE_RESPONSE',
+                        description: 'Enables or disables user permission to rate AI responses using the thumbs up/down feedback system. This controls access to the response rating functionality for evaluation and feedback collection.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_STT',
+                        description: 'Enables or disables user permission to use Speech-to-Text in chats.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_TTS',
+                        description: 'Enables or disables user permission to use Text-to-Speech in chats.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_CALL',
+                        description: 'Enables or disables user permission to make calls in chats.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_MULTIPLE_MODELS',
+                        description: 'Enables or disables user permission to use multiple models in chats.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_TEMPORARY',
+                        description: 'Enables or disables user permission to create temporary chats.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_CHAT_TEMPORARY_ENFORCED',
+                        description: 'Enables or disables enforced temporary chats for users.',
+                        type: 'Input',
+                    },
+                ],
             },
             {
-                name: 'USER_PERMISSIONS_CHAT_DELETE',
-                description: 'Enables or disables user permission to delete chats.',
-                type: 'CheckBox',
+                section: 'Feature Permissions',
+                items: [
+                    {
+                        name: 'USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS',
+                        description: 'Enables or disables user permission to access direct tool servers.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_FEATURES_WEB_SEARCH',
+                        description: 'Enables or disables user permission to use the web search feature.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_FEATURES_IMAGE_GENERATION',
+                        description: 'Enables or disables user permission to use the image generation feature.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_FEATURES_CODE_INTERPRETER',
+                        description: 'Enables or disables user permission to use code interpreter feature.',
+                        type: 'Input',
+                    },
+                ],
             },
             {
-                name: 'USER_PERMISSIONS_CHAT_EDIT',
-                description: 'Enables or disables user permission to edit chats.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'USER_PERMISSIONS_CHAT_TEMPORARY',
-                description: 'Enables or disables user permission to create temporary chats.',
-                type: 'CheckBox',
+                section: 'Workspace Permissions',
+                items: [
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ACCESS',
+                        description: 'Enables or disables user permission to access workspace models.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ACCESS',
+                        description: 'Enables or disables user permission to access workspace knowledge.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ACCESS',
+                        description: 'Enables or disables user permission to access workspace prompts.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ACCESS',
+                        description: 'Enables or disables user permission to access workspace tools.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ALLOW_PUBLIC_SHARING',
+                        description: 'Enables or disables public sharing of workspace models.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ALLOW_PUBLIC_SHARING',
+                        description: 'Enables or disables public sharing of workspace knowledge.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ALLOW_PUBLIC_SHARING',
+                        description: 'Enables or disables public sharing of workspace prompts.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ALLOW_PUBLIC_SHARING',
+                        description: 'Enables or disables public sharing of workspace tools.',
+                        type: 'Input',
+                    },
+                ],
             },
         ],
     },
@@ -22945,16 +23924,27 @@ const openArguments = [
         category: 'Misc Environment Variables',
         sections: [
             {
-                section: 'Amazon S3 Storage',
+                section: 'Cloud Storage',
                 items: [
                     {
                         name: 'STORAGE_PROVIDER',
                         description: 'Sets the storage provider.',
-                        type: 'Input',
+                        type: 'DropDown',
+                        values: ['s3', 'gcs', 'azure'],
                     },
+                ],
+            },
+            {
+                section: 'Amazon S3 Storage',
+                items: [
                     {
                         name: 'S3_ACCESS_KEY_ID',
                         description: 'Sets the access key ID for S3 storage.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'S3_ADDRESSING_STYLE',
+                        description: "Specifies the addressing style to use for S3 storage (e.g., 'path', 'virtual').",
                         type: 'Input',
                     },
                     {
@@ -22968,6 +23958,11 @@ const openArguments = [
                         type: 'Input',
                     },
                     {
+                        name: 'S3_KEY_PREFIX',
+                        description: 'Sets the key prefix for a S3 object.',
+                        type: 'Input',
+                    },
+                    {
                         name: 'S3_REGION_NAME',
                         description: 'Sets the region name for S3 storage.',
                         type: 'Input',
@@ -22976,6 +23971,168 @@ const openArguments = [
                         name: 'S3_SECRET_ACCESS_KEY',
                         description: 'Sets the secret access key for S3 storage.',
                         type: 'Input',
+                    },
+                    {
+                        name: 'S3_USE_ACCELERATE_ENDPOINT',
+                        description: 'Specifies whether to use the accelerated endpoint for S3 storage.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'S3_ENABLE_TAGGING',
+                        description: 'Enables S3 object tagging after uploads for better organization, searching, and integration with file management policies. Always set to `False` when using Cloudflare R2, as R2 does not support object tagging.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Google Cloud Storage',
+                items: [
+                    {
+                        name: 'GOOGLE_APPLICATION_CREDENTIALS_JSON',
+                        description: 'Contents of Google Application Credentials JSON file.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GCS_BUCKET_NAME',
+                        description: 'Sets the bucket name for Google Cloud Storage. Bucket must already exist.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Microsoft Azure Storage',
+                items: [
+                    {
+                        name: 'AZURE_STORAGE_ENDPOINT',
+                        description: 'Sets the endpoint URL for Azure Storage.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AZURE_STORAGE_CONTAINER_NAME',
+                        description: 'Sets the container name for Azure Storage.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AZURE_STORAGE_KEY',
+                        description: 'Set the access key for Azure Storage.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'OpenTelemetry Configuration',
+                items: [
+                    {
+                        name: 'ENABLE_OTEL',
+                        description: 'Enables or disables OpenTelemetry for observability. When enabled, tracing, metrics, and logging data can be collected and exported to an OTLP endpoint.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ENABLE_OTEL_METRICS',
+                        description: 'Enables or disables OpenTelemetry metrics collection and export. This variable works in conjunction with `ENABLE_OTEL`.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ENABLE_OTEL_LOGS',
+                        description: 'Enables or disables OpenTelemetry logging export. When enabled, application logs are sent to the configured OTLP endpoint. This variable works in conjunction with `ENABLE_OTEL`.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'OTEL_EXPORTER_OTLP_ENDPOINT',
+                        description: 'Specifies the default OTLP (OpenTelemetry Protocol) endpoint for exporting traces, metrics, and logs. This can be overridden for metrics if `OTEL_METRICS_EXPORTER_OTLP_ENDPOINT` is set, and for logs if `OTEL_LOGS_EXPORTER_OTLP_ENDPOINT` is set.',
+                        type: 'Input',
+                        defaultValue: 'http://localhost:4317',
+                    },
+                    {
+                        name: 'OTEL_METRICS_EXPORTER_OTLP_ENDPOINT',
+                        description: 'Specifies the dedicated OTLP endpoint for exporting OpenTelemetry metrics. If not set, it defaults to the value of `OTEL_EXPORTER_OTLP_ENDPOINT`. This is useful when separate endpoints for traces and metrics are used.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_LOGS_EXPORTER_OTLP_ENDPOINT',
+                        description: 'Specifies the dedicated OTLP endpoint for exporting OpenTelemetry logs. If not set, it defaults to the value of `OTEL_EXPORTER_OTLP_ENDPOINT`. This is useful when separate endpoints for logs, traces, and metrics are used.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_EXPORTER_OTLP_INSECURE',
+                        description: 'If set to `True`, the OTLP exporter will use an insecure connection (e.g., HTTP for gRPC) for traces. For metrics, its behavior is governed by `OTEL_METRICS_EXPORTER_OTLP_INSECURE`, and for logs by `OTEL_LOGS_EXPORTER_OTLP_INSECURE`.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'OTEL_METRICS_EXPORTER_OTLP_INSECURE',
+                        description: 'If set to `True`, the OTLP exporter will use an insecure connection for metrics. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'OTEL_LOGS_EXPORTER_OTLP_INSECURE',
+                        description: 'If set to `True`, the OTLP exporter will use an insecure connection for logs. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'OTEL_SERVICE_NAME',
+                        description: 'Sets the service name that will be reported to your OpenTelemetry collector or observability platform. This helps identify your Open WebUI instance.',
+                        type: 'Input',
+                        defaultValue: 'open-webui',
+                    },
+                    {
+                        name: 'OTEL_RESOURCE_ATTRIBUTES',
+                        description: 'Allows you to define additional resource attributes to be attached to all telemetry data, in a comma-separated `key1=val1,key2=val2` format.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_TRACES_SAMPLER',
+                        description: 'Configures the sampling strategy for OpenTelemetry traces. This determines which traces are collected and exported to reduce data volume.',
+                        type: 'Input',
+                        defaultValue: 'parentbased_always_on',
+                    },
+                    {
+                        name: 'OTEL_BASIC_AUTH_USERNAME',
+                        description: 'Sets the username for basic authentication with the default OTLP endpoint. This applies to traces, and by default, to metrics and logs unless overridden by their specific authentication variables.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_BASIC_AUTH_PASSWORD',
+                        description: 'Sets the password for basic authentication with the default OTLP endpoint. This applies to traces, and by default, to metrics and logs unless overridden by their specific authentication variables.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_METRICS_BASIC_AUTH_USERNAME',
+                        description: 'Sets the username for basic authentication specifically for the OTLP metrics endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_USERNAME`.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_METRICS_BASIC_AUTH_PASSWORD',
+                        description: 'Sets the password for basic authentication specifically for the OTLP metrics endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_PASSWORD`.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_LOGS_BASIC_AUTH_USERNAME',
+                        description: 'Sets the username for basic authentication specifically for the OTLP logs endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_USERNAME`.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_LOGS_BASIC_AUTH_PASSWORD',
+                        description: 'Sets the password for basic authentication specifically for the OTLP logs endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_PASSWORD`.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_OTLP_SPAN_EXPORTER',
+                        description: 'Specifies the default protocol for exporting OpenTelemetry traces (gRPC or HTTP). This can be overridden for metrics if `OTEL_METRICS_OTLP_SPAN_EXPORTER` is set, and for logs if `OTEL_LOGS_OTLP_SPAN_EXPORTER` is set.',
+                        type: 'DropDown',
+                        values: ['grpc', 'http'],
+                        defaultValue: 'grpc',
+                    },
+                    {
+                        name: 'OTEL_METRICS_OTLP_SPAN_EXPORTER',
+                        description: 'Specifies the protocol for exporting OpenTelemetry metrics (gRPC or HTTP). If not specified, it uses the value of `OTEL_OTLP_SPAN_EXPORTER`.',
+                        type: 'DropDown',
+                        values: ['grpc', 'http'],
+                    },
+                    {
+                        name: 'OTEL_LOGS_OTLP_SPAN_EXPORTER',
+                        description: 'Specifies the protocol for exporting OpenTelemetry logs (gRPC or HTTP). If not specified, it uses the value of `OTEL_OTLP_SPAN_EXPORTER`.',
+                        type: 'DropDown',
+                        values: ['grpc', 'http'],
                     },
                 ],
             },
@@ -22989,10 +24146,14 @@ const openArguments = [
                         defaultValue: 'sqlite:///${DATA_DIR}/webui.db',
                     },
                     {
-                        name: 'DATABASE_POOL_SIZE',
-                        description: 'Specifies the size of the database pool. A value of 0 disables pooling.',
+                        name: 'DATABASE_SCHEMA',
+                        description: 'Specifies the database schema to connect to.',
                         type: 'Input',
-                        defaultValue: 0,
+                    },
+                    {
+                        name: 'DATABASE_POOL_SIZE',
+                        description: 'Specifies the pooling strategy and size of the database pool.',
+                        type: 'Input',
                     },
                     {
                         name: 'DATABASE_POOL_MAX_OVERFLOW',
@@ -23012,14 +24173,52 @@ const openArguments = [
                         type: 'Input',
                         defaultValue: 3600,
                     },
+                    {
+                        name: 'DATABASE_ENABLE_SQLITE_WAL',
+                        description: 'Enables or disables SQLite WAL (Write-Ahead Logging) mode. When enabled, SQLite transactions can be managed more efficiently, allowing multiple readers and one writer concurrently, which can improve database performance, especially under high concurrency. **This setting only applies to SQLite databases.**',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'DATABASE_DEDUPLICATE_INTERVAL',
+                        description: "Sets a time interval in seconds during which certain database write operations (e.g., updating a user's `last_active_at` timestamp) will be deduplicated. If a write operation is attempted within this interval for the same entity, it will be skipped. A value of `0.0` disables deduplication. Enabling this can reduce write conflicts and improve performance, but may result in less real-time accuracy for the affected fields.",
+                        type: 'Input',
+                        defaultValue: 0.0,
+                    },
                 ],
             },
             {
                 section: 'Redis',
                 items: [
                     {
+                        name: 'REDIS_URL',
+                        description: 'Specifies the URL of the Redis instance or cluster host for storing application state.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'REDIS_SENTINEL_HOSTS',
+                        description: 'Comma-separated list of Redis Sentinels for app state. If specified, the "hostname" in `REDIS_URL` will be interpreted as the Sentinel service name.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'REDIS_SENTINEL_PORT',
+                        description: 'Sentinel port for app state Redis.',
+                        type: 'Input',
+                        defaultValue: 26379,
+                    },
+                    {
+                        name: 'REDIS_CLUSTER',
+                        description: 'Connect to a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `REDIS_URL` must also be defined.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'REDIS_KEY_PREFIX',
+                        description: 'Customizes the Redis key prefix used for storing configuration values. This allows multiple Open WebUI instances to share the same Redis instance without key conflicts. When operating in Redis cluster mode, the prefix is formatted as `{prefix}:` (e.g., `{open-webui}:config:*`) to enable multi-key operations on configuration keys within the same hash slot.',
+                        type: 'Input',
+                        defaultValue: 'open-webui',
+                    },
+                    {
                         name: 'ENABLE_WEBSOCKET_SUPPORT',
-                        description: 'Enables websocket support in Open WebUI (used with Redis).',
+                        description: 'Enables websocket support in Open WebUI.',
                         type: 'CheckBox',
                     },
                     {
@@ -23030,9 +24229,46 @@ const openArguments = [
                     },
                     {
                         name: 'WEBSOCKET_REDIS_URL',
-                        description: 'Specifies the URL of the Redis instance for websocket communication.',
+                        description: 'Specifies the URL of the Redis instance or cluster host for websocket communication. It is distinct from `REDIS_URL` and in practice, it is recommended to set both.',
                         type: 'Input',
-                        defaultValue: 'redis://localhost:6379/0',
+                        defaultValue: '${REDIS_URL}',
+                    },
+                    {
+                        name: 'WEBSOCKET_SENTINEL_HOSTS',
+                        description: 'Comma-separated list of Redis Sentinels for websocket. If specified, the "hostname" in `WEBSOCKET_REDIS_URL` will be interpreted as the Sentinel service name.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'WEBSOCKET_SENTINEL_PORT',
+                        description: 'Sentinel port for websocket Redis.',
+                        type: 'Input',
+                        defaultValue: 26379,
+                    },
+                    {
+                        name: 'WEBSOCKET_REDIS_CLUSTER',
+                        description: 'Specifies that websocket should communicate with a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `WEBSOCKET_REDIS_URL` and/or `REDIS_URL` must also be defined.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Uvicorn Settings',
+                items: [
+                    {
+                        name: 'UVICORN_WORKERS',
+                        description: 'Controls the number of worker processes that Uvicorn spawns to handle requests. Each worker runs its own instance of the application in a separate process.',
+                        type: 'Input',
+                        defaultValue: 1,
+                    },
+                ],
+            },
+            {
+                section: 'Cache Settings',
+                items: [
+                    {
+                        name: 'CACHE_CONTROL',
+                        description: 'Sets the Cache-Control header for all HTTP responses. Supports standard directives like `public`, `private`, `no-cache`, `no-store`, `must-revalidate`, `max-age=seconds`, etc. If an invalid value is provided, defaults to `"no-store, max-age=0"` (no caching).',
+                        type: 'Input',
                     },
                 ],
             },
@@ -23051,9 +24287,22 @@ const openArguments = [
                     },
                     {
                         name: 'no_proxy',
-                        description: 'Lists domain extensions (or IP addresses) for which the proxy should not be used,' +
-                            " separated by commas. For example, setting no_proxy to '.mit.edu' ensures that the" +
-                            ' proxy is bypassed when accessing documents from MIT.',
+                        description: 'Lists domain extensions (or IP addresses) for which the proxy should not be used, separated by commas.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Install Required Python Packages',
+                items: [
+                    {
+                        name: 'PIP_OPTIONS',
+                        description: 'Specifies additional command-line options that pip should use when installing packages. For example, you can include flags such as `--upgrade`, `--user`, or `--no-cache-dir` to control the installation process.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'PIP_PACKAGE_INDEX_OPTIONS',
+                        description: 'Defines custom package index behavior for pip. This can include specifying additional or alternate index URLs (e.g., `--extra-index-url`), authentication credentials, or other parameters to manage how packages are retrieved from different locations.',
                         type: 'Input',
                     },
                 ],
@@ -23061,6 +24310,2248 @@ const openArguments = [
         ],
     },
 ];
+
+/* eslint max-len: 0 */
+const geminiCliArguments = [
+    {
+        category: 'LynxHub Configuration',
+        items: [
+            {
+                name: 'Settings File Location',
+                description: '!!Please backup your existing settings.json, this will overwrite it!!. Choose a custom location to save your `settings.json` configuration file.',
+                type: 'File',
+            },
+        ],
+    },
+    {
+        category: 'Environment Variables',
+        sections: [
+            {
+                section: 'Authentication & API',
+                items: [
+                    {
+                        name: 'GEMINI_API_KEY',
+                        description: 'Your API key for the Gemini API.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GOOGLE_API_KEY',
+                        description: 'Your Google Cloud API key, required for using Vertex AI in express mode.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GOOGLE_CLOUD_PROJECT',
+                        description: 'Your Google Cloud Project ID, required for using Code Assist or Vertex AI.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GOOGLE_APPLICATION_CREDENTIALS',
+                        description: 'The path to your Google Application Credentials JSON file.',
+                        type: 'File',
+                    },
+                    {
+                        name: 'GOOGLE_CLOUD_LOCATION',
+                        description: 'Your Google Cloud Project Location (e.g., us-central1), required for using Vertex AI in non-express mode.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Configuration',
+                items: [
+                    {
+                        name: 'GEMINI_MODEL',
+                        description: 'Specifies the default Gemini model to use.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'GEMINI_SANDBOX',
+                        description: 'Alternative to the `sandbox` setting. Accepts true, false, docker, podman, or a custom command string.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'SEATBELT_PROFILE',
+                        description: 'Switches the Seatbelt (`sandbox-exec`) profile on macOS.',
+                        type: 'DropDown',
+                        defaultValue: 'permissive-open',
+                        values: ['permissive-open', 'strict'],
+                    },
+                    {
+                        name: 'CLI_TITLE',
+                        description: 'Set a custom title for the CLI window.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CODE_ASSIST_ENDPOINT',
+                        description: 'Specifies the endpoint for the code assist server.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Telemetry',
+                items: [
+                    {
+                        name: 'OTLP_GOOGLE_CLOUD_PROJECT',
+                        description: 'Your Google Cloud Project ID for Telemetry in Google Cloud.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Debugging & Display',
+                items: [
+                    {
+                        name: 'DEBUG',
+                        description: 'Set to true or 1 to enable verbose debug logging.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'DEBUG_MODE',
+                        description: 'Set to true or 1 to enable verbose debug logging.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'NO_COLOR',
+                        description: 'Set to any value to disable all color output in the CLI.',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Core Functionality',
+                items: [
+                    {
+                        name: '--model <model_name>',
+                        description: 'Specifies the Gemini model to use for this session.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--prompt <your_prompt>',
+                        description: 'Pass a prompt directly to the command for non-interactive mode.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--prompt-interactive <your_prompt>',
+                        description: 'Starts an interactive session with the provided prompt as the initial input.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--all-files',
+                        description: 'Recursively includes all files within the current directory as context.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--include-directories <dir1,dir2,...>',
+                        description: 'Includes additional directories in the workspace for multi-directory support.',
+                        type: 'Directory',
+                    },
+                ],
+            },
+            {
+                section: 'Tool & Sandbox Control',
+                items: [
+                    {
+                        name: '--sandbox',
+                        description: 'Enables sandbox mode for this session.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--sandbox-image',
+                        description: 'Sets the sandbox image URI.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--yolo',
+                        description: 'Enables YOLO mode, which automatically approves all tool calls.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--approval-mode <mode>',
+                        description: 'Sets the approval mode for tool calls.',
+                        type: 'DropDown',
+                        values: ['default', 'auto_edit', 'yolo'],
+                    },
+                    {
+                        name: '--allowed-tools <tool1,tool2,...>',
+                        description: 'A comma-separated list of tool names that will bypass the confirmation dialog.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Telemetry & Checkpointing',
+                items: [
+                    {
+                        name: '--telemetry',
+                        description: 'Enables telemetry.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--telemetry-target',
+                        description: 'Sets the telemetry target.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--telemetry-otlp-endpoint',
+                        description: 'Sets the OTLP endpoint for telemetry.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--telemetry-otlp-protocol',
+                        description: 'Sets the OTLP protocol for telemetry.',
+                        type: 'DropDown',
+                        defaultValue: 'grpc',
+                        values: ['grpc', 'http'],
+                    },
+                    {
+                        name: '--telemetry-log-prompts',
+                        description: 'Enables logging of prompts for telemetry.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--checkpointing',
+                        description: 'Enables checkpointing.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Extensions & Display',
+                items: [
+                    {
+                        name: '--extensions <extension_name ...>',
+                        description: 'Specifies a list of extensions to use for the session.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--list-extensions',
+                        description: 'Lists all available extensions and exits.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--proxy',
+                        description: 'Sets the proxy for the CLI.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--screen-reader',
+                        description: 'Enables screen reader mode for better TUI compatibility.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--show-memory-usage',
+                        description: 'Displays the current memory usage.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Help & Version',
+                items: [
+                    {
+                        name: '--debug',
+                        description: 'Enables debug mode for this session, providing more verbose output.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--help',
+                        description: 'Displays help information about command-line arguments.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--version',
+                        description: 'Displays the version of the CLI.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Settings',
+        condition: 'Settings File Location',
+        sections: [
+            {
+                section: 'general',
+                items: [
+                    {
+                        name: 'general.preferredEditor',
+                        description: 'The preferred editor to open files in.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'general.vimMode',
+                        description: 'Enable Vim keybindings.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'general.disableAutoUpdate',
+                        description: 'Disable automatic updates.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'general.disableUpdateNag',
+                        description: 'Disable update notification prompts.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'general.checkpointing.enabled',
+                        description: 'Enable session checkpointing for recovery.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'ui',
+                items: [
+                    {
+                        name: 'ui.theme',
+                        description: 'The color theme for the UI.',
+                        type: 'DropDown',
+                        values: [
+                            'ANSI',
+                            'ANSI Light',
+                            'Atom One',
+                            'Ayu',
+                            'Ayu Light',
+                            'Default',
+                            'Default Light',
+                            'Dracula',
+                            'GitHub',
+                            'GitHub Light',
+                            'Google Code',
+                            'Xcode',
+                        ],
+                        defaultValue: 'Default',
+                    },
+                    {
+                        name: 'ui.customThemes',
+                        description: 'Custom theme definitions.',
+                        type: 'Input',
+                        defaultValue: {},
+                    },
+                    {
+                        name: 'ui.hideWindowTitle',
+                        description: 'Hide the window title bar.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ui.hideTips',
+                        description: 'Hide helpful tips in the UI.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ui.hideBanner',
+                        description: 'Hide the application banner.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ui.hideFooter',
+                        description: 'Hide the footer from the UI.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ui.showMemoryUsage',
+                        description: 'Display memory usage information in the UI.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ui.showLineNumbers',
+                        description: 'Show line numbers in the chat.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ui.showCitations',
+                        description: 'Show citations for generated text in the chat.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ui.accessibility.disableLoadingPhrases',
+                        description: 'Disable loading phrases for accessibility.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'ide',
+                items: [
+                    {
+                        name: 'ide.enabled',
+                        description: 'Enable IDE integration mode.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'ide.hasSeenNudge',
+                        description: 'Whether the user has seen the IDE integration nudge.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'privacy',
+                items: [
+                    {
+                        name: 'privacy.usageStatisticsEnabled',
+                        description: 'Enable collection of usage statistics.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'model',
+                items: [
+                    {
+                        name: 'model.name',
+                        description: 'The Gemini model to use for conversations.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'model.maxSessionTurns',
+                        description: 'Maximum number of user/model/tool turns to keep in a session. -1 means unlimited.',
+                        type: 'Input',
+                        defaultValue: -1,
+                    },
+                    {
+                        name: 'model.summarizeToolOutput',
+                        description: 'Enables or disables the summarization of tool output.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'model.chatCompression.contextPercentageThreshold',
+                        description: "Sets the threshold for chat history compression as a percentage of the model's total token limit.",
+                        type: 'Input',
+                        defaultValue: 0.7,
+                    },
+                    {
+                        name: 'model.skipNextSpeakerCheck',
+                        description: 'Skip the next speaker check.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'context',
+                items: [
+                    {
+                        name: 'context.fileName',
+                        description: 'The name of the context file(s).',
+                        type: 'File',
+                    },
+                    {
+                        name: 'context.importFormat',
+                        description: 'The format to use when importing memory.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'context.discoveryMaxDirs',
+                        description: 'Maximum number of directories to search for memory.',
+                        type: 'Input',
+                        defaultValue: 200,
+                    },
+                    {
+                        name: 'context.includeDirectories',
+                        description: 'Additional directories to include in the workspace context.',
+                        type: 'Directory',
+                        defaultValue: [],
+                    },
+                    {
+                        name: 'context.loadFromIncludeDirectories',
+                        description: 'If true, /memory refresh loads GEMINI.md from all added directories.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'context.fileFiltering.respectGitIgnore',
+                        description: 'Respect .gitignore files when searching.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'context.fileFiltering.respectGeminiIgnore',
+                        description: 'Respect .geminiignore files when searching.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'context.fileFiltering.enableRecursiveFileSearch',
+                        description: 'Enable searching recursively for filenames when completing @ prefixes.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'tools',
+                items: [
+                    {
+                        name: 'tools.sandbox',
+                        description: 'Sandbox execution environment (can be a boolean or a path string).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'tools.usePty',
+                        description: 'Use node-pty for shell command execution.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'tools.core',
+                        description: 'Restricts the set of built-in tools with an allowlist.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'tools.exclude',
+                        description: 'Tool names to exclude from discovery.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'tools.allowed',
+                        description: 'A list of tool names that will bypass the confirmation dialog.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'tools.discoveryCommand',
+                        description: 'Command to run for tool discovery.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'tools.callCommand',
+                        description: 'Defines a custom shell command for calling a specific tool.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'mcp',
+                items: [
+                    {
+                        name: 'mcp.serverCommand',
+                        description: 'Command to start an MCP server.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'mcp.allowed',
+                        description: 'An allowlist of MCP servers to allow.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'mcp.excluded',
+                        description: 'A denylist of MCP servers to exclude.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'security',
+                items: [
+                    {
+                        name: 'security.folderTrust.enabled',
+                        description: 'Setting to track whether Folder trust is enabled.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'security.auth.selectedType',
+                        description: 'The currently selected authentication type.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'security.auth.enforcedType',
+                        description: 'The required auth type (useful for enterprises).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'security.auth.useExternal',
+                        description: 'Whether to use an external authentication flow.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'advanced',
+                items: [
+                    {
+                        name: 'advanced.autoConfigureMemory',
+                        description: 'Automatically configure Node.js memory limits.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'advanced.dnsResolutionOrder',
+                        description: 'The DNS resolution order.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'advanced.excludedEnvVars',
+                        description: 'Environment variables to exclude from project context.',
+                        type: 'Input',
+                        defaultValue: ['DEBUG', 'DEBUG_MODE'],
+                    },
+                    {
+                        name: 'advanced.bugCommand',
+                        description: 'Configuration for the bug report command.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'telemetry',
+                items: [
+                    {
+                        name: 'telemetry.enabled',
+                        description: 'Whether or not telemetry is enabled.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'telemetry.target',
+                        description: 'The destination for collected telemetry.',
+                        type: 'DropDown',
+                        values: ['local', 'gcp'],
+                    },
+                    {
+                        name: 'telemetry.otlpEndpoint',
+                        description: 'The endpoint for the OTLP Exporter.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'telemetry.otlpProtocol',
+                        description: 'The protocol for the OTLP Exporter.',
+                        type: 'DropDown',
+                        values: ['grpc', 'http'],
+                    },
+                    {
+                        name: 'telemetry.logPrompts',
+                        description: 'Whether or not to include the content of user prompts in the logs.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'telemetry.outfile',
+                        description: 'The file to write telemetry to when target is local.',
+                        type: 'File',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const INSTALL_TIME_KEY$2 = 'install-time-geminiCli';
+const UPDATE_TIME_KEY$2 = 'update-time-geminiCli';
+const UPDATE_AVAILABLE_KEY$2 = 'update-available-version-geminiCli';
+function checkLinuxArgLine$2(line) {
+    if (isWin && line.startsWith('set '))
+        return 'set';
+    if (line.startsWith('export '))
+        return 'export';
+    for (const arg of geminiCliArguments) {
+        if (arg.category === 'Environment') {
+            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
+                return 'var';
+            }
+            else {
+                return undefined;
+            }
+        }
+    }
+    return undefined;
+}
+/**
+ * Finds the category and type of a given argument name.
+ * @param argName The name of the argument to look up.
+ * @returns An object with the category and type, or undefined if not found.
+ */
+function getArgumentInfo(argName) {
+    for (const data of geminiCliArguments) {
+        if ('sections' in data) {
+            for (const section of data.sections) {
+                for (const item of section.items) {
+                    if (item.name.split(' ')[0] === argName) {
+                        return { category: data.category, type: item.type };
+                    }
+                }
+            }
+        }
+    }
+    return undefined;
+}
+function parseArgsToFiles$1(args) {
+    const executeCommand = 'gemini';
+    const envArgs = [];
+    const cliArgs = [];
+    const settingsArgs = [];
+    // 1. Categorize arguments based on their definition in Arguments.ts
+    args.forEach(arg => {
+        const info = getArgumentInfo(arg.name);
+        if (info) {
+            switch (info.category) {
+                case 'Environment Variables':
+                    envArgs.push(arg);
+                    break;
+                case 'Command Line Arguments':
+                    cliArgs.push(arg);
+                    break;
+                case 'Settings':
+                    settingsArgs.push(arg);
+                    break;
+            }
+        }
+    });
+    // 2. Build the Environment Variables script preview
+    let scriptString = '';
+    if (envArgs.length > 0) {
+        envArgs.forEach(arg => {
+            scriptString += isWin ? `set ${arg.name}=${arg.value}\n` : `export ${arg.name}="${arg.value}"\n`;
+        });
+        scriptString += '\n\n';
+    }
+    scriptString += executeCommand;
+    // 3. Build the Command Line execution preview
+    cliArgs.forEach(arg => {
+        const info = getArgumentInfo(arg.name);
+        if (info?.type === 'CheckBox') {
+            if (arg.value === 'true') {
+                scriptString += ` ${arg.name}`;
+            }
+        }
+        else {
+            scriptString += ` ${arg.name} "${arg.value}"`;
+        }
+    });
+    scriptString += '\n';
+    // 4. Build the settings.json file preview
+    let settingsString = '';
+    const settingsJson = {};
+    if (settingsArgs.length > 0) {
+        settingsArgs.forEach(arg => {
+            const keys = arg.name.split('.');
+            let current = settingsJson;
+            // Create nested objects if they don't exist
+            keys.slice(0, -1).forEach(key => {
+                current[key] = current[key] || {};
+                current = current[key];
+            });
+            // Coerce value to the correct type (boolean, number, or string)
+            let value = arg.value;
+            if (value === 'true') {
+                value = true;
+            }
+            else if (value === 'false') {
+                value = false;
+            }
+            else if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
+                value = Number(value);
+            }
+            current[keys[keys.length - 1]] = value;
+        });
+        settingsString += JSON.stringify(settingsJson, null, 2);
+    }
+    return { scriptData: scriptString, settingsData: settingsString };
+}
+function parseArgsToString$4(args) {
+    const { settingsData, scriptData } = parseArgsToFiles$1(args);
+    let envString = `-------------Script File Preview (${isWin ? '.bat' : '.sh'})-------------\n`;
+    if (!lodashExports.isEmpty(scriptData)) {
+        envString += scriptData;
+    }
+    else {
+        envString += '# No environment variables or command lines configured.\n';
+    }
+    let settingsString = '---------------- Settings File (settings.json) ----------------\n';
+    if (!lodashExports.isEmpty(settingsData)) {
+        settingsString += settingsData;
+    }
+    else {
+        settingsString += '{\n  // No settings configured.\n}';
+    }
+    return `${envString}${settingsString}`;
+}
+function parseFilesToArgs$1(scriptContent, settingsContent) {
+    // 1. Parse the script content by reusing the existing function
+    const scriptArgs = parseStringToArgs$4(scriptContent);
+    // 2. Parse the settings content (json)
+    const settingsArgs = [];
+    // 3. Combine args, with settings overriding script args for any duplicates
+    const combinedArgs = new Map();
+    scriptArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
+    settingsArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
+    return Array.from(combinedArgs, ([name, value]) => ({ name, value }));
+}
+function parseStringToArgs$4(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('#')) {
+            return;
+        }
+        if (line.startsWith('gemini')) {
+            const clArg = line.split('gemini ')[1];
+            if (!clArg)
+                return;
+            const clArgs = clArg.split('--').filter(Boolean);
+            const result = clArgs.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return {
+                    name: `${id}`.toUpperCase(),
+                    value: value.join(' ').replace(/"/g, ''),
+                };
+            });
+            result.forEach((value) => {
+                if (isValidArg(value.name, openArguments)) {
+                    if (getArgumentType(value.name, openArguments) === 'CheckBox') {
+                        argResult.push({ name: value.name, value: '' });
+                    }
+                    else {
+                        argResult.push({ name: value.name, value: value.value });
+                    }
+                }
+            });
+        }
+        const lineType = checkLinuxArgLine$2(line);
+        if (lineType === 'export' || lineType === 'set') {
+            let [name, value] = line.replace(`${lineType} `, '').split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, openArguments)) {
+                argResult.push({ name, value });
+            }
+        }
+        else if (checkLinuxArgLine$2(line) === 'var') {
+            let [name, value] = line.split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, openArguments)) {
+                argResult.push({ name, value });
+            }
+        }
+    });
+    return argResult;
+}
+function startInstall$4(stepper) {
+    stepper.initialSteps(['Getting Started', 'NodeJS', 'Detect Existing', 'Gemini Cli', 'All Done!']);
+    stepper.starterStep({ disableSelectDir: true }).then(() => {
+        stepper.nextStep().then(() => {
+            stepper.progressBar(true, 'Checking if NPM is installed...');
+            stepper.ipc.invoke('is_npm_available').then((isNpmInstalled) => {
+                if (isNpmInstalled) {
+                    stepper.nextStep().then(() => {
+                        stepper.progressBar(true, 'Checking for existing Gemini Cli installation...');
+                        stepper.ipc.invoke('is_geminiCli_installed').then((isGeminiCliInstalled) => {
+                            if (isGeminiCliInstalled) {
+                                stepper.setInstalled();
+                                const currentDate = new Date();
+                                stepper.storage.set(INSTALL_TIME_KEY$2, currentDate.toLocaleString());
+                                stepper.showFinalStep('success', "You're All Set!", "Gemini Cli is already installed. You're good to go!");
+                            }
+                            else {
+                                stepper.nextStep().then(() => {
+                                    stepper.executeTerminalCommands('npm i -g @google/gemini-cli').then(() => {
+                                        stepper.setInstalled();
+                                        const currentDate = new Date();
+                                        stepper.storage.set(INSTALL_TIME_KEY$2, currentDate.toLocaleString());
+                                        stepper.showFinalStep('success', 'Installation Complete!', 'Your Gemini Cli environment is ready. Enjoy!');
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+                else {
+                    stepper.showFinalStep('error', 'NodeJs is not installed!', 'Gemini Cli need NPM! Please install NodeJs then try again.');
+                }
+            });
+        });
+    });
+}
+function startUpdate$2(stepper) {
+    stepper.initialSteps(['Update Gemini Cli', 'Complete Update']);
+    stepper.executeTerminalCommands('npm -g update @google/gemini-cli').then(() => {
+        const currentDate = new Date();
+        stepper.storage.set(UPDATE_TIME_KEY$2, currentDate.toLocaleString());
+        stepper.setUpdated();
+        stepper.showFinalStep('success', 'Gemini Cli Updated Successfully!', `Gemini Cli has been updated to the latest version. You can now enjoy the new features and improvements.`);
+    });
+}
+async function cardInfo$4(api, callback) {
+    callback.setOpenFolders(undefined);
+    const descManager = new DescriptionManager([
+        {
+            title: 'Installation Data',
+            items: [
+                { label: 'Install Date', result: 'loading' },
+                { label: 'Update Date', result: 'loading' },
+                { label: 'Current Version', result: 'loading' },
+                { label: 'Latest Version', result: 'loading' },
+            ],
+        },
+    ], callback);
+    api.storage.get(INSTALL_TIME_KEY$2).then(result => {
+        descManager.updateItem(0, 0, result);
+    });
+    api.storage.get(UPDATE_TIME_KEY$2).then(result => {
+        descManager.updateItem(0, 1, result);
+    });
+    api.ipc.invoke('current_geminiCli_version').then(result => {
+        descManager.updateItem(0, 2, result);
+    });
+    api.storage.get(UPDATE_AVAILABLE_KEY$2).then(result => {
+        descManager.updateItem(0, 3, result);
+    });
+}
+const GeminiCli_RM = {
+    cardInfo: cardInfo$4,
+    parseStringToArgs: parseStringToArgs$4,
+    parseArgsToString: parseArgsToString$4,
+    manager: { startInstall: startInstall$4, updater: { updateType: 'stepper', startUpdate: startUpdate$2 } },
+};
+
+/* eslint max-len: 0 */
+// TODO: Support command line conditional configuration
+const n8nArguments = [
+    {
+        category: 'Environment Variables',
+        sections: [
+            {
+                section: 'Nodes',
+                items: [
+                    {
+                        name: 'N8N_COMMUNITY_PACKAGES_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Enables (true) or disables (false) the functionality to install and load community nodes. If set to false, neither verified nor unverified community packages will be available, regardless of their individual settings.',
+                    },
+                    {
+                        name: 'N8N_COMMUNITY_PACKAGES_PREVENT_LOADING',
+                        type: 'CheckBox',
+                        description: 'Prevents (true) or allows (false) loading installed community nodes on instance startup. Use this if a faulty node prevents the instance from starting.',
+                    },
+                    {
+                        name: 'N8N_COMMUNITY_PACKAGES_REGISTRY',
+                        type: 'Input',
+                        defaultValue: 'https://registry.npmjs.org',
+                        description: 'NPM registry URL to pull community packages from (license required).',
+                    },
+                    {
+                        name: 'N8N_CUSTOM_EXTENSIONS',
+                        type: 'Input',
+                        description: 'Specify the path to directories containing your custom nodes.',
+                    },
+                    {
+                        name: 'N8N_PYTHON_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to enable Python execution on the Code node.',
+                    },
+                    {
+                        name: 'N8N_UNVERIFIED_PACKAGES_ENABLED',
+                        type: 'CheckBox',
+                        description: 'When N8N_COMMUNITY_PACKAGES_ENABLED is true, this variable controls whether to enable the installation and use of unverified community nodes from an NPM registry (true) or not (false).',
+                    },
+                    {
+                        name: 'N8N_VERIFIED_PACKAGES_ENABLED',
+                        type: 'CheckBox',
+                        description: 'When N8N_COMMUNITY_PACKAGES_ENABLED is true, this variable controls whether to show verified community nodes in the nodes panel for installation and use (true) or to hide them (false).',
+                    },
+                    {
+                        name: 'NODE_FUNCTION_ALLOW_BUILTIN',
+                        type: 'Input',
+                        description: 'Permit users to import specific built-in modules in the Code node. Use * to allow all. n8n disables importing modules by default.',
+                    },
+                    {
+                        name: 'NODE_FUNCTION_ALLOW_EXTERNAL',
+                        type: 'Input',
+                        description: 'Permit users to import specific external modules (from n8n/node_modules) in the Code node. n8n disables importing modules by default.',
+                    },
+                    {
+                        name: 'NODES_ERROR_TRIGGER_TYPE',
+                        type: 'Input',
+                        defaultValue: 'n8n-nodes-base.errorTrigger',
+                        description: 'Specify which node type to use as Error Trigger.',
+                    },
+                    {
+                        name: 'NODES_EXCLUDE',
+                        type: 'Input',
+                        description: 'Specify which nodes not to load. For example, to block nodes that can be a security risk if users aren\'t trustworthy: NODES_EXCLUDE: "["n8n-nodes-base.executeCommand", "@n8n/n8n-nodes-langchain.lmChatDeepSeek"]"',
+                    },
+                    { name: 'NODES_INCLUDE', type: 'Input', description: 'Specify which nodes to load.' },
+                ],
+            },
+            {
+                section: 'User management SMTP, and two-factor authentication',
+                items: [
+                    { name: 'N8N_EMAIL_MODE', type: 'Input', defaultValue: 'smtp', description: 'Enable emails.' },
+                    { name: 'N8N_SMTP_HOST', type: 'Input', description: 'your_SMTP_server_name' },
+                    { name: 'N8N_SMTP_PORT', type: 'Input', description: 'your_SMTP_server_port' },
+                    { name: 'N8N_SMTP_USER', type: 'Input', description: 'your_SMTP_username' },
+                    { name: 'N8N_SMTP_PASS', type: 'Input', description: 'your_SMTP_password' },
+                    {
+                        name: 'N8N_SMTP_OAUTH_SERVICE_CLIENT',
+                        type: 'Input',
+                        description: 'If using 2LO with a service account this is your client ID',
+                    },
+                    {
+                        name: 'N8N_SMTP_OAUTH_PRIVATE_KEY',
+                        type: 'Input',
+                        description: 'If using 2LO with a service account this is your private key',
+                    },
+                    {
+                        name: 'N8N_SMTP_SENDER',
+                        type: 'Input',
+                        description: 'Sender email address. You can optionally include the sender name. Example with name: N8N <contact@n8n.com>',
+                    },
+                    { name: 'N8N_SMTP_SSL', type: 'CheckBox', description: 'Whether to use SSL for SMTP (true) or not (false).' },
+                    {
+                        name: 'N8N_SMTP_STARTTLS',
+                        type: 'CheckBox',
+                        description: 'Whether to use STARTTLS for SMTP (true) or not (false).',
+                    },
+                    {
+                        name: 'N8N_UM_EMAIL_TEMPLATES_INVITE',
+                        type: 'Input',
+                        description: 'Full path to your HTML email template. This overrides the default template for invite emails.',
+                    },
+                    {
+                        name: 'N8N_UM_EMAIL_TEMPLATES_PWRESET',
+                        type: 'Input',
+                        description: 'Full path to your HTML email template. This overrides the default template for password reset emails.',
+                    },
+                    {
+                        name: 'N8N_UM_EMAIL_TEMPLATES_WORKFLOW_SHARED',
+                        type: 'Input',
+                        description: 'Overrides the default HTML template for notifying users that a workflow was shared. Provide the full path to the template.',
+                    },
+                    {
+                        name: 'N8N_UM_EMAIL_TEMPLATES_CREDENTIALS_SHARED',
+                        type: 'Input',
+                        description: 'Overrides the default HTML template for notifying users that a credential was shared. Provide the full path to the template.',
+                    },
+                    {
+                        name: 'N8N_UM_EMAIL_TEMPLATES_PROJECT_SHARED',
+                        type: 'Input',
+                        description: 'Overrides the default HTML template for notifying users that a project was shared. Provide the full path to the template.',
+                    },
+                    {
+                        name: 'N8N_USER_MANAGEMENT_JWT_SECRET',
+                        type: 'Input',
+                        description: 'Set a specific JWT secret. By default, n8n generates one on start.',
+                    },
+                    {
+                        name: 'N8N_USER_MANAGEMENT_JWT_DURATION_HOURS',
+                        type: 'Input',
+                        defaultValue: 168,
+                        description: 'Set an expiration date for the JWTs in hours.',
+                    },
+                    {
+                        name: 'N8N_USER_MANAGEMENT_JWT_REFRESH_TIMEOUT_HOURS',
+                        type: 'Input',
+                        defaultValue: 0,
+                        description: 'How many hours before the JWT expires to automatically refresh it. 0 means 25% of N8N_USER_MANAGEMENT_JWT_DURATION_HOURS. -1 means it will never refresh, which forces users to log in again after the period defined in N8N_USER_MANAGEMENT_JWT_DURATION_HOURS.',
+                    },
+                    {
+                        name: 'N8N_MFA_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to enable two-factor authentication (true) or disable (false). n8n ignores this if existing users have 2FA enabled.',
+                    },
+                ],
+            },
+            {
+                section: 'Workflows',
+                items: [
+                    {
+                        name: 'N8N_ONBOARDING_FLOW_DISABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to disable onboarding tips when creating a new workflow (true) or not (false).',
+                    },
+                    {
+                        name: 'N8N_WORKFLOW_ACTIVATION_BATCH_SIZE',
+                        type: 'Input',
+                        defaultValue: 1,
+                        description: 'How many workflows to activate simultaneously during startup.',
+                    },
+                    {
+                        name: 'N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION',
+                        type: 'Input',
+                        defaultValue: 'workflowsFromSameOwner',
+                        description: 'Which workflows can call a workflow. Options are: any, none, workflowsFromAList, workflowsFromSameOwner. This feature requires Workflow sharing.',
+                    },
+                    {
+                        name: 'N8N_WORKFLOW_TAGS_DISABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to disable workflow tags (true) or enable tags (false).',
+                    },
+                    {
+                        name: 'WORKFLOWS_DEFAULT_NAME',
+                        type: 'Input',
+                        defaultValue: 'My workflow',
+                        description: 'The default name used for new workflows.',
+                    },
+                ],
+            },
+            {
+                section: 'Task runner environment variables',
+                items: [
+                    { name: 'N8N_RUNNERS_ENABLED', type: 'CheckBox', description: 'Are task runners enabled.' },
+                    {
+                        name: 'N8N_RUNNERS_MODE',
+                        type: 'DropDown',
+                        defaultValue: 'internal',
+                        values: ['internal', 'external'],
+                        description: 'How to launch and run the task runner. `internal` means n8n will launch a task runner as child process. `external` means an external orchestrator will launch the task runner.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_AUTH_TOKEN',
+                        type: 'Input',
+                        defaultValue: 'Random string',
+                        description: 'Shared secret used by a task runner to authenticate to n8n. Required when using `external` mode.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_BROKER_PORT',
+                        type: 'Input',
+                        defaultValue: 5679,
+                        description: 'Port the task broker listens on for task runner connections.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_BROKER_LISTEN_ADDRESS',
+                        type: 'Input',
+                        defaultValue: '127.0.0.1',
+                        description: 'Address the task broker listens on.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_MAX_PAYLOAD',
+                        type: 'Input',
+                        defaultValue: 1073741824,
+                        description: 'Maximum payload size in bytes for communication between a task broker and a task runner.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_MAX_OLD_SPACE_SIZE',
+                        type: 'Input',
+                        description: 'The --max-old-space-size option to use for a task runner (in MB). By default, Node.js will set this based on available memory.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_MAX_CONCURRENCY',
+                        type: 'Input',
+                        defaultValue: 5,
+                        description: 'The number of concurrent tasks a task runner can execute at a time.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_TASK_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: 60,
+                        description: 'How long (in seconds) a task can take to complete before the task aborts and the runner restarts. Must be greater than 0.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_HEARTBEAT_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 30,
+                        description: 'How often (in seconds) the runner must send a heartbeat to the broker, else the task aborts and the runner restarts. Must be greater than 0.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_INSECURE_MODE',
+                        type: 'CheckBox',
+                        description: 'Whether to disable all security measures in the task runner, for compatibility with modules that rely on insecure JS features. **Discouraged for production use.**',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_LAUNCHER_LOG_LEVEL',
+                        type: 'DropDown',
+                        defaultValue: 'info',
+                        values: ['debug', 'info', 'warn', 'error'],
+                        description: 'Which log messages to show.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: 15,
+                        description: 'The number of seconds to wait before shutting down an idle runner.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_TASK_BROKER_URI',
+                        type: 'Input',
+                        defaultValue: 'http://127.0.0.1:5679',
+                        description: 'The URI of the task broker server (n8n instance).',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT',
+                        type: 'Input',
+                        defaultValue: 5680,
+                        description: "Port for the launcher's health check server.",
+                    },
+                    { name: 'NODE_OPTIONS', type: 'Input', description: 'Options for Node.js.' },
+                    {
+                        name: 'N8N_RUNNERS_GRANT_TOKEN',
+                        type: 'Input',
+                        defaultValue: 'Random string',
+                        description: 'Token the runner uses to authenticate with the task broker. This is automatically provided by the launcher.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION',
+                        type: 'CheckBox',
+                        description: 'Whether to allow prototype mutation for external libraries. Set to `true` to allow modules that rely on runtime prototype mutation (for example, `puppeteer`) at the cost of relaxing security.',
+                    },
+                    {
+                        name: 'GENERIC_TIMEZONE',
+                        type: 'Input',
+                        defaultValue: 'America/New_York',
+                        description: 'The same default timezone as configured for the n8n instance.',
+                    },
+                ],
+            },
+            {
+                section: 'Logs environment variables',
+                items: [
+                    {
+                        name: 'N8N_LOG_LEVEL',
+                        type: 'DropDown',
+                        defaultValue: 'info',
+                        values: ['info', 'warn', 'error', 'debug'],
+                        description: 'Log output level. Refer to Log levels for details.',
+                    },
+                    {
+                        name: 'N8N_LOG_OUTPUT',
+                        type: 'DropDown',
+                        defaultValue: 'console',
+                        values: ['console', 'file'],
+                        description: 'Where to output logs. Provide multiple values as a comma-separated list.',
+                    },
+                    {
+                        name: 'N8N_LOG_FORMAT',
+                        type: 'DropDown',
+                        defaultValue: 'text',
+                        values: ['text', 'json'],
+                        description: 'The log format to use. `text` prints human readable messages. `json` prints one JSON object per line containing the message, level, timestamp, and all metadata. This is useful for production monitoring as well as debugging.',
+                    },
+                    {
+                        name: 'N8N_LOG_CRON_ACTIVE_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 0,
+                        description: 'Interval in minutes to log currently active cron jobs. Set to 0 to disable.',
+                    },
+                    {
+                        name: 'N8N_LOG_FILE_COUNT_MAX',
+                        type: 'Input',
+                        defaultValue: 100,
+                        description: 'Max number of log files to keep.',
+                    },
+                    {
+                        name: 'N8N_LOG_FILE_SIZE_MAX',
+                        type: 'Input',
+                        defaultValue: 16,
+                        description: 'Max size of each log file in MB.',
+                    },
+                    {
+                        name: 'N8N_LOG_FILE_LOCATION',
+                        type: 'Input',
+                        defaultValue: '<n8n-directory-path>/logs/n8n.log',
+                        description: 'Log file location. Requires N8N_LOG_OUTPUT set to `file`.',
+                    },
+                    { name: 'DB_LOGGING_ENABLED', type: 'CheckBox', description: 'Whether to enable database-specific logging.' },
+                    {
+                        name: 'DB_LOGGING_OPTIONS',
+                        type: 'DropDown',
+                        defaultValue: 'error',
+                        values: ['query', 'error', 'schema', 'warn', 'info', 'log'],
+                        description: 'Database log output level. To enable all logging, specify `all`. Refer to TypeORM logging options',
+                    },
+                    {
+                        name: 'DB_LOGGING_MAX_EXECUTION_TIME',
+                        type: 'Input',
+                        defaultValue: 1000,
+                        description: 'Maximum execution time (in milliseconds) before n8n logs a warning. Set to 0 to disable long running query warning.',
+                    },
+                    {
+                        name: 'CODE_ENABLE_STDOUT',
+                        type: 'CheckBox',
+                        description: "Set to `true` to send Code node logs to process's stdout for debugging, monitoring, or logging purposes.",
+                    },
+                    {
+                        name: 'NO_COLOR',
+                        type: 'Input',
+                        defaultValue: 'undefined',
+                        description: 'Set to any value to output logs without ANSI colors. For more information, see the no-color.org website.',
+                    },
+                    {
+                        name: 'N8N_EVENTBUS_CHECKUNSENTINTERVAL',
+                        type: 'Input',
+                        defaultValue: 0,
+                        description: 'How often (in milliseconds) to check for unsent event messages. Can in rare cases send message twice. Set to 0 to disable it.',
+                    },
+                    {
+                        name: 'N8N_EVENTBUS_LOGWRITER_SYNCFILEACCESS',
+                        type: 'CheckBox',
+                        description: 'Whether all file access happens synchronously within the thread (true) or not (false).',
+                    },
+                    {
+                        name: 'N8N_EVENTBUS_LOGWRITER_KEEPLOGCOUNT',
+                        type: 'Input',
+                        defaultValue: 3,
+                        description: 'Number of event log files to keep.',
+                    },
+                    {
+                        name: 'N8N_EVENTBUS_LOGWRITER_MAXFILESIZEINKB',
+                        type: 'Input',
+                        defaultValue: 10240,
+                        description: 'Maximum size (in kilo-bytes) of an event log file before a new one starts.',
+                    },
+                    {
+                        name: 'N8N_EVENTBUS_LOGWRITER_LOGBASENAME',
+                        type: 'Input',
+                        defaultValue: 'n8nEventLog',
+                        description: 'Basename of the event log file.',
+                    },
+                ],
+            },
+            {
+                section: 'License environment variables',
+                items: [
+                    { name: 'N8N_HIDE_USAGE_PAGE', type: 'CheckBox', description: 'Hide the usage and plans page in the app.' },
+                    {
+                        name: 'N8N_LICENSE_ACTIVATION_KEY',
+                        type: 'Input',
+                        defaultValue: '',
+                        description: 'Activation key to initialize license. Not applicable if the n8n instance was already activated.',
+                    },
+                    {
+                        name: 'N8N_LICENSE_AUTO_RENEW_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Enables (true) or disables (false) autorenewal for licenses. If disabled, you need to manually renew the license every 10 days by navigating to **Settings** > **Usage and plan**, and pressing `F5`. Failure to renew the license will disable all licensed features.',
+                    },
+                    {
+                        name: 'N8N_LICENSE_DETACH_FLOATING_ON_SHUTDOWN',
+                        type: 'CheckBox',
+                        description: 'Controls whether the instance releases floating entitlements back to the pool upon shutdown. Set to `true` to allow other instances to reuse the entitlements, or `false` to retain them. For production instances that must always keep their licensed features, set this to `false`.',
+                    },
+                    {
+                        name: 'N8N_LICENSE_SERVER_URL',
+                        type: 'Input',
+                        defaultValue: 'https://license.n8n.io/v1',
+                        description: 'Server URL to retrieve license.',
+                    },
+                    {
+                        name: 'N8N_LICENSE_TENANT_ID',
+                        type: 'Input',
+                        defaultValue: 1,
+                        description: 'Tenant ID associated with the license. Only set this variable if explicitly instructed by n8n.',
+                    },
+                    {
+                        name: 'https_proxy_license_server',
+                        type: 'Input',
+                        defaultValue: 'https://user:pass@proxy:port',
+                        description: 'Proxy server URL for HTTPS requests to retrieve license. This variable name needs to be lowercase.',
+                    },
+                ],
+            },
+            {
+                section: 'Queue mode environment variables',
+                items: [
+                    {
+                        name: 'OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS',
+                        type: 'CheckBox',
+                        description: 'Set to `true` if you want manual executions to run on the worker rather than on main.',
+                    },
+                    { name: 'QUEUE_BULL_PREFIX', type: 'Input', description: 'Prefix to use for all queue keys.' },
+                    { name: 'QUEUE_BULL_REDIS_DB', type: 'Input', defaultValue: 0, description: 'The Redis database used.' },
+                    { name: 'QUEUE_BULL_REDIS_HOST', type: 'Input', defaultValue: 'localhost', description: 'The Redis host.' },
+                    { name: 'QUEUE_BULL_REDIS_PORT', type: 'Input', defaultValue: 6379, description: 'The Redis port used.' },
+                    {
+                        name: 'QUEUE_BULL_REDIS_USERNAME',
+                        type: 'Input',
+                        description: "The Redis username (needs Redis version 6 or above). Don't define it for Redis < 6 compatibility",
+                    },
+                    { name: 'QUEUE_BULL_REDIS_PASSWORD', type: 'Input', description: 'The Redis password.' },
+                    {
+                        name: 'QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD',
+                        type: 'Input',
+                        defaultValue: 10000,
+                        description: 'The Redis timeout threshold (in ms).',
+                    },
+                    {
+                        name: 'QUEUE_BULL_REDIS_CLUSTER_NODES',
+                        type: 'Input',
+                        description: 'Expects a comma-separated list of Redis Cluster nodes in the format `host:port`, for the Redis client to initially connect to. If running in queue mode (`EXECUTIONS_MODE = queue`), setting this variable will create a Redis Cluster client instead of a Redis client, and n8n will ignore `QUEUE_BULL_REDIS_HOST` and `QUEUE_BULL_REDIS_PORT`.',
+                    },
+                    { name: 'QUEUE_BULL_REDIS_TLS', type: 'CheckBox', description: 'Enable TLS on Redis connections.' },
+                    {
+                        name: 'QUEUE_BULL_REDIS_DUALSTACK',
+                        type: 'CheckBox',
+                        description: 'Enable dual-stack support (IPv4 and IPv6) on Redis connections.',
+                    },
+                    {
+                        name: 'QUEUE_WORKER_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: 30,
+                        description: '**Deprecated** Use `N8N_GRACEFUL_SHUTDOWN_TIMEOUT` instead. How long should n8n wait (seconds) for running executions before exiting worker process on shutdown.',
+                    },
+                    {
+                        name: 'QUEUE_HEALTH_CHECK_ACTIVE',
+                        type: 'CheckBox',
+                        description: 'Whether to enable health checks (true) or disable (false).',
+                    },
+                    {
+                        name: 'QUEUE_HEALTH_CHECK_PORT',
+                        type: 'Input',
+                        defaultValue: 5678,
+                        description: 'The port to serve health checks on. If you experience a port conflict error when starting a worker server using its default port, change this.',
+                    },
+                    {
+                        name: 'QUEUE_WORKER_LOCK_DURATION',
+                        type: 'Input',
+                        defaultValue: 60000,
+                        description: 'How long (in ms) is the lease period for a worker to work on a message.',
+                    },
+                    {
+                        name: 'QUEUE_WORKER_LOCK_RENEW_TIME',
+                        type: 'Input',
+                        defaultValue: 10000,
+                        description: 'How frequently (in ms) should a worker renew the lease time.',
+                    },
+                    {
+                        name: 'QUEUE_WORKER_STALLED_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 30000,
+                        description: 'How often should a worker check for stalled jobs (use 0 for never).',
+                    },
+                    {
+                        name: 'QUEUE_WORKER_MAX_STALLED_COUNT',
+                        type: 'Input',
+                        defaultValue: 1,
+                        description: 'Maximum amount of times a stalled job will be re-processed.',
+                    },
+                    {
+                        name: 'N8N_MULTI_MAIN_SETUP_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to enable multi-main setup for queue mode (license required).',
+                    },
+                    {
+                        name: 'N8N_MULTI_MAIN_SETUP_KEY_TTL',
+                        type: 'Input',
+                        defaultValue: 10,
+                        description: 'Time to live (in seconds) for leader key in multi-main setup.',
+                    },
+                    {
+                        name: 'N8N_MULTI_MAIN_SETUP_CHECK_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 3,
+                        description: 'Interval (in seconds) for leader check in multi-main setup.',
+                    },
+                ],
+            },
+            {
+                section: 'Source control environment variables',
+                items: [
+                    {
+                        name: 'N8N_SOURCECONTROL_DEFAULT_SSH_KEY_TYPE',
+                        type: 'Input',
+                        defaultValue: 'ed25519',
+                        description: 'Set to `rsa` to make RSA the default SSH key type for Source control setup.',
+                    },
+                ],
+            },
+            {
+                section: 'Timezone and localization environment variables',
+                items: [
+                    {
+                        name: 'GENERIC_TIMEZONE',
+                        type: 'Input',
+                        defaultValue: 'America/New_York',
+                        description: 'The n8n instance timezone. Important for schedule nodes (such as Cron).',
+                    },
+                    {
+                        name: 'N8N_DEFAULT_LOCALE',
+                        type: 'Input',
+                        defaultValue: 'en',
+                        description: "A locale identifier, compatible with the Accept-Language header. n8n doesn't support regional identifiers, such as `de-AT`. When running in a locale other than the default, n8n displays UI strings in the selected locale, and falls back to `en` for any untranslated strings.",
+                    },
+                ],
+            },
+            {
+                section: 'Security environment variables',
+                items: [
+                    {
+                        name: 'N8N_BLOCK_ENV_ACCESS_IN_NODE',
+                        type: 'CheckBox',
+                        description: 'Whether to allow users to access environment variables in expressions and the Code node (false) or not (true).',
+                    },
+                    {
+                        name: 'N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES',
+                        type: 'CheckBox',
+                        description: 'Set to `true` to block access to all files in the .n8n directory and user defined configuration files.',
+                    },
+                    {
+                        name: 'N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS',
+                        type: 'CheckBox',
+                        description: 'Set to `true` to try to set 0600 permissions for the settings file, giving only the owner read and write access.',
+                    },
+                    {
+                        name: 'N8N_RESTRICT_FILE_ACCESS_TO',
+                        type: 'Input',
+                        description: 'Limits access to files in these directories. Provide multiple files as a colon-separated list (":").',
+                    },
+                    {
+                        name: 'N8N_SECURITY_AUDIT_DAYS_ABANDONED_WORKFLOW',
+                        type: 'Input',
+                        defaultValue: 90,
+                        description: "Number of days to consider a workflow abandoned if it's not executed.",
+                    },
+                    {
+                        name: 'N8N_SECURE_COOKIE',
+                        type: 'CheckBox',
+                        description: 'Ensures that cookies are only sent over HTTPS, enhancing security.',
+                    },
+                    {
+                        name: 'N8N_SAMESITE_COOKIE',
+                        type: 'DropDown',
+                        defaultValue: 'lax',
+                        values: ['strict', 'lax', 'none'],
+                        description: 'Controls cross-site cookie behavior:\n- strict: Sent only for first-party requests.\n- lax (default): Sent with top-level navigation requests.\n- none: Sent in all contexts (requires HTTPS).',
+                    },
+                ],
+            },
+            {
+                section: 'External hooks environment variables',
+                items: [
+                    {
+                        name: 'EXTERNAL_HOOK_FILES',
+                        type: 'Input',
+                        description: 'Files containing backend external hooks. Provide multiple files as a colon-separated list (":").',
+                    },
+                    {
+                        name: 'EXTERNAL_FRONTEND_HOOKS_URLS',
+                        type: 'Input',
+                        description: 'URLs to files containing frontend external hooks. Provide multiple URLs as a colon-separated list (":").',
+                    },
+                ],
+            },
+            {
+                section: 'External secrets environment variables',
+                items: [
+                    {
+                        name: 'N8N_EXTERNAL_SECRETS_UPDATE_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 300,
+                        description: 'How often (in seconds) to check for secret updates.',
+                    },
+                ],
+            },
+            {
+                section: 'Deployment environment variables',
+                items: [
+                    {
+                        name: 'HTTP_PROXY',
+                        type: 'Input',
+                        description: 'A URL to proxy unencrypted HTTP requests through. When set, n8n proxies all unencrypted HTTP traffic from nodes through the proxy URL.',
+                    },
+                    {
+                        name: 'HTTPS_PROXY',
+                        type: 'Input',
+                        description: 'A URL to proxy TLS/SSL encrypted HTTP requests through. When set, n8n proxies all TLS/SSL encrypted HTTP traffic from nodes through the proxy URL.',
+                    },
+                    {
+                        name: 'ALL_PROXY',
+                        type: 'Input',
+                        description: "A URL to proxy both unencrypted and encrypted HTTP requests through. When set, n8n uses this value when more specific variables (`HTTP_PROXY` or `HTTPS_PROXY`) aren't present.",
+                    },
+                    {
+                        name: 'NO_PROXY',
+                        type: 'Input',
+                        description: 'A comma-separated list of hostnames or URLs that should bypass the proxy. When using `HTTP_PROXY`, `HTTPS_PROXY`, or `ALL_PROXY`, n8n will connect directly to the URLs or hostnames defined here instead of using the proxy.',
+                    },
+                    {
+                        name: 'N8N_EDITOR_BASE_URL',
+                        type: 'Input',
+                        description: 'Public URL where users can access the editor. Also used for emails sent from n8n and the redirect URL for SAML based authentication.',
+                    },
+                    {
+                        name: 'N8N_CONFIG_FILES',
+                        type: 'Input',
+                        description: 'Use to provide the path to any JSON configuration file.',
+                    },
+                    { name: 'N8N_DISABLE_UI', type: 'CheckBox', description: 'Set to `true` to disable the UI.' },
+                    { name: 'N8N_PREVIEW_MODE', type: 'CheckBox', description: 'Set to `true` to run in preview mode.' },
+                    {
+                        name: 'N8N_TEMPLATES_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Enables workflow templates (true) or disable (false).',
+                    },
+                    {
+                        name: 'N8N_TEMPLATES_HOST',
+                        type: 'Input',
+                        defaultValue: 'https://api.n8n.io',
+                        description: "Change this if creating your own workflow template library. Note that to use your own workflow templates library, your API must provide the same endpoints and response structure as n8n's. Refer to Workflow templates for more information.",
+                    },
+                    {
+                        name: 'N8N_ENCRYPTION_KEY',
+                        type: 'Input',
+                        defaultValue: 'Random key generated by n8n',
+                        description: 'Provide a custom key used to encrypt credentials in the n8n database. By default n8n generates a random key on first launch.',
+                    },
+                    {
+                        name: 'N8N_USER_FOLDER',
+                        type: 'Input',
+                        defaultValue: 'user-folder',
+                        description: 'Provide the path where n8n will create the .n8n folder. This directory stores user-specific data, such as database file and encryption key.',
+                    },
+                    { name: 'N8N_PATH', type: 'Input', defaultValue: '/', description: 'The path n8n deploys to.' },
+                    { name: 'N8N_HOST', type: 'Input', defaultValue: 'localhost', description: 'Host name n8n runs on.' },
+                    { name: 'N8N_PORT', type: 'Input', defaultValue: 5678, description: 'The HTTP port n8n runs on.' },
+                    {
+                        name: 'N8N_LISTEN_ADDRESS',
+                        type: 'Input',
+                        defaultValue: '::',
+                        description: 'The IP address n8n should listen on.',
+                    },
+                    {
+                        name: 'N8N_PROTOCOL',
+                        type: 'DropDown',
+                        defaultValue: 'http',
+                        values: ['http', 'https'],
+                        description: 'The protocol used to reach n8n.',
+                    },
+                    { name: 'N8N_SSL_KEY', type: 'Input', description: 'The SSL key for HTTPS protocol.' },
+                    { name: 'N8N_SSL_CERT', type: 'Input', description: 'The SSL certificate for HTTPS protocol.' },
+                    {
+                        name: 'N8N_PERSONALIZATION_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to ask users personalisation questions and then customise n8n accordingly.',
+                    },
+                    {
+                        name: 'N8N_VERSION_NOTIFICATIONS_ENABLED',
+                        type: 'CheckBox',
+                        description: 'When enabled, n8n sends notifications of new versions and security updates.',
+                    },
+                    {
+                        name: 'N8N_VERSION_NOTIFICATIONS_ENDPOINT',
+                        type: 'Input',
+                        defaultValue: 'https://api.n8n.io/versions/',
+                        description: 'The endpoint to retrieve where version information.',
+                    },
+                    {
+                        name: 'N8N_VERSION_NOTIFICATIONS_INFO_URL',
+                        type: 'Input',
+                        defaultValue: 'https://docs.n8n.io/getting-started/installation/updating.html',
+                        description: 'The URL displayed in the New Versions panel for more information.',
+                    },
+                    {
+                        name: 'N8N_DIAGNOSTICS_ENABLED',
+                        type: 'CheckBox',
+                        description: "Whether to share selected, anonymous telemetry with n8n. Note that if you set this to `false`, you can't enable Ask AI in the Code node.",
+                    },
+                    {
+                        name: 'N8N_DIAGNOSTICS_CONFIG_FRONTEND',
+                        type: 'Input',
+                        defaultValue: '1zPn9bgWPzlQc0p8Gj1uiK6DOTn;https://telemetry.n8n.io',
+                        description: 'Telemetry configuration for the frontend.',
+                    },
+                    {
+                        name: 'N8N_DIAGNOSTICS_CONFIG_BACKEND',
+                        type: 'Input',
+                        defaultValue: '1zPn7YoGC3ZXE9zLeTKLuQCB4F6;https://telemetry.n8n.io/v1/batch',
+                        description: 'Telemetry configuration for the backend.',
+                    },
+                    {
+                        name: 'N8N_PUSH_BACKEND',
+                        type: 'Input',
+                        defaultValue: 'websocket',
+                        description: 'Choose whether the n8n backend uses server-sent events (`sse`) or WebSockets (`websocket`) to send changes to the UI.',
+                    },
+                    {
+                        name: 'VUE_APP_URL_BASE_API',
+                        type: 'Input',
+                        defaultValue: 'http://localhost:5678/',
+                        description: 'Used when building the n8n-editor-ui package manually to set how the frontend can reach the backend API. Refer to Configure the Base URL.',
+                    },
+                    {
+                        name: 'N8N_HIRING_BANNER_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to show the n8n hiring banner in the console (true) or not (false).',
+                    },
+                    {
+                        name: 'N8N_PUBLIC_API_SWAGGERUI_DISABLED',
+                        type: 'CheckBox',
+                        description: 'Whether the Swagger UI (API playground) is disabled (true) or not (false).',
+                    },
+                    {
+                        name: 'N8N_PUBLIC_API_DISABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to disable the public API (true) or not (false).',
+                    },
+                    {
+                        name: 'N8N_PUBLIC_API_ENDPOINT',
+                        type: 'Input',
+                        defaultValue: 'api',
+                        description: 'Path for the public API endpoints.',
+                    },
+                    {
+                        name: 'N8N_GRACEFUL_SHUTDOWN_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: 30,
+                        description: 'How long should the n8n process wait (in seconds) for components to shut down before exiting the process.',
+                    },
+                    {
+                        name: 'N8N_DEV_RELOAD',
+                        type: 'CheckBox',
+                        description: 'When working on the n8n source code, set this to `true` to automatically reload or restart the application when changes occur in the source code files.',
+                    },
+                    {
+                        name: 'N8N_REINSTALL_MISSING_PACKAGES',
+                        type: 'CheckBox',
+                        description: 'If set to `true`, n8n will automatically attempt to reinstall any missing packages.',
+                    },
+                    {
+                        name: 'N8N_TUNNEL_SUBDOMAIN',
+                        type: 'Input',
+                        description: 'Specifies the subdomain for the n8n tunnel. If not set, n8n generates a random subdomain.',
+                    },
+                    {
+                        name: 'N8N_PROXY_HOPS',
+                        type: 'Input',
+                        defaultValue: 0,
+                        description: 'Number of reverse-proxies n8n is running behind.',
+                    },
+                ],
+            },
+            {
+                section: 'Database environment variables',
+                items: [
+                    {
+                        name: 'DB_TYPE',
+                        type: 'DropDown',
+                        defaultValue: 'sqlite',
+                        values: ['sqlite', 'postgresdb'],
+                        description: 'The database to use.',
+                    },
+                    { name: 'DB_TABLE_PREFIX', type: 'Input', description: 'Prefix to use for table names.' },
+                    {
+                        name: 'DB_PING_INTERVAL_SECONDS',
+                        type: 'Input',
+                        defaultValue: 2,
+                        description: 'The interval, in seconds, between pings to the database to check if the connection is still alive.',
+                    },
+                    {
+                        name: 'DB_POSTGRESDB_DATABASE',
+                        type: 'Input',
+                        defaultValue: 'n8n',
+                        description: 'The name of the PostgreSQL database.',
+                    },
+                    { name: 'DB_POSTGRESDB_HOST', type: 'Input', defaultValue: 'localhost', description: 'The PostgreSQL host.' },
+                    { name: 'DB_POSTGRESDB_PORT', type: 'Input', defaultValue: 5432, description: 'The PostgreSQL port.' },
+                    { name: 'DB_POSTGRESDB_USER', type: 'Input', defaultValue: 'postgres', description: 'The PostgreSQL user.' },
+                    { name: 'DB_POSTGRESDB_PASSWORD', type: 'Input', description: 'The PostgreSQL password.' },
+                    {
+                        name: 'DB_POSTGRESDB_POOL_SIZE',
+                        type: 'Input',
+                        defaultValue: 2,
+                        description: 'Control how many parallel open Postgres connections n8n should have. Increasing it may help with resource utilization, but too many connections may degrade performance.',
+                    },
+                    {
+                        name: 'DB_POSTGRESDB_CONNECTION_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: 20000,
+                        description: 'Postgres connection timeout (ms).',
+                    },
+                    {
+                        name: 'DB_POSTGRESDB_IDLE_CONNECTION_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: 30000,
+                        description: 'Amount of time before an idle connection is eligible for eviction for being idle.',
+                    },
+                    { name: 'DB_POSTGRESDB_SCHEMA', type: 'Input', defaultValue: 'public', description: 'The PostgreSQL schema.' },
+                    {
+                        name: 'DB_POSTGRESDB_SSL_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Whether to enable SSL. Automatically enabled if DB_POSTGRESDB_SSL_CA, DB_POSTGRESDB_SSL_CERT or DB_POSTGRESDB_SSL_KEY is defined.',
+                    },
+                    { name: 'DB_POSTGRESDB_SSL_CA', type: 'Input', description: 'The PostgreSQL SSL certificate authority.' },
+                    { name: 'DB_POSTGRESDB_SSL_CERT', type: 'Input', description: 'The PostgreSQL SSL certificate.' },
+                    { name: 'DB_POSTGRESDB_SSL_KEY', type: 'Input', description: 'The PostgreSQL SSL key.' },
+                    {
+                        name: 'DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED',
+                        type: 'CheckBox',
+                        description: 'If n8n should reject unauthorized SSL connections (true) or not (false).',
+                    },
+                    {
+                        name: 'DB_SQLITE_POOL_SIZE',
+                        type: 'Input',
+                        defaultValue: 0,
+                        description: 'Controls whether to open the SQLite file in WAL mode or rollback journal mode. Uses rollback journal mode when set to zero. When greater than zero, uses WAL mode with the value determining the number of parallel SQL read connections to configure. WAL mode is much more performant and reliable than the rollback journal mode.',
+                    },
+                    {
+                        name: 'DB_SQLITE_VACUUM_ON_STARTUP',
+                        type: 'CheckBox',
+                        description: 'Runs VACUUM operation on startup to rebuild the database. Reduces file size and optimizes indexes. This is a long running blocking operation and increases start-up time.',
+                    },
+                ],
+            },
+            {
+                section: 'Executions environment variables',
+                items: [
+                    {
+                        name: 'EXECUTIONS_MODE',
+                        type: 'DropDown',
+                        defaultValue: 'regular',
+                        values: ['regular', 'queue'],
+                        description: 'Whether executions should run directly or using queue.',
+                    },
+                    {
+                        name: 'EXECUTIONS_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: -1,
+                        description: 'Sets a default timeout (in seconds) to all workflows after which n8n stops their execution. Users can override this for individual workflows up to the duration set in EXECUTIONS_TIMEOUT_MAX. Set EXECUTIONS_TIMEOUT to -1 to disable.',
+                    },
+                    {
+                        name: 'EXECUTIONS_TIMEOUT_MAX',
+                        type: 'Input',
+                        defaultValue: 3600,
+                        description: 'The maximum execution time (in seconds) that users can set for an individual workflow.',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_SAVE_ON_ERROR',
+                        type: 'DropDown',
+                        defaultValue: 'all',
+                        values: ['all', 'none'],
+                        description: 'Whether n8n saves execution data on error.',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_SAVE_ON_SUCCESS',
+                        type: 'DropDown',
+                        defaultValue: 'all',
+                        values: ['all', 'none'],
+                        description: 'Whether n8n saves execution data on success.',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_SAVE_ON_PROGRESS',
+                        type: 'CheckBox',
+                        description: 'Whether to save progress for each node executed (true) or not (false).',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS',
+                        type: 'CheckBox',
+                        description: 'Whether to save data of executions when started manually.',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_PRUNE',
+                        type: 'CheckBox',
+                        description: 'Whether to delete data of past executions on a rolling basis.',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_MAX_AGE',
+                        type: 'Input',
+                        defaultValue: 336,
+                        description: "The execution age (in hours) before it's deleted.",
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_PRUNE_MAX_COUNT',
+                        type: 'Input',
+                        defaultValue: 10000,
+                        description: 'Maximum number of executions to keep in the database. 0 = no limit',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_HARD_DELETE_BUFFER',
+                        type: 'Input',
+                        defaultValue: 1,
+                        description: 'How old (hours) the finished execution data has to be to get hard-deleted. By default, this buffer excludes recent executions as the user may need them while building a workflow.',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_PRUNE_HARD_DELETE_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 15,
+                        description: 'How often (minutes) execution data should be hard-deleted.',
+                    },
+                    {
+                        name: 'EXECUTIONS_DATA_PRUNE_SOFT_DELETE_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 60,
+                        description: 'How often (minutes) execution data should be soft-deleted.',
+                    },
+                    {
+                        name: 'N8N_CONCURRENCY_PRODUCTION_LIMIT',
+                        type: 'Input',
+                        defaultValue: -1,
+                        description: 'Max production executions allowed to run concurrently, in both regular and scaling modes. -1 to disable in regular mode.',
+                    },
+                ],
+            },
+            {
+                section: 'Credentials environment variables',
+                items: [
+                    { name: 'CREDENTIALS_OVERWRITE_DATA', type: 'Input', description: 'Overwrites for credentials.' },
+                    {
+                        name: 'CREDENTIALS_OVERWRITE_ENDPOINT',
+                        type: 'Input',
+                        description: 'The API endpoint to fetch credentials.',
+                    },
+                    {
+                        name: 'CREDENTIALS_DEFAULT_NAME',
+                        type: 'Input',
+                        defaultValue: 'My credentials',
+                        description: 'The default name for credentials.',
+                    },
+                ],
+            },
+            {
+                section: 'Insights environment variables',
+                items: [
+                    {
+                        name: 'N8N_DISABLED_MODULES',
+                        type: 'Input',
+                        description: 'Set to `insights` to disable the feature and metrics collection for an instance.',
+                    },
+                    {
+                        name: 'N8N_INSIGHTS_COMPACTION_BATCH_SIZE',
+                        type: 'Input',
+                        defaultValue: 500,
+                        description: 'The number of raw insights data to compact in a single batch.',
+                    },
+                    {
+                        name: 'N8N_INSIGHTS_COMPACTION_DAILY_TO_WEEKLY_THRESHOLD_DAYS',
+                        type: 'Input',
+                        defaultValue: 180,
+                        description: 'The maximum age (in days) of daily insights data to compact.',
+                    },
+                    {
+                        name: 'N8N_INSIGHTS_COMPACTION_HOURLY_TO_DAILY_THRESHOLD_DAYS',
+                        type: 'Input',
+                        defaultValue: 90,
+                        description: 'The maximum age (in days) of hourly insights data to compact.',
+                    },
+                    {
+                        name: 'N8N_INSIGHTS_COMPACTION_INTERVAL_MINUTES',
+                        type: 'Input',
+                        defaultValue: 60,
+                        description: 'Interval (in minutes) at which compaction should run.',
+                    },
+                    {
+                        name: 'N8N_INSIGHTS_FLUSH_BATCH_SIZE',
+                        type: 'Input',
+                        defaultValue: 1000,
+                        description: 'The maximum number of insights data to keep in the buffer before flushing.',
+                    },
+                    {
+                        name: 'N8N_INSIGHTS_FLUSH_INTERVAL_SECONDS',
+                        type: 'Input',
+                        defaultValue: 30,
+                        description: 'The interval (in seconds) at which the insights data should be flushed to the database.',
+                    },
+                ],
+            },
+            {
+                section: 'Binary data environment variables',
+                items: [
+                    {
+                        name: 'N8N_AVAILABLE_BINARY_DATA_MODES',
+                        type: 'Input',
+                        defaultValue: 'filesystem',
+                        description: 'A comma separated list of available binary data modes.',
+                    },
+                    {
+                        name: 'N8N_BINARY_DATA_STORAGE_PATH',
+                        type: 'Input',
+                        defaultValue: 'N8N_USER_FOLDER/binaryData',
+                        description: 'The path where n8n stores binary data.',
+                    },
+                    {
+                        name: 'N8N_DEFAULT_BINARY_DATA_MODE',
+                        type: 'Input',
+                        defaultValue: 'default',
+                        description: 'The default binary data mode. `default` keeps binary data in memory. Set to `filesystem` to use the filesystem, or `s3` to AWS S3. Note that binary data pruning operates on the active binary data mode. For example, if your instance stored data in S3, and you later switched to filesystem mode, n8n only prunes binary data in the filesystem. This may change in future.',
+                    },
+                ],
+            },
+            {
+                section: 'External data storage environment variables',
+                items: [
+                    {
+                        name: 'N8N_EXTERNAL_STORAGE_S3_HOST',
+                        type: 'Input',
+                        description: 'Host of the n8n bucket in S3-compatible external storage. For example, `s3.us-east-1.amazonaws.com`',
+                    },
+                    {
+                        name: 'N8N_EXTERNAL_STORAGE_S3_BUCKET_NAME',
+                        type: 'Input',
+                        description: 'Name of the n8n bucket in S3-compatible external storage.',
+                    },
+                    {
+                        name: 'N8N_EXTERNAL_STORAGE_S3_BUCKET_REGION',
+                        type: 'Input',
+                        description: 'Region of the n8n bucket in S3-compatible external storage. For example, `us-east-1`',
+                    },
+                    {
+                        name: 'N8N_EXTERNAL_STORAGE_S3_ACCESS_KEY',
+                        type: 'Input',
+                        description: 'Access key in S3-compatible external storage',
+                    },
+                    {
+                        name: 'N8N_EXTERNAL_STORAGE_S3_ACCESS_SECRET',
+                        type: 'Input',
+                        description: 'Access secret in S3-compatible external storage.',
+                    },
+                    {
+                        name: 'N8N_EXTERNAL_STORAGE_S3_AUTH_AUTO_DETECT',
+                        type: 'CheckBox',
+                        description: 'Use automatic credential detection to authenticate S3 calls for external storage. This will ignore the access key and access secret and use the default credential provider chain.',
+                    },
+                ],
+            },
+            {
+                section: 'Endpoints environment variables',
+                items: [
+                    {
+                        name: 'N8N_PAYLOAD_SIZE_MAX',
+                        type: 'Input',
+                        defaultValue: 16,
+                        description: 'The maximum payload size in MiB.',
+                    },
+                    {
+                        name: 'N8N_FORMDATA_FILE_SIZE_MAX',
+                        type: 'Input',
+                        defaultValue: 200,
+                        description: 'Max payload size for files in form-data webhook payloads in MiB.',
+                    },
+                    { name: 'N8N_METRICS', type: 'CheckBox', description: 'Whether to enable the /metrics endpoint.' },
+                    {
+                        name: 'N8N_METRICS_PREFIX',
+                        type: 'Input',
+                        defaultValue: 'n8n_',
+                        description: 'Optional prefix for n8n specific metrics names.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_DEFAULT_METRICS',
+                        type: 'CheckBox',
+                        description: 'Whether to expose default system and node.js metrics.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_CACHE_METRICS',
+                        type: 'CheckBox',
+                        description: 'Whether to include metrics (true) for cache hits and misses, or not include them (false).',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS',
+                        type: 'CheckBox',
+                        description: 'Whether to include metrics (true) for events, or not include them (false).',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL',
+                        type: 'CheckBox',
+                        description: 'Whether to include a label for the workflow ID on workflow metrics.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_NODE_TYPE_LABEL',
+                        type: 'CheckBox',
+                        description: 'Whether to include a label for the node type on node metrics.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL',
+                        type: 'CheckBox',
+                        description: 'Whether to include a label for the credential type on credential metrics.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_API_ENDPOINTS',
+                        type: 'CheckBox',
+                        description: 'Whether to expose metrics for API endpoints.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_API_PATH_LABEL',
+                        type: 'CheckBox',
+                        description: 'Whether to include a label for the path of API invocations.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_API_METHOD_LABEL',
+                        type: 'CheckBox',
+                        description: 'Whether to include a label for the HTTP method (GET, POST, ...) of API invocations.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_API_STATUS_CODE_LABEL',
+                        type: 'CheckBox',
+                        description: 'Whether to include a label for the HTTP status code (200, 404, ...) of API invocations.',
+                    },
+                    {
+                        name: 'N8N_METRICS_INCLUDE_QUEUE_METRICS',
+                        type: 'CheckBox',
+                        description: 'Whether to include metrics for jobs in scaling mode. Not supported in multi-main setup.',
+                    },
+                    {
+                        name: 'N8N_METRICS_QUEUE_METRICS_INTERVAL',
+                        type: 'Input',
+                        defaultValue: 20,
+                        description: 'How often (in seconds) to update queue metrics.',
+                    },
+                    {
+                        name: 'N8N_ENDPOINT_REST',
+                        type: 'Input',
+                        defaultValue: 'rest',
+                        description: 'The path used for REST endpoint.',
+                    },
+                    {
+                        name: 'N8N_ENDPOINT_WEBHOOK',
+                        type: 'Input',
+                        defaultValue: 'webhook',
+                        description: 'The path used for webhook endpoint.',
+                    },
+                    {
+                        name: 'N8N_ENDPOINT_WEBHOOK_TEST',
+                        type: 'Input',
+                        defaultValue: 'webhook-test',
+                        description: 'The path used for test-webhook endpoint.',
+                    },
+                    {
+                        name: 'N8N_ENDPOINT_WEBHOOK_WAIT',
+                        type: 'Input',
+                        defaultValue: 'webhook-waiting',
+                        description: 'The path used for waiting-webhook endpoint.',
+                    },
+                    {
+                        name: 'WEBHOOK_URL',
+                        type: 'Input',
+                        description: 'Used to manually provide the Webhook URL when running n8n behind a reverse proxy.',
+                    },
+                    {
+                        name: 'N8N_DISABLE_PRODUCTION_MAIN_PROCESS',
+                        type: 'CheckBox',
+                        description: 'Disable production webhooks from main process. This helps ensure no HTTP traffic load to main process when using webhook-specific processes.',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const INSTALL_TIME_KEY$1 = 'install-time-n8n';
+const UPDATE_TIME_KEY$1 = 'update-time-n8n';
+const UPDATE_AVAILABLE_KEY$1 = 'update-available-version-n8n';
+function checkLinuxArgLine$1(line) {
+    if (isWin && line.startsWith('set '))
+        return 'set';
+    if (line.startsWith('export '))
+        return 'export';
+    for (const arg of n8nArguments) {
+        if (arg.category === 'Environment') {
+            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
+                return 'var';
+            }
+            else {
+                return undefined;
+            }
+        }
+    }
+    return undefined;
+}
+function parseArgsToString$3(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    args.forEach(arg => {
+        if (getArgumentType(arg.name, n8nArguments) === 'CheckBox') {
+            const eWinResult = `set ${arg.name}=true\n`;
+            const eResult = `export ${arg.name}="true"\n`;
+            result += isWin ? eWinResult : eResult;
+        }
+        else {
+            const eWinResult = `set ${arg.name}=${arg.value}\n`;
+            const eResult = `export ${arg.name}="${arg.value}"\n`;
+            result += isWin ? eWinResult : eResult;
+        }
+    });
+    result += isWin ? `\nn8n start` : `n8n start`;
+    return result;
+}
+function parseStringToArgs$3(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('#')) {
+            return;
+        }
+        const lineType = checkLinuxArgLine$1(line);
+        if (lineType === 'export' || lineType === 'set') {
+            let [name, value] = line.replace(`${lineType} `, '').split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, n8nArguments)) {
+                argResult.push({ name, value });
+            }
+        }
+        else if (checkLinuxArgLine$1(line) === 'var') {
+            let [name, value] = line.split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, n8nArguments)) {
+                argResult.push({ name, value });
+            }
+        }
+    });
+    return argResult;
+}
+// TODO: support selecting available versions or @next
+function startInstall$3(stepper) {
+    stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install N8N', 'All Done!']);
+    stepper.starterStep({ disableSelectDir: true }).then(() => {
+        stepper.nextStep().then(() => {
+            stepper.progressBar(true, 'Checking if NPM is installed...');
+            stepper.ipc.invoke('is_npm_available').then((isNpmInstalled) => {
+                if (isNpmInstalled) {
+                    stepper.nextStep().then(() => {
+                        stepper.progressBar(true, 'Checking for existing N8N installation...');
+                        stepper.ipc.invoke('is_n8n_installed').then((isN8nInstalled) => {
+                            if (isN8nInstalled) {
+                                stepper.setInstalled();
+                                const currentDate = new Date();
+                                stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                                stepper.showFinalStep('success', "You're All Set!", "N8N is already installed. You're good to go!");
+                            }
+                            else {
+                                stepper.nextStep().then(() => {
+                                    stepper.executeTerminalCommands('npm i -g n8n').then(() => {
+                                        stepper.setInstalled();
+                                        const currentDate = new Date();
+                                        stepper.storage.set(INSTALL_TIME_KEY$1, currentDate.toLocaleString());
+                                        stepper.showFinalStep('success', 'Installation Complete!', 'Your N8N environment is ready. Enjoy!');
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+                else {
+                    stepper.showFinalStep('error', 'NodeJs is not installed!', 'N8N need NPM! Please install NodeJs then try again.');
+                }
+            });
+        });
+    });
+}
+function startUpdate$1(stepper) {
+    stepper.initialSteps(['Update N8N', 'Complete Update']);
+    stepper.executeTerminalCommands('npm -g update n8n').then(() => {
+        const currentDate = new Date();
+        stepper.storage.set(UPDATE_TIME_KEY$1, currentDate.toLocaleString());
+        stepper.setUpdated();
+        stepper.showFinalStep('success', 'N8N Updated Successfully!', `N8N has been updated to the latest version. You can now enjoy the new features and improvements.`);
+    });
+}
+async function cardInfo$3(api, callback) {
+    callback.setOpenFolders(undefined);
+    const descManager = new DescriptionManager([
+        {
+            title: 'Installation Data',
+            items: [
+                { label: 'Install Date', result: 'loading' },
+                { label: 'Update Date', result: 'loading' },
+                { label: 'Current Version', result: 'loading' },
+                { label: 'Latest Version', result: 'loading' },
+            ],
+        },
+    ], callback);
+    api.storage.get(INSTALL_TIME_KEY$1).then(result => {
+        descManager.updateItem(0, 0, result);
+    });
+    api.storage.get(UPDATE_TIME_KEY$1).then(result => {
+        descManager.updateItem(0, 1, result);
+    });
+    api.ipc.invoke('current_n8n_version').then(result => {
+        descManager.updateItem(0, 2, result);
+    });
+    api.storage.get(UPDATE_AVAILABLE_KEY$1).then(result => {
+        descManager.updateItem(0, 3, result);
+    });
+}
+const N8N_RM = {
+    catchAddress: catchAddress$2,
+    cardInfo: cardInfo$3,
+    parseStringToArgs: parseStringToArgs$3,
+    parseArgsToString: parseArgsToString$3,
+    manager: { startInstall: startInstall$3, updater: { updateType: 'stepper', startUpdate: startUpdate$1 } },
+};
 
 const INSTALL_TIME_KEY = 'install-time-openwebui';
 const UPDATE_TIME_KEY = 'update-time-openwebui';
@@ -23242,20 +26733,3791 @@ const OPEN_WEBUI_RM = {
     manager: { startInstall: startInstall$2, updater: { updateType: 'stepper', startUpdate } },
 };
 
+/*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
+function isNothing(subject) {
+  return (typeof subject === 'undefined') || (subject === null);
+}
+
+
+function isObject(subject) {
+  return (typeof subject === 'object') && (subject !== null);
+}
+
+
+function toArray(sequence) {
+  if (Array.isArray(sequence)) return sequence;
+  else if (isNothing(sequence)) return [];
+
+  return [ sequence ];
+}
+
+
+function extend(target, source) {
+  var index, length, key, sourceKeys;
+
+  if (source) {
+    sourceKeys = Object.keys(source);
+
+    for (index = 0, length = sourceKeys.length; index < length; index += 1) {
+      key = sourceKeys[index];
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+
+function repeat(string, count) {
+  var result = '', cycle;
+
+  for (cycle = 0; cycle < count; cycle += 1) {
+    result += string;
+  }
+
+  return result;
+}
+
+
+function isNegativeZero(number) {
+  return (number === 0) && (Number.NEGATIVE_INFINITY === 1 / number);
+}
+
+
+var isNothing_1      = isNothing;
+var isObject_1       = isObject;
+var toArray_1        = toArray;
+var repeat_1         = repeat;
+var isNegativeZero_1 = isNegativeZero;
+var extend_1         = extend;
+
+var common = {
+	isNothing: isNothing_1,
+	isObject: isObject_1,
+	toArray: toArray_1,
+	repeat: repeat_1,
+	isNegativeZero: isNegativeZero_1,
+	extend: extend_1
+};
+
+// YAML error class. http://stackoverflow.com/questions/8458984
+
+
+function formatError(exception, compact) {
+  var where = '', message = exception.reason || '(unknown reason)';
+
+  if (!exception.mark) return message;
+
+  if (exception.mark.name) {
+    where += 'in "' + exception.mark.name + '" ';
+  }
+
+  where += '(' + (exception.mark.line + 1) + ':' + (exception.mark.column + 1) + ')';
+
+  if (!compact && exception.mark.snippet) {
+    where += '\n\n' + exception.mark.snippet;
+  }
+
+  return message + ' ' + where;
+}
+
+
+function YAMLException$1(reason, mark) {
+  // Super constructor
+  Error.call(this);
+
+  this.name = 'YAMLException';
+  this.reason = reason;
+  this.mark = mark;
+  this.message = formatError(this, false);
+
+  // Include stack trace in error object
+  if (Error.captureStackTrace) {
+    // Chrome and NodeJS
+    Error.captureStackTrace(this, this.constructor);
+  } else {
+    // FF, IE 10+ and Safari 6+. Fallback for others
+    this.stack = (new Error()).stack || '';
+  }
+}
+
+
+// Inherit from Error
+YAMLException$1.prototype = Object.create(Error.prototype);
+YAMLException$1.prototype.constructor = YAMLException$1;
+
+
+YAMLException$1.prototype.toString = function toString(compact) {
+  return this.name + ': ' + formatError(this, compact);
+};
+
+
+var exception = YAMLException$1;
+
+// get snippet for a single line, respecting maxLength
+function getLine(buffer, lineStart, lineEnd, position, maxLineLength) {
+  var head = '';
+  var tail = '';
+  var maxHalfLength = Math.floor(maxLineLength / 2) - 1;
+
+  if (position - lineStart > maxHalfLength) {
+    head = ' ... ';
+    lineStart = position - maxHalfLength + head.length;
+  }
+
+  if (lineEnd - position > maxHalfLength) {
+    tail = ' ...';
+    lineEnd = position + maxHalfLength - tail.length;
+  }
+
+  return {
+    str: head + buffer.slice(lineStart, lineEnd).replace(/\t/g, '→') + tail,
+    pos: position - lineStart + head.length // relative position
+  };
+}
+
+
+function padStart(string, max) {
+  return common.repeat(' ', max - string.length) + string;
+}
+
+
+function makeSnippet(mark, options) {
+  options = Object.create(options || null);
+
+  if (!mark.buffer) return null;
+
+  if (!options.maxLength) options.maxLength = 79;
+  if (typeof options.indent      !== 'number') options.indent      = 1;
+  if (typeof options.linesBefore !== 'number') options.linesBefore = 3;
+  if (typeof options.linesAfter  !== 'number') options.linesAfter  = 2;
+
+  var re = /\r?\n|\r|\0/g;
+  var lineStarts = [ 0 ];
+  var lineEnds = [];
+  var match;
+  var foundLineNo = -1;
+
+  while ((match = re.exec(mark.buffer))) {
+    lineEnds.push(match.index);
+    lineStarts.push(match.index + match[0].length);
+
+    if (mark.position <= match.index && foundLineNo < 0) {
+      foundLineNo = lineStarts.length - 2;
+    }
+  }
+
+  if (foundLineNo < 0) foundLineNo = lineStarts.length - 1;
+
+  var result = '', i, line;
+  var lineNoLength = Math.min(mark.line + options.linesAfter, lineEnds.length).toString().length;
+  var maxLineLength = options.maxLength - (options.indent + lineNoLength + 3);
+
+  for (i = 1; i <= options.linesBefore; i++) {
+    if (foundLineNo - i < 0) break;
+    line = getLine(
+      mark.buffer,
+      lineStarts[foundLineNo - i],
+      lineEnds[foundLineNo - i],
+      mark.position - (lineStarts[foundLineNo] - lineStarts[foundLineNo - i]),
+      maxLineLength
+    );
+    result = common.repeat(' ', options.indent) + padStart((mark.line - i + 1).toString(), lineNoLength) +
+      ' | ' + line.str + '\n' + result;
+  }
+
+  line = getLine(mark.buffer, lineStarts[foundLineNo], lineEnds[foundLineNo], mark.position, maxLineLength);
+  result += common.repeat(' ', options.indent) + padStart((mark.line + 1).toString(), lineNoLength) +
+    ' | ' + line.str + '\n';
+  result += common.repeat('-', options.indent + lineNoLength + 3 + line.pos) + '^' + '\n';
+
+  for (i = 1; i <= options.linesAfter; i++) {
+    if (foundLineNo + i >= lineEnds.length) break;
+    line = getLine(
+      mark.buffer,
+      lineStarts[foundLineNo + i],
+      lineEnds[foundLineNo + i],
+      mark.position - (lineStarts[foundLineNo] - lineStarts[foundLineNo + i]),
+      maxLineLength
+    );
+    result += common.repeat(' ', options.indent) + padStart((mark.line + i + 1).toString(), lineNoLength) +
+      ' | ' + line.str + '\n';
+  }
+
+  return result.replace(/\n$/, '');
+}
+
+
+var snippet = makeSnippet;
+
+var TYPE_CONSTRUCTOR_OPTIONS = [
+  'kind',
+  'multi',
+  'resolve',
+  'construct',
+  'instanceOf',
+  'predicate',
+  'represent',
+  'representName',
+  'defaultStyle',
+  'styleAliases'
+];
+
+var YAML_NODE_KINDS = [
+  'scalar',
+  'sequence',
+  'mapping'
+];
+
+function compileStyleAliases(map) {
+  var result = {};
+
+  if (map !== null) {
+    Object.keys(map).forEach(function (style) {
+      map[style].forEach(function (alias) {
+        result[String(alias)] = style;
+      });
+    });
+  }
+
+  return result;
+}
+
+function Type$1(tag, options) {
+  options = options || {};
+
+  Object.keys(options).forEach(function (name) {
+    if (TYPE_CONSTRUCTOR_OPTIONS.indexOf(name) === -1) {
+      throw new exception('Unknown option "' + name + '" is met in definition of "' + tag + '" YAML type.');
+    }
+  });
+
+  // TODO: Add tag format check.
+  this.options       = options; // keep original options in case user wants to extend this type later
+  this.tag           = tag;
+  this.kind          = options['kind']          || null;
+  this.resolve       = options['resolve']       || function () { return true; };
+  this.construct     = options['construct']     || function (data) { return data; };
+  this.instanceOf    = options['instanceOf']    || null;
+  this.predicate     = options['predicate']     || null;
+  this.represent     = options['represent']     || null;
+  this.representName = options['representName'] || null;
+  this.defaultStyle  = options['defaultStyle']  || null;
+  this.multi         = options['multi']         || false;
+  this.styleAliases  = compileStyleAliases(options['styleAliases'] || null);
+
+  if (YAML_NODE_KINDS.indexOf(this.kind) === -1) {
+    throw new exception('Unknown kind "' + this.kind + '" is specified for "' + tag + '" YAML type.');
+  }
+}
+
+var type = Type$1;
+
+/*eslint-disable max-len*/
+
+
+
+
+
+function compileList(schema, name) {
+  var result = [];
+
+  schema[name].forEach(function (currentType) {
+    var newIndex = result.length;
+
+    result.forEach(function (previousType, previousIndex) {
+      if (previousType.tag === currentType.tag &&
+          previousType.kind === currentType.kind &&
+          previousType.multi === currentType.multi) {
+
+        newIndex = previousIndex;
+      }
+    });
+
+    result[newIndex] = currentType;
+  });
+
+  return result;
+}
+
+
+function compileMap(/* lists... */) {
+  var result = {
+        scalar: {},
+        sequence: {},
+        mapping: {},
+        fallback: {},
+        multi: {
+          scalar: [],
+          sequence: [],
+          mapping: [],
+          fallback: []
+        }
+      }, index, length;
+
+  function collectType(type) {
+    if (type.multi) {
+      result.multi[type.kind].push(type);
+      result.multi['fallback'].push(type);
+    } else {
+      result[type.kind][type.tag] = result['fallback'][type.tag] = type;
+    }
+  }
+
+  for (index = 0, length = arguments.length; index < length; index += 1) {
+    arguments[index].forEach(collectType);
+  }
+  return result;
+}
+
+
+function Schema$1(definition) {
+  return this.extend(definition);
+}
+
+
+Schema$1.prototype.extend = function extend(definition) {
+  var implicit = [];
+  var explicit = [];
+
+  if (definition instanceof type) {
+    // Schema.extend(type)
+    explicit.push(definition);
+
+  } else if (Array.isArray(definition)) {
+    // Schema.extend([ type1, type2, ... ])
+    explicit = explicit.concat(definition);
+
+  } else if (definition && (Array.isArray(definition.implicit) || Array.isArray(definition.explicit))) {
+    // Schema.extend({ explicit: [ type1, type2, ... ], implicit: [ type1, type2, ... ] })
+    if (definition.implicit) implicit = implicit.concat(definition.implicit);
+    if (definition.explicit) explicit = explicit.concat(definition.explicit);
+
+  } else {
+    throw new exception('Schema.extend argument should be a Type, [ Type ], ' +
+      'or a schema definition ({ implicit: [...], explicit: [...] })');
+  }
+
+  implicit.forEach(function (type$1) {
+    if (!(type$1 instanceof type)) {
+      throw new exception('Specified list of YAML types (or a single Type object) contains a non-Type object.');
+    }
+
+    if (type$1.loadKind && type$1.loadKind !== 'scalar') {
+      throw new exception('There is a non-scalar type in the implicit list of a schema. Implicit resolving of such types is not supported.');
+    }
+
+    if (type$1.multi) {
+      throw new exception('There is a multi type in the implicit list of a schema. Multi tags can only be listed as explicit.');
+    }
+  });
+
+  explicit.forEach(function (type$1) {
+    if (!(type$1 instanceof type)) {
+      throw new exception('Specified list of YAML types (or a single Type object) contains a non-Type object.');
+    }
+  });
+
+  var result = Object.create(Schema$1.prototype);
+
+  result.implicit = (this.implicit || []).concat(implicit);
+  result.explicit = (this.explicit || []).concat(explicit);
+
+  result.compiledImplicit = compileList(result, 'implicit');
+  result.compiledExplicit = compileList(result, 'explicit');
+  result.compiledTypeMap  = compileMap(result.compiledImplicit, result.compiledExplicit);
+
+  return result;
+};
+
+
+var schema = Schema$1;
+
+var str = new type('tag:yaml.org,2002:str', {
+  kind: 'scalar',
+  construct: function (data) { return data !== null ? data : ''; }
+});
+
+var seq = new type('tag:yaml.org,2002:seq', {
+  kind: 'sequence',
+  construct: function (data) { return data !== null ? data : []; }
+});
+
+var map = new type('tag:yaml.org,2002:map', {
+  kind: 'mapping',
+  construct: function (data) { return data !== null ? data : {}; }
+});
+
+var failsafe = new schema({
+  explicit: [
+    str,
+    seq,
+    map
+  ]
+});
+
+function resolveYamlNull(data) {
+  if (data === null) return true;
+
+  var max = data.length;
+
+  return (max === 1 && data === '~') ||
+         (max === 4 && (data === 'null' || data === 'Null' || data === 'NULL'));
+}
+
+function constructYamlNull() {
+  return null;
+}
+
+function isNull(object) {
+  return object === null;
+}
+
+var _null = new type('tag:yaml.org,2002:null', {
+  kind: 'scalar',
+  resolve: resolveYamlNull,
+  construct: constructYamlNull,
+  predicate: isNull,
+  represent: {
+    canonical: function () { return '~';    },
+    lowercase: function () { return 'null'; },
+    uppercase: function () { return 'NULL'; },
+    camelcase: function () { return 'Null'; },
+    empty:     function () { return '';     }
+  },
+  defaultStyle: 'lowercase'
+});
+
+function resolveYamlBoolean(data) {
+  if (data === null) return false;
+
+  var max = data.length;
+
+  return (max === 4 && (data === 'true' || data === 'True' || data === 'TRUE')) ||
+         (max === 5 && (data === 'false' || data === 'False' || data === 'FALSE'));
+}
+
+function constructYamlBoolean(data) {
+  return data === 'true' ||
+         data === 'True' ||
+         data === 'TRUE';
+}
+
+function isBoolean(object) {
+  return Object.prototype.toString.call(object) === '[object Boolean]';
+}
+
+var bool = new type('tag:yaml.org,2002:bool', {
+  kind: 'scalar',
+  resolve: resolveYamlBoolean,
+  construct: constructYamlBoolean,
+  predicate: isBoolean,
+  represent: {
+    lowercase: function (object) { return object ? 'true' : 'false'; },
+    uppercase: function (object) { return object ? 'TRUE' : 'FALSE'; },
+    camelcase: function (object) { return object ? 'True' : 'False'; }
+  },
+  defaultStyle: 'lowercase'
+});
+
+function isHexCode(c) {
+  return ((0x30/* 0 */ <= c) && (c <= 0x39/* 9 */)) ||
+         ((0x41/* A */ <= c) && (c <= 0x46/* F */)) ||
+         ((0x61/* a */ <= c) && (c <= 0x66/* f */));
+}
+
+function isOctCode(c) {
+  return ((0x30/* 0 */ <= c) && (c <= 0x37/* 7 */));
+}
+
+function isDecCode(c) {
+  return ((0x30/* 0 */ <= c) && (c <= 0x39/* 9 */));
+}
+
+function resolveYamlInteger(data) {
+  if (data === null) return false;
+
+  var max = data.length,
+      index = 0,
+      hasDigits = false,
+      ch;
+
+  if (!max) return false;
+
+  ch = data[index];
+
+  // sign
+  if (ch === '-' || ch === '+') {
+    ch = data[++index];
+  }
+
+  if (ch === '0') {
+    // 0
+    if (index + 1 === max) return true;
+    ch = data[++index];
+
+    // base 2, base 8, base 16
+
+    if (ch === 'b') {
+      // base 2
+      index++;
+
+      for (; index < max; index++) {
+        ch = data[index];
+        if (ch === '_') continue;
+        if (ch !== '0' && ch !== '1') return false;
+        hasDigits = true;
+      }
+      return hasDigits && ch !== '_';
+    }
+
+
+    if (ch === 'x') {
+      // base 16
+      index++;
+
+      for (; index < max; index++) {
+        ch = data[index];
+        if (ch === '_') continue;
+        if (!isHexCode(data.charCodeAt(index))) return false;
+        hasDigits = true;
+      }
+      return hasDigits && ch !== '_';
+    }
+
+
+    if (ch === 'o') {
+      // base 8
+      index++;
+
+      for (; index < max; index++) {
+        ch = data[index];
+        if (ch === '_') continue;
+        if (!isOctCode(data.charCodeAt(index))) return false;
+        hasDigits = true;
+      }
+      return hasDigits && ch !== '_';
+    }
+  }
+
+  // base 10 (except 0)
+
+  // value should not start with `_`;
+  if (ch === '_') return false;
+
+  for (; index < max; index++) {
+    ch = data[index];
+    if (ch === '_') continue;
+    if (!isDecCode(data.charCodeAt(index))) {
+      return false;
+    }
+    hasDigits = true;
+  }
+
+  // Should have digits and should not end with `_`
+  if (!hasDigits || ch === '_') return false;
+
+  return true;
+}
+
+function constructYamlInteger(data) {
+  var value = data, sign = 1, ch;
+
+  if (value.indexOf('_') !== -1) {
+    value = value.replace(/_/g, '');
+  }
+
+  ch = value[0];
+
+  if (ch === '-' || ch === '+') {
+    if (ch === '-') sign = -1;
+    value = value.slice(1);
+    ch = value[0];
+  }
+
+  if (value === '0') return 0;
+
+  if (ch === '0') {
+    if (value[1] === 'b') return sign * parseInt(value.slice(2), 2);
+    if (value[1] === 'x') return sign * parseInt(value.slice(2), 16);
+    if (value[1] === 'o') return sign * parseInt(value.slice(2), 8);
+  }
+
+  return sign * parseInt(value, 10);
+}
+
+function isInteger(object) {
+  return (Object.prototype.toString.call(object)) === '[object Number]' &&
+         (object % 1 === 0 && !common.isNegativeZero(object));
+}
+
+var int = new type('tag:yaml.org,2002:int', {
+  kind: 'scalar',
+  resolve: resolveYamlInteger,
+  construct: constructYamlInteger,
+  predicate: isInteger,
+  represent: {
+    binary:      function (obj) { return obj >= 0 ? '0b' + obj.toString(2) : '-0b' + obj.toString(2).slice(1); },
+    octal:       function (obj) { return obj >= 0 ? '0o'  + obj.toString(8) : '-0o'  + obj.toString(8).slice(1); },
+    decimal:     function (obj) { return obj.toString(10); },
+    /* eslint-disable max-len */
+    hexadecimal: function (obj) { return obj >= 0 ? '0x' + obj.toString(16).toUpperCase() :  '-0x' + obj.toString(16).toUpperCase().slice(1); }
+  },
+  defaultStyle: 'decimal',
+  styleAliases: {
+    binary:      [ 2,  'bin' ],
+    octal:       [ 8,  'oct' ],
+    decimal:     [ 10, 'dec' ],
+    hexadecimal: [ 16, 'hex' ]
+  }
+});
+
+var YAML_FLOAT_PATTERN = new RegExp(
+  // 2.5e4, 2.5 and integers
+  '^(?:[-+]?(?:[0-9][0-9_]*)(?:\\.[0-9_]*)?(?:[eE][-+]?[0-9]+)?' +
+  // .2e4, .2
+  // special case, seems not from spec
+  '|\\.[0-9_]+(?:[eE][-+]?[0-9]+)?' +
+  // .inf
+  '|[-+]?\\.(?:inf|Inf|INF)' +
+  // .nan
+  '|\\.(?:nan|NaN|NAN))$');
+
+function resolveYamlFloat(data) {
+  if (data === null) return false;
+
+  if (!YAML_FLOAT_PATTERN.test(data) ||
+      // Quick hack to not allow integers end with `_`
+      // Probably should update regexp & check speed
+      data[data.length - 1] === '_') {
+    return false;
+  }
+
+  return true;
+}
+
+function constructYamlFloat(data) {
+  var value, sign;
+
+  value  = data.replace(/_/g, '').toLowerCase();
+  sign   = value[0] === '-' ? -1 : 1;
+
+  if ('+-'.indexOf(value[0]) >= 0) {
+    value = value.slice(1);
+  }
+
+  if (value === '.inf') {
+    return (sign === 1) ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY;
+
+  } else if (value === '.nan') {
+    return NaN;
+  }
+  return sign * parseFloat(value, 10);
+}
+
+
+var SCIENTIFIC_WITHOUT_DOT = /^[-+]?[0-9]+e/;
+
+function representYamlFloat(object, style) {
+  var res;
+
+  if (isNaN(object)) {
+    switch (style) {
+      case 'lowercase': return '.nan';
+      case 'uppercase': return '.NAN';
+      case 'camelcase': return '.NaN';
+    }
+  } else if (Number.POSITIVE_INFINITY === object) {
+    switch (style) {
+      case 'lowercase': return '.inf';
+      case 'uppercase': return '.INF';
+      case 'camelcase': return '.Inf';
+    }
+  } else if (Number.NEGATIVE_INFINITY === object) {
+    switch (style) {
+      case 'lowercase': return '-.inf';
+      case 'uppercase': return '-.INF';
+      case 'camelcase': return '-.Inf';
+    }
+  } else if (common.isNegativeZero(object)) {
+    return '-0.0';
+  }
+
+  res = object.toString(10);
+
+  // JS stringifier can build scientific format without dots: 5e-100,
+  // while YAML requres dot: 5.e-100. Fix it with simple hack
+
+  return SCIENTIFIC_WITHOUT_DOT.test(res) ? res.replace('e', '.e') : res;
+}
+
+function isFloat(object) {
+  return (Object.prototype.toString.call(object) === '[object Number]') &&
+         (object % 1 !== 0 || common.isNegativeZero(object));
+}
+
+var float = new type('tag:yaml.org,2002:float', {
+  kind: 'scalar',
+  resolve: resolveYamlFloat,
+  construct: constructYamlFloat,
+  predicate: isFloat,
+  represent: representYamlFloat,
+  defaultStyle: 'lowercase'
+});
+
+var json = failsafe.extend({
+  implicit: [
+    _null,
+    bool,
+    int,
+    float
+  ]
+});
+
+var core = json;
+
+var YAML_DATE_REGEXP = new RegExp(
+  '^([0-9][0-9][0-9][0-9])'          + // [1] year
+  '-([0-9][0-9])'                    + // [2] month
+  '-([0-9][0-9])$');                   // [3] day
+
+var YAML_TIMESTAMP_REGEXP = new RegExp(
+  '^([0-9][0-9][0-9][0-9])'          + // [1] year
+  '-([0-9][0-9]?)'                   + // [2] month
+  '-([0-9][0-9]?)'                   + // [3] day
+  '(?:[Tt]|[ \\t]+)'                 + // ...
+  '([0-9][0-9]?)'                    + // [4] hour
+  ':([0-9][0-9])'                    + // [5] minute
+  ':([0-9][0-9])'                    + // [6] second
+  '(?:\\.([0-9]*))?'                 + // [7] fraction
+  '(?:[ \\t]*(Z|([-+])([0-9][0-9]?)' + // [8] tz [9] tz_sign [10] tz_hour
+  '(?::([0-9][0-9]))?))?$');           // [11] tz_minute
+
+function resolveYamlTimestamp(data) {
+  if (data === null) return false;
+  if (YAML_DATE_REGEXP.exec(data) !== null) return true;
+  if (YAML_TIMESTAMP_REGEXP.exec(data) !== null) return true;
+  return false;
+}
+
+function constructYamlTimestamp(data) {
+  var match, year, month, day, hour, minute, second, fraction = 0,
+      delta = null, tz_hour, tz_minute, date;
+
+  match = YAML_DATE_REGEXP.exec(data);
+  if (match === null) match = YAML_TIMESTAMP_REGEXP.exec(data);
+
+  if (match === null) throw new Error('Date resolve error');
+
+  // match: [1] year [2] month [3] day
+
+  year = +(match[1]);
+  month = +(match[2]) - 1; // JS month starts with 0
+  day = +(match[3]);
+
+  if (!match[4]) { // no hour
+    return new Date(Date.UTC(year, month, day));
+  }
+
+  // match: [4] hour [5] minute [6] second [7] fraction
+
+  hour = +(match[4]);
+  minute = +(match[5]);
+  second = +(match[6]);
+
+  if (match[7]) {
+    fraction = match[7].slice(0, 3);
+    while (fraction.length < 3) { // milli-seconds
+      fraction += '0';
+    }
+    fraction = +fraction;
+  }
+
+  // match: [8] tz [9] tz_sign [10] tz_hour [11] tz_minute
+
+  if (match[9]) {
+    tz_hour = +(match[10]);
+    tz_minute = +(match[11] || 0);
+    delta = (tz_hour * 60 + tz_minute) * 60000; // delta in mili-seconds
+    if (match[9] === '-') delta = -delta;
+  }
+
+  date = new Date(Date.UTC(year, month, day, hour, minute, second, fraction));
+
+  if (delta) date.setTime(date.getTime() - delta);
+
+  return date;
+}
+
+function representYamlTimestamp(object /*, style*/) {
+  return object.toISOString();
+}
+
+var timestamp = new type('tag:yaml.org,2002:timestamp', {
+  kind: 'scalar',
+  resolve: resolveYamlTimestamp,
+  construct: constructYamlTimestamp,
+  instanceOf: Date,
+  represent: representYamlTimestamp
+});
+
+function resolveYamlMerge(data) {
+  return data === '<<' || data === null;
+}
+
+var merge = new type('tag:yaml.org,2002:merge', {
+  kind: 'scalar',
+  resolve: resolveYamlMerge
+});
+
+/*eslint-disable no-bitwise*/
+
+
+
+
+
+// [ 64, 65, 66 ] -> [ padding, CR, LF ]
+var BASE64_MAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\n\r';
+
+
+function resolveYamlBinary(data) {
+  if (data === null) return false;
+
+  var code, idx, bitlen = 0, max = data.length, map = BASE64_MAP;
+
+  // Convert one by one.
+  for (idx = 0; idx < max; idx++) {
+    code = map.indexOf(data.charAt(idx));
+
+    // Skip CR/LF
+    if (code > 64) continue;
+
+    // Fail on illegal characters
+    if (code < 0) return false;
+
+    bitlen += 6;
+  }
+
+  // If there are any bits left, source was corrupted
+  return (bitlen % 8) === 0;
+}
+
+function constructYamlBinary(data) {
+  var idx, tailbits,
+      input = data.replace(/[\r\n=]/g, ''), // remove CR/LF & padding to simplify scan
+      max = input.length,
+      map = BASE64_MAP,
+      bits = 0,
+      result = [];
+
+  // Collect by 6*4 bits (3 bytes)
+
+  for (idx = 0; idx < max; idx++) {
+    if ((idx % 4 === 0) && idx) {
+      result.push((bits >> 16) & 0xFF);
+      result.push((bits >> 8) & 0xFF);
+      result.push(bits & 0xFF);
+    }
+
+    bits = (bits << 6) | map.indexOf(input.charAt(idx));
+  }
+
+  // Dump tail
+
+  tailbits = (max % 4) * 6;
+
+  if (tailbits === 0) {
+    result.push((bits >> 16) & 0xFF);
+    result.push((bits >> 8) & 0xFF);
+    result.push(bits & 0xFF);
+  } else if (tailbits === 18) {
+    result.push((bits >> 10) & 0xFF);
+    result.push((bits >> 2) & 0xFF);
+  } else if (tailbits === 12) {
+    result.push((bits >> 4) & 0xFF);
+  }
+
+  return new Uint8Array(result);
+}
+
+function representYamlBinary(object /*, style*/) {
+  var result = '', bits = 0, idx, tail,
+      max = object.length,
+      map = BASE64_MAP;
+
+  // Convert every three bytes to 4 ASCII characters.
+
+  for (idx = 0; idx < max; idx++) {
+    if ((idx % 3 === 0) && idx) {
+      result += map[(bits >> 18) & 0x3F];
+      result += map[(bits >> 12) & 0x3F];
+      result += map[(bits >> 6) & 0x3F];
+      result += map[bits & 0x3F];
+    }
+
+    bits = (bits << 8) + object[idx];
+  }
+
+  // Dump tail
+
+  tail = max % 3;
+
+  if (tail === 0) {
+    result += map[(bits >> 18) & 0x3F];
+    result += map[(bits >> 12) & 0x3F];
+    result += map[(bits >> 6) & 0x3F];
+    result += map[bits & 0x3F];
+  } else if (tail === 2) {
+    result += map[(bits >> 10) & 0x3F];
+    result += map[(bits >> 4) & 0x3F];
+    result += map[(bits << 2) & 0x3F];
+    result += map[64];
+  } else if (tail === 1) {
+    result += map[(bits >> 2) & 0x3F];
+    result += map[(bits << 4) & 0x3F];
+    result += map[64];
+    result += map[64];
+  }
+
+  return result;
+}
+
+function isBinary(obj) {
+  return Object.prototype.toString.call(obj) ===  '[object Uint8Array]';
+}
+
+var binary = new type('tag:yaml.org,2002:binary', {
+  kind: 'scalar',
+  resolve: resolveYamlBinary,
+  construct: constructYamlBinary,
+  predicate: isBinary,
+  represent: representYamlBinary
+});
+
+var _hasOwnProperty$3 = Object.prototype.hasOwnProperty;
+var _toString$2       = Object.prototype.toString;
+
+function resolveYamlOmap(data) {
+  if (data === null) return true;
+
+  var objectKeys = [], index, length, pair, pairKey, pairHasKey,
+      object = data;
+
+  for (index = 0, length = object.length; index < length; index += 1) {
+    pair = object[index];
+    pairHasKey = false;
+
+    if (_toString$2.call(pair) !== '[object Object]') return false;
+
+    for (pairKey in pair) {
+      if (_hasOwnProperty$3.call(pair, pairKey)) {
+        if (!pairHasKey) pairHasKey = true;
+        else return false;
+      }
+    }
+
+    if (!pairHasKey) return false;
+
+    if (objectKeys.indexOf(pairKey) === -1) objectKeys.push(pairKey);
+    else return false;
+  }
+
+  return true;
+}
+
+function constructYamlOmap(data) {
+  return data !== null ? data : [];
+}
+
+var omap = new type('tag:yaml.org,2002:omap', {
+  kind: 'sequence',
+  resolve: resolveYamlOmap,
+  construct: constructYamlOmap
+});
+
+var _toString$1 = Object.prototype.toString;
+
+function resolveYamlPairs(data) {
+  if (data === null) return true;
+
+  var index, length, pair, keys, result,
+      object = data;
+
+  result = new Array(object.length);
+
+  for (index = 0, length = object.length; index < length; index += 1) {
+    pair = object[index];
+
+    if (_toString$1.call(pair) !== '[object Object]') return false;
+
+    keys = Object.keys(pair);
+
+    if (keys.length !== 1) return false;
+
+    result[index] = [ keys[0], pair[keys[0]] ];
+  }
+
+  return true;
+}
+
+function constructYamlPairs(data) {
+  if (data === null) return [];
+
+  var index, length, pair, keys, result,
+      object = data;
+
+  result = new Array(object.length);
+
+  for (index = 0, length = object.length; index < length; index += 1) {
+    pair = object[index];
+
+    keys = Object.keys(pair);
+
+    result[index] = [ keys[0], pair[keys[0]] ];
+  }
+
+  return result;
+}
+
+var pairs = new type('tag:yaml.org,2002:pairs', {
+  kind: 'sequence',
+  resolve: resolveYamlPairs,
+  construct: constructYamlPairs
+});
+
+var _hasOwnProperty$2 = Object.prototype.hasOwnProperty;
+
+function resolveYamlSet(data) {
+  if (data === null) return true;
+
+  var key, object = data;
+
+  for (key in object) {
+    if (_hasOwnProperty$2.call(object, key)) {
+      if (object[key] !== null) return false;
+    }
+  }
+
+  return true;
+}
+
+function constructYamlSet(data) {
+  return data !== null ? data : {};
+}
+
+var set = new type('tag:yaml.org,2002:set', {
+  kind: 'mapping',
+  resolve: resolveYamlSet,
+  construct: constructYamlSet
+});
+
+var _default = core.extend({
+  implicit: [
+    timestamp,
+    merge
+  ],
+  explicit: [
+    binary,
+    omap,
+    pairs,
+    set
+  ]
+});
+
+/*eslint-disable max-len,no-use-before-define*/
+
+
+
+
+
+
+
+var _hasOwnProperty$1 = Object.prototype.hasOwnProperty;
+
+
+var CONTEXT_FLOW_IN   = 1;
+var CONTEXT_FLOW_OUT  = 2;
+var CONTEXT_BLOCK_IN  = 3;
+var CONTEXT_BLOCK_OUT = 4;
+
+
+var CHOMPING_CLIP  = 1;
+var CHOMPING_STRIP = 2;
+var CHOMPING_KEEP  = 3;
+
+
+var PATTERN_NON_PRINTABLE         = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]/;
+var PATTERN_NON_ASCII_LINE_BREAKS = /[\x85\u2028\u2029]/;
+var PATTERN_FLOW_INDICATORS       = /[,\[\]\{\}]/;
+var PATTERN_TAG_HANDLE            = /^(?:!|!!|![a-z\-]+!)$/i;
+var PATTERN_TAG_URI               = /^(?:!|[^,\[\]\{\}])(?:%[0-9a-f]{2}|[0-9a-z\-#;\/\?:@&=\+\$,_\.!~\*'\(\)\[\]])*$/i;
+
+
+function _class(obj) { return Object.prototype.toString.call(obj); }
+
+function is_EOL(c) {
+  return (c === 0x0A/* LF */) || (c === 0x0D/* CR */);
+}
+
+function is_WHITE_SPACE(c) {
+  return (c === 0x09/* Tab */) || (c === 0x20/* Space */);
+}
+
+function is_WS_OR_EOL(c) {
+  return (c === 0x09/* Tab */) ||
+         (c === 0x20/* Space */) ||
+         (c === 0x0A/* LF */) ||
+         (c === 0x0D/* CR */);
+}
+
+function is_FLOW_INDICATOR(c) {
+  return c === 0x2C/* , */ ||
+         c === 0x5B/* [ */ ||
+         c === 0x5D/* ] */ ||
+         c === 0x7B/* { */ ||
+         c === 0x7D/* } */;
+}
+
+function fromHexCode(c) {
+  var lc;
+
+  if ((0x30/* 0 */ <= c) && (c <= 0x39/* 9 */)) {
+    return c - 0x30;
+  }
+
+  /*eslint-disable no-bitwise*/
+  lc = c | 0x20;
+
+  if ((0x61/* a */ <= lc) && (lc <= 0x66/* f */)) {
+    return lc - 0x61 + 10;
+  }
+
+  return -1;
+}
+
+function escapedHexLen(c) {
+  if (c === 0x78/* x */) { return 2; }
+  if (c === 0x75/* u */) { return 4; }
+  if (c === 0x55/* U */) { return 8; }
+  return 0;
+}
+
+function fromDecimalCode(c) {
+  if ((0x30/* 0 */ <= c) && (c <= 0x39/* 9 */)) {
+    return c - 0x30;
+  }
+
+  return -1;
+}
+
+function simpleEscapeSequence(c) {
+  /* eslint-disable indent */
+  return (c === 0x30/* 0 */) ? '\x00' :
+        (c === 0x61/* a */) ? '\x07' :
+        (c === 0x62/* b */) ? '\x08' :
+        (c === 0x74/* t */) ? '\x09' :
+        (c === 0x09/* Tab */) ? '\x09' :
+        (c === 0x6E/* n */) ? '\x0A' :
+        (c === 0x76/* v */) ? '\x0B' :
+        (c === 0x66/* f */) ? '\x0C' :
+        (c === 0x72/* r */) ? '\x0D' :
+        (c === 0x65/* e */) ? '\x1B' :
+        (c === 0x20/* Space */) ? ' ' :
+        (c === 0x22/* " */) ? '\x22' :
+        (c === 0x2F/* / */) ? '/' :
+        (c === 0x5C/* \ */) ? '\x5C' :
+        (c === 0x4E/* N */) ? '\x85' :
+        (c === 0x5F/* _ */) ? '\xA0' :
+        (c === 0x4C/* L */) ? '\u2028' :
+        (c === 0x50/* P */) ? '\u2029' : '';
+}
+
+function charFromCodepoint(c) {
+  if (c <= 0xFFFF) {
+    return String.fromCharCode(c);
+  }
+  // Encode UTF-16 surrogate pair
+  // https://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF
+  return String.fromCharCode(
+    ((c - 0x010000) >> 10) + 0xD800,
+    ((c - 0x010000) & 0x03FF) + 0xDC00
+  );
+}
+
+var simpleEscapeCheck = new Array(256); // integer, for fast access
+var simpleEscapeMap = new Array(256);
+for (var i = 0; i < 256; i++) {
+  simpleEscapeCheck[i] = simpleEscapeSequence(i) ? 1 : 0;
+  simpleEscapeMap[i] = simpleEscapeSequence(i);
+}
+
+
+function State$1(input, options) {
+  this.input = input;
+
+  this.filename  = options['filename']  || null;
+  this.schema    = options['schema']    || _default;
+  this.onWarning = options['onWarning'] || null;
+  // (Hidden) Remove? makes the loader to expect YAML 1.1 documents
+  // if such documents have no explicit %YAML directive
+  this.legacy    = options['legacy']    || false;
+
+  this.json      = options['json']      || false;
+  this.listener  = options['listener']  || null;
+
+  this.implicitTypes = this.schema.compiledImplicit;
+  this.typeMap       = this.schema.compiledTypeMap;
+
+  this.length     = input.length;
+  this.position   = 0;
+  this.line       = 0;
+  this.lineStart  = 0;
+  this.lineIndent = 0;
+
+  // position of first leading tab in the current line,
+  // used to make sure there are no tabs in the indentation
+  this.firstTabInLine = -1;
+
+  this.documents = [];
+
+  /*
+  this.version;
+  this.checkLineBreaks;
+  this.tagMap;
+  this.anchorMap;
+  this.tag;
+  this.anchor;
+  this.kind;
+  this.result;*/
+
+}
+
+
+function generateError(state, message) {
+  var mark = {
+    name:     state.filename,
+    buffer:   state.input.slice(0, -1), // omit trailing \0
+    position: state.position,
+    line:     state.line,
+    column:   state.position - state.lineStart
+  };
+
+  mark.snippet = snippet(mark);
+
+  return new exception(message, mark);
+}
+
+function throwError(state, message) {
+  throw generateError(state, message);
+}
+
+function throwWarning(state, message) {
+  if (state.onWarning) {
+    state.onWarning.call(null, generateError(state, message));
+  }
+}
+
+
+var directiveHandlers = {
+
+  YAML: function handleYamlDirective(state, name, args) {
+
+    var match, major, minor;
+
+    if (state.version !== null) {
+      throwError(state, 'duplication of %YAML directive');
+    }
+
+    if (args.length !== 1) {
+      throwError(state, 'YAML directive accepts exactly one argument');
+    }
+
+    match = /^([0-9]+)\.([0-9]+)$/.exec(args[0]);
+
+    if (match === null) {
+      throwError(state, 'ill-formed argument of the YAML directive');
+    }
+
+    major = parseInt(match[1], 10);
+    minor = parseInt(match[2], 10);
+
+    if (major !== 1) {
+      throwError(state, 'unacceptable YAML version of the document');
+    }
+
+    state.version = args[0];
+    state.checkLineBreaks = (minor < 2);
+
+    if (minor !== 1 && minor !== 2) {
+      throwWarning(state, 'unsupported YAML version of the document');
+    }
+  },
+
+  TAG: function handleTagDirective(state, name, args) {
+
+    var handle, prefix;
+
+    if (args.length !== 2) {
+      throwError(state, 'TAG directive accepts exactly two arguments');
+    }
+
+    handle = args[0];
+    prefix = args[1];
+
+    if (!PATTERN_TAG_HANDLE.test(handle)) {
+      throwError(state, 'ill-formed tag handle (first argument) of the TAG directive');
+    }
+
+    if (_hasOwnProperty$1.call(state.tagMap, handle)) {
+      throwError(state, 'there is a previously declared suffix for "' + handle + '" tag handle');
+    }
+
+    if (!PATTERN_TAG_URI.test(prefix)) {
+      throwError(state, 'ill-formed tag prefix (second argument) of the TAG directive');
+    }
+
+    try {
+      prefix = decodeURIComponent(prefix);
+    } catch (err) {
+      throwError(state, 'tag prefix is malformed: ' + prefix);
+    }
+
+    state.tagMap[handle] = prefix;
+  }
+};
+
+
+function captureSegment(state, start, end, checkJson) {
+  var _position, _length, _character, _result;
+
+  if (start < end) {
+    _result = state.input.slice(start, end);
+
+    if (checkJson) {
+      for (_position = 0, _length = _result.length; _position < _length; _position += 1) {
+        _character = _result.charCodeAt(_position);
+        if (!(_character === 0x09 ||
+              (0x20 <= _character && _character <= 0x10FFFF))) {
+          throwError(state, 'expected valid JSON character');
+        }
+      }
+    } else if (PATTERN_NON_PRINTABLE.test(_result)) {
+      throwError(state, 'the stream contains non-printable characters');
+    }
+
+    state.result += _result;
+  }
+}
+
+function mergeMappings(state, destination, source, overridableKeys) {
+  var sourceKeys, key, index, quantity;
+
+  if (!common.isObject(source)) {
+    throwError(state, 'cannot merge mappings; the provided source object is unacceptable');
+  }
+
+  sourceKeys = Object.keys(source);
+
+  for (index = 0, quantity = sourceKeys.length; index < quantity; index += 1) {
+    key = sourceKeys[index];
+
+    if (!_hasOwnProperty$1.call(destination, key)) {
+      destination[key] = source[key];
+      overridableKeys[key] = true;
+    }
+  }
+}
+
+function storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode,
+  startLine, startLineStart, startPos) {
+
+  var index, quantity;
+
+  // The output is a plain object here, so keys can only be strings.
+  // We need to convert keyNode to a string, but doing so can hang the process
+  // (deeply nested arrays that explode exponentially using aliases).
+  if (Array.isArray(keyNode)) {
+    keyNode = Array.prototype.slice.call(keyNode);
+
+    for (index = 0, quantity = keyNode.length; index < quantity; index += 1) {
+      if (Array.isArray(keyNode[index])) {
+        throwError(state, 'nested arrays are not supported inside keys');
+      }
+
+      if (typeof keyNode === 'object' && _class(keyNode[index]) === '[object Object]') {
+        keyNode[index] = '[object Object]';
+      }
+    }
+  }
+
+  // Avoid code execution in load() via toString property
+  // (still use its own toString for arrays, timestamps,
+  // and whatever user schema extensions happen to have @@toStringTag)
+  if (typeof keyNode === 'object' && _class(keyNode) === '[object Object]') {
+    keyNode = '[object Object]';
+  }
+
+
+  keyNode = String(keyNode);
+
+  if (_result === null) {
+    _result = {};
+  }
+
+  if (keyTag === 'tag:yaml.org,2002:merge') {
+    if (Array.isArray(valueNode)) {
+      for (index = 0, quantity = valueNode.length; index < quantity; index += 1) {
+        mergeMappings(state, _result, valueNode[index], overridableKeys);
+      }
+    } else {
+      mergeMappings(state, _result, valueNode, overridableKeys);
+    }
+  } else {
+    if (!state.json &&
+        !_hasOwnProperty$1.call(overridableKeys, keyNode) &&
+        _hasOwnProperty$1.call(_result, keyNode)) {
+      state.line = startLine || state.line;
+      state.lineStart = startLineStart || state.lineStart;
+      state.position = startPos || state.position;
+      throwError(state, 'duplicated mapping key');
+    }
+
+    // used for this specific key only because Object.defineProperty is slow
+    if (keyNode === '__proto__') {
+      Object.defineProperty(_result, keyNode, {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: valueNode
+      });
+    } else {
+      _result[keyNode] = valueNode;
+    }
+    delete overridableKeys[keyNode];
+  }
+
+  return _result;
+}
+
+function readLineBreak(state) {
+  var ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch === 0x0A/* LF */) {
+    state.position++;
+  } else if (ch === 0x0D/* CR */) {
+    state.position++;
+    if (state.input.charCodeAt(state.position) === 0x0A/* LF */) {
+      state.position++;
+    }
+  } else {
+    throwError(state, 'a line break is expected');
+  }
+
+  state.line += 1;
+  state.lineStart = state.position;
+  state.firstTabInLine = -1;
+}
+
+function skipSeparationSpace(state, allowComments, checkIndent) {
+  var lineBreaks = 0,
+      ch = state.input.charCodeAt(state.position);
+
+  while (ch !== 0) {
+    while (is_WHITE_SPACE(ch)) {
+      if (ch === 0x09/* Tab */ && state.firstTabInLine === -1) {
+        state.firstTabInLine = state.position;
+      }
+      ch = state.input.charCodeAt(++state.position);
+    }
+
+    if (allowComments && ch === 0x23/* # */) {
+      do {
+        ch = state.input.charCodeAt(++state.position);
+      } while (ch !== 0x0A/* LF */ && ch !== 0x0D/* CR */ && ch !== 0);
+    }
+
+    if (is_EOL(ch)) {
+      readLineBreak(state);
+
+      ch = state.input.charCodeAt(state.position);
+      lineBreaks++;
+      state.lineIndent = 0;
+
+      while (ch === 0x20/* Space */) {
+        state.lineIndent++;
+        ch = state.input.charCodeAt(++state.position);
+      }
+    } else {
+      break;
+    }
+  }
+
+  if (checkIndent !== -1 && lineBreaks !== 0 && state.lineIndent < checkIndent) {
+    throwWarning(state, 'deficient indentation');
+  }
+
+  return lineBreaks;
+}
+
+function testDocumentSeparator(state) {
+  var _position = state.position,
+      ch;
+
+  ch = state.input.charCodeAt(_position);
+
+  // Condition state.position === state.lineStart is tested
+  // in parent on each call, for efficiency. No needs to test here again.
+  if ((ch === 0x2D/* - */ || ch === 0x2E/* . */) &&
+      ch === state.input.charCodeAt(_position + 1) &&
+      ch === state.input.charCodeAt(_position + 2)) {
+
+    _position += 3;
+
+    ch = state.input.charCodeAt(_position);
+
+    if (ch === 0 || is_WS_OR_EOL(ch)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function writeFoldedLines(state, count) {
+  if (count === 1) {
+    state.result += ' ';
+  } else if (count > 1) {
+    state.result += common.repeat('\n', count - 1);
+  }
+}
+
+
+function readPlainScalar(state, nodeIndent, withinFlowCollection) {
+  var preceding,
+      following,
+      captureStart,
+      captureEnd,
+      hasPendingContent,
+      _line,
+      _lineStart,
+      _lineIndent,
+      _kind = state.kind,
+      _result = state.result,
+      ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (is_WS_OR_EOL(ch)      ||
+      is_FLOW_INDICATOR(ch) ||
+      ch === 0x23/* # */    ||
+      ch === 0x26/* & */    ||
+      ch === 0x2A/* * */    ||
+      ch === 0x21/* ! */    ||
+      ch === 0x7C/* | */    ||
+      ch === 0x3E/* > */    ||
+      ch === 0x27/* ' */    ||
+      ch === 0x22/* " */    ||
+      ch === 0x25/* % */    ||
+      ch === 0x40/* @ */    ||
+      ch === 0x60/* ` */) {
+    return false;
+  }
+
+  if (ch === 0x3F/* ? */ || ch === 0x2D/* - */) {
+    following = state.input.charCodeAt(state.position + 1);
+
+    if (is_WS_OR_EOL(following) ||
+        withinFlowCollection && is_FLOW_INDICATOR(following)) {
+      return false;
+    }
+  }
+
+  state.kind = 'scalar';
+  state.result = '';
+  captureStart = captureEnd = state.position;
+  hasPendingContent = false;
+
+  while (ch !== 0) {
+    if (ch === 0x3A/* : */) {
+      following = state.input.charCodeAt(state.position + 1);
+
+      if (is_WS_OR_EOL(following) ||
+          withinFlowCollection && is_FLOW_INDICATOR(following)) {
+        break;
+      }
+
+    } else if (ch === 0x23/* # */) {
+      preceding = state.input.charCodeAt(state.position - 1);
+
+      if (is_WS_OR_EOL(preceding)) {
+        break;
+      }
+
+    } else if ((state.position === state.lineStart && testDocumentSeparator(state)) ||
+               withinFlowCollection && is_FLOW_INDICATOR(ch)) {
+      break;
+
+    } else if (is_EOL(ch)) {
+      _line = state.line;
+      _lineStart = state.lineStart;
+      _lineIndent = state.lineIndent;
+      skipSeparationSpace(state, false, -1);
+
+      if (state.lineIndent >= nodeIndent) {
+        hasPendingContent = true;
+        ch = state.input.charCodeAt(state.position);
+        continue;
+      } else {
+        state.position = captureEnd;
+        state.line = _line;
+        state.lineStart = _lineStart;
+        state.lineIndent = _lineIndent;
+        break;
+      }
+    }
+
+    if (hasPendingContent) {
+      captureSegment(state, captureStart, captureEnd, false);
+      writeFoldedLines(state, state.line - _line);
+      captureStart = captureEnd = state.position;
+      hasPendingContent = false;
+    }
+
+    if (!is_WHITE_SPACE(ch)) {
+      captureEnd = state.position + 1;
+    }
+
+    ch = state.input.charCodeAt(++state.position);
+  }
+
+  captureSegment(state, captureStart, captureEnd, false);
+
+  if (state.result) {
+    return true;
+  }
+
+  state.kind = _kind;
+  state.result = _result;
+  return false;
+}
+
+function readSingleQuotedScalar(state, nodeIndent) {
+  var ch,
+      captureStart, captureEnd;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch !== 0x27/* ' */) {
+    return false;
+  }
+
+  state.kind = 'scalar';
+  state.result = '';
+  state.position++;
+  captureStart = captureEnd = state.position;
+
+  while ((ch = state.input.charCodeAt(state.position)) !== 0) {
+    if (ch === 0x27/* ' */) {
+      captureSegment(state, captureStart, state.position, true);
+      ch = state.input.charCodeAt(++state.position);
+
+      if (ch === 0x27/* ' */) {
+        captureStart = state.position;
+        state.position++;
+        captureEnd = state.position;
+      } else {
+        return true;
+      }
+
+    } else if (is_EOL(ch)) {
+      captureSegment(state, captureStart, captureEnd, true);
+      writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
+      captureStart = captureEnd = state.position;
+
+    } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
+      throwError(state, 'unexpected end of the document within a single quoted scalar');
+
+    } else {
+      state.position++;
+      captureEnd = state.position;
+    }
+  }
+
+  throwError(state, 'unexpected end of the stream within a single quoted scalar');
+}
+
+function readDoubleQuotedScalar(state, nodeIndent) {
+  var captureStart,
+      captureEnd,
+      hexLength,
+      hexResult,
+      tmp,
+      ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch !== 0x22/* " */) {
+    return false;
+  }
+
+  state.kind = 'scalar';
+  state.result = '';
+  state.position++;
+  captureStart = captureEnd = state.position;
+
+  while ((ch = state.input.charCodeAt(state.position)) !== 0) {
+    if (ch === 0x22/* " */) {
+      captureSegment(state, captureStart, state.position, true);
+      state.position++;
+      return true;
+
+    } else if (ch === 0x5C/* \ */) {
+      captureSegment(state, captureStart, state.position, true);
+      ch = state.input.charCodeAt(++state.position);
+
+      if (is_EOL(ch)) {
+        skipSeparationSpace(state, false, nodeIndent);
+
+        // TODO: rework to inline fn with no type cast?
+      } else if (ch < 256 && simpleEscapeCheck[ch]) {
+        state.result += simpleEscapeMap[ch];
+        state.position++;
+
+      } else if ((tmp = escapedHexLen(ch)) > 0) {
+        hexLength = tmp;
+        hexResult = 0;
+
+        for (; hexLength > 0; hexLength--) {
+          ch = state.input.charCodeAt(++state.position);
+
+          if ((tmp = fromHexCode(ch)) >= 0) {
+            hexResult = (hexResult << 4) + tmp;
+
+          } else {
+            throwError(state, 'expected hexadecimal character');
+          }
+        }
+
+        state.result += charFromCodepoint(hexResult);
+
+        state.position++;
+
+      } else {
+        throwError(state, 'unknown escape sequence');
+      }
+
+      captureStart = captureEnd = state.position;
+
+    } else if (is_EOL(ch)) {
+      captureSegment(state, captureStart, captureEnd, true);
+      writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
+      captureStart = captureEnd = state.position;
+
+    } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
+      throwError(state, 'unexpected end of the document within a double quoted scalar');
+
+    } else {
+      state.position++;
+      captureEnd = state.position;
+    }
+  }
+
+  throwError(state, 'unexpected end of the stream within a double quoted scalar');
+}
+
+function readFlowCollection(state, nodeIndent) {
+  var readNext = true,
+      _line,
+      _lineStart,
+      _pos,
+      _tag     = state.tag,
+      _result,
+      _anchor  = state.anchor,
+      following,
+      terminator,
+      isPair,
+      isExplicitPair,
+      isMapping,
+      overridableKeys = Object.create(null),
+      keyNode,
+      keyTag,
+      valueNode,
+      ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch === 0x5B/* [ */) {
+    terminator = 0x5D;/* ] */
+    isMapping = false;
+    _result = [];
+  } else if (ch === 0x7B/* { */) {
+    terminator = 0x7D;/* } */
+    isMapping = true;
+    _result = {};
+  } else {
+    return false;
+  }
+
+  if (state.anchor !== null) {
+    state.anchorMap[state.anchor] = _result;
+  }
+
+  ch = state.input.charCodeAt(++state.position);
+
+  while (ch !== 0) {
+    skipSeparationSpace(state, true, nodeIndent);
+
+    ch = state.input.charCodeAt(state.position);
+
+    if (ch === terminator) {
+      state.position++;
+      state.tag = _tag;
+      state.anchor = _anchor;
+      state.kind = isMapping ? 'mapping' : 'sequence';
+      state.result = _result;
+      return true;
+    } else if (!readNext) {
+      throwError(state, 'missed comma between flow collection entries');
+    } else if (ch === 0x2C/* , */) {
+      // "flow collection entries can never be completely empty", as per YAML 1.2, section 7.4
+      throwError(state, "expected the node content, but found ','");
+    }
+
+    keyTag = keyNode = valueNode = null;
+    isPair = isExplicitPair = false;
+
+    if (ch === 0x3F/* ? */) {
+      following = state.input.charCodeAt(state.position + 1);
+
+      if (is_WS_OR_EOL(following)) {
+        isPair = isExplicitPair = true;
+        state.position++;
+        skipSeparationSpace(state, true, nodeIndent);
+      }
+    }
+
+    _line = state.line; // Save the current line.
+    _lineStart = state.lineStart;
+    _pos = state.position;
+    composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
+    keyTag = state.tag;
+    keyNode = state.result;
+    skipSeparationSpace(state, true, nodeIndent);
+
+    ch = state.input.charCodeAt(state.position);
+
+    if ((isExplicitPair || state.line === _line) && ch === 0x3A/* : */) {
+      isPair = true;
+      ch = state.input.charCodeAt(++state.position);
+      skipSeparationSpace(state, true, nodeIndent);
+      composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
+      valueNode = state.result;
+    }
+
+    if (isMapping) {
+      storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos);
+    } else if (isPair) {
+      _result.push(storeMappingPair(state, null, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos));
+    } else {
+      _result.push(keyNode);
+    }
+
+    skipSeparationSpace(state, true, nodeIndent);
+
+    ch = state.input.charCodeAt(state.position);
+
+    if (ch === 0x2C/* , */) {
+      readNext = true;
+      ch = state.input.charCodeAt(++state.position);
+    } else {
+      readNext = false;
+    }
+  }
+
+  throwError(state, 'unexpected end of the stream within a flow collection');
+}
+
+function readBlockScalar(state, nodeIndent) {
+  var captureStart,
+      folding,
+      chomping       = CHOMPING_CLIP,
+      didReadContent = false,
+      detectedIndent = false,
+      textIndent     = nodeIndent,
+      emptyLines     = 0,
+      atMoreIndented = false,
+      tmp,
+      ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch === 0x7C/* | */) {
+    folding = false;
+  } else if (ch === 0x3E/* > */) {
+    folding = true;
+  } else {
+    return false;
+  }
+
+  state.kind = 'scalar';
+  state.result = '';
+
+  while (ch !== 0) {
+    ch = state.input.charCodeAt(++state.position);
+
+    if (ch === 0x2B/* + */ || ch === 0x2D/* - */) {
+      if (CHOMPING_CLIP === chomping) {
+        chomping = (ch === 0x2B/* + */) ? CHOMPING_KEEP : CHOMPING_STRIP;
+      } else {
+        throwError(state, 'repeat of a chomping mode identifier');
+      }
+
+    } else if ((tmp = fromDecimalCode(ch)) >= 0) {
+      if (tmp === 0) {
+        throwError(state, 'bad explicit indentation width of a block scalar; it cannot be less than one');
+      } else if (!detectedIndent) {
+        textIndent = nodeIndent + tmp - 1;
+        detectedIndent = true;
+      } else {
+        throwError(state, 'repeat of an indentation width identifier');
+      }
+
+    } else {
+      break;
+    }
+  }
+
+  if (is_WHITE_SPACE(ch)) {
+    do { ch = state.input.charCodeAt(++state.position); }
+    while (is_WHITE_SPACE(ch));
+
+    if (ch === 0x23/* # */) {
+      do { ch = state.input.charCodeAt(++state.position); }
+      while (!is_EOL(ch) && (ch !== 0));
+    }
+  }
+
+  while (ch !== 0) {
+    readLineBreak(state);
+    state.lineIndent = 0;
+
+    ch = state.input.charCodeAt(state.position);
+
+    while ((!detectedIndent || state.lineIndent < textIndent) &&
+           (ch === 0x20/* Space */)) {
+      state.lineIndent++;
+      ch = state.input.charCodeAt(++state.position);
+    }
+
+    if (!detectedIndent && state.lineIndent > textIndent) {
+      textIndent = state.lineIndent;
+    }
+
+    if (is_EOL(ch)) {
+      emptyLines++;
+      continue;
+    }
+
+    // End of the scalar.
+    if (state.lineIndent < textIndent) {
+
+      // Perform the chomping.
+      if (chomping === CHOMPING_KEEP) {
+        state.result += common.repeat('\n', didReadContent ? 1 + emptyLines : emptyLines);
+      } else if (chomping === CHOMPING_CLIP) {
+        if (didReadContent) { // i.e. only if the scalar is not empty.
+          state.result += '\n';
+        }
+      }
+
+      // Break this `while` cycle and go to the funciton's epilogue.
+      break;
+    }
+
+    // Folded style: use fancy rules to handle line breaks.
+    if (folding) {
+
+      // Lines starting with white space characters (more-indented lines) are not folded.
+      if (is_WHITE_SPACE(ch)) {
+        atMoreIndented = true;
+        // except for the first content line (cf. Example 8.1)
+        state.result += common.repeat('\n', didReadContent ? 1 + emptyLines : emptyLines);
+
+      // End of more-indented block.
+      } else if (atMoreIndented) {
+        atMoreIndented = false;
+        state.result += common.repeat('\n', emptyLines + 1);
+
+      // Just one line break - perceive as the same line.
+      } else if (emptyLines === 0) {
+        if (didReadContent) { // i.e. only if we have already read some scalar content.
+          state.result += ' ';
+        }
+
+      // Several line breaks - perceive as different lines.
+      } else {
+        state.result += common.repeat('\n', emptyLines);
+      }
+
+    // Literal style: just add exact number of line breaks between content lines.
+    } else {
+      // Keep all line breaks except the header line break.
+      state.result += common.repeat('\n', didReadContent ? 1 + emptyLines : emptyLines);
+    }
+
+    didReadContent = true;
+    detectedIndent = true;
+    emptyLines = 0;
+    captureStart = state.position;
+
+    while (!is_EOL(ch) && (ch !== 0)) {
+      ch = state.input.charCodeAt(++state.position);
+    }
+
+    captureSegment(state, captureStart, state.position, false);
+  }
+
+  return true;
+}
+
+function readBlockSequence(state, nodeIndent) {
+  var _line,
+      _tag      = state.tag,
+      _anchor   = state.anchor,
+      _result   = [],
+      following,
+      detected  = false,
+      ch;
+
+  // there is a leading tab before this token, so it can't be a block sequence/mapping;
+  // it can still be flow sequence/mapping or a scalar
+  if (state.firstTabInLine !== -1) return false;
+
+  if (state.anchor !== null) {
+    state.anchorMap[state.anchor] = _result;
+  }
+
+  ch = state.input.charCodeAt(state.position);
+
+  while (ch !== 0) {
+    if (state.firstTabInLine !== -1) {
+      state.position = state.firstTabInLine;
+      throwError(state, 'tab characters must not be used in indentation');
+    }
+
+    if (ch !== 0x2D/* - */) {
+      break;
+    }
+
+    following = state.input.charCodeAt(state.position + 1);
+
+    if (!is_WS_OR_EOL(following)) {
+      break;
+    }
+
+    detected = true;
+    state.position++;
+
+    if (skipSeparationSpace(state, true, -1)) {
+      if (state.lineIndent <= nodeIndent) {
+        _result.push(null);
+        ch = state.input.charCodeAt(state.position);
+        continue;
+      }
+    }
+
+    _line = state.line;
+    composeNode(state, nodeIndent, CONTEXT_BLOCK_IN, false, true);
+    _result.push(state.result);
+    skipSeparationSpace(state, true, -1);
+
+    ch = state.input.charCodeAt(state.position);
+
+    if ((state.line === _line || state.lineIndent > nodeIndent) && (ch !== 0)) {
+      throwError(state, 'bad indentation of a sequence entry');
+    } else if (state.lineIndent < nodeIndent) {
+      break;
+    }
+  }
+
+  if (detected) {
+    state.tag = _tag;
+    state.anchor = _anchor;
+    state.kind = 'sequence';
+    state.result = _result;
+    return true;
+  }
+  return false;
+}
+
+function readBlockMapping(state, nodeIndent, flowIndent) {
+  var following,
+      allowCompact,
+      _line,
+      _keyLine,
+      _keyLineStart,
+      _keyPos,
+      _tag          = state.tag,
+      _anchor       = state.anchor,
+      _result       = {},
+      overridableKeys = Object.create(null),
+      keyTag        = null,
+      keyNode       = null,
+      valueNode     = null,
+      atExplicitKey = false,
+      detected      = false,
+      ch;
+
+  // there is a leading tab before this token, so it can't be a block sequence/mapping;
+  // it can still be flow sequence/mapping or a scalar
+  if (state.firstTabInLine !== -1) return false;
+
+  if (state.anchor !== null) {
+    state.anchorMap[state.anchor] = _result;
+  }
+
+  ch = state.input.charCodeAt(state.position);
+
+  while (ch !== 0) {
+    if (!atExplicitKey && state.firstTabInLine !== -1) {
+      state.position = state.firstTabInLine;
+      throwError(state, 'tab characters must not be used in indentation');
+    }
+
+    following = state.input.charCodeAt(state.position + 1);
+    _line = state.line; // Save the current line.
+
+    //
+    // Explicit notation case. There are two separate blocks:
+    // first for the key (denoted by "?") and second for the value (denoted by ":")
+    //
+    if ((ch === 0x3F/* ? */ || ch === 0x3A/* : */) && is_WS_OR_EOL(following)) {
+
+      if (ch === 0x3F/* ? */) {
+        if (atExplicitKey) {
+          storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+          keyTag = keyNode = valueNode = null;
+        }
+
+        detected = true;
+        atExplicitKey = true;
+        allowCompact = true;
+
+      } else if (atExplicitKey) {
+        // i.e. 0x3A/* : */ === character after the explicit key.
+        atExplicitKey = false;
+        allowCompact = true;
+
+      } else {
+        throwError(state, 'incomplete explicit mapping pair; a key node is missed; or followed by a non-tabulated empty line');
+      }
+
+      state.position += 1;
+      ch = following;
+
+    //
+    // Implicit notation case. Flow-style node as the key first, then ":", and the value.
+    //
+    } else {
+      _keyLine = state.line;
+      _keyLineStart = state.lineStart;
+      _keyPos = state.position;
+
+      if (!composeNode(state, flowIndent, CONTEXT_FLOW_OUT, false, true)) {
+        // Neither implicit nor explicit notation.
+        // Reading is done. Go to the epilogue.
+        break;
+      }
+
+      if (state.line === _line) {
+        ch = state.input.charCodeAt(state.position);
+
+        while (is_WHITE_SPACE(ch)) {
+          ch = state.input.charCodeAt(++state.position);
+        }
+
+        if (ch === 0x3A/* : */) {
+          ch = state.input.charCodeAt(++state.position);
+
+          if (!is_WS_OR_EOL(ch)) {
+            throwError(state, 'a whitespace character is expected after the key-value separator within a block mapping');
+          }
+
+          if (atExplicitKey) {
+            storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+            keyTag = keyNode = valueNode = null;
+          }
+
+          detected = true;
+          atExplicitKey = false;
+          allowCompact = false;
+          keyTag = state.tag;
+          keyNode = state.result;
+
+        } else if (detected) {
+          throwError(state, 'can not read an implicit mapping pair; a colon is missed');
+
+        } else {
+          state.tag = _tag;
+          state.anchor = _anchor;
+          return true; // Keep the result of `composeNode`.
+        }
+
+      } else if (detected) {
+        throwError(state, 'can not read a block mapping entry; a multiline key may not be an implicit key');
+
+      } else {
+        state.tag = _tag;
+        state.anchor = _anchor;
+        return true; // Keep the result of `composeNode`.
+      }
+    }
+
+    //
+    // Common reading code for both explicit and implicit notations.
+    //
+    if (state.line === _line || state.lineIndent > nodeIndent) {
+      if (atExplicitKey) {
+        _keyLine = state.line;
+        _keyLineStart = state.lineStart;
+        _keyPos = state.position;
+      }
+
+      if (composeNode(state, nodeIndent, CONTEXT_BLOCK_OUT, true, allowCompact)) {
+        if (atExplicitKey) {
+          keyNode = state.result;
+        } else {
+          valueNode = state.result;
+        }
+      }
+
+      if (!atExplicitKey) {
+        storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, _keyLine, _keyLineStart, _keyPos);
+        keyTag = keyNode = valueNode = null;
+      }
+
+      skipSeparationSpace(state, true, -1);
+      ch = state.input.charCodeAt(state.position);
+    }
+
+    if ((state.line === _line || state.lineIndent > nodeIndent) && (ch !== 0)) {
+      throwError(state, 'bad indentation of a mapping entry');
+    } else if (state.lineIndent < nodeIndent) {
+      break;
+    }
+  }
+
+  //
+  // Epilogue.
+  //
+
+  // Special case: last mapping's node contains only the key in explicit notation.
+  if (atExplicitKey) {
+    storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+  }
+
+  // Expose the resulting mapping.
+  if (detected) {
+    state.tag = _tag;
+    state.anchor = _anchor;
+    state.kind = 'mapping';
+    state.result = _result;
+  }
+
+  return detected;
+}
+
+function readTagProperty(state) {
+  var _position,
+      isVerbatim = false,
+      isNamed    = false,
+      tagHandle,
+      tagName,
+      ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch !== 0x21/* ! */) return false;
+
+  if (state.tag !== null) {
+    throwError(state, 'duplication of a tag property');
+  }
+
+  ch = state.input.charCodeAt(++state.position);
+
+  if (ch === 0x3C/* < */) {
+    isVerbatim = true;
+    ch = state.input.charCodeAt(++state.position);
+
+  } else if (ch === 0x21/* ! */) {
+    isNamed = true;
+    tagHandle = '!!';
+    ch = state.input.charCodeAt(++state.position);
+
+  } else {
+    tagHandle = '!';
+  }
+
+  _position = state.position;
+
+  if (isVerbatim) {
+    do { ch = state.input.charCodeAt(++state.position); }
+    while (ch !== 0 && ch !== 0x3E/* > */);
+
+    if (state.position < state.length) {
+      tagName = state.input.slice(_position, state.position);
+      ch = state.input.charCodeAt(++state.position);
+    } else {
+      throwError(state, 'unexpected end of the stream within a verbatim tag');
+    }
+  } else {
+    while (ch !== 0 && !is_WS_OR_EOL(ch)) {
+
+      if (ch === 0x21/* ! */) {
+        if (!isNamed) {
+          tagHandle = state.input.slice(_position - 1, state.position + 1);
+
+          if (!PATTERN_TAG_HANDLE.test(tagHandle)) {
+            throwError(state, 'named tag handle cannot contain such characters');
+          }
+
+          isNamed = true;
+          _position = state.position + 1;
+        } else {
+          throwError(state, 'tag suffix cannot contain exclamation marks');
+        }
+      }
+
+      ch = state.input.charCodeAt(++state.position);
+    }
+
+    tagName = state.input.slice(_position, state.position);
+
+    if (PATTERN_FLOW_INDICATORS.test(tagName)) {
+      throwError(state, 'tag suffix cannot contain flow indicator characters');
+    }
+  }
+
+  if (tagName && !PATTERN_TAG_URI.test(tagName)) {
+    throwError(state, 'tag name cannot contain such characters: ' + tagName);
+  }
+
+  try {
+    tagName = decodeURIComponent(tagName);
+  } catch (err) {
+    throwError(state, 'tag name is malformed: ' + tagName);
+  }
+
+  if (isVerbatim) {
+    state.tag = tagName;
+
+  } else if (_hasOwnProperty$1.call(state.tagMap, tagHandle)) {
+    state.tag = state.tagMap[tagHandle] + tagName;
+
+  } else if (tagHandle === '!') {
+    state.tag = '!' + tagName;
+
+  } else if (tagHandle === '!!') {
+    state.tag = 'tag:yaml.org,2002:' + tagName;
+
+  } else {
+    throwError(state, 'undeclared tag handle "' + tagHandle + '"');
+  }
+
+  return true;
+}
+
+function readAnchorProperty(state) {
+  var _position,
+      ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch !== 0x26/* & */) return false;
+
+  if (state.anchor !== null) {
+    throwError(state, 'duplication of an anchor property');
+  }
+
+  ch = state.input.charCodeAt(++state.position);
+  _position = state.position;
+
+  while (ch !== 0 && !is_WS_OR_EOL(ch) && !is_FLOW_INDICATOR(ch)) {
+    ch = state.input.charCodeAt(++state.position);
+  }
+
+  if (state.position === _position) {
+    throwError(state, 'name of an anchor node must contain at least one character');
+  }
+
+  state.anchor = state.input.slice(_position, state.position);
+  return true;
+}
+
+function readAlias(state) {
+  var _position, alias,
+      ch;
+
+  ch = state.input.charCodeAt(state.position);
+
+  if (ch !== 0x2A/* * */) return false;
+
+  ch = state.input.charCodeAt(++state.position);
+  _position = state.position;
+
+  while (ch !== 0 && !is_WS_OR_EOL(ch) && !is_FLOW_INDICATOR(ch)) {
+    ch = state.input.charCodeAt(++state.position);
+  }
+
+  if (state.position === _position) {
+    throwError(state, 'name of an alias node must contain at least one character');
+  }
+
+  alias = state.input.slice(_position, state.position);
+
+  if (!_hasOwnProperty$1.call(state.anchorMap, alias)) {
+    throwError(state, 'unidentified alias "' + alias + '"');
+  }
+
+  state.result = state.anchorMap[alias];
+  skipSeparationSpace(state, true, -1);
+  return true;
+}
+
+function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact) {
+  var allowBlockStyles,
+      allowBlockScalars,
+      allowBlockCollections,
+      indentStatus = 1, // 1: this>parent, 0: this=parent, -1: this<parent
+      atNewLine  = false,
+      hasContent = false,
+      typeIndex,
+      typeQuantity,
+      typeList,
+      type,
+      flowIndent,
+      blockIndent;
+
+  if (state.listener !== null) {
+    state.listener('open', state);
+  }
+
+  state.tag    = null;
+  state.anchor = null;
+  state.kind   = null;
+  state.result = null;
+
+  allowBlockStyles = allowBlockScalars = allowBlockCollections =
+    CONTEXT_BLOCK_OUT === nodeContext ||
+    CONTEXT_BLOCK_IN  === nodeContext;
+
+  if (allowToSeek) {
+    if (skipSeparationSpace(state, true, -1)) {
+      atNewLine = true;
+
+      if (state.lineIndent > parentIndent) {
+        indentStatus = 1;
+      } else if (state.lineIndent === parentIndent) {
+        indentStatus = 0;
+      } else if (state.lineIndent < parentIndent) {
+        indentStatus = -1;
+      }
+    }
+  }
+
+  if (indentStatus === 1) {
+    while (readTagProperty(state) || readAnchorProperty(state)) {
+      if (skipSeparationSpace(state, true, -1)) {
+        atNewLine = true;
+        allowBlockCollections = allowBlockStyles;
+
+        if (state.lineIndent > parentIndent) {
+          indentStatus = 1;
+        } else if (state.lineIndent === parentIndent) {
+          indentStatus = 0;
+        } else if (state.lineIndent < parentIndent) {
+          indentStatus = -1;
+        }
+      } else {
+        allowBlockCollections = false;
+      }
+    }
+  }
+
+  if (allowBlockCollections) {
+    allowBlockCollections = atNewLine || allowCompact;
+  }
+
+  if (indentStatus === 1 || CONTEXT_BLOCK_OUT === nodeContext) {
+    if (CONTEXT_FLOW_IN === nodeContext || CONTEXT_FLOW_OUT === nodeContext) {
+      flowIndent = parentIndent;
+    } else {
+      flowIndent = parentIndent + 1;
+    }
+
+    blockIndent = state.position - state.lineStart;
+
+    if (indentStatus === 1) {
+      if (allowBlockCollections &&
+          (readBlockSequence(state, blockIndent) ||
+           readBlockMapping(state, blockIndent, flowIndent)) ||
+          readFlowCollection(state, flowIndent)) {
+        hasContent = true;
+      } else {
+        if ((allowBlockScalars && readBlockScalar(state, flowIndent)) ||
+            readSingleQuotedScalar(state, flowIndent) ||
+            readDoubleQuotedScalar(state, flowIndent)) {
+          hasContent = true;
+
+        } else if (readAlias(state)) {
+          hasContent = true;
+
+          if (state.tag !== null || state.anchor !== null) {
+            throwError(state, 'alias node should not have any properties');
+          }
+
+        } else if (readPlainScalar(state, flowIndent, CONTEXT_FLOW_IN === nodeContext)) {
+          hasContent = true;
+
+          if (state.tag === null) {
+            state.tag = '?';
+          }
+        }
+
+        if (state.anchor !== null) {
+          state.anchorMap[state.anchor] = state.result;
+        }
+      }
+    } else if (indentStatus === 0) {
+      // Special case: block sequences are allowed to have same indentation level as the parent.
+      // http://www.yaml.org/spec/1.2/spec.html#id2799784
+      hasContent = allowBlockCollections && readBlockSequence(state, blockIndent);
+    }
+  }
+
+  if (state.tag === null) {
+    if (state.anchor !== null) {
+      state.anchorMap[state.anchor] = state.result;
+    }
+
+  } else if (state.tag === '?') {
+    // Implicit resolving is not allowed for non-scalar types, and '?'
+    // non-specific tag is only automatically assigned to plain scalars.
+    //
+    // We only need to check kind conformity in case user explicitly assigns '?'
+    // tag, for example like this: "!<?> [0]"
+    //
+    if (state.result !== null && state.kind !== 'scalar') {
+      throwError(state, 'unacceptable node kind for !<?> tag; it should be "scalar", not "' + state.kind + '"');
+    }
+
+    for (typeIndex = 0, typeQuantity = state.implicitTypes.length; typeIndex < typeQuantity; typeIndex += 1) {
+      type = state.implicitTypes[typeIndex];
+
+      if (type.resolve(state.result)) { // `state.result` updated in resolver if matched
+        state.result = type.construct(state.result);
+        state.tag = type.tag;
+        if (state.anchor !== null) {
+          state.anchorMap[state.anchor] = state.result;
+        }
+        break;
+      }
+    }
+  } else if (state.tag !== '!') {
+    if (_hasOwnProperty$1.call(state.typeMap[state.kind || 'fallback'], state.tag)) {
+      type = state.typeMap[state.kind || 'fallback'][state.tag];
+    } else {
+      // looking for multi type
+      type = null;
+      typeList = state.typeMap.multi[state.kind || 'fallback'];
+
+      for (typeIndex = 0, typeQuantity = typeList.length; typeIndex < typeQuantity; typeIndex += 1) {
+        if (state.tag.slice(0, typeList[typeIndex].tag.length) === typeList[typeIndex].tag) {
+          type = typeList[typeIndex];
+          break;
+        }
+      }
+    }
+
+    if (!type) {
+      throwError(state, 'unknown tag !<' + state.tag + '>');
+    }
+
+    if (state.result !== null && type.kind !== state.kind) {
+      throwError(state, 'unacceptable node kind for !<' + state.tag + '> tag; it should be "' + type.kind + '", not "' + state.kind + '"');
+    }
+
+    if (!type.resolve(state.result, state.tag)) { // `state.result` updated in resolver if matched
+      throwError(state, 'cannot resolve a node with !<' + state.tag + '> explicit tag');
+    } else {
+      state.result = type.construct(state.result, state.tag);
+      if (state.anchor !== null) {
+        state.anchorMap[state.anchor] = state.result;
+      }
+    }
+  }
+
+  if (state.listener !== null) {
+    state.listener('close', state);
+  }
+  return state.tag !== null ||  state.anchor !== null || hasContent;
+}
+
+function readDocument(state) {
+  var documentStart = state.position,
+      _position,
+      directiveName,
+      directiveArgs,
+      hasDirectives = false,
+      ch;
+
+  state.version = null;
+  state.checkLineBreaks = state.legacy;
+  state.tagMap = Object.create(null);
+  state.anchorMap = Object.create(null);
+
+  while ((ch = state.input.charCodeAt(state.position)) !== 0) {
+    skipSeparationSpace(state, true, -1);
+
+    ch = state.input.charCodeAt(state.position);
+
+    if (state.lineIndent > 0 || ch !== 0x25/* % */) {
+      break;
+    }
+
+    hasDirectives = true;
+    ch = state.input.charCodeAt(++state.position);
+    _position = state.position;
+
+    while (ch !== 0 && !is_WS_OR_EOL(ch)) {
+      ch = state.input.charCodeAt(++state.position);
+    }
+
+    directiveName = state.input.slice(_position, state.position);
+    directiveArgs = [];
+
+    if (directiveName.length < 1) {
+      throwError(state, 'directive name must not be less than one character in length');
+    }
+
+    while (ch !== 0) {
+      while (is_WHITE_SPACE(ch)) {
+        ch = state.input.charCodeAt(++state.position);
+      }
+
+      if (ch === 0x23/* # */) {
+        do { ch = state.input.charCodeAt(++state.position); }
+        while (ch !== 0 && !is_EOL(ch));
+        break;
+      }
+
+      if (is_EOL(ch)) break;
+
+      _position = state.position;
+
+      while (ch !== 0 && !is_WS_OR_EOL(ch)) {
+        ch = state.input.charCodeAt(++state.position);
+      }
+
+      directiveArgs.push(state.input.slice(_position, state.position));
+    }
+
+    if (ch !== 0) readLineBreak(state);
+
+    if (_hasOwnProperty$1.call(directiveHandlers, directiveName)) {
+      directiveHandlers[directiveName](state, directiveName, directiveArgs);
+    } else {
+      throwWarning(state, 'unknown document directive "' + directiveName + '"');
+    }
+  }
+
+  skipSeparationSpace(state, true, -1);
+
+  if (state.lineIndent === 0 &&
+      state.input.charCodeAt(state.position)     === 0x2D/* - */ &&
+      state.input.charCodeAt(state.position + 1) === 0x2D/* - */ &&
+      state.input.charCodeAt(state.position + 2) === 0x2D/* - */) {
+    state.position += 3;
+    skipSeparationSpace(state, true, -1);
+
+  } else if (hasDirectives) {
+    throwError(state, 'directives end mark is expected');
+  }
+
+  composeNode(state, state.lineIndent - 1, CONTEXT_BLOCK_OUT, false, true);
+  skipSeparationSpace(state, true, -1);
+
+  if (state.checkLineBreaks &&
+      PATTERN_NON_ASCII_LINE_BREAKS.test(state.input.slice(documentStart, state.position))) {
+    throwWarning(state, 'non-ASCII line breaks are interpreted as content');
+  }
+
+  state.documents.push(state.result);
+
+  if (state.position === state.lineStart && testDocumentSeparator(state)) {
+
+    if (state.input.charCodeAt(state.position) === 0x2E/* . */) {
+      state.position += 3;
+      skipSeparationSpace(state, true, -1);
+    }
+    return;
+  }
+
+  if (state.position < (state.length - 1)) {
+    throwError(state, 'end of the stream or a document separator is expected');
+  } else {
+    return;
+  }
+}
+
+
+function loadDocuments(input, options) {
+  input = String(input);
+  options = options || {};
+
+  if (input.length !== 0) {
+
+    // Add tailing `\n` if not exists
+    if (input.charCodeAt(input.length - 1) !== 0x0A/* LF */ &&
+        input.charCodeAt(input.length - 1) !== 0x0D/* CR */) {
+      input += '\n';
+    }
+
+    // Strip BOM
+    if (input.charCodeAt(0) === 0xFEFF) {
+      input = input.slice(1);
+    }
+  }
+
+  var state = new State$1(input, options);
+
+  var nullpos = input.indexOf('\0');
+
+  if (nullpos !== -1) {
+    state.position = nullpos;
+    throwError(state, 'null byte is not allowed in input');
+  }
+
+  // Use 0 as string terminator. That significantly simplifies bounds check.
+  state.input += '\0';
+
+  while (state.input.charCodeAt(state.position) === 0x20/* Space */) {
+    state.lineIndent += 1;
+    state.position += 1;
+  }
+
+  while (state.position < (state.length - 1)) {
+    readDocument(state);
+  }
+
+  return state.documents;
+}
+
+
+function load$1(input, options) {
+  var documents = loadDocuments(input, options);
+
+  if (documents.length === 0) {
+    /*eslint-disable no-undefined*/
+    return undefined;
+  } else if (documents.length === 1) {
+    return documents[0];
+  }
+  throw new exception('expected a single document in the stream, but found more');
+}
+var load_1    = load$1;
+
+var loader = {
+	load: load_1
+};
+
+/*eslint-disable no-use-before-define*/
+
+
+
+
+
+var _toString       = Object.prototype.toString;
+var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+var CHAR_BOM                  = 0xFEFF;
+var CHAR_TAB                  = 0x09; /* Tab */
+var CHAR_LINE_FEED            = 0x0A; /* LF */
+var CHAR_CARRIAGE_RETURN      = 0x0D; /* CR */
+var CHAR_SPACE                = 0x20; /* Space */
+var CHAR_EXCLAMATION          = 0x21; /* ! */
+var CHAR_DOUBLE_QUOTE         = 0x22; /* " */
+var CHAR_SHARP                = 0x23; /* # */
+var CHAR_PERCENT              = 0x25; /* % */
+var CHAR_AMPERSAND            = 0x26; /* & */
+var CHAR_SINGLE_QUOTE         = 0x27; /* ' */
+var CHAR_ASTERISK             = 0x2A; /* * */
+var CHAR_COMMA                = 0x2C; /* , */
+var CHAR_MINUS                = 0x2D; /* - */
+var CHAR_COLON                = 0x3A; /* : */
+var CHAR_EQUALS               = 0x3D; /* = */
+var CHAR_GREATER_THAN         = 0x3E; /* > */
+var CHAR_QUESTION             = 0x3F; /* ? */
+var CHAR_COMMERCIAL_AT        = 0x40; /* @ */
+var CHAR_LEFT_SQUARE_BRACKET  = 0x5B; /* [ */
+var CHAR_RIGHT_SQUARE_BRACKET = 0x5D; /* ] */
+var CHAR_GRAVE_ACCENT         = 0x60; /* ` */
+var CHAR_LEFT_CURLY_BRACKET   = 0x7B; /* { */
+var CHAR_VERTICAL_LINE        = 0x7C; /* | */
+var CHAR_RIGHT_CURLY_BRACKET  = 0x7D; /* } */
+
+var ESCAPE_SEQUENCES = {};
+
+ESCAPE_SEQUENCES[0x00]   = '\\0';
+ESCAPE_SEQUENCES[0x07]   = '\\a';
+ESCAPE_SEQUENCES[0x08]   = '\\b';
+ESCAPE_SEQUENCES[0x09]   = '\\t';
+ESCAPE_SEQUENCES[0x0A]   = '\\n';
+ESCAPE_SEQUENCES[0x0B]   = '\\v';
+ESCAPE_SEQUENCES[0x0C]   = '\\f';
+ESCAPE_SEQUENCES[0x0D]   = '\\r';
+ESCAPE_SEQUENCES[0x1B]   = '\\e';
+ESCAPE_SEQUENCES[0x22]   = '\\"';
+ESCAPE_SEQUENCES[0x5C]   = '\\\\';
+ESCAPE_SEQUENCES[0x85]   = '\\N';
+ESCAPE_SEQUENCES[0xA0]   = '\\_';
+ESCAPE_SEQUENCES[0x2028] = '\\L';
+ESCAPE_SEQUENCES[0x2029] = '\\P';
+
+var DEPRECATED_BOOLEANS_SYNTAX = [
+  'y', 'Y', 'yes', 'Yes', 'YES', 'on', 'On', 'ON',
+  'n', 'N', 'no', 'No', 'NO', 'off', 'Off', 'OFF'
+];
+
+var DEPRECATED_BASE60_SYNTAX = /^[-+]?[0-9_]+(?::[0-9_]+)+(?:\.[0-9_]*)?$/;
+
+function compileStyleMap(schema, map) {
+  var result, keys, index, length, tag, style, type;
+
+  if (map === null) return {};
+
+  result = {};
+  keys = Object.keys(map);
+
+  for (index = 0, length = keys.length; index < length; index += 1) {
+    tag = keys[index];
+    style = String(map[tag]);
+
+    if (tag.slice(0, 2) === '!!') {
+      tag = 'tag:yaml.org,2002:' + tag.slice(2);
+    }
+    type = schema.compiledTypeMap['fallback'][tag];
+
+    if (type && _hasOwnProperty.call(type.styleAliases, style)) {
+      style = type.styleAliases[style];
+    }
+
+    result[tag] = style;
+  }
+
+  return result;
+}
+
+function encodeHex(character) {
+  var string, handle, length;
+
+  string = character.toString(16).toUpperCase();
+
+  if (character <= 0xFF) {
+    handle = 'x';
+    length = 2;
+  } else if (character <= 0xFFFF) {
+    handle = 'u';
+    length = 4;
+  } else if (character <= 0xFFFFFFFF) {
+    handle = 'U';
+    length = 8;
+  } else {
+    throw new exception('code point within a string may not be greater than 0xFFFFFFFF');
+  }
+
+  return '\\' + handle + common.repeat('0', length - string.length) + string;
+}
+
+
+var QUOTING_TYPE_SINGLE = 1,
+    QUOTING_TYPE_DOUBLE = 2;
+
+function State(options) {
+  this.schema        = options['schema'] || _default;
+  this.indent        = Math.max(1, (options['indent'] || 2));
+  this.noArrayIndent = options['noArrayIndent'] || false;
+  this.skipInvalid   = options['skipInvalid'] || false;
+  this.flowLevel     = (common.isNothing(options['flowLevel']) ? -1 : options['flowLevel']);
+  this.styleMap      = compileStyleMap(this.schema, options['styles'] || null);
+  this.sortKeys      = options['sortKeys'] || false;
+  this.lineWidth     = options['lineWidth'] || 80;
+  this.noRefs        = options['noRefs'] || false;
+  this.noCompatMode  = options['noCompatMode'] || false;
+  this.condenseFlow  = options['condenseFlow'] || false;
+  this.quotingType   = options['quotingType'] === '"' ? QUOTING_TYPE_DOUBLE : QUOTING_TYPE_SINGLE;
+  this.forceQuotes   = options['forceQuotes'] || false;
+  this.replacer      = typeof options['replacer'] === 'function' ? options['replacer'] : null;
+
+  this.implicitTypes = this.schema.compiledImplicit;
+  this.explicitTypes = this.schema.compiledExplicit;
+
+  this.tag = null;
+  this.result = '';
+
+  this.duplicates = [];
+  this.usedDuplicates = null;
+}
+
+// Indents every line in a string. Empty lines (\n only) are not indented.
+function indentString(string, spaces) {
+  var ind = common.repeat(' ', spaces),
+      position = 0,
+      next = -1,
+      result = '',
+      line,
+      length = string.length;
+
+  while (position < length) {
+    next = string.indexOf('\n', position);
+    if (next === -1) {
+      line = string.slice(position);
+      position = length;
+    } else {
+      line = string.slice(position, next + 1);
+      position = next + 1;
+    }
+
+    if (line.length && line !== '\n') result += ind;
+
+    result += line;
+  }
+
+  return result;
+}
+
+function generateNextLine(state, level) {
+  return '\n' + common.repeat(' ', state.indent * level);
+}
+
+function testImplicitResolving(state, str) {
+  var index, length, type;
+
+  for (index = 0, length = state.implicitTypes.length; index < length; index += 1) {
+    type = state.implicitTypes[index];
+
+    if (type.resolve(str)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// [33] s-white ::= s-space | s-tab
+function isWhitespace(c) {
+  return c === CHAR_SPACE || c === CHAR_TAB;
+}
+
+// Returns true if the character can be printed without escaping.
+// From YAML 1.2: "any allowed characters known to be non-printable
+// should also be escaped. [However,] This isn’t mandatory"
+// Derived from nb-char - \t - #x85 - #xA0 - #x2028 - #x2029.
+function isPrintable(c) {
+  return  (0x00020 <= c && c <= 0x00007E)
+      || ((0x000A1 <= c && c <= 0x00D7FF) && c !== 0x2028 && c !== 0x2029)
+      || ((0x0E000 <= c && c <= 0x00FFFD) && c !== CHAR_BOM)
+      ||  (0x10000 <= c && c <= 0x10FFFF);
+}
+
+// [34] ns-char ::= nb-char - s-white
+// [27] nb-char ::= c-printable - b-char - c-byte-order-mark
+// [26] b-char  ::= b-line-feed | b-carriage-return
+// Including s-white (for some reason, examples doesn't match specs in this aspect)
+// ns-char ::= c-printable - b-line-feed - b-carriage-return - c-byte-order-mark
+function isNsCharOrWhitespace(c) {
+  return isPrintable(c)
+    && c !== CHAR_BOM
+    // - b-char
+    && c !== CHAR_CARRIAGE_RETURN
+    && c !== CHAR_LINE_FEED;
+}
+
+// [127]  ns-plain-safe(c) ::= c = flow-out  ⇒ ns-plain-safe-out
+//                             c = flow-in   ⇒ ns-plain-safe-in
+//                             c = block-key ⇒ ns-plain-safe-out
+//                             c = flow-key  ⇒ ns-plain-safe-in
+// [128] ns-plain-safe-out ::= ns-char
+// [129]  ns-plain-safe-in ::= ns-char - c-flow-indicator
+// [130]  ns-plain-char(c) ::=  ( ns-plain-safe(c) - “:” - “#” )
+//                            | ( /* An ns-char preceding */ “#” )
+//                            | ( “:” /* Followed by an ns-plain-safe(c) */ )
+function isPlainSafe(c, prev, inblock) {
+  var cIsNsCharOrWhitespace = isNsCharOrWhitespace(c);
+  var cIsNsChar = cIsNsCharOrWhitespace && !isWhitespace(c);
+  return (
+    // ns-plain-safe
+    inblock ? // c = flow-in
+      cIsNsCharOrWhitespace
+      : cIsNsCharOrWhitespace
+        // - c-flow-indicator
+        && c !== CHAR_COMMA
+        && c !== CHAR_LEFT_SQUARE_BRACKET
+        && c !== CHAR_RIGHT_SQUARE_BRACKET
+        && c !== CHAR_LEFT_CURLY_BRACKET
+        && c !== CHAR_RIGHT_CURLY_BRACKET
+  )
+    // ns-plain-char
+    && c !== CHAR_SHARP // false on '#'
+    && !(prev === CHAR_COLON && !cIsNsChar) // false on ': '
+    || (isNsCharOrWhitespace(prev) && !isWhitespace(prev) && c === CHAR_SHARP) // change to true on '[^ ]#'
+    || (prev === CHAR_COLON && cIsNsChar); // change to true on ':[^ ]'
+}
+
+// Simplified test for values allowed as the first character in plain style.
+function isPlainSafeFirst(c) {
+  // Uses a subset of ns-char - c-indicator
+  // where ns-char = nb-char - s-white.
+  // No support of ( ( “?” | “:” | “-” ) /* Followed by an ns-plain-safe(c)) */ ) part
+  return isPrintable(c) && c !== CHAR_BOM
+    && !isWhitespace(c) // - s-white
+    // - (c-indicator ::=
+    // “-” | “?” | “:” | “,” | “[” | “]” | “{” | “}”
+    && c !== CHAR_MINUS
+    && c !== CHAR_QUESTION
+    && c !== CHAR_COLON
+    && c !== CHAR_COMMA
+    && c !== CHAR_LEFT_SQUARE_BRACKET
+    && c !== CHAR_RIGHT_SQUARE_BRACKET
+    && c !== CHAR_LEFT_CURLY_BRACKET
+    && c !== CHAR_RIGHT_CURLY_BRACKET
+    // | “#” | “&” | “*” | “!” | “|” | “=” | “>” | “'” | “"”
+    && c !== CHAR_SHARP
+    && c !== CHAR_AMPERSAND
+    && c !== CHAR_ASTERISK
+    && c !== CHAR_EXCLAMATION
+    && c !== CHAR_VERTICAL_LINE
+    && c !== CHAR_EQUALS
+    && c !== CHAR_GREATER_THAN
+    && c !== CHAR_SINGLE_QUOTE
+    && c !== CHAR_DOUBLE_QUOTE
+    // | “%” | “@” | “`”)
+    && c !== CHAR_PERCENT
+    && c !== CHAR_COMMERCIAL_AT
+    && c !== CHAR_GRAVE_ACCENT;
+}
+
+// Simplified test for values allowed as the last character in plain style.
+function isPlainSafeLast(c) {
+  // just not whitespace or colon, it will be checked to be plain character later
+  return !isWhitespace(c) && c !== CHAR_COLON;
+}
+
+// Same as 'string'.codePointAt(pos), but works in older browsers.
+function codePointAt(string, pos) {
+  var first = string.charCodeAt(pos), second;
+  if (first >= 0xD800 && first <= 0xDBFF && pos + 1 < string.length) {
+    second = string.charCodeAt(pos + 1);
+    if (second >= 0xDC00 && second <= 0xDFFF) {
+      // https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+      return (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
+    }
+  }
+  return first;
+}
+
+// Determines whether block indentation indicator is required.
+function needIndentIndicator(string) {
+  var leadingSpaceRe = /^\n* /;
+  return leadingSpaceRe.test(string);
+}
+
+var STYLE_PLAIN   = 1,
+    STYLE_SINGLE  = 2,
+    STYLE_LITERAL = 3,
+    STYLE_FOLDED  = 4,
+    STYLE_DOUBLE  = 5;
+
+// Determines which scalar styles are possible and returns the preferred style.
+// lineWidth = -1 => no limit.
+// Pre-conditions: str.length > 0.
+// Post-conditions:
+//    STYLE_PLAIN or STYLE_SINGLE => no \n are in the string.
+//    STYLE_LITERAL => no lines are suitable for folding (or lineWidth is -1).
+//    STYLE_FOLDED => a line > lineWidth and can be folded (and lineWidth != -1).
+function chooseScalarStyle(string, singleLineOnly, indentPerLevel, lineWidth,
+  testAmbiguousType, quotingType, forceQuotes, inblock) {
+
+  var i;
+  var char = 0;
+  var prevChar = null;
+  var hasLineBreak = false;
+  var hasFoldableLine = false; // only checked if shouldTrackWidth
+  var shouldTrackWidth = lineWidth !== -1;
+  var previousLineBreak = -1; // count the first line correctly
+  var plain = isPlainSafeFirst(codePointAt(string, 0))
+          && isPlainSafeLast(codePointAt(string, string.length - 1));
+
+  if (singleLineOnly || forceQuotes) {
+    // Case: no block styles.
+    // Check for disallowed characters to rule out plain and single.
+    for (i = 0; i < string.length; char >= 0x10000 ? i += 2 : i++) {
+      char = codePointAt(string, i);
+      if (!isPrintable(char)) {
+        return STYLE_DOUBLE;
+      }
+      plain = plain && isPlainSafe(char, prevChar, inblock);
+      prevChar = char;
+    }
+  } else {
+    // Case: block styles permitted.
+    for (i = 0; i < string.length; char >= 0x10000 ? i += 2 : i++) {
+      char = codePointAt(string, i);
+      if (char === CHAR_LINE_FEED) {
+        hasLineBreak = true;
+        // Check if any line can be folded.
+        if (shouldTrackWidth) {
+          hasFoldableLine = hasFoldableLine ||
+            // Foldable line = too long, and not more-indented.
+            (i - previousLineBreak - 1 > lineWidth &&
+             string[previousLineBreak + 1] !== ' ');
+          previousLineBreak = i;
+        }
+      } else if (!isPrintable(char)) {
+        return STYLE_DOUBLE;
+      }
+      plain = plain && isPlainSafe(char, prevChar, inblock);
+      prevChar = char;
+    }
+    // in case the end is missing a \n
+    hasFoldableLine = hasFoldableLine || (shouldTrackWidth &&
+      (i - previousLineBreak - 1 > lineWidth &&
+       string[previousLineBreak + 1] !== ' '));
+  }
+  // Although every style can represent \n without escaping, prefer block styles
+  // for multiline, since they're more readable and they don't add empty lines.
+  // Also prefer folding a super-long line.
+  if (!hasLineBreak && !hasFoldableLine) {
+    // Strings interpretable as another type have to be quoted;
+    // e.g. the string 'true' vs. the boolean true.
+    if (plain && !forceQuotes && !testAmbiguousType(string)) {
+      return STYLE_PLAIN;
+    }
+    return quotingType === QUOTING_TYPE_DOUBLE ? STYLE_DOUBLE : STYLE_SINGLE;
+  }
+  // Edge case: block indentation indicator can only have one digit.
+  if (indentPerLevel > 9 && needIndentIndicator(string)) {
+    return STYLE_DOUBLE;
+  }
+  // At this point we know block styles are valid.
+  // Prefer literal style unless we want to fold.
+  if (!forceQuotes) {
+    return hasFoldableLine ? STYLE_FOLDED : STYLE_LITERAL;
+  }
+  return quotingType === QUOTING_TYPE_DOUBLE ? STYLE_DOUBLE : STYLE_SINGLE;
+}
+
+// Note: line breaking/folding is implemented for only the folded style.
+// NB. We drop the last trailing newline (if any) of a returned block scalar
+//  since the dumper adds its own newline. This always works:
+//    • No ending newline => unaffected; already using strip "-" chomping.
+//    • Ending newline    => removed then restored.
+//  Importantly, this keeps the "+" chomp indicator from gaining an extra line.
+function writeScalar(state, string, level, iskey, inblock) {
+  state.dump = (function () {
+    if (string.length === 0) {
+      return state.quotingType === QUOTING_TYPE_DOUBLE ? '""' : "''";
+    }
+    if (!state.noCompatMode) {
+      if (DEPRECATED_BOOLEANS_SYNTAX.indexOf(string) !== -1 || DEPRECATED_BASE60_SYNTAX.test(string)) {
+        return state.quotingType === QUOTING_TYPE_DOUBLE ? ('"' + string + '"') : ("'" + string + "'");
+      }
+    }
+
+    var indent = state.indent * Math.max(1, level); // no 0-indent scalars
+    // As indentation gets deeper, let the width decrease monotonically
+    // to the lower bound min(state.lineWidth, 40).
+    // Note that this implies
+    //  state.lineWidth ≤ 40 + state.indent: width is fixed at the lower bound.
+    //  state.lineWidth > 40 + state.indent: width decreases until the lower bound.
+    // This behaves better than a constant minimum width which disallows narrower options,
+    // or an indent threshold which causes the width to suddenly increase.
+    var lineWidth = state.lineWidth === -1
+      ? -1 : Math.max(Math.min(state.lineWidth, 40), state.lineWidth - indent);
+
+    // Without knowing if keys are implicit/explicit, assume implicit for safety.
+    var singleLineOnly = iskey
+      // No block styles in flow mode.
+      || (state.flowLevel > -1 && level >= state.flowLevel);
+    function testAmbiguity(string) {
+      return testImplicitResolving(state, string);
+    }
+
+    switch (chooseScalarStyle(string, singleLineOnly, state.indent, lineWidth,
+      testAmbiguity, state.quotingType, state.forceQuotes && !iskey, inblock)) {
+
+      case STYLE_PLAIN:
+        return string;
+      case STYLE_SINGLE:
+        return "'" + string.replace(/'/g, "''") + "'";
+      case STYLE_LITERAL:
+        return '|' + blockHeader(string, state.indent)
+          + dropEndingNewline(indentString(string, indent));
+      case STYLE_FOLDED:
+        return '>' + blockHeader(string, state.indent)
+          + dropEndingNewline(indentString(foldString(string, lineWidth), indent));
+      case STYLE_DOUBLE:
+        return '"' + escapeString(string) + '"';
+      default:
+        throw new exception('impossible error: invalid scalar style');
+    }
+  }());
+}
+
+// Pre-conditions: string is valid for a block scalar, 1 <= indentPerLevel <= 9.
+function blockHeader(string, indentPerLevel) {
+  var indentIndicator = needIndentIndicator(string) ? String(indentPerLevel) : '';
+
+  // note the special case: the string '\n' counts as a "trailing" empty line.
+  var clip =          string[string.length - 1] === '\n';
+  var keep = clip && (string[string.length - 2] === '\n' || string === '\n');
+  var chomp = keep ? '+' : (clip ? '' : '-');
+
+  return indentIndicator + chomp + '\n';
+}
+
+// (See the note for writeScalar.)
+function dropEndingNewline(string) {
+  return string[string.length - 1] === '\n' ? string.slice(0, -1) : string;
+}
+
+// Note: a long line without a suitable break point will exceed the width limit.
+// Pre-conditions: every char in str isPrintable, str.length > 0, width > 0.
+function foldString(string, width) {
+  // In folded style, $k$ consecutive newlines output as $k+1$ newlines—
+  // unless they're before or after a more-indented line, or at the very
+  // beginning or end, in which case $k$ maps to $k$.
+  // Therefore, parse each chunk as newline(s) followed by a content line.
+  var lineRe = /(\n+)([^\n]*)/g;
+
+  // first line (possibly an empty line)
+  var result = (function () {
+    var nextLF = string.indexOf('\n');
+    nextLF = nextLF !== -1 ? nextLF : string.length;
+    lineRe.lastIndex = nextLF;
+    return foldLine(string.slice(0, nextLF), width);
+  }());
+  // If we haven't reached the first content line yet, don't add an extra \n.
+  var prevMoreIndented = string[0] === '\n' || string[0] === ' ';
+  var moreIndented;
+
+  // rest of the lines
+  var match;
+  while ((match = lineRe.exec(string))) {
+    var prefix = match[1], line = match[2];
+    moreIndented = (line[0] === ' ');
+    result += prefix
+      + (!prevMoreIndented && !moreIndented && line !== ''
+        ? '\n' : '')
+      + foldLine(line, width);
+    prevMoreIndented = moreIndented;
+  }
+
+  return result;
+}
+
+// Greedy line breaking.
+// Picks the longest line under the limit each time,
+// otherwise settles for the shortest line over the limit.
+// NB. More-indented lines *cannot* be folded, as that would add an extra \n.
+function foldLine(line, width) {
+  if (line === '' || line[0] === ' ') return line;
+
+  // Since a more-indented line adds a \n, breaks can't be followed by a space.
+  var breakRe = / [^ ]/g; // note: the match index will always be <= length-2.
+  var match;
+  // start is an inclusive index. end, curr, and next are exclusive.
+  var start = 0, end, curr = 0, next = 0;
+  var result = '';
+
+  // Invariants: 0 <= start <= length-1.
+  //   0 <= curr <= next <= max(0, length-2). curr - start <= width.
+  // Inside the loop:
+  //   A match implies length >= 2, so curr and next are <= length-2.
+  while ((match = breakRe.exec(line))) {
+    next = match.index;
+    // maintain invariant: curr - start <= width
+    if (next - start > width) {
+      end = (curr > start) ? curr : next; // derive end <= length-2
+      result += '\n' + line.slice(start, end);
+      // skip the space that was output as \n
+      start = end + 1;                    // derive start <= length-1
+    }
+    curr = next;
+  }
+
+  // By the invariants, start <= length-1, so there is something left over.
+  // It is either the whole string or a part starting from non-whitespace.
+  result += '\n';
+  // Insert a break if the remainder is too long and there is a break available.
+  if (line.length - start > width && curr > start) {
+    result += line.slice(start, curr) + '\n' + line.slice(curr + 1);
+  } else {
+    result += line.slice(start);
+  }
+
+  return result.slice(1); // drop extra \n joiner
+}
+
+// Escapes a double-quoted string.
+function escapeString(string) {
+  var result = '';
+  var char = 0;
+  var escapeSeq;
+
+  for (var i = 0; i < string.length; char >= 0x10000 ? i += 2 : i++) {
+    char = codePointAt(string, i);
+    escapeSeq = ESCAPE_SEQUENCES[char];
+
+    if (!escapeSeq && isPrintable(char)) {
+      result += string[i];
+      if (char >= 0x10000) result += string[i + 1];
+    } else {
+      result += escapeSeq || encodeHex(char);
+    }
+  }
+
+  return result;
+}
+
+function writeFlowSequence(state, level, object) {
+  var _result = '',
+      _tag    = state.tag,
+      index,
+      length,
+      value;
+
+  for (index = 0, length = object.length; index < length; index += 1) {
+    value = object[index];
+
+    if (state.replacer) {
+      value = state.replacer.call(object, String(index), value);
+    }
+
+    // Write only valid elements, put null instead of invalid elements.
+    if (writeNode(state, level, value, false, false) ||
+        (typeof value === 'undefined' &&
+         writeNode(state, level, null, false, false))) {
+
+      if (_result !== '') _result += ',' + (!state.condenseFlow ? ' ' : '');
+      _result += state.dump;
+    }
+  }
+
+  state.tag = _tag;
+  state.dump = '[' + _result + ']';
+}
+
+function writeBlockSequence(state, level, object, compact) {
+  var _result = '',
+      _tag    = state.tag,
+      index,
+      length,
+      value;
+
+  for (index = 0, length = object.length; index < length; index += 1) {
+    value = object[index];
+
+    if (state.replacer) {
+      value = state.replacer.call(object, String(index), value);
+    }
+
+    // Write only valid elements, put null instead of invalid elements.
+    if (writeNode(state, level + 1, value, true, true, false, true) ||
+        (typeof value === 'undefined' &&
+         writeNode(state, level + 1, null, true, true, false, true))) {
+
+      if (!compact || _result !== '') {
+        _result += generateNextLine(state, level);
+      }
+
+      if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
+        _result += '-';
+      } else {
+        _result += '- ';
+      }
+
+      _result += state.dump;
+    }
+  }
+
+  state.tag = _tag;
+  state.dump = _result || '[]'; // Empty sequence if no valid values.
+}
+
+function writeFlowMapping(state, level, object) {
+  var _result       = '',
+      _tag          = state.tag,
+      objectKeyList = Object.keys(object),
+      index,
+      length,
+      objectKey,
+      objectValue,
+      pairBuffer;
+
+  for (index = 0, length = objectKeyList.length; index < length; index += 1) {
+
+    pairBuffer = '';
+    if (_result !== '') pairBuffer += ', ';
+
+    if (state.condenseFlow) pairBuffer += '"';
+
+    objectKey = objectKeyList[index];
+    objectValue = object[objectKey];
+
+    if (state.replacer) {
+      objectValue = state.replacer.call(object, objectKey, objectValue);
+    }
+
+    if (!writeNode(state, level, objectKey, false, false)) {
+      continue; // Skip this pair because of invalid key;
+    }
+
+    if (state.dump.length > 1024) pairBuffer += '? ';
+
+    pairBuffer += state.dump + (state.condenseFlow ? '"' : '') + ':' + (state.condenseFlow ? '' : ' ');
+
+    if (!writeNode(state, level, objectValue, false, false)) {
+      continue; // Skip this pair because of invalid value.
+    }
+
+    pairBuffer += state.dump;
+
+    // Both key and value are valid.
+    _result += pairBuffer;
+  }
+
+  state.tag = _tag;
+  state.dump = '{' + _result + '}';
+}
+
+function writeBlockMapping(state, level, object, compact) {
+  var _result       = '',
+      _tag          = state.tag,
+      objectKeyList = Object.keys(object),
+      index,
+      length,
+      objectKey,
+      objectValue,
+      explicitPair,
+      pairBuffer;
+
+  // Allow sorting keys so that the output file is deterministic
+  if (state.sortKeys === true) {
+    // Default sorting
+    objectKeyList.sort();
+  } else if (typeof state.sortKeys === 'function') {
+    // Custom sort function
+    objectKeyList.sort(state.sortKeys);
+  } else if (state.sortKeys) {
+    // Something is wrong
+    throw new exception('sortKeys must be a boolean or a function');
+  }
+
+  for (index = 0, length = objectKeyList.length; index < length; index += 1) {
+    pairBuffer = '';
+
+    if (!compact || _result !== '') {
+      pairBuffer += generateNextLine(state, level);
+    }
+
+    objectKey = objectKeyList[index];
+    objectValue = object[objectKey];
+
+    if (state.replacer) {
+      objectValue = state.replacer.call(object, objectKey, objectValue);
+    }
+
+    if (!writeNode(state, level + 1, objectKey, true, true, true)) {
+      continue; // Skip this pair because of invalid key.
+    }
+
+    explicitPair = (state.tag !== null && state.tag !== '?') ||
+                   (state.dump && state.dump.length > 1024);
+
+    if (explicitPair) {
+      if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
+        pairBuffer += '?';
+      } else {
+        pairBuffer += '? ';
+      }
+    }
+
+    pairBuffer += state.dump;
+
+    if (explicitPair) {
+      pairBuffer += generateNextLine(state, level);
+    }
+
+    if (!writeNode(state, level + 1, objectValue, true, explicitPair)) {
+      continue; // Skip this pair because of invalid value.
+    }
+
+    if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
+      pairBuffer += ':';
+    } else {
+      pairBuffer += ': ';
+    }
+
+    pairBuffer += state.dump;
+
+    // Both key and value are valid.
+    _result += pairBuffer;
+  }
+
+  state.tag = _tag;
+  state.dump = _result || '{}'; // Empty mapping if no valid pairs.
+}
+
+function detectType(state, object, explicit) {
+  var _result, typeList, index, length, type, style;
+
+  typeList = explicit ? state.explicitTypes : state.implicitTypes;
+
+  for (index = 0, length = typeList.length; index < length; index += 1) {
+    type = typeList[index];
+
+    if ((type.instanceOf  || type.predicate) &&
+        (!type.instanceOf || ((typeof object === 'object') && (object instanceof type.instanceOf))) &&
+        (!type.predicate  || type.predicate(object))) {
+
+      if (explicit) {
+        if (type.multi && type.representName) {
+          state.tag = type.representName(object);
+        } else {
+          state.tag = type.tag;
+        }
+      } else {
+        state.tag = '?';
+      }
+
+      if (type.represent) {
+        style = state.styleMap[type.tag] || type.defaultStyle;
+
+        if (_toString.call(type.represent) === '[object Function]') {
+          _result = type.represent(object, style);
+        } else if (_hasOwnProperty.call(type.represent, style)) {
+          _result = type.represent[style](object, style);
+        } else {
+          throw new exception('!<' + type.tag + '> tag resolver accepts not "' + style + '" style');
+        }
+
+        state.dump = _result;
+      }
+
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Serializes `object` and writes it to global `result`.
+// Returns true on success, or false on invalid object.
+//
+function writeNode(state, level, object, block, compact, iskey, isblockseq) {
+  state.tag = null;
+  state.dump = object;
+
+  if (!detectType(state, object, false)) {
+    detectType(state, object, true);
+  }
+
+  var type = _toString.call(state.dump);
+  var inblock = block;
+  var tagStr;
+
+  if (block) {
+    block = (state.flowLevel < 0 || state.flowLevel > level);
+  }
+
+  var objectOrArray = type === '[object Object]' || type === '[object Array]',
+      duplicateIndex,
+      duplicate;
+
+  if (objectOrArray) {
+    duplicateIndex = state.duplicates.indexOf(object);
+    duplicate = duplicateIndex !== -1;
+  }
+
+  if ((state.tag !== null && state.tag !== '?') || duplicate || (state.indent !== 2 && level > 0)) {
+    compact = false;
+  }
+
+  if (duplicate && state.usedDuplicates[duplicateIndex]) {
+    state.dump = '*ref_' + duplicateIndex;
+  } else {
+    if (objectOrArray && duplicate && !state.usedDuplicates[duplicateIndex]) {
+      state.usedDuplicates[duplicateIndex] = true;
+    }
+    if (type === '[object Object]') {
+      if (block && (Object.keys(state.dump).length !== 0)) {
+        writeBlockMapping(state, level, state.dump, compact);
+        if (duplicate) {
+          state.dump = '&ref_' + duplicateIndex + state.dump;
+        }
+      } else {
+        writeFlowMapping(state, level, state.dump);
+        if (duplicate) {
+          state.dump = '&ref_' + duplicateIndex + ' ' + state.dump;
+        }
+      }
+    } else if (type === '[object Array]') {
+      if (block && (state.dump.length !== 0)) {
+        if (state.noArrayIndent && !isblockseq && level > 0) {
+          writeBlockSequence(state, level - 1, state.dump, compact);
+        } else {
+          writeBlockSequence(state, level, state.dump, compact);
+        }
+        if (duplicate) {
+          state.dump = '&ref_' + duplicateIndex + state.dump;
+        }
+      } else {
+        writeFlowSequence(state, level, state.dump);
+        if (duplicate) {
+          state.dump = '&ref_' + duplicateIndex + ' ' + state.dump;
+        }
+      }
+    } else if (type === '[object String]') {
+      if (state.tag !== '?') {
+        writeScalar(state, state.dump, level, iskey, inblock);
+      }
+    } else if (type === '[object Undefined]') {
+      return false;
+    } else {
+      if (state.skipInvalid) return false;
+      throw new exception('unacceptable kind of an object to dump ' + type);
+    }
+
+    if (state.tag !== null && state.tag !== '?') {
+      // Need to encode all characters except those allowed by the spec:
+      //
+      // [35] ns-dec-digit    ::=  [#x30-#x39] /* 0-9 */
+      // [36] ns-hex-digit    ::=  ns-dec-digit
+      //                         | [#x41-#x46] /* A-F */ | [#x61-#x66] /* a-f */
+      // [37] ns-ascii-letter ::=  [#x41-#x5A] /* A-Z */ | [#x61-#x7A] /* a-z */
+      // [38] ns-word-char    ::=  ns-dec-digit | ns-ascii-letter | “-”
+      // [39] ns-uri-char     ::=  “%” ns-hex-digit ns-hex-digit | ns-word-char | “#”
+      //                         | “;” | “/” | “?” | “:” | “@” | “&” | “=” | “+” | “$” | “,”
+      //                         | “_” | “.” | “!” | “~” | “*” | “'” | “(” | “)” | “[” | “]”
+      //
+      // Also need to encode '!' because it has special meaning (end of tag prefix).
+      //
+      tagStr = encodeURI(
+        state.tag[0] === '!' ? state.tag.slice(1) : state.tag
+      ).replace(/!/g, '%21');
+
+      if (state.tag[0] === '!') {
+        tagStr = '!' + tagStr;
+      } else if (tagStr.slice(0, 18) === 'tag:yaml.org,2002:') {
+        tagStr = '!!' + tagStr.slice(18);
+      } else {
+        tagStr = '!<' + tagStr + '>';
+      }
+
+      state.dump = tagStr + ' ' + state.dump;
+    }
+  }
+
+  return true;
+}
+
+function getDuplicateReferences(object, state) {
+  var objects = [],
+      duplicatesIndexes = [],
+      index,
+      length;
+
+  inspectNode(object, objects, duplicatesIndexes);
+
+  for (index = 0, length = duplicatesIndexes.length; index < length; index += 1) {
+    state.duplicates.push(objects[duplicatesIndexes[index]]);
+  }
+  state.usedDuplicates = new Array(length);
+}
+
+function inspectNode(object, objects, duplicatesIndexes) {
+  var objectKeyList,
+      index,
+      length;
+
+  if (object !== null && typeof object === 'object') {
+    index = objects.indexOf(object);
+    if (index !== -1) {
+      if (duplicatesIndexes.indexOf(index) === -1) {
+        duplicatesIndexes.push(index);
+      }
+    } else {
+      objects.push(object);
+
+      if (Array.isArray(object)) {
+        for (index = 0, length = object.length; index < length; index += 1) {
+          inspectNode(object[index], objects, duplicatesIndexes);
+        }
+      } else {
+        objectKeyList = Object.keys(object);
+
+        for (index = 0, length = objectKeyList.length; index < length; index += 1) {
+          inspectNode(object[objectKeyList[index]], objects, duplicatesIndexes);
+        }
+      }
+    }
+  }
+}
+
+function dump$1(input, options) {
+  options = options || {};
+
+  var state = new State(options);
+
+  if (!state.noRefs) getDuplicateReferences(input, state);
+
+  var value = input;
+
+  if (state.replacer) {
+    value = state.replacer.call({ '': value }, '', value);
+  }
+
+  if (writeNode(state, 0, value, true, true)) return state.dump + '\n';
+
+  return '';
+}
+
+var dump_1 = dump$1;
+
+var dumper = {
+	dump: dump_1
+};
+var load                = loader.load;
+var dump                = dumper.dump;
+
 const sillyArguments = [
     {
         category: 'Command Line Arguments',
         items: [
             { name: '--version', description: 'Show version number', type: 'CheckBox' },
+            { name: '--global', description: 'Forces the use of system-wide paths for application data', type: 'CheckBox' },
             {
-                name: '--enableIPv6',
-                description: 'Enables IPv6.',
-                type: 'CheckBox',
+                name: '--configPath',
+                description: 'Overrides the path to the config.yaml file (standalone mode only)',
+                type: 'File',
             },
             {
-                name: '--enableIPv4',
-                description: 'Enables IPv4.',
-                type: 'CheckBox',
+                name: '--dataRoot',
+                description: 'Sets the root directory for data storage (standalone mode only)',
+                type: 'Directory',
             },
             {
                 name: '--port',
@@ -23263,28 +30525,34 @@ const sillyArguments = [
                 type: 'Input',
             },
             {
+                name: '--listen',
+                description: "SillyTavern is listening on all network interfaces. If not provided falls back to yaml config 'listen'.",
+                type: 'CheckBox',
+            },
+            { name: '--whitelist', description: 'Enables whitelist mode', type: 'CheckBox' },
+            { name: '--basicAuthMode', description: 'Enables basic authentication', type: 'CheckBox' },
+            { name: '--enableIPv4', description: 'Enables the IPv4 protocol', type: 'CheckBox' },
+            { name: '--enableIPv6', description: 'Enables the IPv6 protocol', type: 'CheckBox' },
+            { name: '--listenAddressIPv4', description: 'Specifies the IPv4 address to listen on', type: 'Input' },
+            { name: '--listenAddressIPv6', description: 'Specifies the IPv6 address to listen on', type: 'Input' },
+            {
                 name: '--dnsPreferIPv6',
                 description: "Prefers IPv6 for dns. If not provided falls back to yaml config 'preferIPv6'.",
                 type: 'CheckBox',
             },
+            { name: '--ssl', description: 'Enables SSL', type: 'CheckBox' },
+            { name: '--certPath', description: 'Path to your certificate file.', type: 'File' },
+            { name: '--keyPath', description: 'Path to your private key file.', type: 'File' },
             {
-                name: '--autorun',
-                description: "Automatically launch SillyTavern in the browser. If not provided falls back to yaml config 'autorun'.",
+                name: '--browserLaunchEnabled',
+                description: 'Automatically launches SillyTavern in the browser.',
                 type: 'CheckBox',
             },
+            { name: '--browserLaunchHostname', description: 'Sets the browser launch hostname', type: 'Input' },
+            { name: '--browserLaunchPort', description: 'Overrides the port for browser launch', type: 'Input' },
             {
-                name: '--autorunHostname',
-                description: "The autorun hostname, probably best left on 'auto'.",
-                type: 'Input',
-            },
-            {
-                name: '--autorunPortOverride',
-                description: 'Overrides the port for autorun.',
-                type: 'Input',
-            },
-            {
-                name: '--listen',
-                description: "SillyTavern is listening on all network interfaces. If not provided falls back to yaml config 'listen'.",
+                name: '--browserLaunchAvoidLocalhost',
+                description: "Avoids using 'localhost' for browser launch in auto mode",
                 type: 'CheckBox',
             },
             {
@@ -23292,60 +30560,490 @@ const sillyArguments = [
                 description: "Enables CORS proxy. If not provided falls back to yaml config 'enableCorsProxy'.",
                 type: 'CheckBox',
             },
-            {
-                name: '--disableCsrf',
-                description: 'Disables CSRF protection',
-                type: 'CheckBox',
-            },
-            {
-                name: '--ssl',
-                description: 'Enables SSL',
-                type: 'CheckBox',
-            },
-            {
-                name: '--certPath',
-                description: 'Path to your certificate file.',
-                type: 'File',
-            },
-            {
-                name: '--keyPath',
-                description: 'Path to your private key file.',
-                type: 'File',
-            },
-            {
-                name: '--whitelist',
-                description: 'Enables whitelist mode',
-                type: 'CheckBox',
-            },
-            {
-                name: '--dataRoot',
-                description: 'Root directory for data storage',
-                type: 'Directory',
-            },
-            {
-                name: '--avoidLocalhost',
-                description: "Avoids using 'localhost' for autorun in auto mode.",
-                type: 'CheckBox',
-            },
-            {
-                name: '--basicAuthMode',
-                description: 'Enables basic authentication',
-                type: 'CheckBox',
-            },
-            {
-                name: '--requestProxyEnabled',
-                description: 'Enables a use of proxy for outgoing requests',
-                type: 'CheckBox',
-            },
-            {
-                name: '--requestProxyUrl',
-                description: 'Request proxy URL (HTTP or SOCKS protocols)',
-                type: 'Input',
-            },
+            { name: '--requestProxyEnabled', description: 'Enables a use of proxy for outgoing requests', type: 'CheckBox' },
+            { name: '--requestProxyUrl', description: 'Request proxy URL (HTTP or SOCKS protocols)', type: 'Input' },
             {
                 name: '--requestProxyBypass',
                 description: 'Request proxy bypass list (space separated list of hosts)',
                 type: 'Input',
+            },
+            { name: '--disableCsrf', description: 'Disables CSRF protection', type: 'CheckBox' },
+        ],
+    },
+    {
+        category: 'Configuration',
+        sections: [
+            {
+                section: 'Data Configuration',
+                items: [
+                    {
+                        name: 'dataRoot',
+                        description: 'Root directory for user data storage (standalone mode only)',
+                        type: 'Directory',
+                    },
+                    {
+                        name: 'skipContentCheck',
+                        description: 'Skip new default content checks',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'enableDownloadableTokenizers',
+                        description: 'Enable on-demand tokenizer downloads',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                ],
+            },
+            {
+                section: 'Logging Configuration',
+                items: [
+                    {
+                        name: 'logging.minLogLevel',
+                        description: 'Minimum log level to display in the terminal',
+                        type: 'DropDown',
+                        defaultValue: 0,
+                        values: ['0 (DEBUG)', '1 (INFO)', '2 (WARN)', '3 (ERROR)'],
+                    },
+                    {
+                        name: 'logging.enableAccessLog',
+                        description: 'Write server access log to file and console',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                ],
+            },
+            {
+                section: 'Network Configuration',
+                items: [
+                    {
+                        name: 'listen',
+                        description: 'Enable listening for incoming connections',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    { name: 'port', description: 'Server listening port', type: 'Input', defaultValue: 8000 },
+                    {
+                        name: 'protocol.ipv4',
+                        description: 'Enable listening on IPv4 protocol',
+                        type: 'DropDown',
+                        defaultValue: 'true',
+                        values: ['true', 'false', 'auto'],
+                    },
+                    {
+                        name: 'protocol.ipv6',
+                        description: 'Enable listening on IPv6 protocol',
+                        type: 'DropDown',
+                        defaultValue: 'false',
+                        values: ['true', 'false', 'auto'],
+                    },
+                    {
+                        name: 'listenAddress.ipv4',
+                        description: 'Listen on specific IPv4 address',
+                        type: 'Input',
+                        defaultValue: '0.0.0.0',
+                    },
+                    {
+                        name: 'listenAddress.ipv6',
+                        description: 'Listen on specific IPv6 address',
+                        type: 'Input',
+                        defaultValue: '[::]',
+                    },
+                    { name: 'dnsPreferIPv6', description: 'Prefer IPv6 for DNS resolution', type: 'CheckBox', defaultValue: false },
+                ],
+            },
+            {
+                section: 'SSL Configuration',
+                items: [
+                    { name: 'ssl.enabled', description: 'Enable SSL/TLS', type: 'CheckBox', defaultValue: false },
+                    {
+                        name: 'ssl.keyPath',
+                        description: 'Path to SSL private key',
+                        type: 'File',
+                        defaultValue: './certs/privkey.pem',
+                    },
+                    {
+                        name: 'ssl.certPath',
+                        description: 'Path to SSL certificate',
+                        type: 'File',
+                        defaultValue: './certs/cert.pem',
+                    },
+                ],
+            },
+            {
+                section: 'Security Configuration',
+                items: [
+                    { name: 'whitelistMode', description: 'Enable IP whitelist filtering', type: 'CheckBox', defaultValue: true },
+                    {
+                        name: 'enableForwardedWhitelist',
+                        description: 'Check forwarded headers for whitelisted IPs',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'whitelist',
+                        description: 'List of allowed IP addresses',
+                        type: 'Input',
+                        defaultValue: '["::1", "127.0.0.1"]',
+                    }, // Note: Representing an array as a string for now.
+                    {
+                        name: 'whitelistDockerHosts',
+                        description: 'Automatically whitelist Docker host IPs',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    { name: 'enableCorsProxy', description: 'Enable CORS proxy middleware', type: 'CheckBox', defaultValue: false },
+                    {
+                        name: 'allowKeysExposure',
+                        description: 'Allow API keys exposure in the UI',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'disableCsrfProtection',
+                        description: 'Disable CSRF protection (not recommended)',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'securityOverride',
+                        description: 'Disable startup security checks (not recommended)',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                ],
+            },
+            {
+                section: 'User Authentication',
+                items: [
+                    { name: 'basicAuthMode', description: 'Enable basic authentication', type: 'CheckBox', defaultValue: false },
+                    { name: 'basicAuthUser.username', description: 'Basic auth username', type: 'Input', defaultValue: 'user' },
+                    { name: 'basicAuthUser.password', description: 'Basic auth password', type: 'Input', defaultValue: 'password' },
+                    { name: 'enableUserAccounts', description: 'Enable multi-user mode', type: 'CheckBox', defaultValue: false },
+                    {
+                        name: 'enableDiscreetLogin',
+                        description: 'Hide user list on login screen',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    { name: 'sessionTimeout', description: 'User session timeout in seconds', type: 'Input', defaultValue: -1 },
+                    {
+                        name: 'autheliaAuth',
+                        description: 'Enable Authelia-based auto login',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'perUserBasicAuth',
+                        description: 'Use account credentials for basic auth',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                ],
+            },
+            {
+                section: 'Rate Limiting Configuration',
+                items: [
+                    {
+                        name: 'rateLimiting.preferRealIpHeader',
+                        description: 'Use X-Real-IP header instead of socket IP for rate limiting',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                ],
+            },
+            {
+                section: 'Request Proxy Configuration',
+                items: [
+                    {
+                        name: 'requestProxy.enabled',
+                        description: 'Enable proxy for outgoing requests',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    { name: 'requestProxy.url', description: 'Proxy server URL', type: 'Input' },
+                    { name: 'requestProxy.bypass', description: 'Hosts to bypass proxy', type: 'Input' },
+                ],
+            },
+            {
+                section: 'Browser Launch Configuration',
+                items: [
+                    {
+                        name: 'browserLaunch.enabled',
+                        description: 'Open the browser automatically on server startup',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'browserLaunch.browser',
+                        description: 'Browser to use for opening the URL',
+                        type: 'DropDown',
+                        defaultValue: 'default',
+                        values: ['default', 'chrome', 'firefox', 'edge', 'brave'],
+                    },
+                    {
+                        name: 'browserLaunch.hostname',
+                        description: 'Override the hostname for browser launch',
+                        type: 'Input',
+                        defaultValue: 'auto',
+                    },
+                    {
+                        name: 'browserLaunch.port',
+                        description: 'Override the port for browser launch',
+                        type: 'Input',
+                        defaultValue: -1,
+                    },
+                    {
+                        name: 'browserLaunch.avoidLocalhost',
+                        description: "Avoid using 'localhost' in a launch URL",
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                ],
+            },
+            {
+                section: 'Performance Configuration',
+                items: [
+                    {
+                        name: 'performance.lazyLoadCharacters',
+                        description: 'Lazy-load character data',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'performance.useDiskCache',
+                        description: 'Enables disk caching for character cards',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'performance.memoryCacheCapacity',
+                        description: 'Maximum memory cache capacity',
+                        type: 'Input',
+                        defaultValue: '100mb',
+                    },
+                ],
+            },
+            {
+                section: 'Cache Buster Configuration',
+                items: [
+                    {
+                        name: 'cacheBuster.enabled',
+                        description: 'Clear browser cache on first load or after uploading image files',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'cacheBuster.userAgentPattern',
+                        description: 'Only clear cache for the specified user agent regex pattern.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Thumbnailing Configuration',
+                items: [
+                    {
+                        name: 'thumbnails.enabled',
+                        description: 'Enable thumbnail generation',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    { name: 'thumbnails.quality', description: 'JPEG thumbnail quality', type: 'Input', defaultValue: 95 },
+                    {
+                        name: 'thumbnails.format',
+                        description: 'Image format for thumbnails',
+                        type: 'DropDown',
+                        defaultValue: 'jpg',
+                        values: ['jpg', 'png'],
+                    },
+                    {
+                        name: 'thumbnails.dimensions.bg',
+                        description: 'Background thumbnails size',
+                        type: 'Input',
+                        defaultValue: '[160, 90]',
+                    },
+                    {
+                        name: 'thumbnails.dimensions.avatar',
+                        description: 'Avatar thumbnails size',
+                        type: 'Input',
+                        defaultValue: '[96, 144]',
+                    },
+                    {
+                        name: 'thumbnails.dimensions.persona',
+                        description: 'Persona thumbnails size',
+                        type: 'Input',
+                        defaultValue: '[96, 144]',
+                    },
+                ],
+            },
+            {
+                section: 'Backup Configuration',
+                items: [
+                    {
+                        name: 'backups.chat.enabled',
+                        description: 'Enable automatic chat backups',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'backups.chat.checkIntegrity',
+                        description: 'Verify integrity of chat files before saving',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'backups.common.numberOfBackups',
+                        description: 'Number of backups to keep',
+                        type: 'Input',
+                        defaultValue: 50,
+                    },
+                    {
+                        name: 'backups.chat.throttleInterval',
+                        description: 'Backup throttle interval (ms)',
+                        type: 'Input',
+                        defaultValue: 10000,
+                    },
+                    {
+                        name: 'backups.chat.maxTotalBackups',
+                        description: 'Maximum total chat backups to keep',
+                        type: 'Input',
+                        defaultValue: -1,
+                    },
+                ],
+            },
+            {
+                section: 'Extensions Configuration',
+                items: [
+                    { name: 'extensions.enabled', description: 'Enable UI extensions', type: 'CheckBox', defaultValue: true },
+                    {
+                        name: 'extensions.autoUpdate',
+                        description: 'Auto-update extensions (if enabled by the extension manifest)',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'extensions.models.autoDownload',
+                        description: 'Enable automatic model downloads',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'extensions.models.classification',
+                        description: 'HuggingFace model ID for classification',
+                        type: 'Input',
+                        defaultValue: 'Cohee/distilbert-base-uncased-go-emotions-onnx',
+                    },
+                    {
+                        name: 'extensions.models.captioning',
+                        description: 'HuggingFace model ID for image captioning',
+                        type: 'Input',
+                        defaultValue: 'Xenova/vit-gpt2-image-captioning',
+                    },
+                    {
+                        name: 'extensions.models.embedding',
+                        description: 'HuggingFace model ID for embeddings',
+                        type: 'Input',
+                        defaultValue: 'Cohee/jina-embeddings-v2-base-en',
+                    },
+                    {
+                        name: 'extensions.models.speechToText',
+                        description: 'HuggingFace model ID for speech-to-text',
+                        type: 'Input',
+                        defaultValue: 'Xenova/whisper-small',
+                    },
+                    {
+                        name: 'extensions.models.textToSpeech',
+                        description: 'HuggingFace model ID for text-to-speech',
+                        type: 'Input',
+                        defaultValue: 'Xenova/speecht5_tts',
+                    },
+                ],
+            },
+            {
+                section: 'Server Plugins',
+                items: [
+                    {
+                        name: 'enableServerPlugins',
+                        description: 'Enable server-side plugins',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'enableServerPluginsAutoUpdate',
+                        description: 'Attempt to automatically update server plugins on startup',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                ],
+            },
+            {
+                section: 'API Integration Settings',
+                items: [
+                    {
+                        name: 'promptPlaceholder',
+                        description: 'Default message for empty prompts',
+                        type: 'Input',
+                        defaultValue: '[Start a new chat]',
+                    },
+                    {
+                        name: 'openai.randomizeUserId',
+                        description: 'Randomize user ID for API calls',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    { name: 'openai.captionSystemPrompt', description: 'System message for caption completion', type: 'Input' },
+                    {
+                        name: 'mistral.enablePrefix',
+                        description: 'Enable reply prefilling. The prefix will be echoed in the response',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'ollama.keepAlive',
+                        description: 'Model keep-alive duration (seconds)',
+                        type: 'Input',
+                        defaultValue: -1,
+                    },
+                    {
+                        name: 'ollama.batchSize',
+                        description: 'Controls the "num_batch" (batch size) parameter of the generation request',
+                        type: 'Input',
+                        defaultValue: -1,
+                    },
+                    {
+                        name: 'claude.enableSystemPromptCache',
+                        description: 'Enable system prompt caching',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'claude.cachingAtDepth',
+                        description: 'Enable message history caching',
+                        type: 'Input',
+                        defaultValue: -1,
+                    },
+                    {
+                        name: 'claude.extendedTTL',
+                        description: 'Use 1h TTL instead of the default 5m.',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'gemini.apiVersion',
+                        description: 'API endpoint version',
+                        type: 'DropDown',
+                        defaultValue: 'v1beta',
+                        values: ['v1beta', 'v1alpha'],
+                    },
+                    {
+                        name: 'deepl.formality',
+                        description: 'Translation formality level',
+                        type: 'DropDown',
+                        defaultValue: 'default',
+                        values: ['default', 'more', 'less', 'prefer_more', 'prefer_less'],
+                    },
+                ],
             },
         ],
     },
@@ -23353,23 +31051,190 @@ const sillyArguments = [
 
 const shellCommand$1 = isWin ? 'call start.bat' : 'bash ./start.sh';
 const URL$1 = 'https://github.com/SillyTavern/SillyTavern';
-function parseArgsToString$1(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, sillyArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
+/**
+ * Checks if an argument is a configuration-file argument or a command-line argument.
+ * @param name The name of the argument.
+ * @returns {boolean | undefined} `true` if it's a config arg, `false` if it's a command-line arg, `undefined` if not found.
+ */
+function isConfigArg(name) {
+    if (lodashExports.isEmpty(name))
+        return undefined;
+    for (const argument of sillyArguments) {
+        // Configuration arguments are defined within 'sections'
+        if ('sections' in argument) {
+            for (const section of argument.sections) {
+                const found = section.items.find(item => item.name === name);
+                if (found)
+                    return true;
+            }
         }
         else {
-            argResult += `${arg.name} ${arg.value} `;
+            // Command-line arguments are directly in 'items'
+            const found = argument.items.find(item => item.name === name);
+            if (found)
+                return false;
+        }
+    }
+    return undefined;
+}
+/**
+ * Finds the full definition of an argument from the sillyArguments structure.
+ * @param name - The name of the argument to find.
+ * @returns The argument item definition or undefined if not found.
+ */
+function getArgDefinition(name) {
+    for (const category of sillyArguments) {
+        const items = 'sections' in category ? category.sections.flatMap(section => section.items) : category.items;
+        const found = items.find(item => item.name === name);
+        if (found) {
+            return found;
+        }
+    }
+    return undefined;
+}
+/**
+ * Sets a nested property on an object based on a dot-notation path.
+ * @param obj The object to modify.
+ * @param path The dot-notation path (e.g., "logging.minLogLevel").
+ * @param value The value to set.
+ */
+function setNestedValue(obj, path, value) {
+    const keys = path.split('.');
+    let current = obj;
+    while (keys.length > 1) {
+        const key = keys.shift();
+        if (typeof current[key] === 'undefined') {
+            current[key] = {};
+        }
+        current = current[key];
+    }
+    current[keys[0]] = value;
+}
+/**
+ * NEW: Parses arguments into an object with separate file contents.
+ * @param args The chosen arguments from the UI.
+ * @returns An object with `commands` and `configs` string properties.
+ */
+function parseArgsToFiles(args) {
+    let commandArgs = '';
+    const configObject = {};
+    // This logic is identical to parseArgsToString for separating arguments
+    args.forEach(arg => {
+        const isConfig = isConfigArg(arg.name);
+        if (isConfig === true) {
+            const definition = getArgDefinition(arg.name);
+            if (!definition)
+                return;
+            let processedValue = arg.value;
+            if (definition.type === 'CheckBox') {
+                processedValue = true;
+            }
+            else if (typeof definition.defaultValue === 'number') {
+                processedValue = Number(arg.value) || definition.defaultValue;
+            }
+            else if (definition.defaultValue === 'true' || definition.defaultValue === 'false') {
+                processedValue = arg.value.toLowerCase() === 'true';
+            }
+            setNestedValue(configObject, arg.name, processedValue);
+        }
+        else if (isConfig === false) {
+            const argType = getArgumentType(arg.name, sillyArguments);
+            if (argType === 'CheckBox') {
+                commandArgs += `${arg.name} `;
+            }
+            else if (argType === 'File' || argType === 'Directory') {
+                commandArgs += `${arg.name} "${arg.value}" `;
+            }
+            else {
+                commandArgs += `${arg.name} ${arg.value} `;
+            }
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$1 : `${shellCommand$1} ${argResult}`;
-    return result;
+    // Build the command file content
+    let commandResult = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    commandResult += lodashExports.isEmpty(commandArgs) ? shellCommand$1 : `${shellCommand$1} ${commandArgs.trim()}`;
+    // Build the config file content
+    const configResult = lodashExports.isEmpty(configObject) ? '# No configuration options were selected to save.' : dump(configObject);
+    return {
+        commands: commandResult,
+        configs: configResult,
+    };
+}
+function parseArgsToString$1(args) {
+    const { commands, configs } = parseArgsToFiles(args);
+    // Combine both file contents into a single preview string
+    let finalResult = '-------------Batch File Preview (.bat)-------------';
+    finalResult += `\n\n${commands}\n\n`;
+    finalResult += '-------------Configuration File Preview (config.yml)-------------';
+    finalResult += `\n\n${configs}`;
+    return finalResult;
+}
+/**
+ * Recursively flattens a nested config object into a ChosenArgument array.
+ */
+function flattenConfigObject(obj, prefix = '') {
+    let results = [];
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            const newPrefix = prefix ? `${prefix}.${key}` : key;
+            const value = obj[key];
+            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                results = results.concat(flattenConfigObject(value, newPrefix));
+            }
+            else {
+                const definition = getArgDefinition(newPrefix);
+                if (definition?.type === 'CheckBox' && value === true) {
+                    results.push({ name: newPrefix, value: '' });
+                }
+                else {
+                    results.push({ name: newPrefix, value: String(value) });
+                }
+            }
+        }
+    }
+    return results;
+}
+function parseFilesToArgs(commands, configs) {
+    // 1. Parse Command-line arguments from the commands string
+    const commandArgResult = [];
+    if (!lodashExports.isEmpty(commands)) {
+        const lines = commands.split('\n');
+        lines.forEach((line) => {
+            if (!line.startsWith(shellCommand$1))
+                return;
+            const clArgs = line.split(`${shellCommand$1} `)[1];
+            if (!clArgs)
+                return;
+            const args = clArgs.split('--').filter(Boolean);
+            const result = args.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return { name: `--${id}`, value: value.join(' ').replace(/"/g, '') };
+            });
+            result.forEach((value) => {
+                if (isValidArg(value.name, sillyArguments)) {
+                    commandArgResult.push({
+                        name: value.name,
+                        value: getArgumentType(value.name, sillyArguments) === 'CheckBox' ? '' : value.value,
+                    });
+                }
+            });
+        });
+    }
+    // 2. Parse YAML configuration from the configs string
+    let configArgResult = [];
+    if (!lodashExports.isEmpty(configs)) {
+        try {
+            const parsedYaml = load(configs); // <-- Changed to use load from js-yaml
+            if (typeof parsedYaml === 'object' && parsedYaml !== null) {
+                configArgResult = flattenConfigObject(parsedYaml);
+            }
+        }
+        catch (e) {
+            console.error('Failed to parse YAML config string:', e);
+        }
+    }
+    // 3. Combine and return both results
+    return [...commandArgResult, ...configArgResult];
 }
 function parseStringToArgs$1(args) {
     const argResult = [];
@@ -23579,6 +31444,13 @@ const oobaboogaArguments = [
                         name: '--use_eager_attention',
                         description: 'Set attn_implementation= eager while loading the model.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: '--attn-implementation',
+                        description: 'Attention implementation. Valid options: sdpa, eager, flash_attention_2.',
+                        type: 'DropDown',
+                        values: ['sdpa', 'eager', 'flash_attention_2'],
+                        defaultValue: 'sdpa',
                     },
                 ],
             },
@@ -23962,6 +31834,11 @@ const oobaboogaArguments = [
                         description: 'Use the legacy Gradio colors, before the December/2024 update.',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--portable',
+                        description: 'Hide features not available in portable mode like training.',
+                        type: 'CheckBox',
+                    },
                 ],
             },
             {
@@ -24004,6 +31881,16 @@ const oobaboogaArguments = [
                         description: 'Do not launch the Gradio UI. Useful for launching the API in standalone mode.',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--api-enable-ipv6',
+                        description: 'Enable IPv6 for the API',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--api-disable-ipv4',
+                        description: 'Disable IPv4 for the API',
+                        type: 'CheckBox',
+                    },
                 ],
             },
             {
@@ -24013,6 +31900,74 @@ const oobaboogaArguments = [
                         name: '--multimodal-pipeline',
                         description: 'The multimodal pipeline to use. Examples: llava-7b, llava-13b.',
                         type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Context and cache',
+                items: [
+                    {
+                        name: '--ctx-size',
+                        description: 'Context size in tokens.',
+                        type: 'Input',
+                        defaultValue: '8192',
+                    },
+                    {
+                        name: '--cache-type',
+                        description: 'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4;' +
+                            ' ExLlamaV3 - fp16, q2 to q8 (can specify k_bits and v_bits separately, e.g. q4_q8).',
+                        type: 'Input',
+                        defaultValue: 'fp16',
+                    },
+                ],
+            },
+            {
+                section: 'Speculative decoding',
+                items: [
+                    {
+                        name: '--model-draft',
+                        description: 'Path to the draft model for speculative decoding.',
+                        type: 'File',
+                    },
+                    {
+                        name: '--draft-max',
+                        description: 'Number of tokens to draft for speculative decoding.',
+                        type: 'Input',
+                        defaultValue: '4',
+                    },
+                    {
+                        name: '--gpu-layers-draft',
+                        description: 'Number of layers to offload to the GPU for the draft model.',
+                        type: 'Input',
+                        defaultValue: '256',
+                    },
+                    {
+                        name: '--device-draft',
+                        description: 'Comma-separated list of devices to use for offloading the draft model. Example: CUDA0,CUDA1',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--ctx-size-draft',
+                        description: 'Size of the prompt context for the draft model. If 0, uses the same as the main model.',
+                        type: 'Input',
+                        defaultValue: '0',
+                    },
+                ],
+            },
+            {
+                section: 'ExLlamaV3',
+                items: [
+                    {
+                        name: '--enable-tp',
+                        description: 'Enable Tensor Parallelism (TP) to split the model across GPUs.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--tp-backend',
+                        description: 'The backend for tensor parallelism. Valid options: native, nccl. Default: native.',
+                        type: 'DropDown',
+                        values: ['native', 'nccl'],
+                        defaultValue: 'native',
                     },
                 ],
             },
@@ -24406,4 +32361,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { SD_FORGE_ID as $, ALLTALK_ID as A, SD_NEXT_ID as B, COMFYUI_ID as C, parseArgsToString$5 as D, parseStringToArgs$5 as E, SWARM_ID as F, parseArgsToString$4 as G, parseStringToArgs$4 as H, INVOKEAI_INSTALL_DIR_KEY as I, BOLT_DIY_ID as J, KOHYA_ID as K, getCdCommand as L, removeAnsi as M, parseArgsToString$3 as N, OPEN_WEBUI_ID as O, parseStringToArgs$3 as P, LoLLMS_ID as Q, parseArgsToString$2 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$2 as U, SILLYTAVERN_ID as V, parseArgsToString$1 as W, parseStringToArgs$1 as X, TG_ID as Y, parseArgsToString as Z, parseStringToArgs as _, getVenvPythonPath as a, SD_FORGE_AMD_ID as a0, SD_UIUX_ID as a1, FLOWISEAI_ID as a2, CardInfo as a3, GitInstaller as a4, AG_RM as a5, gitmyloArguments as a6, fetchExtensionList$2 as a7, catchAddress$2 as a8, lodashExports as a9, automatic1111Arguments as aa, COMFYUI_RM as ab, comfyArguments as ac, INVOKE_RM as ad, SD_NEXT_RM as ae, vladmandicArguments as af, KOHYA_GUI_RM as ag, bmaltaisArguments as ah, COMFYUI_ZLUDA_RM as ai, comfyZludaArguments as aj, SD_AMD_RM as ak, lshqqytigerArguments as al, SWARM_RM as am, mcMonkeyArguments as an, TG_RM as ao, oobaboogaArguments as ap, flowiseArguments as aq, Flow_RM as ar, openArguments as as, OPEN_WEBUI_RM as at, SILLYTAVERN_RM as au, sillyArguments as av, AG_ID as b, commonjsGlobal as c, parseStringToArgs$c as d, parseArgsToString$b as e, parseStringToArgs$b as f, getDefaultExportFromCjs as g, COMFYUI_ZLUDA_ID as h, isWin as i, parseArgsToString$a as j, parseStringToArgs$a as k, INVOKE_ID as l, extractGitUrl as m, INVOKEAI_UPDATE_AVAILABLE_KEY as n, Invoke_Command_ActivateVenv as o, parseArgsToString$c as p, parseArgsToString$9 as q, parseStringToArgs$9 as r, parseArgsToString$8 as s, parseStringToArgs$8 as t, ONETRAINER_ID as u, A1_ID as v, parseArgsToString$7 as w, parseStringToArgs$7 as x, parseArgsToString$6 as y, parseStringToArgs$6 as z };
+export { parseStringToArgs$2 as $, ALLTALK_ID as A, SD_NEXT_ID as B, COMFYUI_ID as C, parseArgsToString$7 as D, parseStringToArgs$7 as E, SWARM_ID as F, parseArgsToString$6 as G, parseStringToArgs$6 as H, INVOKEAI_INSTALL_DIR_KEY as I, BOLT_DIY_ID as J, KOHYA_ID as K, removeAnsi as L, getCdCommand as M, FLOWISEAI_ID as N, OPEN_WEBUI_ID as O, parseArgsToString$5 as P, parseStringToArgs$5 as Q, parseFilesToArgs$1 as R, SD_AMD_ID as S, TTS_ID as T, parseArgsToFiles$1 as U, GeminiCli_ID as V, LoLLMS_ID as W, N8N_ID as X, parseArgsToString$3 as Y, parseStringToArgs$3 as Z, parseArgsToString$2 as _, getVenvPythonPath as a, SILLYTAVERN_ID as a0, parseArgsToFiles as a1, parseFilesToArgs as a2, TG_ID as a3, parseArgsToString as a4, parseStringToArgs as a5, SD_FORGE_ID as a6, SD_FORGE_AMD_ID as a7, SD_UIUX_ID as a8, CardInfo as a9, openArguments as aA, OPEN_WEBUI_RM as aB, n8nArguments as aC, N8N_RM as aD, SILLYTAVERN_RM as aE, sillyArguments as aF, GitInstaller as aa, AG_RM as ab, gitmyloArguments as ac, fetchExtensionList$2 as ad, catchAddress$2 as ae, lodashExports as af, automatic1111Arguments as ag, COMFYUI_RM as ah, comfyArguments as ai, INVOKE_RM as aj, SD_NEXT_RM as ak, vladmandicArguments as al, KOHYA_GUI_RM as am, bmaltaisArguments as an, COMFYUI_ZLUDA_RM as ao, comfyZludaArguments as ap, SD_AMD_RM as aq, lshqqytigerArguments as ar, SWARM_RM as as, mcMonkeyArguments as at, GeminiCli_RM as au, geminiCliArguments as av, TG_RM as aw, oobaboogaArguments as ax, flowiseArguments as ay, Flow_RM as az, AG_ID as b, commonjsGlobal as c, parseStringToArgs$e as d, parseArgsToString$d as e, parseStringToArgs$d as f, getDefaultExportFromCjs as g, COMFYUI_ZLUDA_ID as h, isWin as i, parseArgsToString$c as j, parseStringToArgs$c as k, INVOKE_ID as l, extractGitUrl as m, INVOKEAI_UPDATE_AVAILABLE_KEY as n, Invoke_Command_ActivateVenv as o, parseArgsToString$e as p, parseArgsToString$b as q, parseStringToArgs$b as r, parseArgsToString$a as s, parseStringToArgs$a as t, ONETRAINER_ID as u, A1_ID as v, parseArgsToString$9 as w, parseStringToArgs$9 as x, parseArgsToString$8 as y, parseStringToArgs$8 as z };

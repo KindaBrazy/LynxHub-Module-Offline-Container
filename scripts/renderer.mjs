@@ -1,4 +1,4 @@
-import { i as isWin, a3 as CardInfo, a4 as GitInstaller, T as TTS_ID, a5 as AG_RM, a6 as gitmyloArguments, b as AG_ID, A as ALLTALK_ID, x as parseStringToArgs, w as parseArgsToString, a7 as fetchExtensionList, a8 as catchAddress$2, a9 as lodashExports, aa as automatic1111Arguments, ab as COMFYUI_RM, ac as comfyArguments, C as COMFYUI_ID, $ as SD_FORGE_ID, ad as INVOKE_RM, l as INVOKE_ID, ae as SD_NEXT_RM, af as vladmandicArguments, B as SD_NEXT_ID, v as A1_ID, u as ONETRAINER_ID, ag as KOHYA_GUI_RM, ah as bmaltaisArguments, K as KOHYA_ID, ai as COMFYUI_ZLUDA_RM, aj as comfyZludaArguments, h as COMFYUI_ZLUDA_ID, ak as SD_AMD_RM, al as lshqqytigerArguments, S as SD_AMD_ID, a0 as SD_FORGE_AMD_ID, am as SWARM_RM, an as mcMonkeyArguments, F as SWARM_ID, a1 as SD_UIUX_ID, ao as TG_RM, ap as oobaboogaArguments, Y as TG_ID, aq as flowiseArguments, ar as Flow_RM, a2 as FLOWISEAI_ID, as as openArguments, at as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, J as BOLT_DIY_ID, au as SILLYTAVERN_RM, av as sillyArguments, V as SILLYTAVERN_ID, Q as LoLLMS_ID } from './RendererMethods_ai6e2D.mjs';
+import { i as isWin, a9 as CardInfo, aa as GitInstaller, T as TTS_ID, ab as AG_RM, ac as gitmyloArguments, b as AG_ID, A as ALLTALK_ID, x as parseStringToArgs, w as parseArgsToString, ad as fetchExtensionList, ae as catchAddress$2, af as lodashExports, ag as automatic1111Arguments, ah as COMFYUI_RM, ai as comfyArguments, C as COMFYUI_ID, a6 as SD_FORGE_ID, aj as INVOKE_RM, l as INVOKE_ID, ak as SD_NEXT_RM, al as vladmandicArguments, B as SD_NEXT_ID, v as A1_ID, u as ONETRAINER_ID, am as KOHYA_GUI_RM, an as bmaltaisArguments, K as KOHYA_ID, ao as COMFYUI_ZLUDA_RM, ap as comfyZludaArguments, h as COMFYUI_ZLUDA_ID, aq as SD_AMD_RM, ar as lshqqytigerArguments, S as SD_AMD_ID, a7 as SD_FORGE_AMD_ID, as as SWARM_RM, at as mcMonkeyArguments, F as SWARM_ID, a8 as SD_UIUX_ID, au as GeminiCli_RM, av as geminiCliArguments, V as GeminiCli_ID, aw as TG_RM, ax as oobaboogaArguments, a3 as TG_ID, ay as flowiseArguments, az as Flow_RM, N as FLOWISEAI_ID, aA as openArguments, aB as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, aC as n8nArguments, aD as N8N_RM, X as N8N_ID, J as BOLT_DIY_ID, aE as SILLYTAVERN_RM, aF as sillyArguments, a0 as SILLYTAVERN_ID, W as LoLLMS_ID } from './RendererMethods_DENuaT.mjs';
 
 const URL$2 = 'https://github.com/erew123/alltalk_tts';
 function startInstall$8(stepper) {
@@ -56,7 +56,7 @@ const ALLTALK_RM = {
     },
 };
 
-const URL$1 = 'https://github.com/rsxdalv/tts-generation-webui';
+const URL$1 = 'https://github.com/rsxdalv/TTS-WebUI';
 function catchAddress$1(input) {
     if (input.toLowerCase().includes('Installed Packages'.toLowerCase())) {
         return 'http://127.0.0.1:7770';
@@ -85,7 +85,7 @@ const audioPage = {
             title: 'Text to Speech',
             description: 'TTS Generation Web UI (Bark, MusicGen + AudioGen, Tortoise, RVC, Vocos,' +
                 ' Demucs, SeamlessM4T, MAGNet, StyleTTS2, MMS)',
-            repoUrl: 'https://github.com/rsxdalv/tts-generation-webui',
+            repoUrl: 'https://github.com/rsxdalv/TTS-WebUI',
             type: 'audio',
             extensionsDir: '/extensions',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
@@ -356,11 +356,11 @@ const invokeArguments = [
                     },
                     {
                         name: 'device',
-                        description: 'Preferred execution device. auto will choose the device depending on the hardware platform' +
-                            ' and the installed torch capabilities.',
+                        description: 'Preferred execution device. auto will choose the device depending on the hardware platform,' +
+                            ' installed torch capabilities, and supports cuda:N device numbers.',
                         type: 'DropDown',
                         defaultValue: 'auto',
-                        values: ['auto', 'cpu', 'cuda', 'cuda:1', 'mps'],
+                        values: ['auto', 'cpu', 'cuda', 'mps', 'cuda:N'],
                     },
                     {
                         name: 'precision',
@@ -473,6 +473,12 @@ const invokeArguments = [
                     {
                         name: 'scan_models_on_startup',
                         description: 'Scan models directory on startup to register orphaned models. Typically only used with use_memory_db for testing.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'unsafe_disable_picklescan',
+                        description: 'UNSAFE. Disable the picklescan security check during model installation.' +
+                            ' Recommended only for development and testing purposes.',
                         type: 'CheckBox',
                     },
                 ],
@@ -677,7 +683,7 @@ const imagePage = {
             id: SD_NEXT_ID,
             title: 'SD Next',
             description: 'Advanced Implementation of Stable Diffusion and other Diffusion-based generative image models',
-            repoUrl: 'https://github.com/vladmandic/automatic',
+            repoUrl: 'https://github.com/vladmandic/sdnext',
             extensionsDir: '/extensions',
             type: 'image',
             bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e396ff35-0cf7-4121-8e69-4dd80b2429fa/width=300/00002-1070114876.jpeg',
@@ -916,6 +922,18 @@ const textPage = {
     routePath: '/textGenerationPage',
     cards: [
         {
+            id: GeminiCli_ID,
+            title: 'Gemini CLI',
+            description: 'An open-source AI agent that brings the power of Gemini directly into your terminal.',
+            repoUrl: 'https://github.com/google-gemini/gemini-cli',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/6de40d6e-9b5e-4c41-a0ad-344114f79173/' +
+                'width=300/Gemini_Generated_Image_h5c817h5c817h5c8.jpeg',
+            arguments: geminiCliArguments,
+            methods: GeminiCli_RM,
+            installationType: 'others',
+        },
+        {
             id: TG_ID,
             title: 'Text Generation',
             description: 'A Gradio web UI for Large Language Models.',
@@ -953,6 +971,19 @@ const textPage = {
             installationType: 'others',
             uninstallType: 'others',
             arguments: openArguments,
+        },
+        {
+            id: N8N_ID,
+            title: 'N8N',
+            description: 'Fair-code workflow automation platform with native AI capabilities. ' +
+                'Combine visual building with custom code, self-host or cloud, 400+ integrations.',
+            repoUrl: 'https://github.com/n8n-io/n8n',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/ee2b96df-8dad-4bef-93fb-060f0c03cf0d/' +
+                'width=300/00016-3727992318.jpeg',
+            methods: N8N_RM,
+            installationType: 'others',
+            arguments: n8nArguments,
         },
         {
             id: BOLT_DIY_ID,

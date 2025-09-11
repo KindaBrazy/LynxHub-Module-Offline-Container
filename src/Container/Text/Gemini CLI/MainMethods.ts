@@ -1,14 +1,20 @@
 import path from 'node:path';
 
 import fs from 'graceful-fs';
-import treeKill from 'tree-kill';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {GeminiCli_ID} from '../../../Constants';
-import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
-import {determineShell, initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
+import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
+import {initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
+import {
+  checkNpmPackageUpdate,
+  getNpmPackageVersion,
+  isNpmPackageInstalled,
+  uninstallNpmPackage,
+} from '../../../Utils/NpmUtils';
 import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';
 
+const PACKAGE_NAME = '@google/gemini-cli';
 const CONFIG_FILE = isWin ? 'geminiCli_config.bat' : 'geminiCli_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
 
@@ -52,106 +58,12 @@ async function readArgs(configDir?: string) {
   return parseFilesToArgs(scriptData, '');
 }
 
-async function checkInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {env: process.env});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const cleanOutput = removeAnsi(output).trim().replace('npm list -g @google/gemini-cli', '');
-
-      const isInstalled = new RegExp(`@google/gemini-cli@.+`).test(cleanOutput);
-
-      resolve(isInstalled);
-    });
-
-    utils.getExtensions_TerminalPreCommands(GeminiCli_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g @google/gemini-cli${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
 async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return checkInstalled(utils);
-}
-
-async function getVersion(utils: MainModuleUtils): Promise<string> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const match = output.match(new RegExp(`@google/gemini-cli@([\\d.]+)`, 'i'));
-      if (match && match[1]) {
-        resolve(match[1]);
-      } else {
-        resolve('');
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(GeminiCli_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g @google/gemini-cli${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
-}
-
-async function checkUpdate(utils: MainModuleUtils): Promise<string | null> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data.toString();
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const lines = removeAnsi(output).split(LINE_ENDING);
-      for (const line of lines) {
-        const match = line.match(new RegExp(`@google/gemini-cli\\s+[\\d.]+\\s+[\\d.]+\\s+([\\d.]+)`, 'i'));
-        if (match) {
-          resolve(match[2]);
-        }
-      }
-
-      resolve(null);
-    });
-
-    utils.getExtensions_TerminalPreCommands(GeminiCli_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g outdated @google/gemini-cli${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+  return isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME, utils);
 }
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
-  const available = await checkUpdate(utils);
+  const available = await checkNpmPackageUpdate(GeminiCli_ID, PACKAGE_NAME, utils);
   if (available) {
     utils.storage.set('update-available-version-geminiCli', available);
     return true;
@@ -162,32 +74,8 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_geminiCli_installed', () => checkInstalled(utils));
-  utils.ipc.handle('current_geminiCli_version', () => getVersion(utils));
-}
-
-async function uninstall(utils: MainModuleUtils): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(({exitCode}: {exitCode: number}) => {
-      if (exitCode === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Error uninstalling Gemini Cli. Exit Code: ${exitCode}\nOutput:\n${output}`));
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(GeminiCli_ID).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g rm @google/gemini-cli${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+  utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME, utils));
+  utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(GeminiCli_ID, PACKAGE_NAME, utils));
 }
 
 const GeminiCli_MM: CardMainMethodsInitial = utils => {
@@ -200,7 +88,7 @@ const GeminiCli_MM: CardMainMethodsInitial = utils => {
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),
-    uninstall: () => uninstall(utils),
+    uninstall: () => uninstallNpmPackage(GeminiCli_ID, PACKAGE_NAME, utils),
   };
 };
 

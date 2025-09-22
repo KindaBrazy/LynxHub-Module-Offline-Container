@@ -7,7 +7,7 @@ import GeminiCli_RM from './Gemini CLI/RendererMethods';
 import n8nArguments from './N8N/Arguments';
 import N8N_RM from './N8N/RendererMethods';
 
-const audioPage: PagesData = {
+const agentsPage: PagesData = {
   routePath: 'agents_page',
   cards: [
     {
@@ -54,4 +54,4 @@ const audioPage: PagesData = {
   ],
 };
 
-export default audioPage;
+export default agentsPage;

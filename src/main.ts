@@ -24,6 +24,9 @@ import {
   TG_ID,
   TTS_ID,
 } from './Constants';
+import Flow_MM from './Container/Agent/Flowise (FlowiseAI)/MainMethods';
+import GeminiCli_MM from './Container/Agent/Gemini CLI/MainMethods';
+import N8N_MM from './Container/Agent/N8N/MainMethods';
 import Rrew123_MM from './Container/Audio/AllTalk TTS (erew123)/MainMethods';
 import Gitmylo_MM from './Container/Audio/Audio Generation (gitmylo)/MainMethods';
 import Rsx_MM from './Container/Audio/Text to Speech (rsxdalv)/MainMethods';
@@ -37,10 +40,7 @@ import Ls_MM from './Container/Image/SD AMDGPU (lshqqytiger)/MainMethods';
 import Vlad_MM from './Container/Image/SD Next (vladmandic)/MainMethods';
 import McMonkey_MM from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
 import BOLT_DIY_MM from './Container/Text/BoltDiy (StackblitzLabs)/MainMethods';
-import Flow_MM from './Container/Text/Flowise (FlowiseAI)/MainMethods';
-import GeminiCli_MM from './Container/Text/Gemini CLI/MainMethods';
 import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
-import N8N_MM from './Container/Text/N8N/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';

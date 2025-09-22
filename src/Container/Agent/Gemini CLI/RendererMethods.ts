@@ -11,7 +11,7 @@ import {
 } from '../../../../../src/cross/plugin/ModuleTypes';
 import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
-import openArguments from '../OpenWebUI/Arguments';
+import openArguments from '../../Text/OpenWebUI/Arguments';
 import geminiCliArguments from './Arguments';
 
 const INSTALL_TIME_KEY = 'install-time-geminiCli';

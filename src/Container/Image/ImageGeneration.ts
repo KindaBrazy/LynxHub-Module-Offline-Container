@@ -36,7 +36,7 @@ import mcMonkeyArguments from './SwarmUI (mcmonkeyprojects)/Arguments';
 import SWARM_RM from './SwarmUI (mcmonkeyprojects)/RendererMethods';
 
 const imagePage: PagesData = {
-  routePath: '/imageGenerationPage',
+  routePath: 'imageGen_page',
   cards: [
     {
       id: COMFYUI_ID,

@@ -25,7 +25,7 @@ import oobaboogaArguments from './Text Generation (oobabooga)/Arguments';
 import TG_RM from './Text Generation (oobabooga)/RendererMethods';
 
 const textPage: PagesData = {
-  routePath: '/textGenerationPage',
+  routePath: 'textGen_page',
   cards: [
     {
       id: GeminiCli_ID,

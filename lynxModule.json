@@ -9,7 +9,7 @@
   "version": "12.0.0",
   "updateDate": "2025-09-11",
   "engines": {
-    "moduleApi": "^1.0.0"
+    "moduleApi": "^2.0.0"
   },
   "changes": [
     {

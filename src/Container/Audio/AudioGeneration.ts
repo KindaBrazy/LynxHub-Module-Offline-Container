@@ -6,7 +6,7 @@ import AG_RM from './Audio Generation (gitmylo)/RendererMethods';
 import TTS_RM from './Text to Speech (rsxdalv)/RendererMethods';
 
 const audioPage: PagesData = {
-  routePath: '/audioGenerationPage',
+  routePath: 'audioGen_page',
   cards: [
     {
       id: TTS_ID,

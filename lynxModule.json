@@ -6,12 +6,25 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 29,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "12.0.0",
-  "updateDate": "2025-09-11",
+  "version": "12.1.0",
+  "updateDate": "2025-09-28",
   "engines": {
     "moduleApi": "^2.0.0"
   },
   "changes": [
+    {
+      "title": "V12.1.0",
+      "items": [
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "Migrate Flowise, Gemini CLI, and N8N to new Agents page."
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V12.0.0",
       "items": [

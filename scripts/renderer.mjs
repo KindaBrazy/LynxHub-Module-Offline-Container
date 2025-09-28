@@ -1,4 +1,47 @@
-import { i as isWin, a9 as CardInfo, aa as GitInstaller, T as TTS_ID, ab as AG_RM, ac as gitmyloArguments, b as AG_ID, A as ALLTALK_ID, x as parseStringToArgs, w as parseArgsToString, ad as fetchExtensionList, ae as catchAddress$2, af as lodashExports, ag as automatic1111Arguments, ah as COMFYUI_RM, ai as comfyArguments, C as COMFYUI_ID, a6 as SD_FORGE_ID, aj as INVOKE_RM, l as INVOKE_ID, ak as SD_NEXT_RM, al as vladmandicArguments, B as SD_NEXT_ID, v as A1_ID, u as ONETRAINER_ID, am as KOHYA_GUI_RM, an as bmaltaisArguments, K as KOHYA_ID, ao as COMFYUI_ZLUDA_RM, ap as comfyZludaArguments, h as COMFYUI_ZLUDA_ID, aq as SD_AMD_RM, ar as lshqqytigerArguments, S as SD_AMD_ID, a7 as SD_FORGE_AMD_ID, as as SWARM_RM, at as mcMonkeyArguments, F as SWARM_ID, a8 as SD_UIUX_ID, au as GeminiCli_RM, av as geminiCliArguments, V as GeminiCli_ID, aw as TG_RM, ax as oobaboogaArguments, a3 as TG_ID, ay as flowiseArguments, az as Flow_RM, N as FLOWISEAI_ID, aA as openArguments, aB as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, aC as n8nArguments, aD as N8N_RM, X as N8N_ID, J as BOLT_DIY_ID, aE as SILLYTAVERN_RM, aF as sillyArguments, a0 as SILLYTAVERN_ID, W as LoLLMS_ID } from './RendererMethods_DENuaT.mjs';
+import { a9 as flowiseArguments, aa as Flow_RM, F as FLOWISEAI_ID, ab as GeminiCli_RM, ac as geminiCliArguments, G as GeminiCli_ID, ad as n8nArguments, ae as N8N_RM, N as N8N_ID, i as isWin, af as CardInfo, ag as GitInstaller, T as TTS_ID, ah as AG_RM, ai as gitmyloArguments, k as AG_ID, A as ALLTALK_ID, L as parseStringToArgs, J as parseArgsToString, aj as fetchExtensionList, ak as catchAddress$2, al as lodashExports, am as automatic1111Arguments, an as COMFYUI_RM, ao as comfyArguments, C as COMFYUI_ID, a6 as SD_FORGE_ID, ap as INVOKE_RM, u as INVOKE_ID, aq as SD_NEXT_RM, ar as vladmandicArguments, Q as SD_NEXT_ID, H as A1_ID, E as ONETRAINER_ID, as as KOHYA_GUI_RM, at as bmaltaisArguments, K as KOHYA_ID, au as COMFYUI_ZLUDA_RM, av as comfyZludaArguments, q as COMFYUI_ZLUDA_ID, aw as SD_AMD_RM, ax as lshqqytigerArguments, S as SD_AMD_ID, a7 as SD_FORGE_AMD_ID, ay as SWARM_RM, az as mcMonkeyArguments, V as SWARM_ID, a8 as SD_UIUX_ID, aA as TG_RM, aB as oobaboogaArguments, a3 as TG_ID, aC as openArguments, aD as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, Y as BOLT_DIY_ID, aE as SILLYTAVERN_RM, aF as sillyArguments, a0 as SILLYTAVERN_ID, Z as LoLLMS_ID } from './RendererMethods_LgvC40.mjs';
+
+const agentsPage = {
+    routePath: 'agents_page',
+    cards: [
+        {
+            id: FLOWISEAI_ID,
+            title: 'Flowise',
+            description: 'Drag & drop UI to build your customized LLM flow',
+            repoUrl: 'https://github.com/FlowiseAI/Flowise',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/96d813cd-91e6-41ca-95b3-ea619d6c462c/' +
+                'width=300/00008-112793962.jpeg',
+            methods: Flow_RM,
+            arguments: flowiseArguments,
+            installationType: 'others',
+        },
+        {
+            id: GeminiCli_ID,
+            title: 'Gemini CLI',
+            description: 'An open-source AI agent that brings the power of Gemini directly into your terminal.',
+            repoUrl: 'https://github.com/google-gemini/gemini-cli',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/6de40d6e-9b5e-4c41-a0ad-344114f79173/' +
+                'width=300/Gemini_Generated_Image_h5c817h5c817h5c8.jpeg',
+            arguments: geminiCliArguments,
+            methods: GeminiCli_RM,
+            installationType: 'others',
+        },
+        {
+            id: N8N_ID,
+            title: 'N8N',
+            description: 'Fair-code workflow automation platform with native AI capabilities. ' +
+                'Combine visual building with custom code, self-host or cloud, 400+ integrations.',
+            repoUrl: 'https://github.com/n8n-io/n8n',
+            type: 'text',
+            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/ee2b96df-8dad-4bef-93fb-060f0c03cf0d/' +
+                'width=300/00016-3727992318.jpeg',
+            methods: N8N_RM,
+            installationType: 'others',
+            arguments: n8nArguments,
+        },
+    ],
+};
 
 const URL$2 = 'https://github.com/erew123/alltalk_tts';
 function startInstall$8(stepper) {
@@ -78,7 +121,7 @@ const TTS_RM = {
 };
 
 const audioPage = {
-    routePath: '/audioGenerationPage',
+    routePath: 'audioGen_page',
     cards: [
         {
             id: TTS_ID,
@@ -636,7 +679,7 @@ const SD_UIUX_RM = {
 };
 
 const imagePage = {
-    routePath: '/imageGenerationPage',
+    routePath: 'imageGen_page',
     cards: [
         {
             id: COMFYUI_ID,
@@ -919,20 +962,8 @@ const LoLLM_RM = {
 };
 
 const textPage = {
-    routePath: '/textGenerationPage',
+    routePath: 'textGen_page',
     cards: [
-        {
-            id: GeminiCli_ID,
-            title: 'Gemini CLI',
-            description: 'An open-source AI agent that brings the power of Gemini directly into your terminal.',
-            repoUrl: 'https://github.com/google-gemini/gemini-cli',
-            type: 'text',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/6de40d6e-9b5e-4c41-a0ad-344114f79173/' +
-                'width=300/Gemini_Generated_Image_h5c817h5c817h5c8.jpeg',
-            arguments: geminiCliArguments,
-            methods: GeminiCli_RM,
-            installationType: 'others',
-        },
         {
             id: TG_ID,
             title: 'Text Generation',
@@ -944,18 +975,6 @@ const textPage = {
             arguments: oobaboogaArguments,
             methods: TG_RM,
             installationType: 'git',
-        },
-        {
-            id: FLOWISEAI_ID,
-            title: 'Flowise',
-            description: 'Drag & drop UI to build your customized LLM flow',
-            repoUrl: 'https://github.com/FlowiseAI/Flowise',
-            type: 'text',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/96d813cd-91e6-41ca-95b3-ea619d6c462c/' +
-                'width=300/00008-112793962.jpeg',
-            methods: Flow_RM,
-            arguments: flowiseArguments,
-            installationType: 'others',
         },
         {
             id: OPEN_WEBUI_ID,
@@ -971,19 +990,6 @@ const textPage = {
             installationType: 'others',
             uninstallType: 'others',
             arguments: openArguments,
-        },
-        {
-            id: N8N_ID,
-            title: 'N8N',
-            description: 'Fair-code workflow automation platform with native AI capabilities. ' +
-                'Combine visual building with custom code, self-host or cloud, 400+ integrations.',
-            repoUrl: 'https://github.com/n8n-io/n8n',
-            type: 'text',
-            bgUrl: 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/ee2b96df-8dad-4bef-93fb-060f0c03cf0d/' +
-                'width=300/00016-3727992318.jpeg',
-            methods: N8N_RM,
-            installationType: 'others',
-            arguments: n8nArguments,
         },
         {
             id: BOLT_DIY_ID,
@@ -1025,6 +1031,6 @@ const textPage = {
     ],
 };
 
-const rendererModules = [imagePage, textPage, audioPage];
+const rendererModules = [imagePage, textPage, audioPage, agentsPage];
 
 export { rendererModules as default };

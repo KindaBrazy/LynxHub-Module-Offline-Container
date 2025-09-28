@@ -1,7 +1,7 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, A as ALLTALK_ID, b as AG_ID, p as parseArgsToString, d as parseStringToArgs, T as TTS_ID, C as COMFYUI_ID, e as parseArgsToString$1, f as parseStringToArgs$1, h as COMFYUI_ZLUDA_ID, j as parseArgsToString$2, k as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, l as INVOKE_ID, m as extractGitUrl, n as INVOKEAI_UPDATE_AVAILABLE_KEY, o as Invoke_Command_ActivateVenv, q as parseArgsToString$3, r as parseStringToArgs$3, K as KOHYA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, u as ONETRAINER_ID, v as A1_ID, w as parseArgsToString$5, x as parseStringToArgs$5, S as SD_AMD_ID, y as parseArgsToString$6, z as parseStringToArgs$6, B as SD_NEXT_ID, D as parseArgsToString$7, E as parseStringToArgs$7, F as SWARM_ID, G as parseArgsToString$8, H as parseStringToArgs$8, J as BOLT_DIY_ID, L as removeAnsi, M as getCdCommand, N as FLOWISEAI_ID, P as parseArgsToString$9, Q as parseStringToArgs$9, R as parseFilesToArgs, U as parseArgsToFiles, V as GeminiCli_ID, W as LoLLMS_ID, X as N8N_ID, Y as parseArgsToString$a, Z as parseStringToArgs$a, _ as parseArgsToString$b, $ as parseStringToArgs$b, a0 as SILLYTAVERN_ID, a1 as parseArgsToFiles$1, a2 as parseFilesToArgs$1, a3 as TG_ID, a4 as parseArgsToString$c, a5 as parseStringToArgs$c, a6 as SD_FORGE_ID, a7 as SD_FORGE_AMD_ID, a8 as SD_UIUX_ID } from './RendererMethods_DENuaT.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, r as removeAnsi, b as getCdCommand, F as FLOWISEAI_ID, p as parseArgsToString, d as parseStringToArgs, e as parseFilesToArgs, f as parseArgsToFiles, G as GeminiCli_ID, N as N8N_ID, h as parseArgsToString$1, j as parseStringToArgs$1, A as ALLTALK_ID, k as AG_ID, l as parseArgsToString$2, m as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, n as parseArgsToString$3, o as parseStringToArgs$3, q as COMFYUI_ZLUDA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, u as INVOKE_ID, v as extractGitUrl, w as INVOKEAI_UPDATE_AVAILABLE_KEY, x as Invoke_Command_ActivateVenv, y as parseArgsToString$5, z as parseStringToArgs$5, K as KOHYA_ID, B as parseArgsToString$6, D as parseStringToArgs$6, E as ONETRAINER_ID, H as A1_ID, J as parseArgsToString$7, L as parseStringToArgs$7, S as SD_AMD_ID, M as parseArgsToString$8, P as parseStringToArgs$8, Q as SD_NEXT_ID, R as parseArgsToString$9, U as parseStringToArgs$9, V as SWARM_ID, W as parseArgsToString$a, X as parseStringToArgs$a, Y as BOLT_DIY_ID, Z as LoLLMS_ID, _ as parseArgsToString$b, $ as parseStringToArgs$b, a0 as SILLYTAVERN_ID, a1 as parseArgsToFiles$1, a2 as parseFilesToArgs$1, a3 as TG_ID, a4 as parseArgsToString$c, a5 as parseStringToArgs$c, a6 as SD_FORGE_ID, a7 as SD_FORGE_AMD_ID, a8 as SD_UIUX_ID } from './RendererMethods_LgvC40.mjs';
+import path, { join } from 'node:path';
 import { exec, execSync } from 'node:child_process';
 import { platform as platform$2 } from 'node:os';
-import path, { join } from 'node:path';
 import require$$1 from 'util';
 import stream, { Readable } from 'stream';
 import require$$1$1 from 'path';
@@ -70,7 +70,7 @@ const isUndefined = typeOfTest('undefined');
  */
 function isBuffer(val) {
   return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
-    && isFunction(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+    && isFunction$1(val.constructor.isBuffer) && val.constructor.isBuffer(val);
 }
 
 /**
@@ -115,7 +115,7 @@ const isString = typeOfTest('string');
  * @param {*} val The value to test
  * @returns {boolean} True if value is a Function, otherwise false
  */
-const isFunction = typeOfTest('function');
+const isFunction$1 = typeOfTest('function');
 
 /**
  * Determine if a value is a Number
@@ -171,7 +171,7 @@ const isEmptyObject = (val) => {
   if (!isObject(val) || isBuffer(val)) {
     return false;
   }
-  
+
   try {
     return Object.keys(val).length === 0 && Object.getPrototypeOf(val) === Object.prototype;
   } catch (e) {
@@ -223,7 +223,7 @@ const isFileList = kindOfTest('FileList');
  *
  * @returns {boolean} True if value is a Stream, otherwise false
  */
-const isStream = (val) => isObject(val) && isFunction(val.pipe);
+const isStream = (val) => isObject(val) && isFunction$1(val.pipe);
 
 /**
  * Determine if a value is a FormData
@@ -236,10 +236,10 @@ const isFormData = (thing) => {
   let kind;
   return thing && (
     (typeof FormData === 'function' && thing instanceof FormData) || (
-      isFunction(thing.append) && (
+      isFunction$1(thing.append) && (
         (kind = kindOf(thing)) === 'formdata' ||
         // detect form-data instance
-        (kind === 'object' && isFunction(thing.toString) && thing.toString() === '[object FormData]')
+        (kind === 'object' && isFunction$1(thing.toString) && thing.toString() === '[object FormData]')
       )
     )
   )
@@ -364,7 +364,7 @@ const isContextDefined = (context) => !isUndefined(context) && context !== _glob
  * @returns {Object} Result of all merge properties
  */
 function merge(/* obj1, obj2, obj3, ... */) {
-  const {caseless} = isContextDefined(this) && this || {};
+  const {caseless, skipUndefined} = isContextDefined(this) && this || {};
   const result = {};
   const assignValue = (val, key) => {
     const targetKey = caseless && findKey(result, key) || key;
@@ -374,7 +374,7 @@ function merge(/* obj1, obj2, obj3, ... */) {
       result[targetKey] = merge({}, val);
     } else if (isArray(val)) {
       result[targetKey] = val.slice();
-    } else {
+    } else if (!skipUndefined || !isUndefined(val)) {
       result[targetKey] = val;
     }
   };
@@ -397,7 +397,7 @@ function merge(/* obj1, obj2, obj3, ... */) {
  */
 const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
   forEach(b, (val, key) => {
-    if (thisArg && isFunction(val)) {
+    if (thisArg && isFunction$1(val)) {
       a[key] = bind(val, thisArg);
     } else {
       a[key] = val;
@@ -613,13 +613,13 @@ const reduceDescriptors = (obj, reducer) => {
 const freezeMethods = (obj) => {
   reduceDescriptors(obj, (descriptor, name) => {
     // skip restricted props in strict mode
-    if (isFunction(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
+    if (isFunction$1(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
       return false;
     }
 
     const value = obj[name];
 
-    if (!isFunction(value)) return;
+    if (!isFunction$1(value)) return;
 
     descriptor.enumerable = false;
 
@@ -656,6 +656,8 @@ const toFiniteNumber = (value, defaultValue) => {
   return value != null && Number.isFinite(value = +value) ? value : defaultValue;
 };
 
+
+
 /**
  * If the thing is a FormData object, return true, otherwise return false.
  *
@@ -664,7 +666,7 @@ const toFiniteNumber = (value, defaultValue) => {
  * @returns {boolean}
  */
 function isSpecCompliantForm(thing) {
-  return !!(thing && isFunction(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
+  return !!(thing && isFunction$1(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
 }
 
 const toJSONObject = (obj) => {
@@ -706,7 +708,7 @@ const toJSONObject = (obj) => {
 const isAsyncFn = kindOfTest('AsyncFunction');
 
 const isThenable = (thing) =>
-  thing && (isObject(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
+  thing && (isObject(thing) || isFunction$1(thing)) && isFunction$1(thing.then) && isFunction$1(thing.catch);
 
 // original code
 // https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
@@ -730,7 +732,7 @@ const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
   })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
 })(
   typeof setImmediate === 'function',
-  isFunction(_global.postMessage)
+  isFunction$1(_global.postMessage)
 );
 
 const asap = typeof queueMicrotask !== 'undefined' ?
@@ -739,7 +741,7 @@ const asap = typeof queueMicrotask !== 'undefined' ?
 // *********************
 
 
-const isIterable = (thing) => thing != null && isFunction(thing[iterator]);
+const isIterable = (thing) => thing != null && isFunction$1(thing[iterator]);
 
 
 var utils$1 = {
@@ -763,7 +765,7 @@ var utils$1 = {
   isFile,
   isBlob,
   isRegExp,
-  isFunction,
+  isFunction: isFunction$1,
   isStream,
   isURLSearchParams,
   isTypedArray,
@@ -889,11 +891,18 @@ AxiosError$1.from = (error, code, config, request, response, customProps) => {
     return prop !== 'isAxiosError';
   });
 
-  AxiosError$1.call(axiosError, error.message, code, config, request, response);
+  const msg = error && error.message ? error.message : 'Error';
 
-  axiosError.cause = error;
+  // Prefer explicit code; otherwise copy the low-level error's code (e.g. ECONNREFUSED)
+  const errCode = code == null && error ? error.code : code;
+  AxiosError$1.call(axiosError, msg, errCode, config, request, response);
 
-  axiosError.name = error.name;
+  // Chain the original error on the standard field; non-enumerable to avoid JSON noise
+  if (error && axiosError.cause == null) {
+    Object.defineProperty(axiosError, 'cause', { value: error, configurable: true });
+  }
+
+  axiosError.name = (error && error.name) || 'Error';
 
   customProps && Object.assign(axiosError, customProps);
 
@@ -14497,9 +14506,7 @@ function encode(val) {
     replace(/%3A/gi, ':').
     replace(/%24/g, '$').
     replace(/%2C/gi, ',').
-    replace(/%20/g, '+').
-    replace(/%5B/gi, '[').
-    replace(/%5D/gi, ']');
+    replace(/%20/g, '+');
 }
 
 /**
@@ -14923,7 +14930,7 @@ const defaults = {
       const strictJSONParsing = !silentJSONParsing && JSONRequested;
 
       try {
-        return JSON.parse(data);
+        return JSON.parse(data, this.parseReviver);
       } catch (e) {
         if (strictJSONParsing) {
           if (e.name === 'SyntaxError') {
@@ -17498,7 +17505,7 @@ function requireFollowRedirects () {
 var followRedirectsExports = requireFollowRedirects();
 var followRedirects = /*@__PURE__*/getDefaultExportFromCjs(followRedirectsExports);
 
-const VERSION$1 = "1.11.0";
+const VERSION$1 = "1.12.2";
 
 function parseProtocol(url) {
   const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
@@ -17981,6 +17988,80 @@ const progressEventDecorator = (total, throttled) => {
 
 const asyncDecorator = (fn) => (...args) => utils$1.asap(() => fn(...args));
 
+/**
+ * Estimate decoded byte length of a data:// URL *without* allocating large buffers.
+ * - For base64: compute exact decoded size using length and padding;
+ *               handle %XX at the character-count level (no string allocation).
+ * - For non-base64: use UTF-8 byteLength of the encoded body as a safe upper bound.
+ *
+ * @param {string} url
+ * @returns {number}
+ */
+function estimateDataURLDecodedBytes(url) {
+  if (!url || typeof url !== 'string') return 0;
+  if (!url.startsWith('data:')) return 0;
+
+  const comma = url.indexOf(',');
+  if (comma < 0) return 0;
+
+  const meta = url.slice(5, comma);
+  const body = url.slice(comma + 1);
+  const isBase64 = /;base64/i.test(meta);
+
+  if (isBase64) {
+    let effectiveLen = body.length;
+    const len = body.length; // cache length
+
+    for (let i = 0; i < len; i++) {
+      if (body.charCodeAt(i) === 37 /* '%' */ && i + 2 < len) {
+        const a = body.charCodeAt(i + 1);
+        const b = body.charCodeAt(i + 2);
+        const isHex =
+          ((a >= 48 && a <= 57) || (a >= 65 && a <= 70) || (a >= 97 && a <= 102)) &&
+          ((b >= 48 && b <= 57) || (b >= 65 && b <= 70) || (b >= 97 && b <= 102));
+
+        if (isHex) {
+          effectiveLen -= 2;
+          i += 2;
+        }
+      }
+    }
+
+    let pad = 0;
+    let idx = len - 1;
+
+    const tailIsPct3D = (j) =>
+      j >= 2 &&
+      body.charCodeAt(j - 2) === 37 && // '%'
+      body.charCodeAt(j - 1) === 51 && // '3'
+      (body.charCodeAt(j) === 68 || body.charCodeAt(j) === 100); // 'D' or 'd'
+
+    if (idx >= 0) {
+      if (body.charCodeAt(idx) === 61 /* '=' */) {
+        pad++;
+        idx--;
+      } else if (tailIsPct3D(idx)) {
+        pad++;
+        idx -= 3;
+      }
+    }
+
+    if (pad === 1 && idx >= 0) {
+      if (body.charCodeAt(idx) === 61 /* '=' */) {
+        pad++;
+      } else if (tailIsPct3D(idx)) {
+        pad++;
+      }
+    }
+
+    const groups = Math.floor(effectiveLen / 4);
+    const bytes = groups * 3 - (pad || 0);
+    return bytes > 0 ? bytes : 0;
+  }
+
+  return Buffer.byteLength(body, 'utf8');
+}
+
 const zlibOptions = {
   flush: zlib.constants.Z_SYNC_FLUSH,
   finishFlush: zlib.constants.Z_SYNC_FLUSH
@@ -18001,6 +18082,7 @@ const supportedProtocols = platform.protocols.map(protocol => {
   return protocol + ':';
 });
 
+
 const flushOnFinish = (stream, [throttled, flush]) => {
   stream
     .on('end', flush)
@@ -18008,6 +18090,7 @@ const flushOnFinish = (stream, [throttled, flush]) => {
 
   return throttled;
 };
+
 
 /**
  * If the proxy or config beforeRedirects functions are defined, call them with the options
@@ -18188,6 +18271,21 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
     const protocol = parsed.protocol || supportedProtocols[0];
 
     if (protocol === 'data:') {
+      // Apply the same semantics as HTTP: only enforce if a finite, non-negative cap is set.
+      if (config.maxContentLength > -1) {
+        // Use the exact string passed to fromDataURI (config.url); fall back to fullPath if needed.
+        const dataUrl = String(config.url || fullPath || '');
+        const estimated = estimateDataURLDecodedBytes(dataUrl);
+
+        if (estimated > config.maxContentLength) {
+          return reject(new AxiosError$1(
+            'maxContentLength size of ' + config.maxContentLength + ' exceeded',
+            AxiosError$1.ERR_BAD_RESPONSE,
+            config
+          ));
+        }
+      }
+
       let convertedData;
 
       if (method !== 'GET') {
@@ -18802,7 +18900,7 @@ function mergeConfig$1(config1, config2) {
 var resolveConfig = (config) => {
   const newConfig = mergeConfig$1({}, config);
 
-  let {data, withXSRFToken, xsrfHeaderName, xsrfCookieName, headers, auth} = newConfig;
+  let { data, withXSRFToken, xsrfHeaderName, xsrfCookieName, headers, auth } = newConfig;
 
   newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
@@ -18815,17 +18913,21 @@ var resolveConfig = (config) => {
     );
   }
 
-  let contentType;
-
   if (utils$1.isFormData(data)) {
     if (platform.hasStandardBrowserEnv || platform.hasStandardBrowserWebWorkerEnv) {
-      headers.setContentType(undefined); // Let the browser set it
-    } else if ((contentType = headers.getContentType()) !== false) {
-      // fix semicolon duplication issue for ReactNative FormData implementation
-      const [type, ...tokens] = contentType ? contentType.split(';').map(token => token.trim()).filter(Boolean) : [];
-      headers.setContentType([type || 'multipart/form-data', ...tokens].join('; '));
+      headers.setContentType(undefined); // browser handles it
+    } else if (utils$1.isFunction(data.getHeaders)) {
+      // Node.js FormData (like form-data package)
+      const formHeaders = data.getHeaders();
+      // Only set safe headers to avoid overwriting security headers
+      const allowedHeaders = ['content-type', 'content-length'];
+      Object.entries(formHeaders).forEach(([key, val]) => {
+        if (allowedHeaders.includes(key.toLowerCase())) {
+          headers.set(key, val);
+        }
+      });
     }
-  }
+  }  
 
   // Add xsrf header
   // This is only done if running in a standard browser environment.
@@ -18942,15 +19044,18 @@ var xhrAdapter = isXHRAdapterSupported && function (config) {
     };
 
     // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request));
-
-      // Clean up request
-      request = null;
+  request.onerror = function handleError(event) {
+       // Browsers deliver a ProgressEvent in XHR onerror
+       // (message may be empty; when present, surface it)
+       // See https://developer.mozilla.org/docs/Web/API/XMLHttpRequest/error_event
+       const msg = event && event.message ? event.message : 'Network Error';
+       const err = new AxiosError$1(msg, AxiosError$1.ERR_NETWORK, config, request);
+       // attach the underlying event for consumers who want details
+       err.event = event || null;
+       reject(err);
+       request = null;
     };
-
+    
     // Handle timeout
     request.ontimeout = function handleTimeout() {
       let timeoutErrorMessage = _config.timeout ? 'timeout of ' + _config.timeout + 'ms exceeded' : 'timeout exceeded';
@@ -19164,14 +19269,18 @@ const trackStream = (stream, chunkSize, onProgress, onFinish) => {
   })
 };
 
-const isFetchSupported = typeof fetch === 'function' && typeof Request === 'function' && typeof Response === 'function';
-const isReadableStreamSupported = isFetchSupported && typeof ReadableStream === 'function';
+const DEFAULT_CHUNK_SIZE = 64 * 1024;
 
-// used only inside the fetch adapter
-const encodeText = isFetchSupported && (typeof TextEncoder === 'function' ?
-    ((encoder) => (str) => encoder.encode(str))(new TextEncoder()) :
-    async (str) => new Uint8Array(await new Response(str).arrayBuffer())
-);
+const {isFunction} = utils$1;
+
+const globalFetchAPI = (({Request, Response}) => ({
+  Request, Response
+}))(utils$1.global);
+
+const {
+  ReadableStream: ReadableStream$1, TextEncoder: TextEncoder$1
+} = utils$1.global;
+
 
 const test = (fn, ...args) => {
   try {
@@ -19181,211 +19290,268 @@ const test = (fn, ...args) => {
   }
 };
 
-const supportsRequestStream = isReadableStreamSupported && test(() => {
-  let duplexAccessed = false;
+const factory = (env) => {
+  env = utils$1.merge.call({
+    skipUndefined: true
+  }, globalFetchAPI, env);
 
-  const hasContentType = new Request(platform.origin, {
-    body: new ReadableStream(),
-    method: 'POST',
-    get duplex() {
-      duplexAccessed = true;
-      return 'half';
-    },
-  }).headers.has('Content-Type');
+  const {fetch: envFetch, Request, Response} = env;
+  const isFetchSupported = envFetch ? isFunction(envFetch) : typeof fetch === 'function';
+  const isRequestSupported = isFunction(Request);
+  const isResponseSupported = isFunction(Response);
 
-  return duplexAccessed && !hasContentType;
-});
+  if (!isFetchSupported) {
+    return false;
+  }
 
-const DEFAULT_CHUNK_SIZE = 64 * 1024;
+  const isReadableStreamSupported = isFetchSupported && isFunction(ReadableStream$1);
 
-const supportsResponseStream = isReadableStreamSupported &&
-  test(() => utils$1.isReadableStream(new Response('').body));
+  const encodeText = isFetchSupported && (typeof TextEncoder$1 === 'function' ?
+      ((encoder) => (str) => encoder.encode(str))(new TextEncoder$1()) :
+      async (str) => new Uint8Array(await new Request(str).arrayBuffer())
+  );
 
+  const supportsRequestStream = isRequestSupported && isReadableStreamSupported && test(() => {
+    let duplexAccessed = false;
 
-const resolvers = {
-  stream: supportsResponseStream && ((res) => res.body)
-};
+    const hasContentType = new Request(platform.origin, {
+      body: new ReadableStream$1(),
+      method: 'POST',
+      get duplex() {
+        duplexAccessed = true;
+        return 'half';
+      },
+    }).headers.has('Content-Type');
 
-isFetchSupported && (((res) => {
-  ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach(type => {
-    !resolvers[type] && (resolvers[type] = utils$1.isFunction(res[type]) ? (res) => res[type]() :
-      (_, config) => {
+    return duplexAccessed && !hasContentType;
+  });
+
+  const supportsResponseStream = isResponseSupported && isReadableStreamSupported &&
+    test(() => utils$1.isReadableStream(new Response('').body));
+
+  const resolvers = {
+    stream: supportsResponseStream && ((res) => res.body)
+  };
+
+  isFetchSupported && ((() => {
+    ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach(type => {
+      !resolvers[type] && (resolvers[type] = (res, config) => {
+        let method = res && res[type];
+
+        if (method) {
+          return method.call(res);
+        }
+
         throw new AxiosError$1(`Response type '${type}' is not supported`, AxiosError$1.ERR_NOT_SUPPORT, config);
       });
-  });
-})(new Response));
-
-const getBodyLength = async (body) => {
-  if (body == null) {
-    return 0;
-  }
-
-  if(utils$1.isBlob(body)) {
-    return body.size;
-  }
-
-  if(utils$1.isSpecCompliantForm(body)) {
-    const _request = new Request(platform.origin, {
-      method: 'POST',
-      body,
     });
-    return (await _request.arrayBuffer()).byteLength;
-  }
+  })());
 
-  if(utils$1.isArrayBufferView(body) || utils$1.isArrayBuffer(body)) {
-    return body.byteLength;
-  }
+  const getBodyLength = async (body) => {
+    if (body == null) {
+      return 0;
+    }
 
-  if(utils$1.isURLSearchParams(body)) {
-    body = body + '';
-  }
+    if (utils$1.isBlob(body)) {
+      return body.size;
+    }
 
-  if(utils$1.isString(body)) {
-    return (await encodeText(body)).byteLength;
-  }
-};
-
-const resolveBodyLength = async (headers, body) => {
-  const length = utils$1.toFiniteNumber(headers.getContentLength());
-
-  return length == null ? getBodyLength(body) : length;
-};
-
-var fetchAdapter = isFetchSupported && (async (config) => {
-  let {
-    url,
-    method,
-    data,
-    signal,
-    cancelToken,
-    timeout,
-    onDownloadProgress,
-    onUploadProgress,
-    responseType,
-    headers,
-    withCredentials = 'same-origin',
-    fetchOptions
-  } = resolveConfig(config);
-
-  responseType = responseType ? (responseType + '').toLowerCase() : 'text';
-
-  let composedSignal = composeSignals([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
-
-  let request;
-
-  const unsubscribe = composedSignal && composedSignal.unsubscribe && (() => {
-      composedSignal.unsubscribe();
-  });
-
-  let requestContentLength;
-
-  try {
-    if (
-      onUploadProgress && supportsRequestStream && method !== 'get' && method !== 'head' &&
-      (requestContentLength = await resolveBodyLength(headers, data)) !== 0
-    ) {
-      let _request = new Request(url, {
+    if (utils$1.isSpecCompliantForm(body)) {
+      const _request = new Request(platform.origin, {
         method: 'POST',
-        body: data,
-        duplex: "half"
+        body,
       });
-
-      let contentTypeHeader;
-
-      if (utils$1.isFormData(data) && (contentTypeHeader = _request.headers.get('content-type'))) {
-        headers.setContentType(contentTypeHeader);
-      }
-
-      if (_request.body) {
-        const [onProgress, flush] = progressEventDecorator(
-          requestContentLength,
-          progressEventReducer(asyncDecorator(onUploadProgress))
-        );
-
-        data = trackStream(_request.body, DEFAULT_CHUNK_SIZE, onProgress, flush);
-      }
+      return (await _request.arrayBuffer()).byteLength;
     }
 
-    if (!utils$1.isString(withCredentials)) {
-      withCredentials = withCredentials ? 'include' : 'omit';
+    if (utils$1.isArrayBufferView(body) || utils$1.isArrayBuffer(body)) {
+      return body.byteLength;
     }
 
-    // Cloudflare Workers throws when credentials are defined
-    // see https://github.com/cloudflare/workerd/issues/902
-    const isCredentialsSupported = "credentials" in Request.prototype;
-    request = new Request(url, {
-      ...fetchOptions,
-      signal: composedSignal,
-      method: method.toUpperCase(),
-      headers: headers.normalize().toJSON(),
-      body: data,
-      duplex: "half",
-      credentials: isCredentialsSupported ? withCredentials : undefined
+    if (utils$1.isURLSearchParams(body)) {
+      body = body + '';
+    }
+
+    if (utils$1.isString(body)) {
+      return (await encodeText(body)).byteLength;
+    }
+  };
+
+  const resolveBodyLength = async (headers, body) => {
+    const length = utils$1.toFiniteNumber(headers.getContentLength());
+
+    return length == null ? getBodyLength(body) : length;
+  };
+
+  return async (config) => {
+    let {
+      url,
+      method,
+      data,
+      signal,
+      cancelToken,
+      timeout,
+      onDownloadProgress,
+      onUploadProgress,
+      responseType,
+      headers,
+      withCredentials = 'same-origin',
+      fetchOptions
+    } = resolveConfig(config);
+
+    let _fetch = envFetch || fetch;
+
+    responseType = responseType ? (responseType + '').toLowerCase() : 'text';
+
+    let composedSignal = composeSignals([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
+
+    let request = null;
+
+    const unsubscribe = composedSignal && composedSignal.unsubscribe && (() => {
+      composedSignal.unsubscribe();
     });
 
-    let response = await fetch(request, fetchOptions);
+    let requestContentLength;
 
-    const isStreamResponse = supportsResponseStream && (responseType === 'stream' || responseType === 'response');
+    try {
+      if (
+        onUploadProgress && supportsRequestStream && method !== 'get' && method !== 'head' &&
+        (requestContentLength = await resolveBodyLength(headers, data)) !== 0
+      ) {
+        let _request = new Request(url, {
+          method: 'POST',
+          body: data,
+          duplex: "half"
+        });
 
-    if (supportsResponseStream && (onDownloadProgress || (isStreamResponse && unsubscribe))) {
-      const options = {};
+        let contentTypeHeader;
 
-      ['status', 'statusText', 'headers'].forEach(prop => {
-        options[prop] = response[prop];
-      });
-
-      const responseContentLength = utils$1.toFiniteNumber(response.headers.get('content-length'));
-
-      const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
-        responseContentLength,
-        progressEventReducer(asyncDecorator(onDownloadProgress), true)
-      ) || [];
-
-      response = new Response(
-        trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
-          flush && flush();
-          unsubscribe && unsubscribe();
-        }),
-        options
-      );
-    }
-
-    responseType = responseType || 'text';
-
-    let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || 'text'](response, config);
-
-    !isStreamResponse && unsubscribe && unsubscribe();
-
-    return await new Promise((resolve, reject) => {
-      settle(resolve, reject, {
-        data: responseData,
-        headers: AxiosHeaders$1.from(response.headers),
-        status: response.status,
-        statusText: response.statusText,
-        config,
-        request
-      });
-    })
-  } catch (err) {
-    unsubscribe && unsubscribe();
-
-    if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
-      throw Object.assign(
-        new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request),
-        {
-          cause: err.cause || err
+        if (utils$1.isFormData(data) && (contentTypeHeader = _request.headers.get('content-type'))) {
+          headers.setContentType(contentTypeHeader);
         }
-      )
-    }
 
-    throw AxiosError$1.from(err, err && err.code, config, request);
+        if (_request.body) {
+          const [onProgress, flush] = progressEventDecorator(
+            requestContentLength,
+            progressEventReducer(asyncDecorator(onUploadProgress))
+          );
+
+          data = trackStream(_request.body, DEFAULT_CHUNK_SIZE, onProgress, flush);
+        }
+      }
+
+      if (!utils$1.isString(withCredentials)) {
+        withCredentials = withCredentials ? 'include' : 'omit';
+      }
+
+      // Cloudflare Workers throws when credentials are defined
+      // see https://github.com/cloudflare/workerd/issues/902
+      const isCredentialsSupported = isRequestSupported && "credentials" in Request.prototype;
+
+      const resolvedOptions = {
+        ...fetchOptions,
+        signal: composedSignal,
+        method: method.toUpperCase(),
+        headers: headers.normalize().toJSON(),
+        body: data,
+        duplex: "half",
+        credentials: isCredentialsSupported ? withCredentials : undefined
+      };
+
+      request = isRequestSupported && new Request(url, resolvedOptions);
+
+      let response = await (isRequestSupported ? _fetch(request, fetchOptions) : _fetch(url, resolvedOptions));
+
+      const isStreamResponse = supportsResponseStream && (responseType === 'stream' || responseType === 'response');
+
+      if (supportsResponseStream && (onDownloadProgress || (isStreamResponse && unsubscribe))) {
+        const options = {};
+
+        ['status', 'statusText', 'headers'].forEach(prop => {
+          options[prop] = response[prop];
+        });
+
+        const responseContentLength = utils$1.toFiniteNumber(response.headers.get('content-length'));
+
+        const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
+          responseContentLength,
+          progressEventReducer(asyncDecorator(onDownloadProgress), true)
+        ) || [];
+
+        response = new Response(
+          trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
+            flush && flush();
+            unsubscribe && unsubscribe();
+          }),
+          options
+        );
+      }
+
+      responseType = responseType || 'text';
+
+      let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || 'text'](response, config);
+
+      !isStreamResponse && unsubscribe && unsubscribe();
+
+      return await new Promise((resolve, reject) => {
+        settle(resolve, reject, {
+          data: responseData,
+          headers: AxiosHeaders$1.from(response.headers),
+          status: response.status,
+          statusText: response.statusText,
+          config,
+          request
+        });
+      })
+    } catch (err) {
+      unsubscribe && unsubscribe();
+
+      if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
+        throw Object.assign(
+          new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request),
+          {
+            cause: err.cause || err
+          }
+        )
+      }
+
+      throw AxiosError$1.from(err, err && err.code, config, request);
+    }
   }
-});
+};
+
+const seedCache = new Map();
+
+const getFetch = (config) => {
+  let env = config ? config.env : {};
+  const {fetch, Request, Response} = env;
+  const seeds = [
+    Request, Response, fetch
+  ];
+
+  let len = seeds.length, i = len,
+    seed, target, map = seedCache;
+
+  while (i--) {
+    seed = seeds[i];
+    target = map.get(seed);
+
+    target === undefined && map.set(seed, target = (i ? new Map() : factory(env)));
+
+    map = target;
+  }
+
+  return target;
+};
+
+getFetch();
 
 const knownAdapters = {
   http: httpAdapter,
   xhr: xhrAdapter,
-  fetch: fetchAdapter
+  fetch: {
+    get: getFetch,
+  }
 };
 
 utils$1.forEach(knownAdapters, (fn, value) => {
@@ -19404,7 +19570,7 @@ const renderReason = (reason) => `- ${reason}`;
 const isResolvedHandle = (adapter) => utils$1.isFunction(adapter) || adapter === null || adapter === false;
 
 var adapters = {
-  getAdapter: (adapters) => {
+  getAdapter: (adapters, config) => {
     adapters = utils$1.isArray(adapters) ? adapters : [adapters];
 
     const {length} = adapters;
@@ -19427,7 +19593,7 @@ var adapters = {
         }
       }
 
-      if (adapter) {
+      if (adapter && (utils$1.isFunction(adapter) || (adapter = adapter.get(config)))) {
         break;
       }
 
@@ -19495,7 +19661,7 @@ function dispatchRequest(config) {
     config.headers.setContentType('application/x-www-form-urlencoded', false);
   }
 
-  const adapter = adapters.getAdapter(config.adapter || defaults.adapter);
+  const adapter = adapters.getAdapter(config.adapter || defaults.adapter, config);
 
   return adapter(config).then(function onAdapterResolution(response) {
     throwIfCancellationRequested(config);
@@ -19782,8 +19948,6 @@ let Axios$1 = class Axios {
     len = requestInterceptorChain.length;
 
     let newConfig = config;
-
-    i = 0;
 
     while (i < len) {
       const onFulfilled = requestInterceptorChain[i++];
@@ -21812,71 +21976,318 @@ function isVenvDirectory(dirPath) {
     }
 }
 
+async function isNpmPackageInstalled(id, packageName, utils) {
+    return new Promise(resolve => {
+        const ptyProcess = utils.pty.spawn(determineShell(), [], { env: process.env });
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(() => {
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
+            }
+            const cleanOutput = removeAnsi(output).trim().replace(`npm list -g ${packageName}`, '');
+            const isInstalled = new RegExp(`${packageName}@.+`).test(cleanOutput);
+            resolve(isInstalled);
+        });
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+async function getNpmPackageVersion(id, packageName, utils) {
+    return new Promise(resolve => {
+        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(() => {
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
+            }
+            const match = output.match(new RegExp(`${packageName}@([\\d.]+)`, 'i'));
+            if (match && match[1]) {
+                resolve(match[1]);
+            }
+            else {
+                resolve('');
+            }
+        });
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+async function checkNpmPackageUpdate(id, packageName, utils) {
+    return new Promise(resolve => {
+        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data.toString();
+        });
+        ptyProcess.onExit(() => {
+            if (ptyProcess.pid) {
+                treeKill(ptyProcess.pid);
+                ptyProcess.kill();
+            }
+            const lines = removeAnsi(output).split(LINE_ENDING);
+            for (const line of lines) {
+                const match = line.match(new RegExp(`${packageName}\\s+[\\d.]+\\s+[\\d.]+\\s+([\\d.]+)`, 'i'));
+                if (match) {
+                    resolve(match[1]);
+                }
+            }
+            resolve(null);
+        });
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm -g outdated ${packageName}${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+async function uninstallNpmPackage(id, packageName, utils) {
+    return new Promise((resolve, reject) => {
+        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
+        let output = '';
+        ptyProcess.onData((data) => {
+            output += data;
+        });
+        ptyProcess.onExit(({ exitCode }) => {
+            if (exitCode === 0) {
+                resolve();
+            }
+            else {
+                reject(new Error(`Error uninstalling ${packageName}. Exit Code: ${exitCode}\nOutput:\n${output}`));
+            }
+        });
+        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
+        ptyProcess.write(`npm -g rm ${packageName}${LINE_ENDING}`);
+        ptyProcess.write(`exit${LINE_ENDING}`);
+    });
+}
+
+const PACKAGE_NAME$2 = 'flowise';
+const CONFIG_FILE$6 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
+const DEFAULT_BATCH_DATA$e = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
+async function getRunCommands$j(configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$6));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$e);
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$e(args, configDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$6, parseArgsToString, configDir);
+}
+async function readArgs$e(configDir) {
+    return await utilReadArgs(CONFIG_FILE$6, DEFAULT_BATCH_DATA$e, parseStringToArgs, configDir);
+}
+async function updateAvailable$7(utils) {
+    const available = await checkNpmPackageUpdate(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
+    if (available) {
+        utils.storage.set('update-available-version-flowise', available);
+        return true;
+    }
+    utils.storage.set('update-available-version-flowise', undefined);
+    return false;
+}
+async function isInstalled$3(utils) {
+    return isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
+}
+function mainIpc$5(utils) {
+    utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
+    utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
+    utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
+}
+const Flow_MM = utils => {
+    const configDir = utils.getConfigDir();
+    return {
+        updateAvailable: () => updateAvailable$7(utils),
+        getRunCommands: () => getRunCommands$j(configDir),
+        mainIpc: () => mainIpc$5(utils),
+        isInstalled: () => isInstalled$3(utils),
+        saveArgs: args => saveArgs$e(args, configDir),
+        readArgs: () => readArgs$e(configDir),
+        uninstall: () => uninstallNpmPackage(FLOWISEAI_ID, PACKAGE_NAME$2, utils),
+    };
+};
+
+const PACKAGE_NAME$1 = '@google/gemini-cli';
+const CONFIG_FILE$5 = isWin ? 'geminiCli_config.bat' : 'geminiCli_config.sh';
+const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
+async function getRunCommands$i(configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$5));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$d);
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$d(args, configDir) {
+    if (!configDir)
+        return;
+    const { scriptData, settingsData } = parseArgsToFiles(args);
+    const scriptPath = path.join(configDir, CONFIG_FILE$5);
+    const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
+    await fs.promises.writeFile(scriptPath, scriptData);
+    if (settingsPath) {
+        try {
+            await fs.promises.writeFile(settingsPath, settingsData);
+        }
+        catch (e) {
+            console.error('Error saving settings.json file for gemini-cli', e);
+        }
+    }
+}
+async function readArgs$d(configDir) {
+    if (!configDir)
+        return [];
+    const scriptPath = path.join(configDir, CONFIG_FILE$5);
+    await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$d);
+    const scriptData = await fs.promises.readFile(scriptPath, 'utf-8');
+    return parseFilesToArgs(scriptData);
+}
+async function isInstalled$2(utils) {
+    return isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils);
+}
+async function updateAvailable$6(utils) {
+    const available = await checkNpmPackageUpdate(GeminiCli_ID, PACKAGE_NAME$1, utils);
+    if (available) {
+        utils.storage.set('update-available-version-geminiCli', available);
+        return true;
+    }
+    utils.storage.set('update-available-version-geminiCli', undefined);
+    return false;
+}
+function mainIpc$4(utils) {
+    utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils));
+    utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(GeminiCli_ID, PACKAGE_NAME$1, utils));
+}
+const GeminiCli_MM = utils => {
+    const configDir = utils.getConfigDir();
+    return {
+        mainIpc: () => mainIpc$4(utils),
+        getRunCommands: () => getRunCommands$i(configDir),
+        isInstalled: () => isInstalled$2(utils),
+        saveArgs: args => saveArgs$d(args, configDir),
+        readArgs: () => readArgs$d(configDir),
+        updateAvailable: () => updateAvailable$6(utils),
+        uninstall: () => uninstallNpmPackage(GeminiCli_ID, PACKAGE_NAME$1, utils),
+    };
+};
+
+const PACKAGE_NAME = 'n8n';
+const CONFIG_FILE$4 = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
+const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
+async function getRunCommands$h(configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$4));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$c);
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$c(args, configDir) {
+    return await utilSaveArgs(args, CONFIG_FILE$4, parseArgsToString$1, configDir);
+}
+async function readArgs$c(configDir) {
+    return await utilReadArgs(CONFIG_FILE$4, DEFAULT_BATCH_DATA$c, parseStringToArgs$1, configDir);
+}
+async function isInstalled$1(utils) {
+    return isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils);
+}
+async function updateAvailable$5(utils) {
+    const available = await checkNpmPackageUpdate(N8N_ID, PACKAGE_NAME, utils);
+    if (available) {
+        utils.storage.set('update-available-version-n8n', available);
+        return true;
+    }
+    utils.storage.set('update-available-version-n8n', undefined);
+    return false;
+}
+function mainIpc$3(utils) {
+    utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils));
+    utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(N8N_ID, PACKAGE_NAME, utils));
+}
+const N8N_MM = utils => {
+    const configDir = utils.getConfigDir();
+    return {
+        mainIpc: () => mainIpc$3(utils),
+        getRunCommands: () => getRunCommands$h(configDir),
+        isInstalled: () => isInstalled$1(utils),
+        saveArgs: args => saveArgs$c(args, configDir),
+        readArgs: () => readArgs$c(configDir),
+        updateAvailable: () => updateAvailable$5(utils),
+        uninstall: () => uninstallNpmPackage(N8N_ID, PACKAGE_NAME, utils),
+    };
+};
+
 const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$e = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
-async function getRunCommands$j(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$e);
+const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
+async function getRunCommands$g(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$b);
 }
 const Rrew123_MM = utils => {
     const installDir = utils.getInstallDir(ALLTALK_ID);
     return {
-        getRunCommands: () => getRunCommands$j(installDir),
+        getRunCommands: () => getRunCommands$g(installDir),
     };
 };
 
 const BAT_FILE_NAME$9 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
-async function getRunCommands$i(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$9, dir, DEFAULT_BATCH_DATA$d);
+const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\ncall run.bat' : '#!/bin/bash\n\nbash ./run.sh';
+async function getRunCommands$f(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$9, dir, DEFAULT_BATCH_DATA$a);
 }
-async function saveArgs$e(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$9, parseArgsToString, dir);
+async function saveArgs$b(args, dir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$9, parseArgsToString$2, dir);
 }
-async function readArgs$e(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$9, DEFAULT_BATCH_DATA$d, parseStringToArgs, dir);
+async function readArgs$b(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$9, DEFAULT_BATCH_DATA$a, parseStringToArgs$2, dir);
 }
 const Gitmylo_MM = utils => {
     const installDir = utils.getInstallDir(AG_ID);
     return {
-        getRunCommands: () => getRunCommands$i(installDir),
-        readArgs: () => readArgs$e(installDir),
-        saveArgs: args => saveArgs$e(args, installDir),
+        getRunCommands: () => getRunCommands$f(installDir),
+        readArgs: () => readArgs$b(installDir),
+        saveArgs: args => saveArgs$b(args, installDir),
     };
 };
 
 const BAT_FILE_NAME$8 = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
-async function getRunCommands$h(dir) {
+async function getRunCommands$e(dir) {
     return await utilRunCommands(BAT_FILE_NAME$8, dir);
 }
 const Rsx_MM = utils => {
     const installDir = utils.getInstallDir(TTS_ID);
     return {
-        getRunCommands: () => getRunCommands$h(installDir),
+        getRunCommands: () => getRunCommands$e(installDir),
     };
 };
 
 const BAT_FILE_NAME$7 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
-async function getRunCommands$g(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$c);
+const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+async function getRunCommands$d(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$7, dir, DEFAULT_BATCH_DATA$9);
 }
-async function saveArgs$d(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$7, parseArgsToString$1, dir);
+async function saveArgs$a(args, dir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$7, parseArgsToString$3, dir);
 }
-async function readArgs$d(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$c, parseStringToArgs$1, dir);
+async function readArgs$a(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$9, parseStringToArgs$3, dir);
 }
 const Comfy_MM = utils => {
     const installDir = utils.getInstallDir(COMFYUI_ID);
     return {
-        getRunCommands: () => getRunCommands$g(installDir),
-        readArgs: () => readArgs$d(installDir),
-        saveArgs: args => saveArgs$d(args, installDir),
+        getRunCommands: () => getRunCommands$d(installDir),
+        readArgs: () => readArgs$a(installDir),
+        saveArgs: args => saveArgs$a(args, installDir),
     };
 };
 
 const BAT_FILE_NAME$6 = 'lynx-user.bat';
-const DEFAULT_BATCH_DATA$b = '@echo off\n' +
+const DEFAULT_BATCH_DATA$8 = '@echo off\n' +
     '\n' +
     'set PYTHON="%~dp0/venv/Scripts/python.exe"\n' +
     'set VENV_DIR=./venv\n' +
@@ -21885,21 +22296,21 @@ const DEFAULT_BATCH_DATA$b = '@echo off\n' +
     '\n' +
     '.\\zluda\\zluda.exe -- %PYTHON% main.py ' +
     '\npause';
-async function getRunCommands$f(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$b);
+async function getRunCommands$c(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$6, dir, DEFAULT_BATCH_DATA$8);
 }
-async function saveArgs$c(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$6, parseArgsToString$2, dir);
+async function saveArgs$9(args, dir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$6, parseArgsToString$4, dir);
 }
-async function readArgs$c(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$b, parseStringToArgs$2, dir);
+async function readArgs$9(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$6, DEFAULT_BATCH_DATA$8, parseStringToArgs$4, dir);
 }
 const ComfyZluda_MM = utils => {
     const installDir = utils.getInstallDir(COMFYUI_ZLUDA_ID);
     return {
-        getRunCommands: () => getRunCommands$f(installDir),
-        readArgs: () => readArgs$c(installDir),
-        saveArgs: args => saveArgs$c(args, installDir),
+        getRunCommands: () => getRunCommands$c(installDir),
+        readArgs: () => readArgs$9(installDir),
+        saveArgs: args => saveArgs$9(args, installDir),
     };
 };
 
@@ -24651,18 +25062,18 @@ async function invokeGetCurrentVersion(storage) {
     return await getPipPackageVersionCustom(pythonExe, 'invokeai');
 }
 
-const CONFIG_FILE$6 = 'invokeai.yaml';
+const CONFIG_FILE$3 = 'invokeai.yaml';
 const DEFAULT_CONFIG_DATA = 'schema_version: 4.0.2\n\n';
-async function getRunCommands$e(dir) {
+async function getRunCommands$b(dir) {
     return [`${Invoke_Command_ActivateVenv}${LINE_ENDING}`, `invokeai-web --root ${dir}${LINE_ENDING}`];
 }
-async function saveArgs$b(args, dir) {
-    return await utilSaveArgs(args, CONFIG_FILE$6, parseArgsToString$3, dir);
+async function saveArgs$8(args, dir) {
+    return await utilSaveArgs(args, CONFIG_FILE$3, parseArgsToString$5, dir);
 }
-async function readArgs$b(dir) {
-    return await utilReadArgs(CONFIG_FILE$6, DEFAULT_CONFIG_DATA, parseStringToArgs$3, dir);
+async function readArgs$8(dir) {
+    return await utilReadArgs(CONFIG_FILE$3, DEFAULT_CONFIG_DATA, parseStringToArgs$5, dir);
 }
-async function mainIpc$5(utils) {
+async function mainIpc$2(utils) {
     utils.ipc.handle('is_uv_installed', () => {
         return checkWhich('uv');
     });
@@ -24679,7 +25090,7 @@ async function mainIpc$5(utils) {
         return false;
     });
 }
-async function updateAvailable$7(utils) {
+async function updateAvailable$4(utils) {
     const currentVersion = await invokeGetCurrentVersion(utils.storage);
     if (!currentVersion)
         return false;
@@ -24694,125 +25105,62 @@ async function updateAvailable$7(utils) {
 const Invoke_MM = utils => {
     const installDir = utils.getInstallDir(INVOKE_ID);
     return {
-        getRunCommands: () => getRunCommands$e(installDir),
-        readArgs: () => readArgs$b(installDir),
-        saveArgs: args => saveArgs$b(args, installDir),
-        updateAvailable: () => updateAvailable$7(utils),
-        mainIpc: () => mainIpc$5(utils),
+        getRunCommands: () => getRunCommands$b(installDir),
+        readArgs: () => readArgs$8(installDir),
+        saveArgs: args => saveArgs$8(args, installDir),
+        updateAvailable: () => updateAvailable$4(utils),
+        mainIpc: () => mainIpc$2(utils),
     };
 };
 
 const BAT_FILE_NAME$5 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$a = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
-async function getRunCommands$d(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$a);
+const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall gui.bat' : '#!/bin/bash\n\nbash ./gui.sh';
+async function getRunCommands$a(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$5, dir, DEFAULT_BATCH_DATA$7);
 }
-async function saveArgs$a(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$5, parseArgsToString$4, dir);
+async function saveArgs$7(args, dir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$5, parseArgsToString$6, dir);
 }
-async function readArgs$a(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$a, parseStringToArgs$4, dir);
+async function readArgs$7(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$5, DEFAULT_BATCH_DATA$7, parseStringToArgs$6, dir);
 }
 const Bmaltais_MM = utils => {
     const installDir = utils.getInstallDir(KOHYA_ID);
     return {
-        getRunCommands: () => getRunCommands$d(installDir),
-        readArgs: () => readArgs$a(installDir),
-        saveArgs: args => saveArgs$a(args, installDir),
+        getRunCommands: () => getRunCommands$a(installDir),
+        readArgs: () => readArgs$7(installDir),
+        saveArgs: args => saveArgs$7(args, installDir),
     };
 };
 
 const BAT_FILE_NAME$4 = isWin ? 'start-ui.bat' : 'start-ui.sh';
-async function getRunCommands$c(dir) {
+async function getRunCommands$9(dir) {
     return await utilRunCommands(BAT_FILE_NAME$4, dir);
 }
-async function updateAvailable$6(utils, dir) {
+async function updateAvailable$3(utils, dir) {
     if (!dir)
         return false;
     return await utils.isPullAvailable(dir);
 }
 const Nerogar_MM = utils => {
     const installDir = utils.getInstallDir(ONETRAINER_ID);
-    return { getRunCommands: () => getRunCommands$c(installDir), updateAvailable: () => updateAvailable$6(utils, installDir) };
+    return { getRunCommands: () => getRunCommands$9(installDir), updateAvailable: () => updateAvailable$3(utils, installDir) };
 };
 
-const CONFIG_FILE$5 = isWin ? 'webui-user.bat' : 'webui-user.sh';
+const CONFIG_FILE$2 = isWin ? 'webui-user.bat' : 'webui-user.sh';
 const EXEC_FILE$1 = isWin ? 'webui-user.bat' : 'webui.sh';
-const DEFAULT_BATCH_DATA$9 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$b(dir) {
-    return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$9);
+const DEFAULT_BATCH_DATA$6 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$8(dir) {
+    return await utilRunCommands(EXEC_FILE$1, dir, DEFAULT_BATCH_DATA$6);
 }
-async function saveArgs$9(args, dir) {
-    return await utilSaveArgs(args, CONFIG_FILE$5, parseArgsToString$5, dir);
+async function saveArgs$6(args, dir) {
+    return await utilSaveArgs(args, CONFIG_FILE$2, parseArgsToString$7, dir);
 }
-async function readArgs$9(dir) {
-    return await utilReadArgs(CONFIG_FILE$5, DEFAULT_BATCH_DATA$9, parseStringToArgs$5, dir);
+async function readArgs$6(dir) {
+    return await utilReadArgs(CONFIG_FILE$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$7, dir);
 }
 const A1_MM = utils => {
     const installDir = utils.getInstallDir(A1_ID);
-    return {
-        getRunCommands: () => getRunCommands$b(installDir),
-        readArgs: () => readArgs$9(installDir),
-        saveArgs: args => saveArgs$9(args, installDir),
-    };
-};
-
-const CONFIG_FILE$4 = isWin ? 'webui-user.bat' : 'webui-user.sh';
-const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
-const DEFAULT_BATCH_DATA$8 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
-async function getRunCommands$a(dir) {
-    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$8);
-}
-async function saveArgs$8(args, dir) {
-    return await utilSaveArgs(args, CONFIG_FILE$4, parseArgsToString$6, dir);
-}
-async function readArgs$8(dir) {
-    return await utilReadArgs(CONFIG_FILE$4, DEFAULT_BATCH_DATA$8, parseStringToArgs$6, dir);
-}
-const Ls_MM = utils => {
-    const installDir = utils.getInstallDir(SD_AMD_ID);
-    return {
-        getRunCommands: () => getRunCommands$a(installDir),
-        readArgs: () => readArgs$8(installDir),
-        saveArgs: args => saveArgs$8(args, installDir),
-    };
-};
-
-const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$7 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
-async function getRunCommands$9(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$7);
-}
-async function saveArgs$7(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$3, parseArgsToString$7, dir);
-}
-async function readArgs$7(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$7, parseStringToArgs$7, dir);
-}
-const Vlad_MM = utils => {
-    const installDir = utils.getInstallDir(SD_NEXT_ID);
-    return {
-        getRunCommands: () => getRunCommands$9(installDir),
-        readArgs: () => readArgs$7(installDir),
-        saveArgs: args => saveArgs$7(args, installDir),
-    };
-};
-
-const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$6 = isWin
-    ? '@echo off\n\ncall launch-windows.bat'
-    : '#!/bin/bash\n\nbash ./launch-linux.sh';
-async function getRunCommands$8(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$6);
-}
-async function saveArgs$6(args, dir) {
-    return await utilSaveArgs(args, BAT_FILE_NAME$2, parseArgsToString$8, dir);
-}
-async function readArgs$6(dir) {
-    return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$6, parseStringToArgs$8, dir);
-}
-const McMonkey_MM = utils => {
-    const installDir = utils.getInstallDir(SWARM_ID);
     return {
         getRunCommands: () => getRunCommands$8(installDir),
         readArgs: () => readArgs$6(installDir),
@@ -24820,280 +25168,96 @@ const McMonkey_MM = utils => {
     };
 };
 
-async function getRunCommands$7() {
-    return `npm run dev ${LINE_ENDING}`;
+const CONFIG_FILE$1 = isWin ? 'webui-user.bat' : 'webui-user.sh';
+const EXEC_FILE = isWin ? 'webui-user.bat' : 'webui.sh';
+const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\n';
+async function getRunCommands$7(dir) {
+    return await utilRunCommands(EXEC_FILE, dir, DEFAULT_BATCH_DATA$5);
 }
-function mainIpc$4(utils) {
-    utils.ipc.handle('is_nodejs_installed', () => checkWhich('node'));
+async function saveArgs$5(args, dir) {
+    return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$8, dir);
 }
-async function updateAvailable$5(utils, dir) {
-    if (!dir)
-        return false;
-    return await utils.isPullAvailable(dir);
+async function readArgs$5(dir) {
+    return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$5, parseStringToArgs$8, dir);
 }
-const BOLT_DIY_MM = utils => {
-    const installDir = utils.getInstallDir(BOLT_DIY_ID);
-    return { getRunCommands: getRunCommands$7, mainIpc: () => mainIpc$4(utils), updateAvailable: () => updateAvailable$5(utils, installDir) };
-};
-
-async function isNpmPackageInstalled(id, packageName, utils) {
-    return new Promise(resolve => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], { env: process.env });
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(() => {
-            if (ptyProcess.pid) {
-                treeKill(ptyProcess.pid);
-                ptyProcess.kill();
-            }
-            const cleanOutput = removeAnsi(output).trim().replace(`npm list -g ${packageName}`, '');
-            const isInstalled = new RegExp(`${packageName}@.+`).test(cleanOutput);
-            resolve(isInstalled);
-        });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
-}
-async function getNpmPackageVersion(id, packageName, utils) {
-    return new Promise(resolve => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(() => {
-            if (ptyProcess.pid) {
-                treeKill(ptyProcess.pid);
-                ptyProcess.kill();
-            }
-            const match = output.match(new RegExp(`${packageName}@([\\d.]+)`, 'i'));
-            if (match && match[1]) {
-                resolve(match[1]);
-            }
-            else {
-                resolve('');
-            }
-        });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
-}
-async function checkNpmPackageUpdate(id, packageName, utils) {
-    return new Promise(resolve => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data.toString();
-        });
-        ptyProcess.onExit(() => {
-            if (ptyProcess.pid) {
-                treeKill(ptyProcess.pid);
-                ptyProcess.kill();
-            }
-            const lines = removeAnsi(output).split(LINE_ENDING);
-            for (const line of lines) {
-                const match = line.match(new RegExp(`${packageName}\\s+[\\d.]+\\s+[\\d.]+\\s+([\\d.]+)`, 'i'));
-                if (match) {
-                    resolve(match[1]);
-                }
-            }
-            resolve(null);
-        });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm -g outdated ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
-}
-async function uninstallNpmPackage(id, packageName, utils) {
-    return new Promise((resolve, reject) => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(({ exitCode }) => {
-            if (exitCode === 0) {
-                resolve();
-            }
-            else {
-                reject(new Error(`Error uninstalling ${packageName}. Exit Code: ${exitCode}\nOutput:\n${output}`));
-            }
-        });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm -g rm ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
-}
-
-const PACKAGE_NAME$2 = 'flowise';
-const CONFIG_FILE$3 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
-const DEFAULT_BATCH_DATA$5 = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
-async function getRunCommands$6(configDir) {
-    if (!configDir)
-        return '';
-    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$3));
-    await initBatchFile(filePath, DEFAULT_BATCH_DATA$5);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
-}
-async function saveArgs$5(args, configDir) {
-    return await utilSaveArgs(args, CONFIG_FILE$3, parseArgsToString$9, configDir);
-}
-async function readArgs$5(configDir) {
-    return await utilReadArgs(CONFIG_FILE$3, DEFAULT_BATCH_DATA$5, parseStringToArgs$9, configDir);
-}
-async function updateAvailable$4(utils) {
-    const available = await checkNpmPackageUpdate(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
-    if (available) {
-        utils.storage.set('update-available-version-flowise', available);
-        return true;
-    }
-    utils.storage.set('update-available-version-flowise', undefined);
-    return false;
-}
-async function isInstalled$3(utils) {
-    return isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
-}
-function mainIpc$3(utils) {
-    utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
-    utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
-    utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
-}
-const Flow_MM = utils => {
-    const configDir = utils.getConfigDir();
+const Ls_MM = utils => {
+    const installDir = utils.getInstallDir(SD_AMD_ID);
     return {
-        updateAvailable: () => updateAvailable$4(utils),
-        getRunCommands: () => getRunCommands$6(configDir),
-        mainIpc: () => mainIpc$3(utils),
-        isInstalled: () => isInstalled$3(utils),
-        saveArgs: args => saveArgs$5(args, configDir),
-        readArgs: () => readArgs$5(configDir),
-        uninstall: () => uninstallNpmPackage(FLOWISEAI_ID, PACKAGE_NAME$2, utils),
+        getRunCommands: () => getRunCommands$7(installDir),
+        readArgs: () => readArgs$5(installDir),
+        saveArgs: args => saveArgs$5(args, installDir),
     };
 };
 
-const PACKAGE_NAME$1 = '@google/gemini-cli';
-const CONFIG_FILE$2 = isWin ? 'geminiCli_config.bat' : 'geminiCli_config.sh';
-const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
-async function getRunCommands$5(configDir) {
-    if (!configDir)
-        return '';
-    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$2));
-    await initBatchFile(filePath, DEFAULT_BATCH_DATA$4);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+const BAT_FILE_NAME$3 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$4 = isWin ? '@echo off\n\ncall webui.bat' : '#!/bin/bash\n\nbash ./webui.sh';
+async function getRunCommands$6(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$3, dir, DEFAULT_BATCH_DATA$4);
 }
-async function saveArgs$4(args, configDir) {
-    if (!configDir)
-        return;
-    const { scriptData, settingsData } = parseArgsToFiles(args);
-    const scriptPath = path.join(configDir, CONFIG_FILE$2);
-    const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
-    await fs.promises.writeFile(scriptPath, scriptData);
-    if (settingsPath) {
-        try {
-            await fs.promises.writeFile(settingsPath, settingsData);
-        }
-        catch (e) {
-            console.error('Error saving settings.json file for gemini-cli', e);
-        }
-    }
+async function saveArgs$4(args, dir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$3, parseArgsToString$9, dir);
 }
-async function readArgs$4(configDir) {
-    if (!configDir)
-        return [];
-    const scriptPath = path.join(configDir, CONFIG_FILE$2);
-    await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$4);
-    const scriptData = await fs.promises.readFile(scriptPath, 'utf-8');
-    return parseFilesToArgs(scriptData);
+async function readArgs$4(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$3, DEFAULT_BATCH_DATA$4, parseStringToArgs$9, dir);
 }
-async function isInstalled$2(utils) {
-    return isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils);
-}
-async function updateAvailable$3(utils) {
-    const available = await checkNpmPackageUpdate(GeminiCli_ID, PACKAGE_NAME$1, utils);
-    if (available) {
-        utils.storage.set('update-available-version-geminiCli', available);
-        return true;
-    }
-    utils.storage.set('update-available-version-geminiCli', undefined);
-    return false;
-}
-function mainIpc$2(utils) {
-    utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils));
-    utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(GeminiCli_ID, PACKAGE_NAME$1, utils));
-}
-const GeminiCli_MM = utils => {
-    const configDir = utils.getConfigDir();
+const Vlad_MM = utils => {
+    const installDir = utils.getInstallDir(SD_NEXT_ID);
     return {
-        mainIpc: () => mainIpc$2(utils),
-        getRunCommands: () => getRunCommands$5(configDir),
-        isInstalled: () => isInstalled$2(utils),
-        saveArgs: args => saveArgs$4(args, configDir),
-        readArgs: () => readArgs$4(configDir),
-        updateAvailable: () => updateAvailable$3(utils),
-        uninstall: () => uninstallNpmPackage(GeminiCli_ID, PACKAGE_NAME$1, utils),
+        getRunCommands: () => getRunCommands$6(installDir),
+        readArgs: () => readArgs$4(installDir),
+        saveArgs: args => saveArgs$4(args, installDir),
+    };
+};
+
+const BAT_FILE_NAME$2 = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
+const DEFAULT_BATCH_DATA$3 = isWin
+    ? '@echo off\n\ncall launch-windows.bat'
+    : '#!/bin/bash\n\nbash ./launch-linux.sh';
+async function getRunCommands$5(dir) {
+    return await utilRunCommands(BAT_FILE_NAME$2, dir, DEFAULT_BATCH_DATA$3);
+}
+async function saveArgs$3(args, dir) {
+    return await utilSaveArgs(args, BAT_FILE_NAME$2, parseArgsToString$a, dir);
+}
+async function readArgs$3(dir) {
+    return await utilReadArgs(BAT_FILE_NAME$2, DEFAULT_BATCH_DATA$3, parseStringToArgs$a, dir);
+}
+const McMonkey_MM = utils => {
+    const installDir = utils.getInstallDir(SWARM_ID);
+    return {
+        getRunCommands: () => getRunCommands$5(installDir),
+        readArgs: () => readArgs$3(installDir),
+        saveArgs: args => saveArgs$3(args, installDir),
     };
 };
 
 async function getRunCommands$4() {
-    return `python app.py ${LINE_ENDING}`;
+    return `npm run dev ${LINE_ENDING}`;
+}
+function mainIpc$1(utils) {
+    utils.ipc.handle('is_nodejs_installed', () => checkWhich('node'));
 }
 async function updateAvailable$2(utils, dir) {
     if (!dir)
         return false;
     return await utils.isPullAvailable(dir);
 }
-const LoLLM_MM = utils => {
-    const installDir = utils.getInstallDir(LoLLMS_ID);
-    return { getRunCommands: getRunCommands$4, updateAvailable: () => updateAvailable$2(utils, installDir) };
+const BOLT_DIY_MM = utils => {
+    const installDir = utils.getInstallDir(BOLT_DIY_ID);
+    return { getRunCommands: getRunCommands$4, mainIpc: () => mainIpc$1(utils), updateAvailable: () => updateAvailable$2(utils, installDir) };
 };
 
-const PACKAGE_NAME = 'n8n';
-const CONFIG_FILE$1 = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
-const DEFAULT_BATCH_DATA$3 = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
-async function getRunCommands$3(configDir) {
-    if (!configDir)
-        return '';
-    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$1));
-    await initBatchFile(filePath, DEFAULT_BATCH_DATA$3);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+async function getRunCommands$3() {
+    return `python app.py ${LINE_ENDING}`;
 }
-async function saveArgs$3(args, configDir) {
-    return await utilSaveArgs(args, CONFIG_FILE$1, parseArgsToString$a, configDir);
+async function updateAvailable$1(utils, dir) {
+    if (!dir)
+        return false;
+    return await utils.isPullAvailable(dir);
 }
-async function readArgs$3(configDir) {
-    return await utilReadArgs(CONFIG_FILE$1, DEFAULT_BATCH_DATA$3, parseStringToArgs$a, configDir);
-}
-async function isInstalled$1(utils) {
-    return isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils);
-}
-async function updateAvailable$1(utils) {
-    const available = await checkNpmPackageUpdate(N8N_ID, PACKAGE_NAME, utils);
-    if (available) {
-        utils.storage.set('update-available-version-n8n', available);
-        return true;
-    }
-    utils.storage.set('update-available-version-n8n', undefined);
-    return false;
-}
-function mainIpc$1(utils) {
-    utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils));
-    utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(N8N_ID, PACKAGE_NAME, utils));
-}
-const N8N_MM = utils => {
-    const configDir = utils.getConfigDir();
-    return {
-        mainIpc: () => mainIpc$1(utils),
-        getRunCommands: () => getRunCommands$3(configDir),
-        isInstalled: () => isInstalled$1(utils),
-        saveArgs: args => saveArgs$3(args, configDir),
-        readArgs: () => readArgs$3(configDir),
-        updateAvailable: () => updateAvailable$1(utils),
-        uninstall: () => uninstallNpmPackage(N8N_ID, PACKAGE_NAME, utils),
-    };
+const LoLLM_MM = utils => {
+    const installDir = utils.getInstallDir(LoLLMS_ID);
+    return { getRunCommands: getRunCommands$3, updateAvailable: () => updateAvailable$1(utils, installDir) };
 };
 
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';

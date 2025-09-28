@@ -42,9 +42,6 @@ A collection of local AI tools with **full support** for **arguments**, **config
 | <img height='20' src="https://avatars.githubusercontent.com/u/158137808?s=20&v=4"> Open-WebUI      | Open WebUI      | [Link](https://github.com/open-webui/open-webui)           |
 | <img height='20' src="https://avatars.githubusercontent.com/u/164069192?s=20&v=4"> StackBlitz Labs | bolt.diy        | [Link](https://github.com/stackblitz-labs/bolt.diy)        |
 | <img height='20' src="https://avatars.githubusercontent.com/u/827993?s=20&v=4"> ParisNeo           | LoLLMs          | [Link](https://github.com/ParisNeo/lollms-webui)           |
-| <img height='20' src="https://avatars.githubusercontent.com/u/128289781?s=20&v=4"> FlowiseAI       | Flowise         | [Link](https://github.com/FlowiseAI/Flowise)               |
-| <img height='20' src="https://avatars.githubusercontent.com/u/45487711?s=20&v=4"> n8n-io           | n8n             | [Link](https://github.com/n8n-io/n8n)                      |
-| <img height='20' src="https://avatars.githubusercontent.com/u/161781182?s=20&v=4"> google-gemini   | gemini-cli      | [Link](https://github.com/google-gemini/gemini-cli)        |
 
 ### 🎵 Audio Generation
 
@@ -53,6 +50,15 @@ A collection of local AI tools with **full support** for **arguments**, **config
 | <img height='20' src="https://avatars.githubusercontent.com/u/6757283?s=20&v=4"> Rsxdalv  | Text to Speech   | [Link](https://github.com/rsxdalv/tts-generation-webui) |
 | <img height='20' src="https://avatars.githubusercontent.com/u/36931363?s=20&v=4"> Gitmylo | Audio Generation | [Link](https://github.com/gitmylo/audio-webui)          |
 | <img height='20' src="https://avatars.githubusercontent.com/u/35898566?s=20&v=4"> Erew123 | AllTalk TTS      | [Link](https://github.com/erew123/alltalk_tts)          |
+
+### 🤖 Agents
+
+| Developer                                                                                 | Project          | GitHub                                                  |
+| ----------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------- |
+| <img height='20' src="https://avatars.githubusercontent.com/u/128289781?s=20&v=4"> FlowiseAI       | Flowise         | [Link](https://github.com/FlowiseAI/Flowise)               |
+| <img height='20' src="https://avatars.githubusercontent.com/u/161781182?s=20&v=4"> google-gemini   | gemini-cli      | [Link](https://github.com/google-gemini/gemini-cli)        |
+| <img height='20' src="https://avatars.githubusercontent.com/u/45487711?s=20&v=4"> n8n-io           | n8n             | [Link](https://github.com/n8n-io/n8n)                      |
+
 
 ## 📊 Module Statistics
 

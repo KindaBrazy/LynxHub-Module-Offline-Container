@@ -17447,3618 +17447,6 @@ async function CardInfo(url, extensionFolder, api, callback) {
     });
 }
 
-const gitmyloArguments = [
-    {
-        category: 'Command Line Arguments',
-        sections: [
-            {
-                section: 'Install',
-                items: [
-                    {
-                        name: '--skip-install',
-                        description: 'Skip installing packages',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--skip-venv',
-                        description: 'Skip creating/activating venv, also skips install (for advanced users)',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--no-data-cache',
-                        description: "Don\\'t override the default huggingface_hub cache path.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--verbose',
-                        description: 'Show more info, like logs during installs',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Gradio',
-                items: [
-                    {
-                        name: '--share',
-                        description: 'Share this gradio instance.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--username',
-                        description: 'Gradio username',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--password',
-                        description: 'Gradio password (defaults to "password")',
-                        type: 'Input',
-                        defaultValue: 'password',
-                    },
-                    {
-                        name: '--theme',
-                        description: 'Gradio theme',
-                        type: 'Input',
-                        defaultValue: 'gradio/soft',
-                    },
-                    {
-                        name: '--listen',
-                        description: 'Listen on 0.0.0.0',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--port',
-                        description: 'Use a different port, automatic when not set.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--launch',
-                        description: 'Automatically open a browser window when the webui launches.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-        ],
-    },
-];
-
-const shellCommand$6 = isWin ? 'call run.bat' : 'bash ./run.sh';
-const URL$6 = 'https://github.com/gitmylo/audio-webui';
-function parseArgsToString$e(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, gitmyloArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$e(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$6))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$6} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, gitmyloArguments)) {
-                if (getArgumentType(value.name, gitmyloArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-function startInstall$d(stepper) {
-    GitInstaller('Audio Generation', URL$6, stepper);
-}
-async function cardInfo$d(api, callback) {
-    return CardInfo(URL$6, '/extensions', api, callback);
-}
-const AG_RM = {
-    catchAddress: catchAddress$2,
-    parseArgsToString: parseArgsToString$e,
-    parseStringToArgs: parseStringToArgs$e,
-    cardInfo: cardInfo$d,
-    manager: { startInstall: startInstall$d, updater: { updateType: 'git' } },
-};
-
-const comfyArguments = [
-    {
-        category: 'Command Line Arguments',
-        sections: [
-            {
-                section: 'Network',
-                items: [
-                    {
-                        name: '--listen',
-                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
-                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
-                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
-                        type: 'Input',
-                        defaultValue: '127.0.0.1',
-                    },
-                    {
-                        name: '--port',
-                        description: 'Set the listen port.',
-                        type: 'Input',
-                        defaultValue: 8188,
-                    },
-                    {
-                        name: '--tls-keyfile',
-                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-certfile to function',
-                        type: 'File',
-                    },
-                    {
-                        name: '--tls-certfile',
-                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-keyfile to function',
-                        type: 'File',
-                    },
-                    {
-                        name: '--enable-cors-header',
-                        description: "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
-                        type: 'Input',
-                    },
-                    {
-                        name: '--max-upload-size',
-                        description: 'Set the maximum upload size in MB.',
-                        type: 'Input',
-                        defaultValue: 100,
-                    },
-                    {
-                        name: '--enable-compress-response-body',
-                        description: 'Enable compressing response body.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--comfy-api-base',
-                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
-                        type: 'Input',
-                        defaultValue: 'https://api.comfy.org',
-                    },
-                ],
-            },
-            {
-                section: 'Paths',
-                items: [
-                    {
-                        name: '--base-directory',
-                        description: 'Set the ComfyUI base directory for models, custom_nodes, input, output, temp, and user directories.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--extra-model-paths-config',
-                        description: 'Load one or more extra_model_paths.yaml files.',
-                        type: 'File',
-                    },
-                    {
-                        name: '--output-directory',
-                        description: 'Set the ComfyUI output directory. Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--temp-directory',
-                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory). Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--input-directory',
-                        description: 'Set the ComfyUI input directory. Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--user-directory',
-                        description: 'Set the ComfyUI user directory with an absolute path. Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                ],
-            },
-            {
-                section: 'Execution',
-                items: [
-                    {
-                        name: '--auto-launch',
-                        description: 'Automatically launch ComfyUI in the default browser.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-auto-launch',
-                        description: 'Disable auto launching the browser.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cuda-device',
-                        description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--default-device',
-                        description: 'Set the id of the default device, all other devices will stay visible.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--cuda-malloc',
-                        description: 'Enable cudaMallocAsync (enabled by default for torch 2.0 and up).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-cuda-malloc',
-                        description: 'Disable cudaMallocAsync.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Precision',
-                items: [
-                    {
-                        name: '--force-fp32',
-                        description: 'Force fp32 (If this makes your GPU work better please report it).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--force-fp16',
-                        description: 'Force fp16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-unet',
-                        description: 'Run the diffusion model in bf16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-unet',
-                        description: 'Run the diffusion model in fp16',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-unet',
-                        description: 'Run the diffusion model in fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp64-unet',
-                        description: 'Run the diffusion model in fp64.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e4m3fn-unet',
-                        description: 'Store unet weights in fp8_e4m3fn.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e5m2-unet',
-                        description: 'Store unet weights in fp8_e5m2.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e8m0fnu-unet',
-                        description: 'Store unet weights in fp8_e8m0fnu.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-vae',
-                        description: 'Run the VAE in fp16, might cause black images.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-vae',
-                        description: 'Run the VAE in full precision fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-vae',
-                        description: 'Run the VAE in bf16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cpu-vae',
-                        description: 'Run the VAE on the CPU.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e4m3fn-text-enc',
-                        description: 'Store text encoder weights in fp8 (e4m3fn variant).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e5m2-text-enc',
-                        description: 'Store text encoder weights in fp8 (e5m2 variant).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-text-enc',
-                        description: 'Store text encoder weights in fp16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-text-enc',
-                        description: 'Store text encoder weights in fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-text-enc',
-                        description: 'Store text encoder weights in bf16.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Optimizations',
-                items: [
-                    {
-                        name: '--force-channels-last',
-                        description: 'Force channels last format when inferencing the models.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--directml',
-                        description: 'Use torch-directml.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--oneapi-device-selector',
-                        description: 'Sets the oneAPI device(s) this instance will use.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--disable-ipex-optimize',
-                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--supports-fp8-compute',
-                        description: 'ComfyUI will act like if the device supports fp8 compute.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--preview-method',
-                        description: 'Default preview method for sampler nodes.',
-                        type: 'DropDown',
-                        values: ['none', 'auto', 'latent2rgb', 'taesd'],
-                        defaultValue: 'none',
-                    },
-                    {
-                        name: '--preview-size',
-                        description: 'Sets the maximum preview size for sampler nodes.',
-                        type: 'Input',
-                        defaultValue: 512,
-                    },
-                    {
-                        name: '--cache-classic',
-                        description: 'Use the old style (aggressive) caching.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cache-lru',
-                        description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
-                        type: 'Input',
-                        defaultValue: 0,
-                    },
-                    {
-                        name: '--cache-none',
-                        description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-split-cross-attention',
-                        description: 'Use the split cross attention optimization. Ignored when xformers is used.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-quad-cross-attention',
-                        description: 'Use the sub-quadratic cross attention optimization . Ignored when xformers is used.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-pytorch-cross-attention',
-                        description: 'Use the new pytorch 2.0 cross attention function.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-sage-attention',
-                        description: 'Use sage attention.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-flash-attention',
-                        description: 'Use FlashAttention.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-xformers',
-                        description: 'Disable xformers.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--force-upcast-attention',
-                        description: 'Force enable attention upcasting, please report if it fixes black images.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--dont-upcast-attention',
-                        description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--force-non-blocking',
-                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors.' +
-                            ' This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Memory Management',
-                items: [
-                    {
-                        name: '--gpu-only',
-                        description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--highvram',
-                        description: 'By default models will be unloaded to CPU memory after being used.' +
-                            ' This option keeps them in GPU memory.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--normalvram',
-                        description: 'Used to force normal vram use if lowvram gets automatically enabled.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--lowvram',
-                        description: 'Split the unet in parts to use less vram.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--novram',
-                        description: "When lowvram isn't enough.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cpu',
-                        description: 'To use the CPU for everything (slow).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--async-offload',
-                        description: 'Use async weight offloading.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-smart-memory',
-                        description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--reserve-vram',
-                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
-                            ' amount is reserved depending on your OS.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Miscellaneous',
-                items: [
-                    {
-                        name: '--default-hashing-function',
-                        description: 'Allows you to choose the hash function to use for duplicate filename /' +
-                            ' contents comparison. Default is sha256.',
-                        type: 'DropDown',
-                        values: ['md5', 'sha1', 'sha256', 'sha512'],
-                        defaultValue: 'sha256',
-                    },
-                    {
-                        name: '--deterministic',
-                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this' +
-                            ' might not make images deterministic in all cases.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--mmap-torch-files',
-                        description: 'Use mmap when loading ckpt/pt files.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-mmap',
-                        description: "Don't use mmap when loading safetensors.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--dont-print-server',
-                        description: "Don't print server output.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--quick-test-for-ci',
-                        description: 'Quick test for CI.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--windows-standalone-build',
-                        description: 'Windows standalone build: Enable convenient things that most people using the' +
-                            ' standalone windows build will probably enjoy (like auto opening the page on startup).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-metadata',
-                        description: 'Disable saving prompt metadata in files.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-all-custom-nodes',
-                        description: 'Disable loading all custom nodes.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--whitelist-custom-nodes',
-                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--disable-api-nodes',
-                        description: 'Disable loading all api nodes.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--multi-user',
-                        description: 'Enables per-user storage.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--verbose',
-                        description: 'Set the logging level',
-                        type: 'DropDown',
-                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        defaultValue: 'INFO',
-                    },
-                    {
-                        name: '--log-stdout',
-                        description: 'Send normal process output to stdout instead of stderr (default).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--front-end-version',
-                        description: 'Specifies the version of the frontend to be used. This command needs internet connectivity' +
-                            ' to query and download available frontend implementations from GitHub releases. The version' +
-                            ' string should be in the format of: [repoOwner]/[repoName]@[version]',
-                        type: 'Input',
-                        defaultValue: 'comfyanonymous/ComfyUI@latest',
-                    },
-                    {
-                        name: '--front-end-root',
-                        description: 'The local filesystem path to the directory where the frontend is' +
-                            ' located. Overrides --front-end-version.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--fast',
-                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
-                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--database-url',
-                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
-                        type: 'Input',
-                    },
-                ],
-            },
-        ],
-    },
-];
-
-const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
-function parseArgsToString$d(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, comfyArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
-    return result;
-}
-function parseStringToArgs$d(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith('python main.py'))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split('python main.py ')[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, comfyArguments)) {
-                if (getArgumentType(value.name, comfyArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-async function fetchExtensionList$4() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
-        const extensions = await response.json();
-        return extensions.custom_nodes.map((extension) => ({
-            title: extension.title,
-            description: extension.description,
-            url: extension.reference,
-        }));
-    }
-    catch (e) {
-        console.error(e);
-        return [];
-    }
-}
-function startInstall$c(stepper) {
-    const selectOptions = [
-        'NVIDIA CU129',
-        'NVIDIA CU129 Nightly',
-        'AMD GPUs (Linux only) ROCm 6.4',
-        'AMD GPUs (Linux only) ROCm 6.4 Nightly',
-        'Intel GPUs (Windows and Linux)',
-        'Intel GPUs Nightly (Windows and Linux)',
-    ];
-    const getPyTorchInstallCommand = (selectedOption) => {
-        switch (selectedOption) {
-            case 'AMD GPUs (Linux only) ROCm 6.2':
-                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
-            case 'AMD GPUs (Linux only) ROCm 6.4 Nightly':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.4';
-            case 'Intel GPUs (Windows and Linux)':
-                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu';
-            case 'Intel GPUs Nightly (Windows and Linux)':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/xpu';
-            case 'NVIDIA CU129':
-                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129';
-            case 'NVIDIA CU129 Nightly':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu129';
-            default:
-                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
-        }
-    };
-    stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep().then(() => {
-                stepper.cloneRepository(COMFYUI_URL).then(dir => {
-                    stepper.nextStep().then(() => {
-                        stepper
-                            .collectUserInput([
-                            {
-                                id: 'gpu_type',
-                                type: 'select',
-                                label: 'Please Select PyTorch Version (Gpu)',
-                                selectOptions,
-                                defaultValue: selectOptions[0],
-                                isRequired: true,
-                            },
-                        ])
-                            .then(result => {
-                            stepper.nextStep().then(() => {
-                                stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result)).then(() => {
-                                    stepper.nextStep().then(() => {
-                                        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                                            stepper.setInstalled(dir);
-                                            stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. Your ComfyUI environment is now ready for use.');
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        }
-        else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {
-                if (isValid) {
-                    stepper.setInstalled(targetDirectory);
-                    stepper.showFinalStep('success', 'ComfyUI located successfully!', 'Pre-installed ComfyUI detected. Installation skipped as your existing setup is ready to use.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Unable to locate ComfyUI!', 'Please ensure you have selected the correct folder containing the ComfyUI repository.');
-                }
-            });
-        }
-    });
-}
-async function cardInfo$c(api, callback) {
-    return CardInfo(COMFYUI_URL, '/custom_nodes', api, callback);
-}
-const COMFYUI_RM = {
-    catchAddress: catchAddress$2,
-    fetchExtensionList: fetchExtensionList$4,
-    parseArgsToString: parseArgsToString$d,
-    parseStringToArgs: parseStringToArgs$d,
-    cardInfo: cardInfo$c,
-    manager: { startInstall: startInstall$c, updater: { updateType: 'git' } },
-};
-
-const comfyZludaArguments = [
-    {
-        category: 'Environment Variables',
-        items: [
-            {
-                name: 'PYTHON',
-                description: 'Sets a custom path for Python executable.',
-                type: 'File',
-                defaultValue: '"%~dp0/venv/Scripts/python.exe"',
-            },
-            {
-                name: 'VENV_DIR',
-                description: 'Specifies the path for the virtual environment. Default is venv.' +
-                    ' Special value - runs the script without creating virtual environment.',
-                type: 'Directory',
-                defaultValue: './venv',
-            },
-            {
-                name: 'ZLUDA_COMGR_LOG_LEVEL',
-                description: 'Zluda log level',
-                type: 'Input',
-                defaultValue: '1',
-            },
-        ],
-    },
-    {
-        category: 'Command Line Arguments',
-        sections: [
-            {
-                section: 'Network',
-                items: [
-                    {
-                        name: '--listen',
-                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
-                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
-                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
-                        type: 'Input',
-                        defaultValue: '127.0.0.1',
-                    },
-                    {
-                        name: '--port',
-                        description: 'Set the listen port.',
-                        type: 'Input',
-                        defaultValue: 8188,
-                    },
-                    {
-                        name: '--tls-keyfile',
-                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-certfile to function',
-                        type: 'File',
-                    },
-                    {
-                        name: '--tls-certfile',
-                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-keyfile to function',
-                        type: 'File',
-                    },
-                    {
-                        name: '--enable-cors-header',
-                        description: "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
-                        type: 'Input',
-                    },
-                    {
-                        name: '--max-upload-size',
-                        description: 'Set the maximum upload size in MB.',
-                        type: 'Input',
-                        defaultValue: 100,
-                    },
-                    {
-                        name: '--enable-compress-response-body',
-                        description: 'Enable compressing response body.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--comfy-api-base',
-                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
-                        type: 'Input',
-                        defaultValue: 'https://api.comfy.org',
-                    },
-                ],
-            },
-            {
-                section: 'Paths',
-                items: [
-                    {
-                        name: '--base-directory',
-                        description: 'Set the ComfyUI base directory for models, custom_nodes, input, output, temp, and user directories.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--extra-model-paths-config',
-                        description: 'Load one or more extra_model_paths.yaml files.',
-                        type: 'File',
-                    },
-                    {
-                        name: '--output-directory',
-                        description: 'Set the ComfyUI output directory. Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--temp-directory',
-                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory). Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--input-directory',
-                        description: 'Set the ComfyUI input directory. Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--user-directory',
-                        description: 'Set the ComfyUI user directory with an absolute path. Overrides --base-directory.',
-                        type: 'Directory',
-                    },
-                ],
-            },
-            {
-                section: 'Execution',
-                items: [
-                    {
-                        name: '--auto-launch',
-                        description: 'Automatically launch ComfyUI in the default browser.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-auto-launch',
-                        description: 'Disable auto launching the browser.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cuda-device',
-                        description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--default-device',
-                        description: 'Set the id of the default device, all other devices will stay visible.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--cuda-malloc',
-                        description: 'Enable cudaMallocAsync (enabled by default for torch 2.0 and up).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-cuda-malloc',
-                        description: 'Disable cudaMallocAsync.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Precision',
-                items: [
-                    {
-                        name: '--force-fp32',
-                        description: 'Force fp32 (If this makes your GPU work better please report it).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--force-fp16',
-                        description: 'Force fp16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-unet',
-                        description: 'Run the diffusion model in bf16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-unet',
-                        description: 'Run the diffusion model in fp16',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-unet',
-                        description: 'Run the diffusion model in fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp64-unet',
-                        description: 'Run the diffusion model in fp64.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e4m3fn-unet',
-                        description: 'Store unet weights in fp8_e4m3fn.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e5m2-unet',
-                        description: 'Store unet weights in fp8_e5m2.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e8m0fnu-unet',
-                        description: 'Store unet weights in fp8_e8m0fnu.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-vae',
-                        description: 'Run the VAE in fp16, might cause black images.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-vae',
-                        description: 'Run the VAE in full precision fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-vae',
-                        description: 'Run the VAE in bf16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cpu-vae',
-                        description: 'Run the VAE on the CPU.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e4m3fn-text-enc',
-                        description: 'Store text encoder weights in fp8 (e4m3fn variant).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e5m2-text-enc',
-                        description: 'Store text encoder weights in fp8 (e5m2 variant).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-text-enc',
-                        description: 'Store text encoder weights in fp16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-text-enc',
-                        description: 'Store text encoder weights in fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-text-enc',
-                        description: 'Store text encoder weights in bf16.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Optimizations',
-                items: [
-                    {
-                        name: '--force-channels-last',
-                        description: 'Force channels last format when inferencing the models.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--directml',
-                        description: 'Use torch-directml.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--oneapi-device-selector',
-                        description: 'Sets the oneAPI device(s) this instance will use.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--disable-ipex-optimize',
-                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--supports-fp8-compute',
-                        description: 'ComfyUI will act like if the device supports fp8 compute.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--preview-method',
-                        description: 'Default preview method for sampler nodes.',
-                        type: 'DropDown',
-                        values: ['none', 'auto', 'latent2rgb', 'taesd'],
-                        defaultValue: 'none',
-                    },
-                    {
-                        name: '--preview-size',
-                        description: 'Sets the maximum preview size for sampler nodes.',
-                        type: 'Input',
-                        defaultValue: 512,
-                    },
-                    {
-                        name: '--cache-classic',
-                        description: 'Use the old style (aggressive) caching.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cache-lru',
-                        description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
-                        type: 'Input',
-                        defaultValue: 0,
-                    },
-                    {
-                        name: '--cache-none',
-                        description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-split-cross-attention',
-                        description: 'Use the split cross attention optimization. Ignored when xformers is used.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-quad-cross-attention',
-                        description: 'Use the sub-quadratic cross attention optimization . Ignored when xformers is used.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-pytorch-cross-attention',
-                        description: 'Use the new pytorch 2.0 cross attention function.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-sage-attention',
-                        description: 'Use sage attention.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-flash-attention',
-                        description: 'Use FlashAttention.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-xformers',
-                        description: 'Disable xformers.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--force-upcast-attention',
-                        description: 'Force enable attention upcasting, please report if it fixes black images.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--dont-upcast-attention',
-                        description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--force-non-blocking',
-                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve' +
-                            ' performance on some non-Nvidia systems but can cause issues with some workflows.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Memory Management',
-                items: [
-                    {
-                        name: '--gpu-only',
-                        description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--highvram',
-                        description: 'By default models will be unloaded to CPU memory after being used.' +
-                            ' This option keeps them in GPU memory.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--normalvram',
-                        description: 'Used to force normal vram use if lowvram gets automatically enabled.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--lowvram',
-                        description: 'Split the unet in parts to use less vram.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--novram',
-                        description: "When lowvram isn't enough.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cpu',
-                        description: 'To use the CPU for everything (slow).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--async-offload',
-                        description: 'Use async weight offloading.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-smart-memory',
-                        description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--reserve-vram',
-                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
-                            ' amount is reserved depending on your OS.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Miscellaneous',
-                items: [
-                    {
-                        name: '--default-hashing-function',
-                        description: 'Allows you to choose the hash function to use for duplicate filename /' +
-                            ' contents comparison. Default is sha256.',
-                        type: 'DropDown',
-                        values: ['md5', 'sha1', 'sha256', 'sha512'],
-                        defaultValue: 'sha256',
-                    },
-                    {
-                        name: '--deterministic',
-                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this' +
-                            ' might not make images deterministic in all cases.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--mmap-torch-files',
-                        description: 'Use mmap when loading ckpt/pt files.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-mmap',
-                        description: "Don't use mmap when loading safetensors.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--dont-print-server',
-                        description: "Don't print server output.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--quick-test-for-ci',
-                        description: 'Quick test for CI.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--windows-standalone-build',
-                        description: 'Windows standalone build: Enable convenient things that most people using the' +
-                            ' standalone windows build will probably enjoy (like auto opening the page on startup).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-metadata',
-                        description: 'Disable saving prompt metadata in files.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-all-custom-nodes',
-                        description: 'Disable loading all custom nodes.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--whitelist-custom-nodes',
-                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--disable-api-nodes',
-                        description: 'Disable loading all api nodes.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--multi-user',
-                        description: 'Enables per-user storage.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--verbose',
-                        description: 'Set the logging level',
-                        type: 'DropDown',
-                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        defaultValue: 'INFO',
-                    },
-                    {
-                        name: '--log-stdout',
-                        description: 'Send normal process output to stdout instead of stderr (default).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--front-end-version',
-                        description: 'Specifies the version of the frontend to be used. This command needs internet' +
-                            ' connectivity to query and download available frontend implementations from' +
-                            ' GitHub releases. The version string should be in the format of: [repoOwner]/[repoName]@[version]',
-                        type: 'Input',
-                        defaultValue: 'comfyanonymous/ComfyUI@latest',
-                    },
-                    {
-                        name: '--front-end-root',
-                        description: 'The local filesystem path to the directory where the frontend is' +
-                            ' located. Overrides --front-end-version.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--fast',
-                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
-                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--database-url',
-                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
-                        type: 'Input',
-                    },
-                ],
-            },
-        ],
-    },
-];
-
-const URL$5 = 'https://github.com/patientx/ComfyUI-Zluda';
-function parseArgsToString$c(args) {
-    let result = '@echo off' + '\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        if (arg.name === 'PYTHON' || arg.name === 'VENV_DIR' || arg.name === 'ZLUDA_COMGR_LOG_LEVEL') {
-            result += `set ${arg.name}=${arg.value}` + `\n`;
-            return;
-        }
-        const argType = getArgumentType(arg.name, comfyZludaArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += '\n' + '.\\zluda\\zluda.exe -- ';
-    result += lodashExports.isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
-    result += '\n\n' + 'pause';
-    return result;
-}
-function parseStringToArgs$c(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (line.startsWith('set')) {
-            const argName = line.split('=')[0].split(' ')[1].trim();
-            const argValue = line.split('=')[1].trim();
-            if (argName === 'PYTHON' || argName === 'VENV_DIR' || argName === 'ZLUDA_COMGR_LOG_LEVEL') {
-                argResult.push({ name: argName, value: argValue });
-            }
-        }
-        else if (line.includes('%PYTHON% main.py')) {
-            // Extract the command line arguments and clear falsy values
-            const clArgs = line.split('%PYTHON% main.py ')[1];
-            if (!clArgs)
-                return;
-            const args = clArgs.split('--').filter(Boolean);
-            // Map each argument to an object with id and value
-            const result = args.map((arg) => {
-                const [id, ...value] = arg.trim().split(' ');
-                return {
-                    name: `--${id}`,
-                    value: value.join(' ').replace(/"/g, ''),
-                };
-            });
-            // Process each argument
-            result.forEach((value) => {
-                // Check if the argument exists or valid
-                if (isValidArg(value.name, comfyZludaArguments)) {
-                    if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
-                        argResult.push({ name: value.name, value: '' });
-                    }
-                    else {
-                        argResult.push({ name: value.name, value: value.value });
-                    }
-                }
-            });
-        }
-    });
-    return argResult;
-}
-async function fetchExtensionList$3() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
-        const extensions = await response.json();
-        return extensions.custom_nodes.map((extension) => ({
-            title: extension.title,
-            description: extension.description,
-            url: extension.reference,
-        }));
-    }
-    catch (e) {
-        console.error(e);
-        return [];
-    }
-}
-const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
-const customArguments = [
-    { name: 'PYTHON', value: '"%~dp0/venv/Scripts/python.exe"' },
-    { name: 'VENV_DIR', value: './venv' },
-    {
-        name: '--use-quad-cross-attention',
-        value: '',
-    },
-];
-function startInstall$b(stepper) {
-    stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep().then(() => {
-                stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
-                    stepper.nextStep().then(() => {
-                        stepper.runTerminalScript(dir, 'install.bat').then(() => {
-                            stepper.setInstalled(dir);
-                            stepper.postInstall.config({
-                                customArguments: {
-                                    presetName: 'Zluda Config',
-                                    customArguments,
-                                },
-                            });
-                            stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
-                        });
-                    });
-                });
-            });
-        }
-        else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_ZLUDA_URL).then(isValid => {
-                if (isValid) {
-                    stepper.setInstalled(targetDirectory);
-                    stepper.postInstall.config({
-                        customArguments: {
-                            presetName: 'Zluda Config',
-                            customArguments,
-                        },
-                    });
-                    stepper.showFinalStep('success', 'ComfyUI-Zluda located successfully!', 'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Unable to locate ComfyUI-Zluda!', 'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.');
-                }
-            });
-        }
-    });
-}
-async function cardInfo$b(api, callback) {
-    return CardInfo(URL$5, '/custom_nodes', api, callback);
-}
-const COMFYUI_ZLUDA_RM = {
-    catchAddress: catchAddress$2,
-    fetchExtensionList: fetchExtensionList$3,
-    parseArgsToString: parseArgsToString$c,
-    parseStringToArgs: parseStringToArgs$c,
-    cardInfo: cardInfo$b,
-    manager: { startInstall: startInstall$b, updater: { updateType: 'git' } },
-};
-
-const Invoke_Command_CreateVenv = 'uv venv --relocatable --prompt invoke --python 3.12 --python-preference only-managed .venv';
-const Invoke_Command_ActivateVenv = isWin ? '.venv\\Scripts\\activate' : 'source .venv/bin/activate';
-const Invoke_Command_InstallPip = 'python -m ensurepip --upgrade';
-const Invoke_Command_InstallUV = isWin
-    ? 'powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"'
-    : 'wget -qO- https://astral.sh/uv/install.sh | sh';
-const Invoke_PyPI = {
-    cu126: 'cu126: Windows or Linux with an Nvidia GPU',
-    rocm: 'rocm6.2.4: Linux with an AMD GPU',
-    cpu: 'cpu: Linux with no GPU',
-};
-const Invoke_PackageSpec = {
-    invokeai: 'invokeai: Nvidia 30xx series GPU or newer, or do not have an Nvidia GPU',
-    invokeaiXformers: 'invokeai[xformers]:  Nvidia 20xx series GPU or older',
-};
-const INVOKEAI_INSTALL_TIME_KEY = 'install-time-invokeai';
-const INVOKEAI_INSTALL_DIR_KEY = 'install-dir-invokeai';
-const INVOKEAI_UPDATE_TIME_KEY = 'update-time-invokeai';
-const INVOKEAI_UPDATE_AVAILABLE_KEY = 'update-version-invokeai';
-const invokeGetInputFields = async (ipc) => {
-    const releases = await ipc.invoke('invoke_latest_versions');
-    return [
-        {
-            label: 'Installation Directory',
-            id: 'install_dir',
-            type: 'directory',
-            isRequired: true,
-        },
-        {
-            label: 'InvokeAI Version',
-            id: 'invoke_version',
-            type: 'select',
-            selectOptions: releases,
-            defaultValue: releases[0],
-            isRequired: true,
-        },
-        {
-            label: 'Package Specifier',
-            id: 'package_spec',
-            type: 'select',
-            selectOptions: [Invoke_PackageSpec.invokeai, Invoke_PackageSpec.invokeaiXformers],
-            defaultValue: Invoke_PackageSpec.invokeai,
-            isRequired: true,
-        },
-        {
-            label: 'PyPI',
-            id: 'pypi',
-            type: 'select',
-            selectOptions: [Invoke_PyPI.cu126, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
-            defaultValue: Invoke_PyPI.cu126,
-            isRequired: true,
-        },
-    ];
-};
-const invokeGetInputResults = (items) => {
-    let installDirResult = '';
-    let packageSpecResult = '';
-    let pyPIResult = '';
-    let version = '';
-    items.forEach(item => {
-        if (item.id === 'install_dir') {
-            installDirResult = item.result;
-        }
-        else if (item.id === 'invoke_version') {
-            version = item.result;
-        }
-        else if (item.id === 'package_spec') {
-            switch (item.result) {
-                case Invoke_PackageSpec.invokeaiXformers:
-                    packageSpecResult = 'invokeai[xformers]';
-                    break;
-                case Invoke_PackageSpec.invokeai:
-                default:
-                    packageSpecResult = 'invokeai';
-            }
-        }
-        else if (item.id === 'pypi') {
-            switch (item.result) {
-                case Invoke_PyPI.rocm:
-                    pyPIResult = 'https://download.pytorch.org/whl/rocm6.3';
-                    break;
-                case Invoke_PyPI.cu126:
-                    pyPIResult = 'https://download.pytorch.org/whl/cu128';
-                    break;
-                case Invoke_PyPI.cpu:
-                    pyPIResult = 'https://download.pytorch.org/whl/cpu';
-                    break;
-                default:
-                case 'others':
-                    pyPIResult = '';
-                    break;
-            }
-        }
-    });
-    return { installDirResult, version, packageSpecResult, pyPIResult };
-};
-const invokeGetInstallCommand = (items) => {
-    const { version, pyPIResult, packageSpecResult } = invokeGetInputResults(items);
-    const index = pyPIResult ? ` --index=${pyPIResult}` : '';
-    return (`uv pip install ${packageSpecResult}==${version} --python 3.12 ` +
-        `--python-preference only-managed${index} --force-reinstall`);
-};
-
-function parseArgsToString$b(args) {
-    let result = 'schema_version: 4.0.2\n\n';
-    const argResult = args
-        .map(arg => {
-        return `${arg.name}: ${arg.value}`;
-    })
-        .join('\n');
-    result += argResult;
-    return result;
-}
-function parseStringToArgs$b(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (line.startsWith('schema_version') || line.startsWith('#') || lodash.isEmpty(line.trim()))
-            return;
-        const clArgs = line.split(`: `);
-        const [name, value] = clArgs;
-        argResult.push({ name, value });
-    });
-    return argResult;
-}
-function startInstall$a(stepper) {
-    stepper.initialSteps(['InvokeAI', 'UV', 'Config', 'Install', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep().then(() => {
-                stepper.progressBar(true, 'Detecting UV installation...');
-                stepper.ipc.invoke('is_uv_installed').then(isUvInstalled => {
-                    if (!isUvInstalled) {
-                        stepper.executeTerminalCommands(Invoke_Command_InstallUV).then(() => {
-                            stepper.showFinalStep('success', 'UV Package Manager Installation Complete.', 'Restart your computer and run the installer again to continue installation.');
-                        });
-                    }
-                    else {
-                        stepper.nextStep().then(() => {
-                            stepper.progressBar(true, 'Fetching the latest InvokeAI versions...');
-                            invokeGetInputFields(stepper.ipc).then(fields => {
-                                stepper.collectUserInput(fields).then(result => {
-                                    const { installDirResult } = invokeGetInputResults(result);
-                                    const installCommand = invokeGetInstallCommand(result);
-                                    stepper.nextStep().then(() => {
-                                        stepper
-                                            .executeTerminalCommands([
-                                            Invoke_Command_CreateVenv,
-                                            Invoke_Command_ActivateVenv,
-                                            Invoke_Command_InstallPip,
-                                            installCommand,
-                                        ], installDirResult)
-                                            .then(() => {
-                                            stepper.setInstalled(installDirResult);
-                                            const currentDate = new Date();
-                                            stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
-                                            stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, installDirResult);
-                                            stepper.showFinalStep('success', 'InvokeAI Installation Complete.', 'Your InvokeAI environment is ready. Enjoy!');
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    }
-                });
-            });
-        }
-        else {
-            stepper.ipc.invoke('validate_install_dir', targetDirectory).then(isValid => {
-                if (isValid) {
-                    stepper.setInstalled(targetDirectory);
-                    const currentDate = new Date();
-                    stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
-                    stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, targetDirectory);
-                    stepper.showFinalStep('success', 'InvokeAI Environment Found.', 'Location validated successfully.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Invalid Environment!', 'Could not find InvokeAI installation in the selected directory.');
-                }
-            });
-        }
-    });
-}
-function startUpdate$4(stepper, dir) {
-    if (!dir)
-        return;
-    const venvDir = isWin ? `${dir}\\.venv` : `${dir}/.venv`;
-    const pythonPath = getVenvPythonPath(venvDir);
-    stepper.initialSteps(['Updating', 'Done']);
-    stepper
-        .executeTerminalCommands(`${isWin ? '&' : '.'} "${pythonPath}" -m pip install --upgrade "invokeai"`, dir)
-        .then(() => {
-        const currentDate = new Date();
-        stepper.storage.set(INVOKEAI_UPDATE_TIME_KEY, currentDate);
-        stepper.setUpdated();
-        stepper.showFinalStep('success', 'InvokeAI Updated Successfully!', `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`);
-    });
-}
-async function cardInfo$a(api, callback) {
-    const dir = api.installationFolder;
-    callback.setOpenFolders(dir ? [dir] : undefined);
-    const descManager = new DescriptionManager([
-        {
-            title: 'Installation Data',
-            items: [
-                { label: 'Install Date', result: 'loading' },
-                { label: 'Update Date', result: 'loading' },
-                { label: 'Current Version', result: 'loading' },
-                { label: 'Latest Version', result: 'loading' },
-            ],
-        },
-    ], callback);
-    api.storage.get(INVOKEAI_INSTALL_TIME_KEY).then(result => {
-        descManager.updateItem(0, 0, result);
-    });
-    api.storage.get(INVOKEAI_UPDATE_TIME_KEY).then(result => {
-        descManager.updateItem(0, 1, result);
-    });
-    api.ipc.invoke('invoke_current_version').then(result => {
-        descManager.updateItem(0, 2, result);
-    });
-    api.storage.get(INVOKEAI_UPDATE_AVAILABLE_KEY).then(result => {
-        descManager.updateItem(0, 3, result);
-    });
-}
-const INVOKE_RM = {
-    catchAddress: catchAddress$2,
-    cardInfo: cardInfo$a,
-    parseArgsToString: parseArgsToString$b,
-    parseStringToArgs: parseStringToArgs$b,
-    manager: { startInstall: startInstall$a, updater: { updateType: 'stepper', startUpdate: startUpdate$4 } },
-};
-
-const bmaltaisArguments = [
-    {
-        category: 'Command Line Arguments',
-        items: [
-            {
-                name: '--config',
-                description: 'Path to the toml config file for interface defaults',
-                type: 'File',
-                defaultValue: './config.toml',
-            },
-            {
-                name: '--debug',
-                description: 'Enable debug mode.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--listen',
-                description: 'Specify the IP address to listen on for connections to Gradio.',
-                type: 'Input',
-                defaultValue: '127.0.0.1',
-            },
-            {
-                name: '--username',
-                description: 'Set a username for authentication.',
-                type: 'Input',
-                defaultValue: '',
-            },
-            {
-                name: '--password',
-                description: 'Set a password for authentication.',
-                type: 'Input',
-                defaultValue: '',
-            },
-            {
-                name: '--server_port',
-                description: 'Define the port to run the server listener on.',
-                type: 'Input',
-                defaultValue: '0',
-            },
-            {
-                name: '--inbrowser',
-                description: 'Open the Gradio UI in a web browser.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--share',
-                description: 'Share the Gradio UI.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--headless',
-                description: 'Indicates whether the server is headless.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--language',
-                description: 'Set custom language',
-                type: 'Input',
-            },
-            {
-                name: '--use-ipex',
-                description: 'Use IPEX environment.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--use-rocm',
-                description: 'Use ROCm environment.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--do_not_use_shell',
-                description: 'Enforce not to use shell=True when running external commands.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--do_not_share',
-                description: 'Do not share the Gradio UI.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--root_path',
-                description: '`root_path` for Gradio to enable reverse proxy support. e.g. /kohya_ss',
-                type: 'Input',
-            },
-        ],
-    },
-];
-
-const shellCommand$5 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
-const URL$4 = 'https://github.com/bmaltais/kohya_ss';
-function parseArgsToString$a(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, bmaltaisArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$5 : `${shellCommand$5} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$a(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$5))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$5} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, bmaltaisArguments)) {
-                if (getArgumentType(value.name, bmaltaisArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-function startInstall$9(stepper) {
-    GitInstaller("Kohya's GUI", URL$4, stepper);
-}
-async function cardInfo$9(api, callback) {
-    return CardInfo(URL$4, undefined, api, callback);
-}
-const KOHYA_GUI_RM = {
-    catchAddress: catchAddress$2,
-    parseArgsToString: parseArgsToString$a,
-    parseStringToArgs: parseStringToArgs$a,
-    cardInfo: cardInfo$9,
-    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
-};
-
-const automatic1111Arguments = [
-    {
-        category: 'Command Line Arguments',
-        condition: 'COMMANDLINE_ARGS',
-        sections: [
-            {
-                items: [
-                    {
-                        defaultValue: false,
-                        description: 'Show this help message and exit.',
-                        name: '--help',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Terminate after installation',
-                        name: '--exit',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: './',
-                        description: 'base path where all user data is stored',
-                        name: '--data-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'configs/stable-diffusion/v1-inference.yaml',
-                        description: 'Path to config which constructs model.',
-                        name: '--config',
-                        type: 'File',
-                    },
-                    {
-                        defaultValue: 'model.ckpt',
-                        description: 'Path to checkpoint of Stable Diffusion model; if specified, this checkpoint will' +
-                            ' be added to the list of checkpoints and loaded.',
-                        name: '--ckpt',
-                        type: 'File',
-                    },
-                    {
-                        description: 'Path to directory with Stable Diffusion checkpoints.',
-                        name: '--ckpt-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: false,
-                        description: "Don't download SD1.5 model even if no model is found.",
-                        name: '--no-download-sd-model',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: "do not download CLIP model even if it's not included in the checkpoint",
-                        name: '--do-not-download-clip',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Path to Variational Autoencoders model | disables all settings related to VAE.',
-                        name: '--vae-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        description: 'Checkpoint to use as VAE; setting this argument',
-                        name: '--vae-path',
-                        type: 'File',
-                    },
-                    {
-                        defaultValue: 'GFPGAN/',
-                        description: 'GFPGAN directory.',
-                        name: '--gfpgan-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'GFPGAN model file name.',
-                        name: '--gfpgan-model',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: 'models/Codeformer/',
-                        description: 'Path to directory with codeformer model file(s).',
-                        name: '--codeformer-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/GFPGAN',
-                        description: 'Path to directory with GFPGAN model file(s).',
-                        name: '--gfpgan-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/ESRGAN',
-                        description: 'Path to directory with ESRGAN model file(s).',
-                        name: '--esrgan-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/BSRGAN',
-                        description: 'Path to directory with BSRGAN model file(s).',
-                        name: '--bsrgan-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/RealESRGAN',
-                        description: 'Path to directory with RealESRGAN model file(s).',
-                        name: '--realesrgan-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/ScuNET',
-                        description: 'Path to directory with ScuNET model file(s).',
-                        name: '--scunet-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/SwinIR',
-                        description: 'Path to directory with SwinIR and SwinIR v2 model file(s).',
-                        name: '--swinir-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/LDSR',
-                        description: 'Path to directory with LDSR model file(s).',
-                        name: '--ldsr-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/DAT',
-                        description: 'Path to directory with DAT model file(s).',
-                        name: '--dat-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/Lora',
-                        description: 'Path to directory with Lora networks.',
-                        name: '--lora-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        description: 'Path to directory with CLIP model file(s).',
-                        name: '--clip-models-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'embeddings/',
-                        description: 'Embeddings directory for textual inversion (default: embeddings).',
-                        name: '--embeddings-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'textual_inversion_templates',
-                        description: 'Directory with textual inversion templates.',
-                        name: '--textual-inversion-templates-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'models/hypernetworks/',
-                        description: 'hypernetwork directory.',
-                        name: '--hypernetwork-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'localizations/',
-                        description: 'Localizations directory.',
-                        name: '--localizations-dir',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: 'styles.csv',
-                        description: 'Path or wildcard path of styles files, allow multiple entries.',
-                        name: '--styles-file',
-                        type: 'File',
-                    },
-                    {
-                        defaultValue: 'ui-config.json',
-                        description: 'Filename to use for UI configuration.',
-                        name: '--ui-config-file',
-                        type: 'File',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not hide progress bar in gradio UI (we hide it because it' +
-                            ' slows down ML if you have hardware acceleration in browser).',
-                        name: '--no-progressbar-hiding',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: 16,
-                        description: 'Maximum batch count value for the UI.',
-                        name: '--max-batch-count',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: 'config.json',
-                        description: 'Filename to use for UI settings.',
-                        name: '--ui-settings-file',
-                        type: 'File',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Allow custom script execution from web UI.',
-                        name: '--allow-code',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Use `share=True` for gradio and make the UI accessible through their site.',
-                        name: '--share',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Launch gradio with 0.0.0.0 as server name, allowing to respond to network requests.',
-                        name: '--listen',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: 7860,
-                        description: 'Launch gradio with given server port, you need root/admin rights for ports' +
-                            ' < 1024; defaults to 7860 if available.',
-                        name: '--port',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Hide directory configuration from web UI.',
-                        name: '--hide-ui-dir-config',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'disable editing of all settings globally',
-                        name: '--freeze-settings',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'disable editing settings in specific sections of the settings page by specifying a' +
-                            ' comma-delimited list such like "saving-images,upscaling". The list of setting names' +
-                            ' can be found in the modules/shared_options.py file',
-                        name: '--freeze-settings-in-sections',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'disable editing of individual settings by specifying a comma-delimited list like' +
-                            ' "samples_save,samples_format". The list of setting names can be found in the config.json file',
-                        name: '--freeze-specific-settings',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable extensions tab regardless of other options.',
-                        name: '--enable-insecure-extension-access',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Launch gradio with `--debug` option.',
-                        name: '--gradio-debug',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Set gradio authentication like `username:password`; or comma-delimit multiple like `u1:p1,u2:p2,u3:p3`.',
-                        name: '--gradio-auth',
-                        type: 'Input',
-                    },
-                    {
-                        description: 'Set gradio authentication file path ex. `/path/to/auth/file` same auth format as `--gradio-auth`.',
-                        name: '--gradio-auth-path',
-                        type: 'File',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not output progress bars to console.',
-                        name: '--disable-console-progressbars',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Print prompts to console when generating with txt2img and img2img.',
-                        name: '--enable-console-prompts',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Launch web UI with API.',
-                        name: '--api',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Set authentication for API like `username:password`; or ' +
-                            'comma-delimit multiple like `u1:p1,u2:p2,u3:p3`.',
-                        name: '--api-auth',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable logging of all API requests.',
-                        name: '--api-log',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Only launch the API, without the UI.',
-                        name: '--nowebui',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: "Don't load model to quickly launch UI.",
-                        name: '--ui-debug-mode',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Select the default CUDA device to use (export `CUDA_VISIBLE_DEVICES=0,1` etc might be needed before).',
-                        name: '--device-id',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Administrator privileges.',
-                        name: '--administrator',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Allowed CORS origin(s) in the form of a comma-separated list (no spaces).',
-                        name: '--cors-allow-origins',
-                        type: 'Input',
-                    },
-                    {
-                        description: 'Allowed CORS origin(s) in the form of a single regular expression.',
-                        name: '--cors-allow-origins-regex',
-                        type: 'Input',
-                    },
-                    {
-                        description: 'Partially enables TLS, requires `--tls-certfile` to fully function.',
-                        name: '--tls-keyfile',
-                        type: 'File',
-                    },
-                    {
-                        description: 'Partially enables TLS, requires `--tls-keyfile` to fully function.',
-                        name: '--tls-certfile',
-                        type: 'File',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'When passed, enables the use of self-signed certificates.',
-                        name: '--disable-tls-verify',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Sets hostname of server.',
-                        name: '--server-name',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Disables gradio queue; causes the webpage to use http requests' +
-                            ' instead of websockets; was the default in earlier versions.',
-                        name: '--no-gradio-queue',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: "Add path to Gradio's `allowed_paths`; make it possible to serve files from it.",
-                        name: '--gradio-allowed-path',
-                        type: 'Directory',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Disable SHA-256 hashing of checkpoints to help loading performance.',
-                        name: '--no-hashing',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not check versions of torch and xformers.',
-                        name: '--skip-version-check',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not check versions of Python.',
-                        name: '--skip-python-version-check',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not check if CUDA is able to work properly.',
-                        name: '--skip-torch-cuda-test',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Skip installation of packages.',
-                        name: '--skip-install',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'log level; one of: CRITICAL, ERROR, WARNING, INFO, DEBUG',
-                        name: '--loglevel',
-                        type: 'DropDown',
-                        values: ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
-                    },
-                    {
-                        defaultValue: false,
-                        description: "launch.py argument: print a detailed log of what's happening at startup",
-                        name: '--log-startup',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'enable server stop/restart/kill via api',
-                        name: '--api-server-stop',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: 30,
-                        description: 'set timeout_keep_alive for uvicorn',
-                        name: '--timeout-keep-alive',
-                        type: 'Input',
-                    },
-                ],
-                section: 'Configuration',
-            },
-            {
-                items: [
-                    {
-                        defaultValue: false,
-                        description: 'Enable xformers for cross attention layers.',
-                        name: '--xformers',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable xformers for cross attention layers regardless of whether the' +
-                            ' checking code thinks you can run it; ***do not make bug reports if' +
-                            ' this fails to work***.',
-                        name: '--force-enable-xformers',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable xformers with Flash Attention to improve reproducibility (supported for SD2.x or variant only).',
-                        name: '--xformers-flash-attention',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable scaled dot product cross-attention layer optimization; requires PyTorch 2.*',
-                        name: '--opt-sdp-attention',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable scaled dot product cross-attention layer optimization without memory' +
-                            ' efficient attention, makes image generation deterministic; requires PyTorch 2.*',
-                        name: '--opt-sdp-no-mem-attention',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: "Force-enables Doggettx's cross-attention layer optimization. By default," +
-                            " it's on for CUDA-enabled systems.",
-                        name: '--opt-split-attention',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: "Force-enables InvokeAI's cross-attention layer optimization. By default," +
-                            " it's on when CUDA is unavailable.",
-                        name: '--opt-split-attention-invokeai',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable older version of split attention optimization that does not consume all VRAM available.',
-                        name: '--opt-split-attention-v1',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable memory efficient sub-quadratic cross-attention layer optimization.',
-                        name: '--opt-sub-quad-attention',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: 1024,
-                        description: 'Query chunk size for the sub-quadratic cross-attention layer optimization to use.',
-                        name: '--sub-quad-q-chunk-size',
-                        type: 'Input',
-                    },
-                    {
-                        description: 'KV chunk size for the sub-quadratic cross-attention layer optimization to use.',
-                        name: '--sub-quad-kv-chunk-size',
-                        type: 'Input',
-                    },
-                    {
-                        description: 'The percentage of VRAM threshold for the sub-quadratic cross-attention' +
-                            ' layer optimization to use chunking.',
-                        name: '--sub-quad-chunk-threshold',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable alternative layout for 4d tensors, may result in faster inference' +
-                            ' **only** on Nvidia cards with Tensor cores (16xx and higher).',
-                        name: '--opt-channelslast',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Force-disables cross-attention layer optimization.',
-                        name: '--disable-opt-split-attention',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not check if produced images/latent spaces have nans; useful for running without a checkpoint in CI.',
-                        name: '--disable-nan-check',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Use CPU as torch device for specified modules.',
-                        name: '--use-cpu',
-                        type: 'DropDown',
-                        values: ['all', 'sd', 'interrogate', 'gfpgan', 'bsrgan', 'esrgan', 'scunet', 'codeformer'],
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Use Intel XPU as torch device',
-                        name: '--use-ipex',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not switch the model to 16-bit floats.',
-                        name: '--no-half',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: 'autocast',
-                        description: 'Evaluate at this precision.',
-                        name: '--precision',
-                        type: 'DropDown',
-                        values: ['full', 'autocast'],
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not switch the VAE model to 16-bit floats.',
-                        name: '--no-half-vae',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Upcast sampling. No effect with `--no-half`. Usually produces similar results' +
-                            ' to `--no-half` with better performance while using less memory.',
-                        name: '--upcast-sampling',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable Stable Diffusion model optimizations for sacrificing a some performance for low VRAM usage.',
-                        name: '--medvram',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'enable `--medvram` optimization just for SDXL models',
-                        name: '--medvram-sdxl',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Enable Stable Diffusion model optimizations for sacrificing a lot of speed for very low VRAM usage.',
-                        name: '--lowvram',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Load Stable Diffusion checkpoint weights to VRAM instead of RAM.',
-                        name: '--lowram',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'disable an optimization that reduces RAM use when loading a model',
-                        name: '--disable-model-loading-ram-optimization',
-                        type: 'CheckBox',
-                    },
-                ],
-                section: 'Performance',
-            },
-            {
-                items: [
-                    {
-                        defaultValue: false,
-                        description: "Open the web UI URL in the system's default browser upon launch.",
-                        name: '--autolaunch',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'Open the web UI with the specified theme (`light` or `dark`). If not specified,' +
-                            ' uses the default browser theme.',
-                        name: '--theme',
-                        type: 'DropDown',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Use textbox for seeds in UI (no up/down, but possible to input long seeds).',
-                        name: '--use-textbox-seed',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Disable checking PyTorch models for malicious code.',
-                        name: '--disable-safe-unpickle',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'ngrok authtoken, alternative to gradio `--share`.',
-                        name: '--ngrok',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: 'us',
-                        description: 'The region in which ngrok should start.',
-                        name: '--ngrok-region',
-                        type: 'Input',
-                    },
-                    {
-                        description: 'The options to pass to ngrok in JSON format, e.g.: `{"authtoken_from_env":true,' +
-                            ' "basic_auth":"user:password", "oauth_provider":"google", "oauth_allow_emails":"user@asdf.com"}`',
-                        name: '--ngrok-options',
-                        type: 'Input',
-                    },
-                    {
-                        description: 'On startup, notifies whether or not your web UI version (commit) is up-to-date' +
-                            ' with the current master branch.',
-                        name: '--update-check',
-                        type: 'CheckBox',
-                    },
-                    {
-                        description: 'On startup, it pulls the latest updates for all extensions you have installed.',
-                        name: '--update-all-extensions',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Force-reinstall xformers. Useful for upgrading - but remove it after upgrading' +
-                            " or you'll reinstall xformers perpetually.",
-                        name: '--reinstall-xformers',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Force-reinstall torch. Useful for upgrading - but remove it after upgrading' +
-                            " or you'll reinstall torch perpetually.",
-                        name: '--reinstall-torch',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Run test to validate web UI functionality, see wiki topic for more details.',
-                        name: '--tests',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'Do not run tests even if `--tests` option is specified.',
-                        name: '--no-tests',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'launch.py argument: dump limited sysinfo file (without information' +
-                            ' about extensions, options) to disk and quit',
-                        name: '--dump-sysinfo',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'disable all non-built-in extensions from running',
-                        name: '--disable-all-extensions',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'disable all extensions from running',
-                        name: '--disable-extra-extensions',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'if load a model at web start, only take effect when --nowebui',
-                        name: '--skip-load-model-at-start',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: false,
-                        description: "allow any symbols except '/' in filenames. May conflict with your browser and file system",
-                        name: '--unix-filenames-sanitization',
-                        type: 'CheckBox',
-                    },
-                    {
-                        defaultValue: 128,
-                        description: 'maximal length of filenames of saved images, longer filenames will be truncated.' +
-                            ' if overridden it can potentially cause issues with the file system',
-                        name: '--filenames-max-length',
-                        type: 'Input',
-                    },
-                    {
-                        defaultValue: false,
-                        description: 'disable read prompt from last generation feature; disables `--data-path/params.txt`',
-                        name: '--no-prompt-history',
-                        type: 'CheckBox',
-                    },
-                ],
-                section: 'Features',
-            },
-        ],
-    },
-];
-const winEV = {
-    category: 'Environment Variables',
-    items: [
-        {
-            description: 'Sets a custom path for Python executable.',
-            name: 'PYTHON',
-            type: 'File',
-        },
-        {
-            description: 'Specifies the path for the virtual environment. Default is venv.' +
-                ' Special value - runs the script without creating virtual environment.',
-            name: 'VENV_DIR',
-            type: 'Directory',
-        },
-        {
-            description: 'Additional commandline arguments for the main program.',
-            name: 'COMMANDLINE_ARGS',
-            type: 'CheckBox',
-        },
-        {
-            description: 'Set to anything to make the program not exit with an error' +
-                ' if an unexpected commandline argument is encountered.',
-            name: 'IGNORE_CMD_ARGS_ERRORS',
-            type: 'CheckBox',
-        },
-        {
-            description: 'Name of requirements.txt file with dependencies that will be' +
-                ' installed when launch.py is run. Defaults to requirements_versions.txt.',
-            name: 'REQS_FILE',
-            type: 'Input',
-        },
-        {
-            description: 'Command for installing PyTorch.',
-            name: 'TORCH_COMMAND',
-            type: 'Input',
-        },
-        {
-            description: '`--index-url` parameter for pip.',
-            name: 'INDEX_URL',
-            type: 'Input',
-        },
-        {
-            description: 'Path to where transformers library will download and keep its files related to the CLIP model.',
-            name: 'TRANSFORMERS_CACHE',
-            type: 'Directory',
-        },
-        {
-            description: 'Select GPU to use for your instance on a system with multiple GPUs. For example, if you' +
-                ' want to use secondary GPU, put "1".\n(add a new line to webui-user.bat not in' +
-                ' COMMANDLINE_ARGS): `set CUDA_VISIBLE_DEVICES=0`\nAlternatively, just use `--device-id`' +
-                ' flag in `COMMANDLINE_ARGS`.',
-            name: 'CUDA_VISIBLE_DEVICES',
-            type: 'Input',
-        },
-        {
-            description: "Log verbosity. Supports any valid logging level supported by Python's built-in" +
-                ' `logging` module. Defaults to `INFO` if not set.',
-            name: 'SD_WEBUI_LOG_LEVEL',
-            type: 'Input',
-        },
-        {
-            description: 'Cache file path. Defaults to `cache.json` in the root directory if not set.',
-            name: 'SD_WEBUI_CACHE_FILE',
-            type: 'File',
-        },
-        {
-            description: 'A value set by `launcher script` (like webui.bat webui.sh) informing Webui that' +
-                ' restart function is available',
-            name: 'SD_WEBUI_RESTAR',
-            type: 'CheckBox',
-        },
-        {
-            description: 'A internal value signifying if webui is currently restarting or reloading, used for disabling' +
-                ' certain actions asuch as auto launching browser.\nset to `1` disables auto launching browser\n' +
-                'set to `0` enables auto launch even when restarting\nCertain extensions might use this value' +
-                ' for similar purpose.',
-            name: 'SD_WEBUI_RESTARTING',
-            type: 'CheckBox',
-        },
-    ],
-};
-const linEV = {
-    category: 'Environment',
-    sections: [
-        {
-            section: 'Variables',
-            items: [
-                {
-                    description: 'Install directory without trailing slash',
-                    name: 'install_dir',
-                    type: 'Input',
-                    defaultValue: '/home/$(whoami)',
-                },
-                {
-                    description: 'Name of the subdirectory',
-                    name: 'clone_dir',
-                    type: 'Input',
-                    defaultValue: 'stable-diffusion-webui',
-                },
-                {
-                    description: 'python3 executable',
-                    name: 'python_cmd',
-                    type: 'Input',
-                    defaultValue: 'python3',
-                },
-                {
-                    description: 'python3 venv without trailing slash (defaults to ${install_dir}/${clone_dir}/venv)',
-                    name: 'venv_dir',
-                    type: 'Input',
-                    defaultValue: 'venv',
-                },
-            ],
-        },
-        {
-            section: 'Arguments',
-            items: [
-                {
-                    description: 'Commandline arguments for webui.py',
-                    name: 'COMMANDLINE_ARGS',
-                    type: 'CheckBox',
-                },
-                {
-                    description: 'Script to launch to start the app',
-                    name: 'LAUNCH_SCRIPT',
-                    type: 'Input',
-                    defaultValue: 'launch.py',
-                },
-                {
-                    description: 'Install command for torch',
-                    name: 'TORCH_COMMAND',
-                    type: 'Input',
-                    defaultValue: 'pip install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113',
-                },
-                {
-                    description: 'Requirements file to use for stable-diffusion-webui',
-                    name: 'REQS_FILE',
-                    type: 'Input',
-                    defaultValue: 'requirements_versions.txt',
-                },
-                {
-                    description: 'Fixed git repo for K_DIFFUSION_PACKAGE',
-                    name: 'K_DIFFUSION_PACKAGE',
-                    type: 'Input',
-                    defaultValue: '',
-                },
-                {
-                    description: 'Fixed git repo for GFPGAN_PACKAGE',
-                    name: 'GFPGAN_PACKAGE',
-                    type: 'Input',
-                    defaultValue: '',
-                },
-                {
-                    description: 'Fixed git commit for Stable Diffusion',
-                    name: 'STABLE_DIFFUSION_COMMIT_HASH',
-                    type: 'Input',
-                    defaultValue: '',
-                },
-                {
-                    description: 'Fixed git commit for CodeFormer',
-                    name: 'CODEFORMER_COMMIT_HASH',
-                    type: 'Input',
-                    defaultValue: '',
-                },
-                {
-                    description: 'Fixed git commit for BLIP',
-                    name: 'BLIP_COMMIT_HASH',
-                    type: 'Input',
-                    defaultValue: '',
-                },
-                {
-                    description: 'Enable accelerated launch',
-                    name: 'ACCELERATE',
-                    type: 'CheckBox',
-                    defaultValue: false,
-                },
-                {
-                    description: 'Disable TCMalloc',
-                    name: 'NO_TCMALLOC',
-                    type: 'CheckBox',
-                    defaultValue: false,
-                },
-            ],
-        },
-    ],
-};
-automatic1111Arguments.unshift(isWin ? winEV : linEV);
-
-async function fetchExtensionList$2() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/AUTOMATIC1111/stable-diffusion-webui-extensions/master/index.json');
-        const extensions = await response.json();
-        return extensions.extensions.map((extension) => ({
-            title: extension.name,
-            description: extension.description,
-            url: extension.url,
-            stars: extension.stars,
-        }));
-    }
-    catch (e) {
-        console.error(e);
-        return [];
-    }
-}
-function getTypeByCategoryName$1(category) {
-    switch (category) {
-        case 'Command Line Arguments':
-            return 'cl';
-        case 'Environment':
-        case 'Environment Variables':
-            return 'env';
-        default:
-            return undefined;
-    }
-}
-function getCategoryType$1(name) {
-    if (!name)
-        return undefined;
-    for (const argument of automatic1111Arguments) {
-        if ('sections' in argument) {
-            for (const section of argument.sections) {
-                if (section.items.some(item => item.name === name)) {
-                    if (section.section === 'Variables')
-                        return 'envVar';
-                    return getTypeByCategoryName$1(argument.category);
-                }
-            }
-        }
-        else {
-            if (argument.items.some(item => item.name === name)) {
-                return getTypeByCategoryName$1(argument.category);
-            }
-        }
-    }
-    return undefined;
-}
-function parseArgsToString$9(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let clResult = '';
-    args.forEach(arg => {
-        const cat = getCategoryType$1(arg.name);
-        if (cat !== 'cl') {
-            const eWinResult = `set ${arg.name}=${arg.value}\n`;
-            const eResult = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
-            if (arg.name !== 'COMMANDLINE_ARGS')
-                result += isWin ? eWinResult : eResult;
-        }
-        else if (cat === 'cl') {
-            const argType = getArgumentType(arg.name, automatic1111Arguments);
-            if (argType === 'CheckBox') {
-                clResult += `${arg.name} `;
-            }
-            else if (argType === 'File' || argType === 'Directory') {
-                clResult += isWin ? `${arg.name} "${arg.value}" ` : `${arg.name} ${arg.value} `;
-            }
-            else {
-                clResult += `${arg.name} ${arg.value} `;
-            }
-        }
-    });
-    if (!lodashExports.isEmpty(clResult))
-        result += isWin ? `set COMMANDLINE_ARGS=${clResult}\n` : `export COMMANDLINE_ARGS=${clResult}\n`;
-    result += isWin ? `\ncall webui.bat` : ``;
-    return result;
-}
-function checkLinuxArgLine$4(line) {
-    if (isWin && line.startsWith('set '))
-        return 'set';
-    if (line.startsWith('export '))
-        return 'export';
-    for (const arg of automatic1111Arguments) {
-        if (arg.category === 'Environment') {
-            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
-                return 'var';
-            }
-            else {
-                return undefined;
-            }
-        }
-    }
-    return undefined;
-}
-function parseStringToArgs$9(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (line.startsWith('#')) {
-            return;
-        }
-        else if (line.startsWith(`${isWin ? 'set' : 'export'} COMMANDLINE_ARGS=`)) {
-            argResult.push({ name: 'COMMANDLINE_ARGS', value: '' });
-            // Extract the command line arguments and clear falsy values
-            const clArgs = line.split('=')[1];
-            if (!clArgs)
-                return;
-            const args = clArgs.split('--').filter(Boolean);
-            // Map each argument to an object with id and value
-            const result = args.map((arg) => {
-                const [id, ...value] = arg.trim().split(' ');
-                return {
-                    name: `--${id}`,
-                    value: value.join(' ').replace(/"/g, ''),
-                };
-            });
-            // Process each argument
-            result.forEach((value) => {
-                // Check if the argument exists or valid
-                if (isValidArg(value.name, automatic1111Arguments)) {
-                    if (getArgumentType(value.name, automatic1111Arguments) === 'CheckBox') {
-                        argResult.push({ name: value.name, value: '' });
-                    }
-                    else {
-                        argResult.push({ name: value.name, value: value.value });
-                    }
-                }
-            });
-        }
-        else {
-            const lineType = checkLinuxArgLine$4(line);
-            if (lineType === 'export' || lineType === 'set') {
-                // If line starts with 'set ' or 'export ', extract the environment variable id and value
-                let [name, value] = line.replace(`${lineType} `, '').split('=');
-                name = removeEscapes(name.trim());
-                value = removeEscapes(value.trim());
-                if (isValidArg(name, automatic1111Arguments)) {
-                    argResult.push({ name, value });
-                }
-            }
-            else if (checkLinuxArgLine$4(line) === 'var') {
-                let [name, value] = line.split('=');
-                name = removeEscapes(name.trim());
-                value = removeEscapes(value.trim());
-                if (isValidArg(name, automatic1111Arguments)) {
-                    argResult.push({ name, value });
-                }
-            }
-        }
-    });
-    return argResult;
-}
-
-const lshqqytigerArguments = lodashExports.cloneDeep(automatic1111Arguments);
-const lsSpecifArgs = [
-    {
-        description: 'Skip installation of onnxruntime; ONNX and Olive will be unavailable',
-        name: '--skip-ort',
-        type: 'CheckBox',
-    },
-    {
-        description: 'use torch built with cpu',
-        name: '--use-cpu-torch',
-        type: 'CheckBox',
-    },
-    {
-        description: 'use DirectML device as torch device',
-        name: '--use-directml',
-        type: 'CheckBox',
-    },
-    {
-        description: 'use ZLUDA device as torch device',
-        name: '--use-zluda',
-        type: 'CheckBox',
-    },
-    {
-        description: 'override torch version',
-        name: '--override-torch',
-        type: 'Input',
-    },
-];
-const newSection = {
-    section: 'AmdGPU',
-    items: lsSpecifArgs,
-};
-const commandLineArgsIndex = lshqqytigerArguments.findIndex(arg => arg.category === 'Command Line Arguments');
-if (commandLineArgsIndex !== -1 && lshqqytigerArguments[commandLineArgsIndex].sections) {
-    lshqqytigerArguments[commandLineArgsIndex].sections.unshift(newSection);
-}
-
-const SdAMD_URL = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
-function startInstall$8(stepper) {
-    GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper);
-}
-async function cardInfo$8(api, callback) {
-    return CardInfo(SdAMD_URL, '/extensions', api, callback);
-}
-function getTypeByCategoryName(category) {
-    switch (category) {
-        case 'Command Line Arguments':
-            return 'cl';
-        case 'Environment':
-        case 'Environment Variables':
-            return 'env';
-        default:
-            return undefined;
-    }
-}
-function getCategoryType(name) {
-    if (!name)
-        return undefined;
-    for (const argument of lshqqytigerArguments) {
-        if ('sections' in argument) {
-            for (const section of argument.sections) {
-                if (section.items.some(item => item.name === name)) {
-                    if (section.section === 'Variables')
-                        return 'envVar';
-                    return getTypeByCategoryName(argument.category);
-                }
-            }
-        }
-        else {
-            if (argument.items.some(item => item.name === name)) {
-                return getTypeByCategoryName(argument.category);
-            }
-        }
-    }
-    return undefined;
-}
-function parseArgsToString$8(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let clResult = '';
-    args.forEach(arg => {
-        const cat = getCategoryType(arg.name);
-        if (cat !== 'cl') {
-            const eWinResult = `set ${arg.name}=${arg.value}\n`;
-            const eResult = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
-            if (arg.name !== 'COMMANDLINE_ARGS')
-                result += isWin ? eWinResult : eResult;
-        }
-        else if (cat === 'cl') {
-            const argType = getArgumentType(arg.name, lshqqytigerArguments);
-            if (argType === 'CheckBox') {
-                clResult += `${arg.name} `;
-            }
-            else if (argType === 'File' || argType === 'Directory') {
-                clResult += isWin ? `${arg.name} "${arg.value}" ` : `${arg.name} ${arg.value} `;
-            }
-            else {
-                clResult += `${arg.name} ${arg.value} `;
-            }
-        }
-    });
-    if (!lodashExports.isEmpty(clResult))
-        result += isWin ? `set COMMANDLINE_ARGS=${clResult}\n` : `export COMMANDLINE_ARGS=${clResult}\n`;
-    result += isWin ? `\ncall webui.bat` : ``;
-    return result;
-}
-function checkLinuxArgLine$3(line) {
-    if (isWin && line.startsWith('set '))
-        return 'set';
-    if (line.startsWith('export '))
-        return 'export';
-    for (const arg of lshqqytigerArguments) {
-        if (arg.category === 'Environment') {
-            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
-                return 'var';
-            }
-            else {
-                return undefined;
-            }
-        }
-    }
-    return undefined;
-}
-function parseStringToArgs$8(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (line.startsWith('#')) {
-            return;
-        }
-        else if (line.startsWith(`${isWin ? 'set' : 'export'} COMMANDLINE_ARGS=`)) {
-            argResult.push({ name: 'COMMANDLINE_ARGS', value: '' });
-            // Extract the command line arguments and clear falsy values
-            const clArgs = line.split('=')[1];
-            if (!clArgs)
-                return;
-            const args = clArgs.split('--').filter(Boolean);
-            // Map each argument to an object with id and value
-            const result = args.map((arg) => {
-                const [id, ...value] = arg.trim().split(' ');
-                return {
-                    name: `--${id}`,
-                    value: value.join(' ').replace(/"/g, ''),
-                };
-            });
-            // Process each argument
-            result.forEach((value) => {
-                // Check if the argument exists or valid
-                if (isValidArg(value.name, lshqqytigerArguments)) {
-                    if (getArgumentType(value.name, lshqqytigerArguments) === 'CheckBox') {
-                        argResult.push({ name: value.name, value: '' });
-                    }
-                    else {
-                        argResult.push({ name: value.name, value: value.value });
-                    }
-                }
-            });
-        }
-        else {
-            const lineType = checkLinuxArgLine$3(line);
-            if (lineType === 'export' || lineType === 'set') {
-                // If line starts with 'set ' or 'export ', extract the environment variable id and value
-                let [name, value] = line.replace(`${lineType} `, '').split('=');
-                name = removeEscapes(name.trim());
-                value = removeEscapes(value.trim());
-                if (isValidArg(name, lshqqytigerArguments)) {
-                    argResult.push({ name, value });
-                }
-            }
-            else if (checkLinuxArgLine$3(line) === 'var') {
-                let [name, value] = line.split('=');
-                name = removeEscapes(name.trim());
-                value = removeEscapes(value.trim());
-                if (isValidArg(name, lshqqytigerArguments)) {
-                    argResult.push({ name, value });
-                }
-            }
-        }
-    });
-    return argResult;
-}
-const SD_AMD_RM = {
-    catchAddress: catchAddress$2,
-    fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$8,
-    parseStringToArgs: parseStringToArgs$8,
-    cardInfo: cardInfo$8,
-    manager: { startInstall: startInstall$8, updater: { updateType: 'git' } },
-};
-
-const vladmandicArguments = [
-    {
-        category: 'Environment Variables',
-        items: [
-            {
-                description: 'Sets a custom path for Python executable.',
-                name: 'PYTHON',
-                type: 'File',
-            },
-            {
-                description: 'Specifies the path for the virtual environment. Default is venv.' +
-                    ' Special value - runs the script without creating virtual environment.',
-                name: 'VENV_DIR',
-                type: 'Directory',
-            },
-        ],
-    },
-    {
-        category: 'Command Line Arguments',
-        sections: [
-            {
-                section: 'Configuration',
-                items: [
-                    {
-                        name: '--config',
-                        description: 'Use specific server configuration file, default: config.json',
-                        type: 'File',
-                    },
-                    {
-                        name: '--ui-config',
-                        description: 'Use specific UI configuration file, default: ui-config.json',
-                        type: 'File',
-                    },
-                    {
-                        name: '--medvram',
-                        description: 'Split model stages and keep only active part in VRAM',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--lowvram',
-                        description: 'Split model components and keep only active part in VRAM',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--freeze',
-                        description: 'Disable editing settings',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Compute Engine',
-                items: [
-                    {
-                        name: '--device-id',
-                        description: 'Select the default CUDA device to use',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--use-directml',
-                        description: 'Use DirectML if no compatible GPU is detected',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-zluda',
-                        description: 'Force use ZLUDA, AMD GPUs only',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-openvino',
-                        description: 'Use Intel OpenVINO backend',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-ipex',
-                        description: 'Force use Intel OneAPI XPU backend',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-cuda',
-                        description: 'Force use nVidia CUDA backend',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-rocm',
-                        description: 'Force use AMD ROCm backend',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Paths',
-                items: [
-                    {
-                        name: '--ckpt',
-                        description: 'Path to model checkpoint to load immediately',
-                        type: 'File',
-                    },
-                    {
-                        name: '--data-dir',
-                        description: 'Base path where all user data is stored',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--models-dir',
-                        description: 'Base path where all models are stored',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--extensions-dir',
-                        description: 'Base path where all extensions are stored',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--allowed-paths',
-                        description: 'Add additional paths to paths allowed for web access',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Diagnostics',
-                items: [
-                    {
-                        name: '--no-hashing',
-                        description: 'Disable hashing of checkpoints',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--no-metadata',
-                        description: 'Disable reading of metadata from models',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--profile',
-                        description: 'Run profiler',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--monitor',
-                        description: 'Run memory monitor',
-                        type: 'Input',
-                        defaultValue: 0,
-                    },
-                    {
-                        name: '--status',
-                        description: 'Run server is-alive status',
-                        type: 'Input',
-                        defaultValue: 120,
-                    },
-                    {
-                        name: '--experimental',
-                        description: 'Allow unsupported versions of libraries',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'HTTP Server',
-                items: [
-                    {
-                        name: '--listen',
-                        description: 'Launch web server using public IP address',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--port',
-                        description: 'Launch web server with given server port',
-                        type: 'Input',
-                        defaultValue: 7860,
-                    },
-                    {
-                        name: '--share',
-                        description: 'Enable UI accessible through Gradio site',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--autolaunch',
-                        description: "Open the UI URL in the system's default browser upon launch",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--subpath',
-                        description: 'Customize the URL subpath for usage with reverse proxy',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--theme',
-                        description: 'Override UI theme',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--locale',
-                        description: 'Override UI locale',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--server-name',
-                        description: 'Sets hostname of server',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--insecure',
-                        description: 'Enable extensions tab regardless of other options',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--auth',
-                        description: 'Set access authentication like "user:pwd,user:pwd"',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--auth-file',
-                        description: 'Set access authentication using file',
-                        type: 'File',
-                    },
-                    {
-                        name: '--docs',
-                        description: 'Mount API docs',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cors-origins',
-                        description: 'Allowed CORS origins as comma-separated list',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--cors-regex',
-                        description: 'Allowed CORS origins as regular expression',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--tls-keyfile',
-                        description: 'Enable TLS and specify key file',
-                        type: 'File',
-                    },
-                    {
-                        name: '--tls-certfile',
-                        description: 'Enable TLS and specify cert file',
-                        type: 'File',
-                    },
-                    {
-                        name: '--tls-selfsign',
-                        description: 'Enable TLS with self-signed certificates',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-        ],
-    },
-];
-
-const shellCommand$4 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
-const URL$3 = 'https://github.com/vladmandic/sdnext';
-function parseArgsToString$7(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, vladmandicArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$7(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$4))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$4} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, vladmandicArguments)) {
-                if (getArgumentType(value.name, vladmandicArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-function startInstall$7(stepper) {
-    GitInstaller('SD Next', URL$3, stepper);
-}
-async function cardInfo$7(api, callback) {
-    return CardInfo(URL$3, '/extensions', api, callback);
-}
-const SD_NEXT_RM = {
-    catchAddress: catchAddress$2,
-    fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$7,
-    parseStringToArgs: parseStringToArgs$7,
-    cardInfo: cardInfo$7,
-    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
-};
-
-const mcMonkeyArguments = [
-    {
-        category: 'Command Line Arguments',
-        items: [
-            {
-                name: '--data_dir',
-                description: 'Override the default data directory.',
-                type: 'Directory',
-                defaultValue: 'Data',
-            },
-            {
-                name: '--settings_file',
-                description: 'If your settings file is anywhere other than the default, you must specify as a command line arg.',
-                type: 'File',
-                defaultValue: 'Data/Settings.fds',
-            },
-            {
-                name: '--backends_file',
-                description: 'If your backends file is anywhere other than the default, you must specify as a command line arg.',
-                type: 'File',
-                defaultValue: 'Data/Backends.fds',
-            },
-            {
-                name: '--environment',
-                description: 'Can be `development` or `production` to set what ASP.NET Web Environment to use. `Development`' +
-                    ' gives detailed debug logs and errors, while `Production` is optimized for normal usage.',
-                type: 'DropDown',
-                defaultValue: 'Production',
-                values: ['development', 'production'],
-            },
-            {
-                name: '--host',
-                description: "Can be used to override the 'Network.Host' server setting.",
-                type: 'Input',
-                defaultValue: 'localhost',
-            },
-            {
-                name: '--port',
-                description: "Can be used to override the 'Network.Port' server setting.",
-                type: 'Input',
-                defaultValue: '7801',
-            },
-            {
-                name: '--asp_loglevel',
-                description: 'Sets the minimum log level for ASP.NET web logger, as any of: `Trace`, `Debug`, `Information`,' +
-                    " `Warning`, `Error`, `Critical`, `None`. Note 'information' here spams debug output.",
-                type: 'DropDown',
-                defaultValue: 'warning',
-                values: ['Trace', 'Debug', 'Information', 'Warning', 'Error', 'Critical', 'None'],
-            },
-            {
-                name: '--loglevel',
-                description: 'Minimum SwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
-                    " `None`. 'Info' here is the normal usage data.",
-                type: 'DropDown',
-                defaultValue: 'Info',
-                values: ['Debug', 'Info', 'Init', 'Warning', 'Error', 'None'],
-            },
-            {
-                name: '--user_id',
-                description: "Set the local user's default UserID (for running in single-user mode, not useful in shared mode).",
-                type: 'Input',
-                defaultValue: 'local',
-            },
-            {
-                name: '--lock_settings',
-                description: 'If enabled, blocks in-UI editing of server settings by admins. Settings cannot be modified ' +
-                    'in this mode without editing the settings file and restarting the server.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--ngrok-path',
-                description: 'If specified, will be used as the path to an `ngrok` executable, and will automatically ' +
-                    'load and configure ngrok when launching, to share your UI instance on a publicly accessible URL.',
-                type: 'File',
-            },
-            {
-                name: '--cloudflared-path',
-                description: 'If specified, will be used as the path to an `cloudflared` executable, and will automatically' +
-                    ' load and configure TryCloudflare when launching, to share your UI instance on a publicly accessible URL.',
-                type: 'File',
-            },
-            {
-                name: '--proxy-region',
-                description: 'If specified, sets the proxy (ngrok/cloudflared) region. If unspecified, defaults to closest.',
-                type: 'Input',
-            },
-            {
-                name: '--proxy-added-args',
-                description: 'If specified, adds additional args to the proxy launch. Use a `.` as the first symbol (parser hackaround).' +
-                    ' For example, `--proxy-added-args ".--my-arg --arg -argy arg"`',
-                type: 'Input',
-            },
-            {
-                name: '--ngrok-basic-auth',
-                description: 'If specified, sets an ngrok basic-auth requirement to access.',
-                type: 'Input',
-            },
-            {
-                name: '--launch_mode',
-                description: "Can be used to override the 'LaunchMode' server setting.",
-                type: 'Input',
-                defaultValue: 'none',
-            },
-            {
-                name: '--help',
-                description: 'Displays an in-CLI shortlist of CLI args and some usage hints.',
-                type: 'CheckBox',
-            },
-        ],
-    },
-];
-
-const shellCommand$3 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
-const URL$2 = 'https://github.com/mcmonkeyprojects/SwarmUI';
-function parseArgsToString$6(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, mcMonkeyArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$6(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$3))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$3} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, mcMonkeyArguments)) {
-                if (getArgumentType(value.name, mcMonkeyArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-async function fetchExtensionList$1() {
-    return [
-        {
-            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
-            title: 'SwarmUI-FaceTools',
-            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
-            stars: 8,
-        },
-        {
-            url: 'https://github.com/mcmonkey4eva/SwarmComfyDeployBackendExt',
-            title: 'Swarm ComfyDeploy Backend Extension',
-            description: 'An extension for SwarmUI to use ComfyDeploy as a backend.',
-            stars: 1,
-        },
-        {
-            url: 'https://github.com/kalebbroo/SwarmUI-MagicPromptExtension',
-            title: 'SwarmUI MagicPrompt Extension',
-            description: 'The MagicPrompt Extension provides a simple and intuitive way directly in SwarmUI to generate text' +
-                ' prompts for Stable Diffusion images. This uses your local Ollama LLMs.',
-            stars: 7,
-        },
-        {
-            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
-            title: 'SwarmUI-FaceTools',
-            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
-            stars: 8,
-        },
-    ];
-}
-function startInstall$6(stepper) {
-    GitInstaller('SwarmUI', URL$2, stepper);
-}
-async function cardInfo$6(api, callback) {
-    return CardInfo(URL$2, '/src/Extensions', api, callback);
-}
-const SWARM_RM = {
-    catchAddress: catchAddress$2,
-    fetchExtensionList: fetchExtensionList$1,
-    parseArgsToString: parseArgsToString$6,
-    parseStringToArgs: parseStringToArgs$6,
-    cardInfo: cardInfo$6,
-    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
-};
-
 const flowiseArguments = [
     {
         category: 'General',
@@ -21412,8 +17800,8 @@ const flowiseArguments = [
 const INSTALL_TIME_KEY$3 = 'install-time-flowise';
 const UPDATE_TIME_KEY$3 = 'update-time-flowise';
 const UPDATE_AVAILABLE_KEY$3 = 'update-available-version-flowise';
-const shellCommand$2 = 'npx flowise start';
-function parseArgsToString$5(args) {
+const shellCommand$6 = 'npx flowise start';
+function parseArgsToString$e(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -21428,16 +17816,16 @@ function parseArgsToString$5(args) {
             argResult += `${arg.name}=${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
     return result;
 }
-function parseStringToArgs$5(args) {
+function parseStringToArgs$e(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$2))
+        if (!line.startsWith(shellCommand$6))
             return;
-        const clArgs = line.split(`${shellCommand$2} `)[1];
+        const clArgs = line.split(`${shellCommand$6} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -21461,7 +17849,7 @@ function parseStringToArgs$5(args) {
     });
     return argResult;
 }
-function startInstall$5(stepper) {
+function startInstall$d(stepper) {
     stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install Flowise', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -21497,7 +17885,7 @@ function startInstall$5(stepper) {
         });
     });
 }
-function startUpdate$3(stepper) {
+function startUpdate$4(stepper) {
     stepper.initialSteps(['Update Flowise', 'Complete Update']);
     stepper.executeTerminalCommands('npm -g update flowise').then(() => {
         const currentDate = new Date();
@@ -21506,7 +17894,7 @@ function startUpdate$3(stepper) {
         stepper.showFinalStep('success', 'Flowise Updated Successfully!', `Flowise has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$5(api, callback) {
+async function cardInfo$d(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -21547,10 +17935,10 @@ function catchAddress$1(input) {
 }
 const Flow_RM = {
     catchAddress: catchAddress$1,
-    parseArgsToString: parseArgsToString$5,
-    parseStringToArgs: parseStringToArgs$5,
-    cardInfo: cardInfo$5,
-    manager: { startInstall: startInstall$5, updater: { updateType: 'stepper', startUpdate: startUpdate$3 } },
+    parseArgsToString: parseArgsToString$e,
+    parseStringToArgs: parseStringToArgs$e,
+    cardInfo: cardInfo$d,
+    manager: { startInstall: startInstall$d, updater: { updateType: 'stepper', startUpdate: startUpdate$4 } },
 };
 
 // noinspection SpellCheckingInspection
@@ -24937,7 +21325,7 @@ const geminiCliArguments = [
 const INSTALL_TIME_KEY$2 = 'install-time-geminiCli';
 const UPDATE_TIME_KEY$2 = 'update-time-geminiCli';
 const UPDATE_AVAILABLE_KEY$2 = 'update-available-version-geminiCli';
-function checkLinuxArgLine$2(line) {
+function checkLinuxArgLine$4(line) {
     if (isWin && line.startsWith('set '))
         return 'set';
     if (line.startsWith('export '))
@@ -25046,7 +21434,7 @@ function parseArgsToFiles$1(args) {
     }
     return { scriptData: scriptString, settingsData: settingsString };
 }
-function parseArgsToString$4(args) {
+function parseArgsToString$d(args) {
     const { settingsData, scriptData } = parseArgsToFiles$1(args);
     let envString = `-------------Script File Preview (${isWin ? '.bat' : '.sh'})-------------\n`;
     if (!lodashExports.isEmpty(scriptData)) {
@@ -25066,7 +21454,7 @@ function parseArgsToString$4(args) {
 }
 function parseFilesToArgs$1(scriptContent, settingsContent) {
     // 1. Parse the script content by reusing the existing function
-    const scriptArgs = parseStringToArgs$4(scriptContent);
+    const scriptArgs = parseStringToArgs$d(scriptContent);
     // 2. Parse the settings content (json)
     const settingsArgs = [];
     // 3. Combine args, with settings overriding script args for any duplicates
@@ -25075,7 +21463,7 @@ function parseFilesToArgs$1(scriptContent, settingsContent) {
     settingsArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
     return Array.from(combinedArgs, ([name, value]) => ({ name, value }));
 }
-function parseStringToArgs$4(args) {
+function parseStringToArgs$d(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -25105,7 +21493,7 @@ function parseStringToArgs$4(args) {
                 }
             });
         }
-        const lineType = checkLinuxArgLine$2(line);
+        const lineType = checkLinuxArgLine$4(line);
         if (lineType === 'export' || lineType === 'set') {
             let [name, value] = line.replace(`${lineType} `, '').split('=');
             name = removeEscapes(name.trim());
@@ -25114,7 +21502,7 @@ function parseStringToArgs$4(args) {
                 argResult.push({ name, value });
             }
         }
-        else if (checkLinuxArgLine$2(line) === 'var') {
+        else if (checkLinuxArgLine$4(line) === 'var') {
             let [name, value] = line.split('=');
             name = removeEscapes(name.trim());
             value = removeEscapes(value.trim());
@@ -25125,7 +21513,7 @@ function parseStringToArgs$4(args) {
     });
     return argResult;
 }
-function startInstall$4(stepper) {
+function startInstall$c(stepper) {
     stepper.initialSteps(['Getting Started', 'NodeJS', 'Detect Existing', 'Gemini Cli', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -25161,7 +21549,7 @@ function startInstall$4(stepper) {
         });
     });
 }
-function startUpdate$2(stepper) {
+function startUpdate$3(stepper) {
     stepper.initialSteps(['Update Gemini Cli', 'Complete Update']);
     stepper.executeTerminalCommands('npm -g update @google/gemini-cli').then(() => {
         const currentDate = new Date();
@@ -25170,7 +21558,7 @@ function startUpdate$2(stepper) {
         stepper.showFinalStep('success', 'Gemini Cli Updated Successfully!', `Gemini Cli has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$4(api, callback) {
+async function cardInfo$c(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -25197,10 +21585,10 @@ async function cardInfo$4(api, callback) {
     });
 }
 const GeminiCli_RM = {
-    cardInfo: cardInfo$4,
-    parseStringToArgs: parseStringToArgs$4,
-    parseArgsToString: parseArgsToString$4,
-    manager: { startInstall: startInstall$4, updater: { updateType: 'stepper', startUpdate: startUpdate$2 } },
+    cardInfo: cardInfo$c,
+    parseStringToArgs: parseStringToArgs$d,
+    parseArgsToString: parseArgsToString$d,
+    manager: { startInstall: startInstall$c, updater: { updateType: 'stepper', startUpdate: startUpdate$3 } },
 };
 
 /* eslint max-len: 0 */
@@ -26412,7 +22800,7 @@ const n8nArguments = [
 const INSTALL_TIME_KEY$1 = 'install-time-n8n';
 const UPDATE_TIME_KEY$1 = 'update-time-n8n';
 const UPDATE_AVAILABLE_KEY$1 = 'update-available-version-n8n';
-function checkLinuxArgLine$1(line) {
+function checkLinuxArgLine$3(line) {
     if (isWin && line.startsWith('set '))
         return 'set';
     if (line.startsWith('export '))
@@ -26429,7 +22817,7 @@ function checkLinuxArgLine$1(line) {
     }
     return undefined;
 }
-function parseArgsToString$3(args) {
+function parseArgsToString$c(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     args.forEach(arg => {
         if (getArgumentType(arg.name, n8nArguments) === 'CheckBox') {
@@ -26446,14 +22834,14 @@ function parseArgsToString$3(args) {
     result += isWin ? `\nn8n start` : `n8n start`;
     return result;
 }
-function parseStringToArgs$3(args) {
+function parseStringToArgs$c(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
         if (line.startsWith('#')) {
             return;
         }
-        const lineType = checkLinuxArgLine$1(line);
+        const lineType = checkLinuxArgLine$3(line);
         if (lineType === 'export' || lineType === 'set') {
             let [name, value] = line.replace(`${lineType} `, '').split('=');
             name = removeEscapes(name.trim());
@@ -26462,7 +22850,7 @@ function parseStringToArgs$3(args) {
                 argResult.push({ name, value });
             }
         }
-        else if (checkLinuxArgLine$1(line) === 'var') {
+        else if (checkLinuxArgLine$3(line) === 'var') {
             let [name, value] = line.split('=');
             name = removeEscapes(name.trim());
             value = removeEscapes(value.trim());
@@ -26474,7 +22862,7 @@ function parseStringToArgs$3(args) {
     return argResult;
 }
 // TODO: support selecting available versions or @next
-function startInstall$3(stepper) {
+function startInstall$b(stepper) {
     stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install N8N', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -26510,7 +22898,7 @@ function startInstall$3(stepper) {
         });
     });
 }
-function startUpdate$1(stepper) {
+function startUpdate$2(stepper) {
     stepper.initialSteps(['Update N8N', 'Complete Update']);
     stepper.executeTerminalCommands('npm -g update n8n').then(() => {
         const currentDate = new Date();
@@ -26519,7 +22907,7 @@ function startUpdate$1(stepper) {
         stepper.showFinalStep('success', 'N8N Updated Successfully!', `N8N has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$3(api, callback) {
+async function cardInfo$b(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -26547,10 +22935,3622 @@ async function cardInfo$3(api, callback) {
 }
 const N8N_RM = {
     catchAddress: catchAddress$2,
-    cardInfo: cardInfo$3,
-    parseStringToArgs: parseStringToArgs$3,
+    cardInfo: cardInfo$b,
+    parseStringToArgs: parseStringToArgs$c,
+    parseArgsToString: parseArgsToString$c,
+    manager: { startInstall: startInstall$b, updater: { updateType: 'stepper', startUpdate: startUpdate$2 } },
+};
+
+const gitmyloArguments = [
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Install',
+                items: [
+                    {
+                        name: '--skip-install',
+                        description: 'Skip installing packages',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--skip-venv',
+                        description: 'Skip creating/activating venv, also skips install (for advanced users)',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--no-data-cache',
+                        description: "Don\\'t override the default huggingface_hub cache path.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--verbose',
+                        description: 'Show more info, like logs during installs',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Gradio',
+                items: [
+                    {
+                        name: '--share',
+                        description: 'Share this gradio instance.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--username',
+                        description: 'Gradio username',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--password',
+                        description: 'Gradio password (defaults to "password")',
+                        type: 'Input',
+                        defaultValue: 'password',
+                    },
+                    {
+                        name: '--theme',
+                        description: 'Gradio theme',
+                        type: 'Input',
+                        defaultValue: 'gradio/soft',
+                    },
+                    {
+                        name: '--listen',
+                        description: 'Listen on 0.0.0.0',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Use a different port, automatic when not set.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--launch',
+                        description: 'Automatically open a browser window when the webui launches.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const shellCommand$5 = isWin ? 'call run.bat' : 'bash ./run.sh';
+const URL$6 = 'https://github.com/gitmylo/audio-webui';
+function parseArgsToString$b(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, gitmyloArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand$5 : `${shellCommand$5} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$b(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand$5))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand$5} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, gitmyloArguments)) {
+                if (getArgumentType(value.name, gitmyloArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+function startInstall$a(stepper) {
+    GitInstaller('Audio Generation', URL$6, stepper);
+}
+async function cardInfo$a(api, callback) {
+    return CardInfo(URL$6, '/extensions', api, callback);
+}
+const AG_RM = {
+    catchAddress: catchAddress$2,
+    parseArgsToString: parseArgsToString$b,
+    parseStringToArgs: parseStringToArgs$b,
+    cardInfo: cardInfo$a,
+    manager: { startInstall: startInstall$a, updater: { updateType: 'git' } },
+};
+
+const comfyArguments = [
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Network',
+                items: [
+                    {
+                        name: '--listen',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
+                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
+                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
+                        type: 'Input',
+                        defaultValue: '127.0.0.1',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Set the listen port.',
+                        type: 'Input',
+                        defaultValue: 8188,
+                    },
+                    {
+                        name: '--tls-keyfile',
+                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
+                            ' requires --tls-certfile to function',
+                        type: 'File',
+                    },
+                    {
+                        name: '--tls-certfile',
+                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
+                            ' requires --tls-keyfile to function',
+                        type: 'File',
+                    },
+                    {
+                        name: '--enable-cors-header',
+                        description: "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
+                        type: 'Input',
+                    },
+                    {
+                        name: '--max-upload-size',
+                        description: 'Set the maximum upload size in MB.',
+                        type: 'Input',
+                        defaultValue: 100,
+                    },
+                    {
+                        name: '--enable-compress-response-body',
+                        description: 'Enable compressing response body.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--comfy-api-base',
+                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
+                        type: 'Input',
+                        defaultValue: 'https://api.comfy.org',
+                    },
+                ],
+            },
+            {
+                section: 'Paths',
+                items: [
+                    {
+                        name: '--base-directory',
+                        description: 'Set the ComfyUI base directory for models, custom_nodes, input, output, temp, and user directories.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--extra-model-paths-config',
+                        description: 'Load one or more extra_model_paths.yaml files.',
+                        type: 'File',
+                    },
+                    {
+                        name: '--output-directory',
+                        description: 'Set the ComfyUI output directory. Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--temp-directory',
+                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory). Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--input-directory',
+                        description: 'Set the ComfyUI input directory. Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--user-directory',
+                        description: 'Set the ComfyUI user directory with an absolute path. Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                ],
+            },
+            {
+                section: 'Execution',
+                items: [
+                    {
+                        name: '--auto-launch',
+                        description: 'Automatically launch ComfyUI in the default browser.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-auto-launch',
+                        description: 'Disable auto launching the browser.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cuda-device',
+                        description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--default-device',
+                        description: 'Set the id of the default device, all other devices will stay visible.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--cuda-malloc',
+                        description: 'Enable cudaMallocAsync (enabled by default for torch 2.0 and up).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-cuda-malloc',
+                        description: 'Disable cudaMallocAsync.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Precision',
+                items: [
+                    {
+                        name: '--force-fp32',
+                        description: 'Force fp32 (If this makes your GPU work better please report it).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-fp16',
+                        description: 'Force fp16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-unet',
+                        description: 'Run the diffusion model in bf16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-unet',
+                        description: 'Run the diffusion model in fp16',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-unet',
+                        description: 'Run the diffusion model in fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp64-unet',
+                        description: 'Run the diffusion model in fp64.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e4m3fn-unet',
+                        description: 'Store unet weights in fp8_e4m3fn.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e5m2-unet',
+                        description: 'Store unet weights in fp8_e5m2.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e8m0fnu-unet',
+                        description: 'Store unet weights in fp8_e8m0fnu.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-vae',
+                        description: 'Run the VAE in fp16, might cause black images.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-vae',
+                        description: 'Run the VAE in full precision fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-vae',
+                        description: 'Run the VAE in bf16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cpu-vae',
+                        description: 'Run the VAE on the CPU.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e4m3fn-text-enc',
+                        description: 'Store text encoder weights in fp8 (e4m3fn variant).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e5m2-text-enc',
+                        description: 'Store text encoder weights in fp8 (e5m2 variant).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-text-enc',
+                        description: 'Store text encoder weights in fp16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-text-enc',
+                        description: 'Store text encoder weights in fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-text-enc',
+                        description: 'Store text encoder weights in bf16.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Optimizations',
+                items: [
+                    {
+                        name: '--force-channels-last',
+                        description: 'Force channels last format when inferencing the models.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--directml',
+                        description: 'Use torch-directml.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--oneapi-device-selector',
+                        description: 'Sets the oneAPI device(s) this instance will use.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--disable-ipex-optimize',
+                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--supports-fp8-compute',
+                        description: 'ComfyUI will act like if the device supports fp8 compute.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--preview-method',
+                        description: 'Default preview method for sampler nodes.',
+                        type: 'DropDown',
+                        values: ['none', 'auto', 'latent2rgb', 'taesd'],
+                        defaultValue: 'none',
+                    },
+                    {
+                        name: '--preview-size',
+                        description: 'Sets the maximum preview size for sampler nodes.',
+                        type: 'Input',
+                        defaultValue: 512,
+                    },
+                    {
+                        name: '--cache-classic',
+                        description: 'Use the old style (aggressive) caching.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cache-lru',
+                        description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
+                        type: 'Input',
+                        defaultValue: 0,
+                    },
+                    {
+                        name: '--cache-none',
+                        description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-split-cross-attention',
+                        description: 'Use the split cross attention optimization. Ignored when xformers is used.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-quad-cross-attention',
+                        description: 'Use the sub-quadratic cross attention optimization . Ignored when xformers is used.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-pytorch-cross-attention',
+                        description: 'Use the new pytorch 2.0 cross attention function.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-sage-attention',
+                        description: 'Use sage attention.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-flash-attention',
+                        description: 'Use FlashAttention.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-xformers',
+                        description: 'Disable xformers.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-upcast-attention',
+                        description: 'Force enable attention upcasting, please report if it fixes black images.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--dont-upcast-attention',
+                        description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-non-blocking',
+                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors.' +
+                            ' This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Memory Management',
+                items: [
+                    {
+                        name: '--gpu-only',
+                        description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--highvram',
+                        description: 'By default models will be unloaded to CPU memory after being used.' +
+                            ' This option keeps them in GPU memory.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--normalvram',
+                        description: 'Used to force normal vram use if lowvram gets automatically enabled.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--lowvram',
+                        description: 'Split the unet in parts to use less vram.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--novram',
+                        description: "When lowvram isn't enough.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cpu',
+                        description: 'To use the CPU for everything (slow).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--async-offload',
+                        description: 'Use async weight offloading.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-smart-memory',
+                        description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--reserve-vram',
+                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
+                            ' amount is reserved depending on your OS.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Miscellaneous',
+                items: [
+                    {
+                        name: '--default-hashing-function',
+                        description: 'Allows you to choose the hash function to use for duplicate filename /' +
+                            ' contents comparison. Default is sha256.',
+                        type: 'DropDown',
+                        values: ['md5', 'sha1', 'sha256', 'sha512'],
+                        defaultValue: 'sha256',
+                    },
+                    {
+                        name: '--deterministic',
+                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this' +
+                            ' might not make images deterministic in all cases.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--mmap-torch-files',
+                        description: 'Use mmap when loading ckpt/pt files.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-mmap',
+                        description: "Don't use mmap when loading safetensors.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--dont-print-server',
+                        description: "Don't print server output.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--quick-test-for-ci',
+                        description: 'Quick test for CI.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--windows-standalone-build',
+                        description: 'Windows standalone build: Enable convenient things that most people using the' +
+                            ' standalone windows build will probably enjoy (like auto opening the page on startup).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-metadata',
+                        description: 'Disable saving prompt metadata in files.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-all-custom-nodes',
+                        description: 'Disable loading all custom nodes.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--whitelist-custom-nodes',
+                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--disable-api-nodes',
+                        description: 'Disable loading all api nodes.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--multi-user',
+                        description: 'Enables per-user storage.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--verbose',
+                        description: 'Set the logging level',
+                        type: 'DropDown',
+                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        defaultValue: 'INFO',
+                    },
+                    {
+                        name: '--log-stdout',
+                        description: 'Send normal process output to stdout instead of stderr (default).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--front-end-version',
+                        description: 'Specifies the version of the frontend to be used. This command needs internet connectivity' +
+                            ' to query and download available frontend implementations from GitHub releases. The version' +
+                            ' string should be in the format of: [repoOwner]/[repoName]@[version]',
+                        type: 'Input',
+                        defaultValue: 'comfyanonymous/ComfyUI@latest',
+                    },
+                    {
+                        name: '--front-end-root',
+                        description: 'The local filesystem path to the directory where the frontend is' +
+                            ' located. Overrides --front-end-version.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--fast',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
+                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--database-url',
+                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
+function parseArgsToString$a(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, comfyArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
+    return result;
+}
+function parseStringToArgs$a(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith('python main.py'))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split('python main.py ')[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, comfyArguments)) {
+                if (getArgumentType(value.name, comfyArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+async function fetchExtensionList$4() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
+        const extensions = await response.json();
+        return extensions.custom_nodes.map((extension) => ({
+            title: extension.title,
+            description: extension.description,
+            url: extension.reference,
+        }));
+    }
+    catch (e) {
+        console.error(e);
+        return [];
+    }
+}
+function startInstall$9(stepper) {
+    const selectOptions = [
+        'NVIDIA CU129',
+        'NVIDIA CU129 Nightly',
+        'AMD GPUs (Linux only) ROCm 6.4',
+        'AMD GPUs (Linux only) ROCm 6.4 Nightly',
+        'Intel GPUs (Windows and Linux)',
+        'Intel GPUs Nightly (Windows and Linux)',
+    ];
+    const getPyTorchInstallCommand = (selectedOption) => {
+        switch (selectedOption) {
+            case 'AMD GPUs (Linux only) ROCm 6.2':
+                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
+            case 'AMD GPUs (Linux only) ROCm 6.4 Nightly':
+                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.4';
+            case 'Intel GPUs (Windows and Linux)':
+                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu';
+            case 'Intel GPUs Nightly (Windows and Linux)':
+                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/xpu';
+            case 'NVIDIA CU129':
+                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129';
+            case 'NVIDIA CU129 Nightly':
+                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu129';
+            default:
+                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
+        }
+    };
+    stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(COMFYUI_URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper
+                            .collectUserInput([
+                            {
+                                id: 'gpu_type',
+                                type: 'select',
+                                label: 'Please Select PyTorch Version (Gpu)',
+                                selectOptions,
+                                defaultValue: selectOptions[0],
+                                isRequired: true,
+                            },
+                        ])
+                            .then(result => {
+                            stepper.nextStep().then(() => {
+                                stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result)).then(() => {
+                                    stepper.nextStep().then(() => {
+                                        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                                            stepper.setInstalled(dir);
+                                            stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. Your ComfyUI environment is now ready for use.');
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'ComfyUI located successfully!', 'Pre-installed ComfyUI detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate ComfyUI!', 'Please ensure you have selected the correct folder containing the ComfyUI repository.');
+                }
+            });
+        }
+    });
+}
+async function cardInfo$9(api, callback) {
+    return CardInfo(COMFYUI_URL, '/custom_nodes', api, callback);
+}
+const COMFYUI_RM = {
+    catchAddress: catchAddress$2,
+    fetchExtensionList: fetchExtensionList$4,
+    parseArgsToString: parseArgsToString$a,
+    parseStringToArgs: parseStringToArgs$a,
+    cardInfo: cardInfo$9,
+    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
+};
+
+const comfyZludaArguments = [
+    {
+        category: 'Environment Variables',
+        items: [
+            {
+                name: 'PYTHON',
+                description: 'Sets a custom path for Python executable.',
+                type: 'File',
+                defaultValue: '"%~dp0/venv/Scripts/python.exe"',
+            },
+            {
+                name: 'VENV_DIR',
+                description: 'Specifies the path for the virtual environment. Default is venv.' +
+                    ' Special value - runs the script without creating virtual environment.',
+                type: 'Directory',
+                defaultValue: './venv',
+            },
+            {
+                name: 'ZLUDA_COMGR_LOG_LEVEL',
+                description: 'Zluda log level',
+                type: 'Input',
+                defaultValue: '1',
+            },
+        ],
+    },
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Network',
+                items: [
+                    {
+                        name: '--listen',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
+                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
+                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
+                        type: 'Input',
+                        defaultValue: '127.0.0.1',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Set the listen port.',
+                        type: 'Input',
+                        defaultValue: 8188,
+                    },
+                    {
+                        name: '--tls-keyfile',
+                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
+                            ' requires --tls-certfile to function',
+                        type: 'File',
+                    },
+                    {
+                        name: '--tls-certfile',
+                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
+                            ' requires --tls-keyfile to function',
+                        type: 'File',
+                    },
+                    {
+                        name: '--enable-cors-header',
+                        description: "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
+                        type: 'Input',
+                    },
+                    {
+                        name: '--max-upload-size',
+                        description: 'Set the maximum upload size in MB.',
+                        type: 'Input',
+                        defaultValue: 100,
+                    },
+                    {
+                        name: '--enable-compress-response-body',
+                        description: 'Enable compressing response body.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--comfy-api-base',
+                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
+                        type: 'Input',
+                        defaultValue: 'https://api.comfy.org',
+                    },
+                ],
+            },
+            {
+                section: 'Paths',
+                items: [
+                    {
+                        name: '--base-directory',
+                        description: 'Set the ComfyUI base directory for models, custom_nodes, input, output, temp, and user directories.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--extra-model-paths-config',
+                        description: 'Load one or more extra_model_paths.yaml files.',
+                        type: 'File',
+                    },
+                    {
+                        name: '--output-directory',
+                        description: 'Set the ComfyUI output directory. Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--temp-directory',
+                        description: 'Set the ComfyUI temp directory (default is in the ComfyUI directory). Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--input-directory',
+                        description: 'Set the ComfyUI input directory. Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--user-directory',
+                        description: 'Set the ComfyUI user directory with an absolute path. Overrides --base-directory.',
+                        type: 'Directory',
+                    },
+                ],
+            },
+            {
+                section: 'Execution',
+                items: [
+                    {
+                        name: '--auto-launch',
+                        description: 'Automatically launch ComfyUI in the default browser.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-auto-launch',
+                        description: 'Disable auto launching the browser.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cuda-device',
+                        description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--default-device',
+                        description: 'Set the id of the default device, all other devices will stay visible.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--cuda-malloc',
+                        description: 'Enable cudaMallocAsync (enabled by default for torch 2.0 and up).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-cuda-malloc',
+                        description: 'Disable cudaMallocAsync.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Precision',
+                items: [
+                    {
+                        name: '--force-fp32',
+                        description: 'Force fp32 (If this makes your GPU work better please report it).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-fp16',
+                        description: 'Force fp16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-unet',
+                        description: 'Run the diffusion model in bf16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-unet',
+                        description: 'Run the diffusion model in fp16',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-unet',
+                        description: 'Run the diffusion model in fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp64-unet',
+                        description: 'Run the diffusion model in fp64.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e4m3fn-unet',
+                        description: 'Store unet weights in fp8_e4m3fn.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e5m2-unet',
+                        description: 'Store unet weights in fp8_e5m2.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e8m0fnu-unet',
+                        description: 'Store unet weights in fp8_e8m0fnu.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-vae',
+                        description: 'Run the VAE in fp16, might cause black images.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-vae',
+                        description: 'Run the VAE in full precision fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-vae',
+                        description: 'Run the VAE in bf16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cpu-vae',
+                        description: 'Run the VAE on the CPU.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e4m3fn-text-enc',
+                        description: 'Store text encoder weights in fp8 (e4m3fn variant).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp8_e5m2-text-enc',
+                        description: 'Store text encoder weights in fp8 (e5m2 variant).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-text-enc',
+                        description: 'Store text encoder weights in fp16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp32-text-enc',
+                        description: 'Store text encoder weights in fp32.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-text-enc',
+                        description: 'Store text encoder weights in bf16.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Optimizations',
+                items: [
+                    {
+                        name: '--force-channels-last',
+                        description: 'Force channels last format when inferencing the models.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--directml',
+                        description: 'Use torch-directml.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--oneapi-device-selector',
+                        description: 'Sets the oneAPI device(s) this instance will use.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--disable-ipex-optimize',
+                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--supports-fp8-compute',
+                        description: 'ComfyUI will act like if the device supports fp8 compute.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--preview-method',
+                        description: 'Default preview method for sampler nodes.',
+                        type: 'DropDown',
+                        values: ['none', 'auto', 'latent2rgb', 'taesd'],
+                        defaultValue: 'none',
+                    },
+                    {
+                        name: '--preview-size',
+                        description: 'Sets the maximum preview size for sampler nodes.',
+                        type: 'Input',
+                        defaultValue: 512,
+                    },
+                    {
+                        name: '--cache-classic',
+                        description: 'Use the old style (aggressive) caching.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cache-lru',
+                        description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
+                        type: 'Input',
+                        defaultValue: 0,
+                    },
+                    {
+                        name: '--cache-none',
+                        description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-split-cross-attention',
+                        description: 'Use the split cross attention optimization. Ignored when xformers is used.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-quad-cross-attention',
+                        description: 'Use the sub-quadratic cross attention optimization . Ignored when xformers is used.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-pytorch-cross-attention',
+                        description: 'Use the new pytorch 2.0 cross attention function.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-sage-attention',
+                        description: 'Use sage attention.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-flash-attention',
+                        description: 'Use FlashAttention.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-xformers',
+                        description: 'Disable xformers.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-upcast-attention',
+                        description: 'Force enable attention upcasting, please report if it fixes black images.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--dont-upcast-attention',
+                        description: 'Disable all upcasting of attention. Should be unnecessary except for debugging.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--force-non-blocking',
+                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve' +
+                            ' performance on some non-Nvidia systems but can cause issues with some workflows.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Memory Management',
+                items: [
+                    {
+                        name: '--gpu-only',
+                        description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--highvram',
+                        description: 'By default models will be unloaded to CPU memory after being used.' +
+                            ' This option keeps them in GPU memory.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--normalvram',
+                        description: 'Used to force normal vram use if lowvram gets automatically enabled.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--lowvram',
+                        description: 'Split the unet in parts to use less vram.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--novram',
+                        description: "When lowvram isn't enough.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cpu',
+                        description: 'To use the CPU for everything (slow).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--async-offload',
+                        description: 'Use async weight offloading.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-smart-memory',
+                        description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--reserve-vram',
+                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
+                            ' amount is reserved depending on your OS.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Miscellaneous',
+                items: [
+                    {
+                        name: '--default-hashing-function',
+                        description: 'Allows you to choose the hash function to use for duplicate filename /' +
+                            ' contents comparison. Default is sha256.',
+                        type: 'DropDown',
+                        values: ['md5', 'sha1', 'sha256', 'sha512'],
+                        defaultValue: 'sha256',
+                    },
+                    {
+                        name: '--deterministic',
+                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this' +
+                            ' might not make images deterministic in all cases.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--mmap-torch-files',
+                        description: 'Use mmap when loading ckpt/pt files.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-mmap',
+                        description: "Don't use mmap when loading safetensors.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--dont-print-server',
+                        description: "Don't print server output.",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--quick-test-for-ci',
+                        description: 'Quick test for CI.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--windows-standalone-build',
+                        description: 'Windows standalone build: Enable convenient things that most people using the' +
+                            ' standalone windows build will probably enjoy (like auto opening the page on startup).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-metadata',
+                        description: 'Disable saving prompt metadata in files.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-all-custom-nodes',
+                        description: 'Disable loading all custom nodes.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--whitelist-custom-nodes',
+                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--disable-api-nodes',
+                        description: 'Disable loading all api nodes.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--multi-user',
+                        description: 'Enables per-user storage.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--verbose',
+                        description: 'Set the logging level',
+                        type: 'DropDown',
+                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        defaultValue: 'INFO',
+                    },
+                    {
+                        name: '--log-stdout',
+                        description: 'Send normal process output to stdout instead of stderr (default).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--front-end-version',
+                        description: 'Specifies the version of the frontend to be used. This command needs internet' +
+                            ' connectivity to query and download available frontend implementations from' +
+                            ' GitHub releases. The version string should be in the format of: [repoOwner]/[repoName]@[version]',
+                        type: 'Input',
+                        defaultValue: 'comfyanonymous/ComfyUI@latest',
+                    },
+                    {
+                        name: '--front-end-root',
+                        description: 'The local filesystem path to the directory where the frontend is' +
+                            ' located. Overrides --front-end-version.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--fast',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
+                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--database-url',
+                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const URL$5 = 'https://github.com/patientx/ComfyUI-Zluda';
+function parseArgsToString$9(args) {
+    let result = '@echo off' + '\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        if (arg.name === 'PYTHON' || arg.name === 'VENV_DIR' || arg.name === 'ZLUDA_COMGR_LOG_LEVEL') {
+            result += `set ${arg.name}=${arg.value}` + `\n`;
+            return;
+        }
+        const argType = getArgumentType(arg.name, comfyZludaArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += '\n' + '.\\zluda\\zluda.exe -- ';
+    result += lodashExports.isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
+    result += '\n\n' + 'pause';
+    return result;
+}
+function parseStringToArgs$9(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('set')) {
+            const argName = line.split('=')[0].split(' ')[1].trim();
+            const argValue = line.split('=')[1].trim();
+            if (argName === 'PYTHON' || argName === 'VENV_DIR' || argName === 'ZLUDA_COMGR_LOG_LEVEL') {
+                argResult.push({ name: argName, value: argValue });
+            }
+        }
+        else if (line.includes('%PYTHON% main.py')) {
+            // Extract the command line arguments and clear falsy values
+            const clArgs = line.split('%PYTHON% main.py ')[1];
+            if (!clArgs)
+                return;
+            const args = clArgs.split('--').filter(Boolean);
+            // Map each argument to an object with id and value
+            const result = args.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return {
+                    name: `--${id}`,
+                    value: value.join(' ').replace(/"/g, ''),
+                };
+            });
+            // Process each argument
+            result.forEach((value) => {
+                // Check if the argument exists or valid
+                if (isValidArg(value.name, comfyZludaArguments)) {
+                    if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
+                        argResult.push({ name: value.name, value: '' });
+                    }
+                    else {
+                        argResult.push({ name: value.name, value: value.value });
+                    }
+                }
+            });
+        }
+    });
+    return argResult;
+}
+async function fetchExtensionList$3() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
+        const extensions = await response.json();
+        return extensions.custom_nodes.map((extension) => ({
+            title: extension.title,
+            description: extension.description,
+            url: extension.reference,
+        }));
+    }
+    catch (e) {
+        console.error(e);
+        return [];
+    }
+}
+const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
+const customArguments = [
+    { name: 'PYTHON', value: '"%~dp0/venv/Scripts/python.exe"' },
+    { name: 'VENV_DIR', value: './venv' },
+    {
+        name: '--use-quad-cross-attention',
+        value: '',
+    },
+];
+function startInstall$8(stepper) {
+    stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper.runTerminalScript(dir, 'install.bat').then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.postInstall.config({
+                                customArguments: {
+                                    presetName: 'Zluda Config',
+                                    customArguments,
+                                },
+                            });
+                            stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
+                        });
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_ZLUDA_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.postInstall.config({
+                        customArguments: {
+                            presetName: 'Zluda Config',
+                            customArguments,
+                        },
+                    });
+                    stepper.showFinalStep('success', 'ComfyUI-Zluda located successfully!', 'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate ComfyUI-Zluda!', 'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.');
+                }
+            });
+        }
+    });
+}
+async function cardInfo$8(api, callback) {
+    return CardInfo(URL$5, '/custom_nodes', api, callback);
+}
+const COMFYUI_ZLUDA_RM = {
+    catchAddress: catchAddress$2,
+    fetchExtensionList: fetchExtensionList$3,
+    parseArgsToString: parseArgsToString$9,
+    parseStringToArgs: parseStringToArgs$9,
+    cardInfo: cardInfo$8,
+    manager: { startInstall: startInstall$8, updater: { updateType: 'git' } },
+};
+
+const Invoke_Command_CreateVenv = 'uv venv --relocatable --prompt invoke --python 3.12 --python-preference only-managed .venv';
+const Invoke_Command_ActivateVenv = isWin ? '.venv\\Scripts\\activate' : 'source .venv/bin/activate';
+const Invoke_Command_InstallPip = 'python -m ensurepip --upgrade';
+const Invoke_Command_InstallUV = isWin
+    ? 'powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"'
+    : 'wget -qO- https://astral.sh/uv/install.sh | sh';
+const Invoke_PyPI = {
+    cu126: 'cu126: Windows or Linux with an Nvidia GPU',
+    rocm: 'rocm6.2.4: Linux with an AMD GPU',
+    cpu: 'cpu: Linux with no GPU',
+};
+const Invoke_PackageSpec = {
+    invokeai: 'invokeai: Nvidia 30xx series GPU or newer, or do not have an Nvidia GPU',
+    invokeaiXformers: 'invokeai[xformers]:  Nvidia 20xx series GPU or older',
+};
+const INVOKEAI_INSTALL_TIME_KEY = 'install-time-invokeai';
+const INVOKEAI_INSTALL_DIR_KEY = 'install-dir-invokeai';
+const INVOKEAI_UPDATE_TIME_KEY = 'update-time-invokeai';
+const INVOKEAI_UPDATE_AVAILABLE_KEY = 'update-version-invokeai';
+const invokeGetInputFields = async (ipc) => {
+    const releases = await ipc.invoke('invoke_latest_versions');
+    return [
+        {
+            label: 'Installation Directory',
+            id: 'install_dir',
+            type: 'directory',
+            isRequired: true,
+        },
+        {
+            label: 'InvokeAI Version',
+            id: 'invoke_version',
+            type: 'select',
+            selectOptions: releases,
+            defaultValue: releases[0],
+            isRequired: true,
+        },
+        {
+            label: 'Package Specifier',
+            id: 'package_spec',
+            type: 'select',
+            selectOptions: [Invoke_PackageSpec.invokeai, Invoke_PackageSpec.invokeaiXformers],
+            defaultValue: Invoke_PackageSpec.invokeai,
+            isRequired: true,
+        },
+        {
+            label: 'PyPI',
+            id: 'pypi',
+            type: 'select',
+            selectOptions: [Invoke_PyPI.cu126, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
+            defaultValue: Invoke_PyPI.cu126,
+            isRequired: true,
+        },
+    ];
+};
+const invokeGetInputResults = (items) => {
+    let installDirResult = '';
+    let packageSpecResult = '';
+    let pyPIResult = '';
+    let version = '';
+    items.forEach(item => {
+        if (item.id === 'install_dir') {
+            installDirResult = item.result;
+        }
+        else if (item.id === 'invoke_version') {
+            version = item.result;
+        }
+        else if (item.id === 'package_spec') {
+            switch (item.result) {
+                case Invoke_PackageSpec.invokeaiXformers:
+                    packageSpecResult = 'invokeai[xformers]';
+                    break;
+                case Invoke_PackageSpec.invokeai:
+                default:
+                    packageSpecResult = 'invokeai';
+            }
+        }
+        else if (item.id === 'pypi') {
+            switch (item.result) {
+                case Invoke_PyPI.rocm:
+                    pyPIResult = 'https://download.pytorch.org/whl/rocm6.3';
+                    break;
+                case Invoke_PyPI.cu126:
+                    pyPIResult = 'https://download.pytorch.org/whl/cu128';
+                    break;
+                case Invoke_PyPI.cpu:
+                    pyPIResult = 'https://download.pytorch.org/whl/cpu';
+                    break;
+                default:
+                case 'others':
+                    pyPIResult = '';
+                    break;
+            }
+        }
+    });
+    return { installDirResult, version, packageSpecResult, pyPIResult };
+};
+const invokeGetInstallCommand = (items) => {
+    const { version, pyPIResult, packageSpecResult } = invokeGetInputResults(items);
+    const index = pyPIResult ? ` --index=${pyPIResult}` : '';
+    return (`uv pip install ${packageSpecResult}==${version} --python 3.12 ` +
+        `--python-preference only-managed${index} --force-reinstall`);
+};
+
+function parseArgsToString$8(args) {
+    let result = 'schema_version: 4.0.2\n\n';
+    const argResult = args
+        .map(arg => {
+        return `${arg.name}: ${arg.value}`;
+    })
+        .join('\n');
+    result += argResult;
+    return result;
+}
+function parseStringToArgs$8(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('schema_version') || line.startsWith('#') || lodash.isEmpty(line.trim()))
+            return;
+        const clArgs = line.split(`: `);
+        const [name, value] = clArgs;
+        argResult.push({ name, value });
+    });
+    return argResult;
+}
+function startInstall$7(stepper) {
+    stepper.initialSteps(['InvokeAI', 'UV', 'Config', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.progressBar(true, 'Detecting UV installation...');
+                stepper.ipc.invoke('is_uv_installed').then(isUvInstalled => {
+                    if (!isUvInstalled) {
+                        stepper.executeTerminalCommands(Invoke_Command_InstallUV).then(() => {
+                            stepper.showFinalStep('success', 'UV Package Manager Installation Complete.', 'Restart your computer and run the installer again to continue installation.');
+                        });
+                    }
+                    else {
+                        stepper.nextStep().then(() => {
+                            stepper.progressBar(true, 'Fetching the latest InvokeAI versions...');
+                            invokeGetInputFields(stepper.ipc).then(fields => {
+                                stepper.collectUserInput(fields).then(result => {
+                                    const { installDirResult } = invokeGetInputResults(result);
+                                    const installCommand = invokeGetInstallCommand(result);
+                                    stepper.nextStep().then(() => {
+                                        stepper
+                                            .executeTerminalCommands([
+                                            Invoke_Command_CreateVenv,
+                                            Invoke_Command_ActivateVenv,
+                                            Invoke_Command_InstallPip,
+                                            installCommand,
+                                        ], installDirResult)
+                                            .then(() => {
+                                            stepper.setInstalled(installDirResult);
+                                            const currentDate = new Date();
+                                            stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
+                                            stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, installDirResult);
+                                            stepper.showFinalStep('success', 'InvokeAI Installation Complete.', 'Your InvokeAI environment is ready. Enjoy!');
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    }
+                });
+            });
+        }
+        else {
+            stepper.ipc.invoke('validate_install_dir', targetDirectory).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    const currentDate = new Date();
+                    stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
+                    stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, targetDirectory);
+                    stepper.showFinalStep('success', 'InvokeAI Environment Found.', 'Location validated successfully.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Invalid Environment!', 'Could not find InvokeAI installation in the selected directory.');
+                }
+            });
+        }
+    });
+}
+function startUpdate$1(stepper, dir) {
+    if (!dir)
+        return;
+    const venvDir = isWin ? `${dir}\\.venv` : `${dir}/.venv`;
+    const pythonPath = getVenvPythonPath(venvDir);
+    stepper.initialSteps(['Updating', 'Done']);
+    stepper
+        .executeTerminalCommands(`${isWin ? '&' : '.'} "${pythonPath}" -m pip install --upgrade "invokeai"`, dir)
+        .then(() => {
+        const currentDate = new Date();
+        stepper.storage.set(INVOKEAI_UPDATE_TIME_KEY, currentDate);
+        stepper.setUpdated();
+        stepper.showFinalStep('success', 'InvokeAI Updated Successfully!', `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`);
+    });
+}
+async function cardInfo$7(api, callback) {
+    const dir = api.installationFolder;
+    callback.setOpenFolders(dir ? [dir] : undefined);
+    const descManager = new DescriptionManager([
+        {
+            title: 'Installation Data',
+            items: [
+                { label: 'Install Date', result: 'loading' },
+                { label: 'Update Date', result: 'loading' },
+                { label: 'Current Version', result: 'loading' },
+                { label: 'Latest Version', result: 'loading' },
+            ],
+        },
+    ], callback);
+    api.storage.get(INVOKEAI_INSTALL_TIME_KEY).then(result => {
+        descManager.updateItem(0, 0, result);
+    });
+    api.storage.get(INVOKEAI_UPDATE_TIME_KEY).then(result => {
+        descManager.updateItem(0, 1, result);
+    });
+    api.ipc.invoke('invoke_current_version').then(result => {
+        descManager.updateItem(0, 2, result);
+    });
+    api.storage.get(INVOKEAI_UPDATE_AVAILABLE_KEY).then(result => {
+        descManager.updateItem(0, 3, result);
+    });
+}
+const INVOKE_RM = {
+    catchAddress: catchAddress$2,
+    cardInfo: cardInfo$7,
+    parseArgsToString: parseArgsToString$8,
+    parseStringToArgs: parseStringToArgs$8,
+    manager: { startInstall: startInstall$7, updater: { updateType: 'stepper', startUpdate: startUpdate$1 } },
+};
+
+const bmaltaisArguments = [
+    {
+        category: 'Command Line Arguments',
+        items: [
+            {
+                name: '--config',
+                description: 'Path to the toml config file for interface defaults',
+                type: 'File',
+                defaultValue: './config.toml',
+            },
+            {
+                name: '--debug',
+                description: 'Enable debug mode.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--listen',
+                description: 'Specify the IP address to listen on for connections to Gradio.',
+                type: 'Input',
+                defaultValue: '127.0.0.1',
+            },
+            {
+                name: '--username',
+                description: 'Set a username for authentication.',
+                type: 'Input',
+                defaultValue: '',
+            },
+            {
+                name: '--password',
+                description: 'Set a password for authentication.',
+                type: 'Input',
+                defaultValue: '',
+            },
+            {
+                name: '--server_port',
+                description: 'Define the port to run the server listener on.',
+                type: 'Input',
+                defaultValue: '0',
+            },
+            {
+                name: '--inbrowser',
+                description: 'Open the Gradio UI in a web browser.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--share',
+                description: 'Share the Gradio UI.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--headless',
+                description: 'Indicates whether the server is headless.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--language',
+                description: 'Set custom language',
+                type: 'Input',
+            },
+            {
+                name: '--use-ipex',
+                description: 'Use IPEX environment.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--use-rocm',
+                description: 'Use ROCm environment.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--do_not_use_shell',
+                description: 'Enforce not to use shell=True when running external commands.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--do_not_share',
+                description: 'Do not share the Gradio UI.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--root_path',
+                description: '`root_path` for Gradio to enable reverse proxy support. e.g. /kohya_ss',
+                type: 'Input',
+            },
+        ],
+    },
+];
+
+const shellCommand$4 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
+const URL$4 = 'https://github.com/bmaltais/kohya_ss';
+function parseArgsToString$7(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, bmaltaisArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$7(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand$4))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand$4} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, bmaltaisArguments)) {
+                if (getArgumentType(value.name, bmaltaisArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+function startInstall$6(stepper) {
+    GitInstaller("Kohya's GUI", URL$4, stepper);
+}
+async function cardInfo$6(api, callback) {
+    return CardInfo(URL$4, undefined, api, callback);
+}
+const KOHYA_GUI_RM = {
+    catchAddress: catchAddress$2,
+    parseArgsToString: parseArgsToString$7,
+    parseStringToArgs: parseStringToArgs$7,
+    cardInfo: cardInfo$6,
+    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
+};
+
+const automatic1111Arguments = [
+    {
+        category: 'Command Line Arguments',
+        condition: 'COMMANDLINE_ARGS',
+        sections: [
+            {
+                items: [
+                    {
+                        defaultValue: false,
+                        description: 'Show this help message and exit.',
+                        name: '--help',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Terminate after installation',
+                        name: '--exit',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: './',
+                        description: 'base path where all user data is stored',
+                        name: '--data-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'configs/stable-diffusion/v1-inference.yaml',
+                        description: 'Path to config which constructs model.',
+                        name: '--config',
+                        type: 'File',
+                    },
+                    {
+                        defaultValue: 'model.ckpt',
+                        description: 'Path to checkpoint of Stable Diffusion model; if specified, this checkpoint will' +
+                            ' be added to the list of checkpoints and loaded.',
+                        name: '--ckpt',
+                        type: 'File',
+                    },
+                    {
+                        description: 'Path to directory with Stable Diffusion checkpoints.',
+                        name: '--ckpt-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: false,
+                        description: "Don't download SD1.5 model even if no model is found.",
+                        name: '--no-download-sd-model',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: "do not download CLIP model even if it's not included in the checkpoint",
+                        name: '--do-not-download-clip',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Path to Variational Autoencoders model | disables all settings related to VAE.',
+                        name: '--vae-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        description: 'Checkpoint to use as VAE; setting this argument',
+                        name: '--vae-path',
+                        type: 'File',
+                    },
+                    {
+                        defaultValue: 'GFPGAN/',
+                        description: 'GFPGAN directory.',
+                        name: '--gfpgan-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'GFPGAN model file name.',
+                        name: '--gfpgan-model',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: 'models/Codeformer/',
+                        description: 'Path to directory with codeformer model file(s).',
+                        name: '--codeformer-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/GFPGAN',
+                        description: 'Path to directory with GFPGAN model file(s).',
+                        name: '--gfpgan-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/ESRGAN',
+                        description: 'Path to directory with ESRGAN model file(s).',
+                        name: '--esrgan-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/BSRGAN',
+                        description: 'Path to directory with BSRGAN model file(s).',
+                        name: '--bsrgan-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/RealESRGAN',
+                        description: 'Path to directory with RealESRGAN model file(s).',
+                        name: '--realesrgan-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/ScuNET',
+                        description: 'Path to directory with ScuNET model file(s).',
+                        name: '--scunet-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/SwinIR',
+                        description: 'Path to directory with SwinIR and SwinIR v2 model file(s).',
+                        name: '--swinir-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/LDSR',
+                        description: 'Path to directory with LDSR model file(s).',
+                        name: '--ldsr-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/DAT',
+                        description: 'Path to directory with DAT model file(s).',
+                        name: '--dat-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/Lora',
+                        description: 'Path to directory with Lora networks.',
+                        name: '--lora-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        description: 'Path to directory with CLIP model file(s).',
+                        name: '--clip-models-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'embeddings/',
+                        description: 'Embeddings directory for textual inversion (default: embeddings).',
+                        name: '--embeddings-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'textual_inversion_templates',
+                        description: 'Directory with textual inversion templates.',
+                        name: '--textual-inversion-templates-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'models/hypernetworks/',
+                        description: 'hypernetwork directory.',
+                        name: '--hypernetwork-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'localizations/',
+                        description: 'Localizations directory.',
+                        name: '--localizations-dir',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: 'styles.csv',
+                        description: 'Path or wildcard path of styles files, allow multiple entries.',
+                        name: '--styles-file',
+                        type: 'File',
+                    },
+                    {
+                        defaultValue: 'ui-config.json',
+                        description: 'Filename to use for UI configuration.',
+                        name: '--ui-config-file',
+                        type: 'File',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not hide progress bar in gradio UI (we hide it because it' +
+                            ' slows down ML if you have hardware acceleration in browser).',
+                        name: '--no-progressbar-hiding',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: 16,
+                        description: 'Maximum batch count value for the UI.',
+                        name: '--max-batch-count',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: 'config.json',
+                        description: 'Filename to use for UI settings.',
+                        name: '--ui-settings-file',
+                        type: 'File',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Allow custom script execution from web UI.',
+                        name: '--allow-code',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Use `share=True` for gradio and make the UI accessible through their site.',
+                        name: '--share',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Launch gradio with 0.0.0.0 as server name, allowing to respond to network requests.',
+                        name: '--listen',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: 7860,
+                        description: 'Launch gradio with given server port, you need root/admin rights for ports' +
+                            ' < 1024; defaults to 7860 if available.',
+                        name: '--port',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Hide directory configuration from web UI.',
+                        name: '--hide-ui-dir-config',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'disable editing of all settings globally',
+                        name: '--freeze-settings',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'disable editing settings in specific sections of the settings page by specifying a' +
+                            ' comma-delimited list such like "saving-images,upscaling". The list of setting names' +
+                            ' can be found in the modules/shared_options.py file',
+                        name: '--freeze-settings-in-sections',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'disable editing of individual settings by specifying a comma-delimited list like' +
+                            ' "samples_save,samples_format". The list of setting names can be found in the config.json file',
+                        name: '--freeze-specific-settings',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable extensions tab regardless of other options.',
+                        name: '--enable-insecure-extension-access',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Launch gradio with `--debug` option.',
+                        name: '--gradio-debug',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Set gradio authentication like `username:password`; or comma-delimit multiple like `u1:p1,u2:p2,u3:p3`.',
+                        name: '--gradio-auth',
+                        type: 'Input',
+                    },
+                    {
+                        description: 'Set gradio authentication file path ex. `/path/to/auth/file` same auth format as `--gradio-auth`.',
+                        name: '--gradio-auth-path',
+                        type: 'File',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not output progress bars to console.',
+                        name: '--disable-console-progressbars',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Print prompts to console when generating with txt2img and img2img.',
+                        name: '--enable-console-prompts',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Launch web UI with API.',
+                        name: '--api',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Set authentication for API like `username:password`; or ' +
+                            'comma-delimit multiple like `u1:p1,u2:p2,u3:p3`.',
+                        name: '--api-auth',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable logging of all API requests.',
+                        name: '--api-log',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Only launch the API, without the UI.',
+                        name: '--nowebui',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: "Don't load model to quickly launch UI.",
+                        name: '--ui-debug-mode',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Select the default CUDA device to use (export `CUDA_VISIBLE_DEVICES=0,1` etc might be needed before).',
+                        name: '--device-id',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Administrator privileges.',
+                        name: '--administrator',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Allowed CORS origin(s) in the form of a comma-separated list (no spaces).',
+                        name: '--cors-allow-origins',
+                        type: 'Input',
+                    },
+                    {
+                        description: 'Allowed CORS origin(s) in the form of a single regular expression.',
+                        name: '--cors-allow-origins-regex',
+                        type: 'Input',
+                    },
+                    {
+                        description: 'Partially enables TLS, requires `--tls-certfile` to fully function.',
+                        name: '--tls-keyfile',
+                        type: 'File',
+                    },
+                    {
+                        description: 'Partially enables TLS, requires `--tls-keyfile` to fully function.',
+                        name: '--tls-certfile',
+                        type: 'File',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'When passed, enables the use of self-signed certificates.',
+                        name: '--disable-tls-verify',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Sets hostname of server.',
+                        name: '--server-name',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Disables gradio queue; causes the webpage to use http requests' +
+                            ' instead of websockets; was the default in earlier versions.',
+                        name: '--no-gradio-queue',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: "Add path to Gradio's `allowed_paths`; make it possible to serve files from it.",
+                        name: '--gradio-allowed-path',
+                        type: 'Directory',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Disable SHA-256 hashing of checkpoints to help loading performance.',
+                        name: '--no-hashing',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not check versions of torch and xformers.',
+                        name: '--skip-version-check',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not check versions of Python.',
+                        name: '--skip-python-version-check',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not check if CUDA is able to work properly.',
+                        name: '--skip-torch-cuda-test',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Skip installation of packages.',
+                        name: '--skip-install',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'log level; one of: CRITICAL, ERROR, WARNING, INFO, DEBUG',
+                        name: '--loglevel',
+                        type: 'DropDown',
+                        values: ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
+                    },
+                    {
+                        defaultValue: false,
+                        description: "launch.py argument: print a detailed log of what's happening at startup",
+                        name: '--log-startup',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'enable server stop/restart/kill via api',
+                        name: '--api-server-stop',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: 30,
+                        description: 'set timeout_keep_alive for uvicorn',
+                        name: '--timeout-keep-alive',
+                        type: 'Input',
+                    },
+                ],
+                section: 'Configuration',
+            },
+            {
+                items: [
+                    {
+                        defaultValue: false,
+                        description: 'Enable xformers for cross attention layers.',
+                        name: '--xformers',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable xformers for cross attention layers regardless of whether the' +
+                            ' checking code thinks you can run it; ***do not make bug reports if' +
+                            ' this fails to work***.',
+                        name: '--force-enable-xformers',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable xformers with Flash Attention to improve reproducibility (supported for SD2.x or variant only).',
+                        name: '--xformers-flash-attention',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable scaled dot product cross-attention layer optimization; requires PyTorch 2.*',
+                        name: '--opt-sdp-attention',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable scaled dot product cross-attention layer optimization without memory' +
+                            ' efficient attention, makes image generation deterministic; requires PyTorch 2.*',
+                        name: '--opt-sdp-no-mem-attention',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: "Force-enables Doggettx's cross-attention layer optimization. By default," +
+                            " it's on for CUDA-enabled systems.",
+                        name: '--opt-split-attention',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: "Force-enables InvokeAI's cross-attention layer optimization. By default," +
+                            " it's on when CUDA is unavailable.",
+                        name: '--opt-split-attention-invokeai',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable older version of split attention optimization that does not consume all VRAM available.',
+                        name: '--opt-split-attention-v1',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable memory efficient sub-quadratic cross-attention layer optimization.',
+                        name: '--opt-sub-quad-attention',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: 1024,
+                        description: 'Query chunk size for the sub-quadratic cross-attention layer optimization to use.',
+                        name: '--sub-quad-q-chunk-size',
+                        type: 'Input',
+                    },
+                    {
+                        description: 'KV chunk size for the sub-quadratic cross-attention layer optimization to use.',
+                        name: '--sub-quad-kv-chunk-size',
+                        type: 'Input',
+                    },
+                    {
+                        description: 'The percentage of VRAM threshold for the sub-quadratic cross-attention' +
+                            ' layer optimization to use chunking.',
+                        name: '--sub-quad-chunk-threshold',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable alternative layout for 4d tensors, may result in faster inference' +
+                            ' **only** on Nvidia cards with Tensor cores (16xx and higher).',
+                        name: '--opt-channelslast',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Force-disables cross-attention layer optimization.',
+                        name: '--disable-opt-split-attention',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not check if produced images/latent spaces have nans; useful for running without a checkpoint in CI.',
+                        name: '--disable-nan-check',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Use CPU as torch device for specified modules.',
+                        name: '--use-cpu',
+                        type: 'DropDown',
+                        values: ['all', 'sd', 'interrogate', 'gfpgan', 'bsrgan', 'esrgan', 'scunet', 'codeformer'],
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Use Intel XPU as torch device',
+                        name: '--use-ipex',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not switch the model to 16-bit floats.',
+                        name: '--no-half',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: 'autocast',
+                        description: 'Evaluate at this precision.',
+                        name: '--precision',
+                        type: 'DropDown',
+                        values: ['full', 'autocast'],
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not switch the VAE model to 16-bit floats.',
+                        name: '--no-half-vae',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Upcast sampling. No effect with `--no-half`. Usually produces similar results' +
+                            ' to `--no-half` with better performance while using less memory.',
+                        name: '--upcast-sampling',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable Stable Diffusion model optimizations for sacrificing a some performance for low VRAM usage.',
+                        name: '--medvram',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'enable `--medvram` optimization just for SDXL models',
+                        name: '--medvram-sdxl',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Enable Stable Diffusion model optimizations for sacrificing a lot of speed for very low VRAM usage.',
+                        name: '--lowvram',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Load Stable Diffusion checkpoint weights to VRAM instead of RAM.',
+                        name: '--lowram',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'disable an optimization that reduces RAM use when loading a model',
+                        name: '--disable-model-loading-ram-optimization',
+                        type: 'CheckBox',
+                    },
+                ],
+                section: 'Performance',
+            },
+            {
+                items: [
+                    {
+                        defaultValue: false,
+                        description: "Open the web UI URL in the system's default browser upon launch.",
+                        name: '--autolaunch',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'Open the web UI with the specified theme (`light` or `dark`). If not specified,' +
+                            ' uses the default browser theme.',
+                        name: '--theme',
+                        type: 'DropDown',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Use textbox for seeds in UI (no up/down, but possible to input long seeds).',
+                        name: '--use-textbox-seed',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Disable checking PyTorch models for malicious code.',
+                        name: '--disable-safe-unpickle',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'ngrok authtoken, alternative to gradio `--share`.',
+                        name: '--ngrok',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: 'us',
+                        description: 'The region in which ngrok should start.',
+                        name: '--ngrok-region',
+                        type: 'Input',
+                    },
+                    {
+                        description: 'The options to pass to ngrok in JSON format, e.g.: `{"authtoken_from_env":true,' +
+                            ' "basic_auth":"user:password", "oauth_provider":"google", "oauth_allow_emails":"user@asdf.com"}`',
+                        name: '--ngrok-options',
+                        type: 'Input',
+                    },
+                    {
+                        description: 'On startup, notifies whether or not your web UI version (commit) is up-to-date' +
+                            ' with the current master branch.',
+                        name: '--update-check',
+                        type: 'CheckBox',
+                    },
+                    {
+                        description: 'On startup, it pulls the latest updates for all extensions you have installed.',
+                        name: '--update-all-extensions',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Force-reinstall xformers. Useful for upgrading - but remove it after upgrading' +
+                            " or you'll reinstall xformers perpetually.",
+                        name: '--reinstall-xformers',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Force-reinstall torch. Useful for upgrading - but remove it after upgrading' +
+                            " or you'll reinstall torch perpetually.",
+                        name: '--reinstall-torch',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Run test to validate web UI functionality, see wiki topic for more details.',
+                        name: '--tests',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'Do not run tests even if `--tests` option is specified.',
+                        name: '--no-tests',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'launch.py argument: dump limited sysinfo file (without information' +
+                            ' about extensions, options) to disk and quit',
+                        name: '--dump-sysinfo',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'disable all non-built-in extensions from running',
+                        name: '--disable-all-extensions',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'disable all extensions from running',
+                        name: '--disable-extra-extensions',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'if load a model at web start, only take effect when --nowebui',
+                        name: '--skip-load-model-at-start',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: false,
+                        description: "allow any symbols except '/' in filenames. May conflict with your browser and file system",
+                        name: '--unix-filenames-sanitization',
+                        type: 'CheckBox',
+                    },
+                    {
+                        defaultValue: 128,
+                        description: 'maximal length of filenames of saved images, longer filenames will be truncated.' +
+                            ' if overridden it can potentially cause issues with the file system',
+                        name: '--filenames-max-length',
+                        type: 'Input',
+                    },
+                    {
+                        defaultValue: false,
+                        description: 'disable read prompt from last generation feature; disables `--data-path/params.txt`',
+                        name: '--no-prompt-history',
+                        type: 'CheckBox',
+                    },
+                ],
+                section: 'Features',
+            },
+        ],
+    },
+];
+const winEV = {
+    category: 'Environment Variables',
+    items: [
+        {
+            description: 'Sets a custom path for Python executable.',
+            name: 'PYTHON',
+            type: 'File',
+        },
+        {
+            description: 'Specifies the path for the virtual environment. Default is venv.' +
+                ' Special value - runs the script without creating virtual environment.',
+            name: 'VENV_DIR',
+            type: 'Directory',
+        },
+        {
+            description: 'Additional commandline arguments for the main program.',
+            name: 'COMMANDLINE_ARGS',
+            type: 'CheckBox',
+        },
+        {
+            description: 'Set to anything to make the program not exit with an error' +
+                ' if an unexpected commandline argument is encountered.',
+            name: 'IGNORE_CMD_ARGS_ERRORS',
+            type: 'CheckBox',
+        },
+        {
+            description: 'Name of requirements.txt file with dependencies that will be' +
+                ' installed when launch.py is run. Defaults to requirements_versions.txt.',
+            name: 'REQS_FILE',
+            type: 'Input',
+        },
+        {
+            description: 'Command for installing PyTorch.',
+            name: 'TORCH_COMMAND',
+            type: 'Input',
+        },
+        {
+            description: '`--index-url` parameter for pip.',
+            name: 'INDEX_URL',
+            type: 'Input',
+        },
+        {
+            description: 'Path to where transformers library will download and keep its files related to the CLIP model.',
+            name: 'TRANSFORMERS_CACHE',
+            type: 'Directory',
+        },
+        {
+            description: 'Select GPU to use for your instance on a system with multiple GPUs. For example, if you' +
+                ' want to use secondary GPU, put "1".\n(add a new line to webui-user.bat not in' +
+                ' COMMANDLINE_ARGS): `set CUDA_VISIBLE_DEVICES=0`\nAlternatively, just use `--device-id`' +
+                ' flag in `COMMANDLINE_ARGS`.',
+            name: 'CUDA_VISIBLE_DEVICES',
+            type: 'Input',
+        },
+        {
+            description: "Log verbosity. Supports any valid logging level supported by Python's built-in" +
+                ' `logging` module. Defaults to `INFO` if not set.',
+            name: 'SD_WEBUI_LOG_LEVEL',
+            type: 'Input',
+        },
+        {
+            description: 'Cache file path. Defaults to `cache.json` in the root directory if not set.',
+            name: 'SD_WEBUI_CACHE_FILE',
+            type: 'File',
+        },
+        {
+            description: 'A value set by `launcher script` (like webui.bat webui.sh) informing Webui that' +
+                ' restart function is available',
+            name: 'SD_WEBUI_RESTAR',
+            type: 'CheckBox',
+        },
+        {
+            description: 'A internal value signifying if webui is currently restarting or reloading, used for disabling' +
+                ' certain actions asuch as auto launching browser.\nset to `1` disables auto launching browser\n' +
+                'set to `0` enables auto launch even when restarting\nCertain extensions might use this value' +
+                ' for similar purpose.',
+            name: 'SD_WEBUI_RESTARTING',
+            type: 'CheckBox',
+        },
+    ],
+};
+const linEV = {
+    category: 'Environment',
+    sections: [
+        {
+            section: 'Variables',
+            items: [
+                {
+                    description: 'Install directory without trailing slash',
+                    name: 'install_dir',
+                    type: 'Input',
+                    defaultValue: '/home/$(whoami)',
+                },
+                {
+                    description: 'Name of the subdirectory',
+                    name: 'clone_dir',
+                    type: 'Input',
+                    defaultValue: 'stable-diffusion-webui',
+                },
+                {
+                    description: 'python3 executable',
+                    name: 'python_cmd',
+                    type: 'Input',
+                    defaultValue: 'python3',
+                },
+                {
+                    description: 'python3 venv without trailing slash (defaults to ${install_dir}/${clone_dir}/venv)',
+                    name: 'venv_dir',
+                    type: 'Input',
+                    defaultValue: 'venv',
+                },
+            ],
+        },
+        {
+            section: 'Arguments',
+            items: [
+                {
+                    description: 'Commandline arguments for webui.py',
+                    name: 'COMMANDLINE_ARGS',
+                    type: 'CheckBox',
+                },
+                {
+                    description: 'Script to launch to start the app',
+                    name: 'LAUNCH_SCRIPT',
+                    type: 'Input',
+                    defaultValue: 'launch.py',
+                },
+                {
+                    description: 'Install command for torch',
+                    name: 'TORCH_COMMAND',
+                    type: 'Input',
+                    defaultValue: 'pip install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113',
+                },
+                {
+                    description: 'Requirements file to use for stable-diffusion-webui',
+                    name: 'REQS_FILE',
+                    type: 'Input',
+                    defaultValue: 'requirements_versions.txt',
+                },
+                {
+                    description: 'Fixed git repo for K_DIFFUSION_PACKAGE',
+                    name: 'K_DIFFUSION_PACKAGE',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git repo for GFPGAN_PACKAGE',
+                    name: 'GFPGAN_PACKAGE',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git commit for Stable Diffusion',
+                    name: 'STABLE_DIFFUSION_COMMIT_HASH',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git commit for CodeFormer',
+                    name: 'CODEFORMER_COMMIT_HASH',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Fixed git commit for BLIP',
+                    name: 'BLIP_COMMIT_HASH',
+                    type: 'Input',
+                    defaultValue: '',
+                },
+                {
+                    description: 'Enable accelerated launch',
+                    name: 'ACCELERATE',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    description: 'Disable TCMalloc',
+                    name: 'NO_TCMALLOC',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+    ],
+};
+automatic1111Arguments.unshift(isWin ? winEV : linEV);
+
+async function fetchExtensionList$2() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/AUTOMATIC1111/stable-diffusion-webui-extensions/master/index.json');
+        const extensions = await response.json();
+        return extensions.extensions.map((extension) => ({
+            title: extension.name,
+            description: extension.description,
+            url: extension.url,
+            stars: extension.stars,
+        }));
+    }
+    catch (e) {
+        console.error(e);
+        return [];
+    }
+}
+function getTypeByCategoryName$1(category) {
+    switch (category) {
+        case 'Command Line Arguments':
+            return 'cl';
+        case 'Environment':
+        case 'Environment Variables':
+            return 'env';
+        default:
+            return undefined;
+    }
+}
+function getCategoryType$1(name) {
+    if (!name)
+        return undefined;
+    for (const argument of automatic1111Arguments) {
+        if ('sections' in argument) {
+            for (const section of argument.sections) {
+                if (section.items.some(item => item.name === name)) {
+                    if (section.section === 'Variables')
+                        return 'envVar';
+                    return getTypeByCategoryName$1(argument.category);
+                }
+            }
+        }
+        else {
+            if (argument.items.some(item => item.name === name)) {
+                return getTypeByCategoryName$1(argument.category);
+            }
+        }
+    }
+    return undefined;
+}
+function parseArgsToString$6(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let clResult = '';
+    args.forEach(arg => {
+        const cat = getCategoryType$1(arg.name);
+        if (cat !== 'cl') {
+            const eWinResult = `set ${arg.name}=${arg.value}\n`;
+            const eResult = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
+            if (arg.name !== 'COMMANDLINE_ARGS')
+                result += isWin ? eWinResult : eResult;
+        }
+        else if (cat === 'cl') {
+            const argType = getArgumentType(arg.name, automatic1111Arguments);
+            if (argType === 'CheckBox') {
+                clResult += `${arg.name} `;
+            }
+            else if (argType === 'File' || argType === 'Directory') {
+                clResult += isWin ? `${arg.name} "${arg.value}" ` : `${arg.name} ${arg.value} `;
+            }
+            else {
+                clResult += `${arg.name} ${arg.value} `;
+            }
+        }
+    });
+    if (!lodashExports.isEmpty(clResult))
+        result += isWin ? `set COMMANDLINE_ARGS=${clResult}\n` : `export COMMANDLINE_ARGS=${clResult}\n`;
+    result += isWin ? `\ncall webui.bat` : ``;
+    return result;
+}
+function checkLinuxArgLine$2(line) {
+    if (isWin && line.startsWith('set '))
+        return 'set';
+    if (line.startsWith('export '))
+        return 'export';
+    for (const arg of automatic1111Arguments) {
+        if (arg.category === 'Environment') {
+            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
+                return 'var';
+            }
+            else {
+                return undefined;
+            }
+        }
+    }
+    return undefined;
+}
+function parseStringToArgs$6(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('#')) {
+            return;
+        }
+        else if (line.startsWith(`${isWin ? 'set' : 'export'} COMMANDLINE_ARGS=`)) {
+            argResult.push({ name: 'COMMANDLINE_ARGS', value: '' });
+            // Extract the command line arguments and clear falsy values
+            const clArgs = line.split('=')[1];
+            if (!clArgs)
+                return;
+            const args = clArgs.split('--').filter(Boolean);
+            // Map each argument to an object with id and value
+            const result = args.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return {
+                    name: `--${id}`,
+                    value: value.join(' ').replace(/"/g, ''),
+                };
+            });
+            // Process each argument
+            result.forEach((value) => {
+                // Check if the argument exists or valid
+                if (isValidArg(value.name, automatic1111Arguments)) {
+                    if (getArgumentType(value.name, automatic1111Arguments) === 'CheckBox') {
+                        argResult.push({ name: value.name, value: '' });
+                    }
+                    else {
+                        argResult.push({ name: value.name, value: value.value });
+                    }
+                }
+            });
+        }
+        else {
+            const lineType = checkLinuxArgLine$2(line);
+            if (lineType === 'export' || lineType === 'set') {
+                // If line starts with 'set ' or 'export ', extract the environment variable id and value
+                let [name, value] = line.replace(`${lineType} `, '').split('=');
+                name = removeEscapes(name.trim());
+                value = removeEscapes(value.trim());
+                if (isValidArg(name, automatic1111Arguments)) {
+                    argResult.push({ name, value });
+                }
+            }
+            else if (checkLinuxArgLine$2(line) === 'var') {
+                let [name, value] = line.split('=');
+                name = removeEscapes(name.trim());
+                value = removeEscapes(value.trim());
+                if (isValidArg(name, automatic1111Arguments)) {
+                    argResult.push({ name, value });
+                }
+            }
+        }
+    });
+    return argResult;
+}
+
+const lshqqytigerArguments = lodashExports.cloneDeep(automatic1111Arguments);
+const lsSpecifArgs = [
+    {
+        description: 'Skip installation of onnxruntime; ONNX and Olive will be unavailable',
+        name: '--skip-ort',
+        type: 'CheckBox',
+    },
+    {
+        description: 'use torch built with cpu',
+        name: '--use-cpu-torch',
+        type: 'CheckBox',
+    },
+    {
+        description: 'use DirectML device as torch device',
+        name: '--use-directml',
+        type: 'CheckBox',
+    },
+    {
+        description: 'use ZLUDA device as torch device',
+        name: '--use-zluda',
+        type: 'CheckBox',
+    },
+    {
+        description: 'override torch version',
+        name: '--override-torch',
+        type: 'Input',
+    },
+];
+const newSection = {
+    section: 'AmdGPU',
+    items: lsSpecifArgs,
+};
+const commandLineArgsIndex = lshqqytigerArguments.findIndex(arg => arg.category === 'Command Line Arguments');
+if (commandLineArgsIndex !== -1 && lshqqytigerArguments[commandLineArgsIndex].sections) {
+    lshqqytigerArguments[commandLineArgsIndex].sections.unshift(newSection);
+}
+
+const SdAMD_URL = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
+function startInstall$5(stepper) {
+    GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper);
+}
+async function cardInfo$5(api, callback) {
+    return CardInfo(SdAMD_URL, '/extensions', api, callback);
+}
+function getTypeByCategoryName(category) {
+    switch (category) {
+        case 'Command Line Arguments':
+            return 'cl';
+        case 'Environment':
+        case 'Environment Variables':
+            return 'env';
+        default:
+            return undefined;
+    }
+}
+function getCategoryType(name) {
+    if (!name)
+        return undefined;
+    for (const argument of lshqqytigerArguments) {
+        if ('sections' in argument) {
+            for (const section of argument.sections) {
+                if (section.items.some(item => item.name === name)) {
+                    if (section.section === 'Variables')
+                        return 'envVar';
+                    return getTypeByCategoryName(argument.category);
+                }
+            }
+        }
+        else {
+            if (argument.items.some(item => item.name === name)) {
+                return getTypeByCategoryName(argument.category);
+            }
+        }
+    }
+    return undefined;
+}
+function parseArgsToString$5(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let clResult = '';
+    args.forEach(arg => {
+        const cat = getCategoryType(arg.name);
+        if (cat !== 'cl') {
+            const eWinResult = `set ${arg.name}=${arg.value}\n`;
+            const eResult = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
+            if (arg.name !== 'COMMANDLINE_ARGS')
+                result += isWin ? eWinResult : eResult;
+        }
+        else if (cat === 'cl') {
+            const argType = getArgumentType(arg.name, lshqqytigerArguments);
+            if (argType === 'CheckBox') {
+                clResult += `${arg.name} `;
+            }
+            else if (argType === 'File' || argType === 'Directory') {
+                clResult += isWin ? `${arg.name} "${arg.value}" ` : `${arg.name} ${arg.value} `;
+            }
+            else {
+                clResult += `${arg.name} ${arg.value} `;
+            }
+        }
+    });
+    if (!lodashExports.isEmpty(clResult))
+        result += isWin ? `set COMMANDLINE_ARGS=${clResult}\n` : `export COMMANDLINE_ARGS=${clResult}\n`;
+    result += isWin ? `\ncall webui.bat` : ``;
+    return result;
+}
+function checkLinuxArgLine$1(line) {
+    if (isWin && line.startsWith('set '))
+        return 'set';
+    if (line.startsWith('export '))
+        return 'export';
+    for (const arg of lshqqytigerArguments) {
+        if (arg.category === 'Environment') {
+            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
+                return 'var';
+            }
+            else {
+                return undefined;
+            }
+        }
+    }
+    return undefined;
+}
+function parseStringToArgs$5(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('#')) {
+            return;
+        }
+        else if (line.startsWith(`${isWin ? 'set' : 'export'} COMMANDLINE_ARGS=`)) {
+            argResult.push({ name: 'COMMANDLINE_ARGS', value: '' });
+            // Extract the command line arguments and clear falsy values
+            const clArgs = line.split('=')[1];
+            if (!clArgs)
+                return;
+            const args = clArgs.split('--').filter(Boolean);
+            // Map each argument to an object with id and value
+            const result = args.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return {
+                    name: `--${id}`,
+                    value: value.join(' ').replace(/"/g, ''),
+                };
+            });
+            // Process each argument
+            result.forEach((value) => {
+                // Check if the argument exists or valid
+                if (isValidArg(value.name, lshqqytigerArguments)) {
+                    if (getArgumentType(value.name, lshqqytigerArguments) === 'CheckBox') {
+                        argResult.push({ name: value.name, value: '' });
+                    }
+                    else {
+                        argResult.push({ name: value.name, value: value.value });
+                    }
+                }
+            });
+        }
+        else {
+            const lineType = checkLinuxArgLine$1(line);
+            if (lineType === 'export' || lineType === 'set') {
+                // If line starts with 'set ' or 'export ', extract the environment variable id and value
+                let [name, value] = line.replace(`${lineType} `, '').split('=');
+                name = removeEscapes(name.trim());
+                value = removeEscapes(value.trim());
+                if (isValidArg(name, lshqqytigerArguments)) {
+                    argResult.push({ name, value });
+                }
+            }
+            else if (checkLinuxArgLine$1(line) === 'var') {
+                let [name, value] = line.split('=');
+                name = removeEscapes(name.trim());
+                value = removeEscapes(value.trim());
+                if (isValidArg(name, lshqqytigerArguments)) {
+                    argResult.push({ name, value });
+                }
+            }
+        }
+    });
+    return argResult;
+}
+const SD_AMD_RM = {
+    catchAddress: catchAddress$2,
+    fetchExtensionList: fetchExtensionList$2,
+    parseArgsToString: parseArgsToString$5,
+    parseStringToArgs: parseStringToArgs$5,
+    cardInfo: cardInfo$5,
+    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
+};
+
+const vladmandicArguments = [
+    {
+        category: 'Environment Variables',
+        items: [
+            {
+                description: 'Sets a custom path for Python executable.',
+                name: 'PYTHON',
+                type: 'File',
+            },
+            {
+                description: 'Specifies the path for the virtual environment. Default is venv.' +
+                    ' Special value - runs the script without creating virtual environment.',
+                name: 'VENV_DIR',
+                type: 'Directory',
+            },
+        ],
+    },
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Configuration',
+                items: [
+                    {
+                        name: '--config',
+                        description: 'Use specific server configuration file, default: config.json',
+                        type: 'File',
+                    },
+                    {
+                        name: '--ui-config',
+                        description: 'Use specific UI configuration file, default: ui-config.json',
+                        type: 'File',
+                    },
+                    {
+                        name: '--medvram',
+                        description: 'Split model stages and keep only active part in VRAM',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--lowvram',
+                        description: 'Split model components and keep only active part in VRAM',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--freeze',
+                        description: 'Disable editing settings',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Compute Engine',
+                items: [
+                    {
+                        name: '--device-id',
+                        description: 'Select the default CUDA device to use',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--use-directml',
+                        description: 'Use DirectML if no compatible GPU is detected',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-zluda',
+                        description: 'Force use ZLUDA, AMD GPUs only',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-openvino',
+                        description: 'Use Intel OpenVINO backend',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-ipex',
+                        description: 'Force use Intel OneAPI XPU backend',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-cuda',
+                        description: 'Force use nVidia CUDA backend',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-rocm',
+                        description: 'Force use AMD ROCm backend',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Paths',
+                items: [
+                    {
+                        name: '--ckpt',
+                        description: 'Path to model checkpoint to load immediately',
+                        type: 'File',
+                    },
+                    {
+                        name: '--data-dir',
+                        description: 'Base path where all user data is stored',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--models-dir',
+                        description: 'Base path where all models are stored',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--extensions-dir',
+                        description: 'Base path where all extensions are stored',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--allowed-paths',
+                        description: 'Add additional paths to paths allowed for web access',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Diagnostics',
+                items: [
+                    {
+                        name: '--no-hashing',
+                        description: 'Disable hashing of checkpoints',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--no-metadata',
+                        description: 'Disable reading of metadata from models',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--profile',
+                        description: 'Run profiler',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--monitor',
+                        description: 'Run memory monitor',
+                        type: 'Input',
+                        defaultValue: 0,
+                    },
+                    {
+                        name: '--status',
+                        description: 'Run server is-alive status',
+                        type: 'Input',
+                        defaultValue: 120,
+                    },
+                    {
+                        name: '--experimental',
+                        description: 'Allow unsupported versions of libraries',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'HTTP Server',
+                items: [
+                    {
+                        name: '--listen',
+                        description: 'Launch web server using public IP address',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Launch web server with given server port',
+                        type: 'Input',
+                        defaultValue: 7860,
+                    },
+                    {
+                        name: '--share',
+                        description: 'Enable UI accessible through Gradio site',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--autolaunch',
+                        description: "Open the UI URL in the system's default browser upon launch",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--subpath',
+                        description: 'Customize the URL subpath for usage with reverse proxy',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--theme',
+                        description: 'Override UI theme',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--locale',
+                        description: 'Override UI locale',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--server-name',
+                        description: 'Sets hostname of server',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--insecure',
+                        description: 'Enable extensions tab regardless of other options',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--auth',
+                        description: 'Set access authentication like "user:pwd,user:pwd"',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--auth-file',
+                        description: 'Set access authentication using file',
+                        type: 'File',
+                    },
+                    {
+                        name: '--docs',
+                        description: 'Mount API docs',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cors-origins',
+                        description: 'Allowed CORS origins as comma-separated list',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--cors-regex',
+                        description: 'Allowed CORS origins as regular expression',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--tls-keyfile',
+                        description: 'Enable TLS and specify key file',
+                        type: 'File',
+                    },
+                    {
+                        name: '--tls-certfile',
+                        description: 'Enable TLS and specify cert file',
+                        type: 'File',
+                    },
+                    {
+                        name: '--tls-selfsign',
+                        description: 'Enable TLS with self-signed certificates',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const shellCommand$3 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
+const URL$3 = 'https://github.com/vladmandic/sdnext';
+function parseArgsToString$4(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, vladmandicArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$4(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand$3))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand$3} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, vladmandicArguments)) {
+                if (getArgumentType(value.name, vladmandicArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+function startInstall$4(stepper) {
+    GitInstaller('SD Next', URL$3, stepper);
+}
+async function cardInfo$4(api, callback) {
+    return CardInfo(URL$3, '/extensions', api, callback);
+}
+const SD_NEXT_RM = {
+    catchAddress: catchAddress$2,
+    fetchExtensionList: fetchExtensionList$2,
+    parseArgsToString: parseArgsToString$4,
+    parseStringToArgs: parseStringToArgs$4,
+    cardInfo: cardInfo$4,
+    manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
+};
+
+const mcMonkeyArguments = [
+    {
+        category: 'Command Line Arguments',
+        items: [
+            {
+                name: '--data_dir',
+                description: 'Override the default data directory.',
+                type: 'Directory',
+                defaultValue: 'Data',
+            },
+            {
+                name: '--settings_file',
+                description: 'If your settings file is anywhere other than the default, you must specify as a command line arg.',
+                type: 'File',
+                defaultValue: 'Data/Settings.fds',
+            },
+            {
+                name: '--backends_file',
+                description: 'If your backends file is anywhere other than the default, you must specify as a command line arg.',
+                type: 'File',
+                defaultValue: 'Data/Backends.fds',
+            },
+            {
+                name: '--environment',
+                description: 'Can be `development` or `production` to set what ASP.NET Web Environment to use. `Development`' +
+                    ' gives detailed debug logs and errors, while `Production` is optimized for normal usage.',
+                type: 'DropDown',
+                defaultValue: 'Production',
+                values: ['development', 'production'],
+            },
+            {
+                name: '--host',
+                description: "Can be used to override the 'Network.Host' server setting.",
+                type: 'Input',
+                defaultValue: 'localhost',
+            },
+            {
+                name: '--port',
+                description: "Can be used to override the 'Network.Port' server setting.",
+                type: 'Input',
+                defaultValue: '7801',
+            },
+            {
+                name: '--asp_loglevel',
+                description: 'Sets the minimum log level for ASP.NET web logger, as any of: `Trace`, `Debug`, `Information`,' +
+                    " `Warning`, `Error`, `Critical`, `None`. Note 'information' here spams debug output.",
+                type: 'DropDown',
+                defaultValue: 'warning',
+                values: ['Trace', 'Debug', 'Information', 'Warning', 'Error', 'Critical', 'None'],
+            },
+            {
+                name: '--loglevel',
+                description: 'Minimum SwarmUI log level, as any of: `Debug`, `Info`, `Init`, `Warning`, `Error`,' +
+                    " `None`. 'Info' here is the normal usage data.",
+                type: 'DropDown',
+                defaultValue: 'Info',
+                values: ['Debug', 'Info', 'Init', 'Warning', 'Error', 'None'],
+            },
+            {
+                name: '--user_id',
+                description: "Set the local user's default UserID (for running in single-user mode, not useful in shared mode).",
+                type: 'Input',
+                defaultValue: 'local',
+            },
+            {
+                name: '--lock_settings',
+                description: 'If enabled, blocks in-UI editing of server settings by admins. Settings cannot be modified ' +
+                    'in this mode without editing the settings file and restarting the server.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--ngrok-path',
+                description: 'If specified, will be used as the path to an `ngrok` executable, and will automatically ' +
+                    'load and configure ngrok when launching, to share your UI instance on a publicly accessible URL.',
+                type: 'File',
+            },
+            {
+                name: '--cloudflared-path',
+                description: 'If specified, will be used as the path to an `cloudflared` executable, and will automatically' +
+                    ' load and configure TryCloudflare when launching, to share your UI instance on a publicly accessible URL.',
+                type: 'File',
+            },
+            {
+                name: '--proxy-region',
+                description: 'If specified, sets the proxy (ngrok/cloudflared) region. If unspecified, defaults to closest.',
+                type: 'Input',
+            },
+            {
+                name: '--proxy-added-args',
+                description: 'If specified, adds additional args to the proxy launch. Use a `.` as the first symbol (parser hackaround).' +
+                    ' For example, `--proxy-added-args ".--my-arg --arg -argy arg"`',
+                type: 'Input',
+            },
+            {
+                name: '--ngrok-basic-auth',
+                description: 'If specified, sets an ngrok basic-auth requirement to access.',
+                type: 'Input',
+            },
+            {
+                name: '--launch_mode',
+                description: "Can be used to override the 'LaunchMode' server setting.",
+                type: 'Input',
+                defaultValue: 'none',
+            },
+            {
+                name: '--help',
+                description: 'Displays an in-CLI shortlist of CLI args and some usage hints.',
+                type: 'CheckBox',
+            },
+        ],
+    },
+];
+
+const shellCommand$2 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
+const URL$2 = 'https://github.com/mcmonkeyprojects/SwarmUI';
+function parseArgsToString$3(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, mcMonkeyArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$3(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand$2))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand$2} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, mcMonkeyArguments)) {
+                if (getArgumentType(value.name, mcMonkeyArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+async function fetchExtensionList$1() {
+    return [
+        {
+            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
+            title: 'SwarmUI-FaceTools',
+            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
+            stars: 8,
+        },
+        {
+            url: 'https://github.com/mcmonkey4eva/SwarmComfyDeployBackendExt',
+            title: 'Swarm ComfyDeploy Backend Extension',
+            description: 'An extension for SwarmUI to use ComfyDeploy as a backend.',
+            stars: 1,
+        },
+        {
+            url: 'https://github.com/kalebbroo/SwarmUI-MagicPromptExtension',
+            title: 'SwarmUI MagicPrompt Extension',
+            description: 'The MagicPrompt Extension provides a simple and intuitive way directly in SwarmUI to generate text' +
+                ' prompts for Stable Diffusion images. This uses your local Ollama LLMs.',
+            stars: 7,
+        },
+        {
+            url: 'https://github.com/Quaggles/SwarmUI-FaceTools',
+            title: 'SwarmUI-FaceTools',
+            description: 'A SwarmUI extension that adds parameters for ReActor and FaceRestoreCF nodes to the the generate tab.',
+            stars: 8,
+        },
+    ];
+}
+function startInstall$3(stepper) {
+    GitInstaller('SwarmUI', URL$2, stepper);
+}
+async function cardInfo$3(api, callback) {
+    return CardInfo(URL$2, '/src/Extensions', api, callback);
+}
+const SWARM_RM = {
+    catchAddress: catchAddress$2,
+    fetchExtensionList: fetchExtensionList$1,
     parseArgsToString: parseArgsToString$3,
-    manager: { startInstall: startInstall$3, updater: { updateType: 'stepper', startUpdate: startUpdate$1 } },
+    parseStringToArgs: parseStringToArgs$3,
+    cardInfo: cardInfo$3,
+    manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
 };
 
 const INSTALL_TIME_KEY = 'install-time-openwebui';
@@ -32361,4 +32361,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { parseStringToArgs$2 as $, ALLTALK_ID as A, SD_NEXT_ID as B, COMFYUI_ID as C, parseArgsToString$7 as D, parseStringToArgs$7 as E, SWARM_ID as F, parseArgsToString$6 as G, parseStringToArgs$6 as H, INVOKEAI_INSTALL_DIR_KEY as I, BOLT_DIY_ID as J, KOHYA_ID as K, removeAnsi as L, getCdCommand as M, FLOWISEAI_ID as N, OPEN_WEBUI_ID as O, parseArgsToString$5 as P, parseStringToArgs$5 as Q, parseFilesToArgs$1 as R, SD_AMD_ID as S, TTS_ID as T, parseArgsToFiles$1 as U, GeminiCli_ID as V, LoLLMS_ID as W, N8N_ID as X, parseArgsToString$3 as Y, parseStringToArgs$3 as Z, parseArgsToString$2 as _, getVenvPythonPath as a, SILLYTAVERN_ID as a0, parseArgsToFiles as a1, parseFilesToArgs as a2, TG_ID as a3, parseArgsToString as a4, parseStringToArgs as a5, SD_FORGE_ID as a6, SD_FORGE_AMD_ID as a7, SD_UIUX_ID as a8, CardInfo as a9, openArguments as aA, OPEN_WEBUI_RM as aB, n8nArguments as aC, N8N_RM as aD, SILLYTAVERN_RM as aE, sillyArguments as aF, GitInstaller as aa, AG_RM as ab, gitmyloArguments as ac, fetchExtensionList$2 as ad, catchAddress$2 as ae, lodashExports as af, automatic1111Arguments as ag, COMFYUI_RM as ah, comfyArguments as ai, INVOKE_RM as aj, SD_NEXT_RM as ak, vladmandicArguments as al, KOHYA_GUI_RM as am, bmaltaisArguments as an, COMFYUI_ZLUDA_RM as ao, comfyZludaArguments as ap, SD_AMD_RM as aq, lshqqytigerArguments as ar, SWARM_RM as as, mcMonkeyArguments as at, GeminiCli_RM as au, geminiCliArguments as av, TG_RM as aw, oobaboogaArguments as ax, flowiseArguments as ay, Flow_RM as az, AG_ID as b, commonjsGlobal as c, parseStringToArgs$e as d, parseArgsToString$d as e, parseStringToArgs$d as f, getDefaultExportFromCjs as g, COMFYUI_ZLUDA_ID as h, isWin as i, parseArgsToString$c as j, parseStringToArgs$c as k, INVOKE_ID as l, extractGitUrl as m, INVOKEAI_UPDATE_AVAILABLE_KEY as n, Invoke_Command_ActivateVenv as o, parseArgsToString$e as p, parseArgsToString$b as q, parseStringToArgs$b as r, parseArgsToString$a as s, parseStringToArgs$a as t, ONETRAINER_ID as u, A1_ID as v, parseArgsToString$9 as w, parseStringToArgs$9 as x, parseArgsToString$8 as y, parseStringToArgs$8 as z };
+export { parseStringToArgs$2 as $, ALLTALK_ID as A, parseArgsToString$7 as B, COMFYUI_ID as C, parseStringToArgs$7 as D, ONETRAINER_ID as E, FLOWISEAI_ID as F, GeminiCli_ID as G, A1_ID as H, INVOKEAI_INSTALL_DIR_KEY as I, parseArgsToString$6 as J, KOHYA_ID as K, parseStringToArgs$6 as L, parseArgsToString$5 as M, N8N_ID as N, OPEN_WEBUI_ID as O, parseStringToArgs$5 as P, SD_NEXT_ID as Q, parseArgsToString$4 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$4 as U, SWARM_ID as V, parseArgsToString$3 as W, parseStringToArgs$3 as X, BOLT_DIY_ID as Y, LoLLMS_ID as Z, parseArgsToString$2 as _, getVenvPythonPath as a, SILLYTAVERN_ID as a0, parseArgsToFiles as a1, parseFilesToArgs as a2, TG_ID as a3, parseArgsToString as a4, parseStringToArgs as a5, SD_FORGE_ID as a6, SD_FORGE_AMD_ID as a7, SD_UIUX_ID as a8, flowiseArguments as a9, TG_RM as aA, oobaboogaArguments as aB, openArguments as aC, OPEN_WEBUI_RM as aD, SILLYTAVERN_RM as aE, sillyArguments as aF, Flow_RM as aa, GeminiCli_RM as ab, geminiCliArguments as ac, n8nArguments as ad, N8N_RM as ae, CardInfo as af, GitInstaller as ag, AG_RM as ah, gitmyloArguments as ai, fetchExtensionList$2 as aj, catchAddress$2 as ak, lodashExports as al, automatic1111Arguments as am, COMFYUI_RM as an, comfyArguments as ao, INVOKE_RM as ap, SD_NEXT_RM as aq, vladmandicArguments as ar, KOHYA_GUI_RM as as, bmaltaisArguments as at, COMFYUI_ZLUDA_RM as au, comfyZludaArguments as av, SD_AMD_RM as aw, lshqqytigerArguments as ax, SWARM_RM as ay, mcMonkeyArguments as az, getCdCommand as b, commonjsGlobal as c, parseStringToArgs$e as d, parseFilesToArgs$1 as e, parseArgsToFiles$1 as f, getDefaultExportFromCjs as g, parseArgsToString$c as h, isWin as i, parseStringToArgs$c as j, AG_ID as k, parseArgsToString$b as l, parseStringToArgs$b as m, parseArgsToString$a as n, parseStringToArgs$a as o, parseArgsToString$e as p, COMFYUI_ZLUDA_ID as q, removeAnsi as r, parseArgsToString$9 as s, parseStringToArgs$9 as t, INVOKE_ID as u, extractGitUrl as v, INVOKEAI_UPDATE_AVAILABLE_KEY as w, Invoke_Command_ActivateVenv as x, parseArgsToString$8 as y, parseStringToArgs$8 as z };

@@ -4,62 +4,14 @@
     {
       "version": "12.1.0",
       "commit": "724cda0",
-      "engines": {"moduleApi": "^2.0.0"},
+      "engines": { "moduleApi": "^2.0.0" },
       "stage": ["insider"]
     },
     {
       "version": "12.0.0",
       "commit": "9179b6b",
-      "engines": {"moduleApi": "^1.0.0"},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "11.3.1",
-      "commit": "1cabec8",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "11.3.0",
-      "commit": "aa056f0",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "11.2.2",
-      "commit": "df7e64a",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "11.2.1",
-      "commit": "d25af7a",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "11.2.0",
-      "commit": "f9f73a3",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "11.1.0",
-      "commit": "88edceb",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "11.0.0",
-      "commit": "ca3d124",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
-    },
-    {
-      "version": "10.0.0",
-      "commit": "c7ed91c",
-      "engines": {"moduleApi": ""},
-      "stage": ["insider", "early_access", "public"]
+      "engines": { "moduleApi": "^1.0.0" },
+      "stage": ["public"]
     }
   ],
   "changes": [
@@ -68,7 +20,9 @@
       "date": "2025-09-28",
       "items": [
         {
-          "⚡ Improvements": ["Migrate Flowise, Gemini CLI, and N8N to new Agents page."]
+          "⚡ Improvements": [
+            "Migrate Flowise, Gemini CLI, and N8N to new Agents page."
+          ]
         }
       ]
     },
@@ -135,7 +89,9 @@
       "date": "2025-05-14",
       "items": [
         {
-          "🪲 Bug Fixes": ["Fix open-webui installation detection in various environments (e.g., conda)."]
+          "🪲 Bug Fixes": [
+            "Fix open-webui installation detection in various environments (e.g., conda)."
+          ]
         }
       ]
     },
@@ -156,7 +112,9 @@
       "date": "2025-04-20",
       "items": [
         {
-          "⚡ Improvements": ["Implement new InvokeAI installation and updating logic."]
+          "⚡ Improvements": [
+            "Implement new InvokeAI installation and updating logic."
+          ]
         }
       ]
     },

@@ -1,0 +1,194 @@
+{
+  "$schema": "https://raw.githubusercontent.com/KindaBrazy/LynxHub-Statics/refs/heads/schema/plugins/versioning.schema.json",
+  "versions": [
+    {
+      "version": "12.1.0",
+      "commit": "724cda0",
+      "engines": {"moduleApi": "^2.0.0"},
+      "stage": ["insider"]
+    },
+    {
+      "version": "12.0.0",
+      "commit": "9179b6b",
+      "engines": {"moduleApi": "^1.0.0"},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "11.3.1",
+      "commit": "1cabec8",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "11.3.0",
+      "commit": "aa056f0",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "11.2.2",
+      "commit": "df7e64a",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "11.2.1",
+      "commit": "d25af7a",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "11.2.0",
+      "commit": "f9f73a3",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "11.1.0",
+      "commit": "88edceb",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "11.0.0",
+      "commit": "ca3d124",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    },
+    {
+      "version": "10.0.0",
+      "commit": "c7ed91c",
+      "engines": {"moduleApi": ""},
+      "stage": ["insider", "early_access", "public"]
+    }
+  ],
+  "changes": [
+    {
+      "version": "12.1.0",
+      "date": "2025-09-28",
+      "items": [
+        {
+          "⚡ Improvements": ["Migrate Flowise, Gemini CLI, and N8N to new Agents page."]
+        }
+      ]
+    },
+    {
+      "version": "12.0.0",
+      "date": "2025-09-11",
+      "items": [
+        {
+          "✨ New": ["Added n8n integration.", "Added gemini-cli integration."]
+        },
+        {
+          "⚡ Improvements": [
+            {
+              "Updated Arguments and configurations:": [
+                "ComfyUI, ComfyUI Zluda, InvokeAI, Sd Next, Swarm UI, Flowise AI, Open WebUI, SillyTavern, Oobabooga, "
+              ]
+            },
+            "Updated ComfyUI GPU and PyTorch installation options.",
+            "Updated InvokeAI download URLs for PyTorch ROCm and CUDA versions.",
+            "Enhanced SillyTavern argument parsing and add YAML configuration support.",
+            "Added flowise uninstallation."
+          ]
+        },
+        {
+          "🪲 Bug Fixes": ["Fixed flowise updating and update check."]
+        },
+        {
+          "📌 Minor Changes": ["Updated Sd-Next and TTS-Webui repository URL."]
+        }
+      ]
+    },
+    {
+      "version": "11.3.1",
+      "date": "2025-09-04",
+      "items": [
+        {
+          "⚡ Improvements": ["Support LynxHub Version 3.2.0"]
+        }
+      ]
+    },
+    {
+      "version": "11.3.0",
+      "date": "2025-07-22",
+      "items": [
+        {
+          "⚡ Improvements": [
+            "Support LynxHub V3.1.0",
+            "Invoke AI & ComfyUI: Added default values and required to inputs fields"
+          ]
+        }
+      ]
+    },
+    {
+      "version": "11.2.2",
+      "date": "2025-06-30",
+      "items": [
+        {
+          "⚡ Improvements": ["Support new LynxHub module API"]
+        }
+      ]
+    },
+    {
+      "version": "11.2.1",
+      "date": "2025-05-14",
+      "items": [
+        {
+          "🪲 Bug Fixes": ["Fix open-webui installation detection in various environments (e.g., conda)."]
+        }
+      ]
+    },
+    {
+      "version": "11.2.0",
+      "date": "2025-04-26",
+      "items": [
+        {
+          "⚡ Improvements": [
+            "OpenWebUI: Add `GLOBAL_LOG_LEVEL` argument.",
+            "OpenWebUI: Provide the default `localhost:8080` address if none is detected."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "11.1.0",
+      "date": "2025-04-20",
+      "items": [
+        {
+          "⚡ Improvements": ["Implement new InvokeAI installation and updating logic."]
+        }
+      ]
+    },
+    {
+      "version": "11.0.0",
+      "date": "2025-03-19",
+      "items": [
+        {
+          "✨ New": ["Add bolt.diy integration."]
+        },
+        {
+          "⚡ Improvements": ["Faster Open WebUI installation detection."]
+        }
+      ]
+    },
+    {
+      "version": "10.0.0",
+      "date": "2025-02-16",
+      "items": [
+        {
+          "✨ New": [
+            "Add Flowise integration.",
+            "Display latest version in card info for updatable Open WebUI and Flowise."
+          ]
+        },
+        {
+          "⚡ Improvements": [
+            "Reorder cards",
+            "Improve handling of terminal commands (Kill process and Shell detection)"
+          ]
+        }
+      ]
+    }
+  ]
+}

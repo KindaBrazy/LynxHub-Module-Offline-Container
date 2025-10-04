@@ -3,6 +3,5 @@
   "id": "local_ai_collection",
   "title": "Local AI Collection",
   "description": "A collection of local AI tools with full support for arguments, configurations, and extensions.",
-  "platforms": ["win32", "linux", "darwin"],
   "type": "module"
 }

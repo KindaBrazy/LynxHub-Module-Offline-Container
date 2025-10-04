@@ -5,13 +5,15 @@
       "version": "12.1.0",
       "commit": "724cda0",
       "engines": { "moduleApi": "^2.0.0" },
-      "stage": ["insider"]
+      "stage": "insider",
+      "platforms": ["win32", "linux", "darwin"]
     },
     {
       "version": "12.0.0",
       "commit": "9179b6b",
       "engines": { "moduleApi": "^1.0.0" },
-      "stage": ["public"]
+      "stage": "public",
+      "platforms": ["win32", "linux", "darwin"]
     }
   ],
   "changes": [

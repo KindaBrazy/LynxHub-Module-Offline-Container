@@ -17352,7 +17352,7 @@ function getArgumentType(name, Arguments) {
 function replaceAddress(input) {
     return input.replace(/http:\/\/0\.0\.0\.0:(\d+)/g, 'http://localhost:$1');
 }
-function catchAddress$2(input) {
+function catchAddress$3(input) {
     const localhostPatterns = [
         /https?:\/\/localhost(?::\d+)?/i,
         /https?:\/\/127\.0\.0\.1(?::\d+)?/i,
@@ -17920,7 +17920,7 @@ async function cardInfo$d(api, callback) {
         descManager.updateItem(0, 3, result);
     });
 }
-function catchAddress$1(input) {
+function catchAddress$2(input) {
     if (input.toLowerCase().includes('listening at')) {
         const portRegex = /:(\d+)(?!.*\d)/;
         const match = input.match(portRegex);
@@ -17934,7 +17934,7 @@ function catchAddress$1(input) {
     return undefined;
 }
 const Flow_RM = {
-    catchAddress: catchAddress$1,
+    catchAddress: catchAddress$2,
     parseArgsToString: parseArgsToString$e,
     parseStringToArgs: parseStringToArgs$e,
     cardInfo: cardInfo$d,
@@ -22934,7 +22934,7 @@ async function cardInfo$b(api, callback) {
     });
 }
 const N8N_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     cardInfo: cardInfo$b,
     parseStringToArgs: parseStringToArgs$c,
     parseArgsToString: parseArgsToString$c,
@@ -23077,7 +23077,7 @@ async function cardInfo$a(api, callback) {
     return CardInfo(URL$6, '/extensions', api, callback);
 }
 const AG_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     parseArgsToString: parseArgsToString$b,
     parseStringToArgs: parseStringToArgs$b,
     cardInfo: cardInfo$a,
@@ -23719,7 +23719,7 @@ async function cardInfo$9(api, callback) {
     return CardInfo(COMFYUI_URL, '/custom_nodes', api, callback);
 }
 const COMFYUI_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$4,
     parseArgsToString: parseArgsToString$a,
     parseStringToArgs: parseStringToArgs$a,
@@ -24375,7 +24375,7 @@ async function cardInfo$8(api, callback) {
     return CardInfo(URL$5, '/custom_nodes', api, callback);
 }
 const COMFYUI_ZLUDA_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$3,
     parseArgsToString: parseArgsToString$9,
     parseStringToArgs: parseStringToArgs$9,
@@ -24609,7 +24609,7 @@ async function cardInfo$7(api, callback) {
     });
 }
 const INVOKE_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     cardInfo: cardInfo$7,
     parseArgsToString: parseArgsToString$8,
     parseStringToArgs: parseStringToArgs$8,
@@ -24765,7 +24765,7 @@ async function cardInfo$6(api, callback) {
     return CardInfo(URL$4, undefined, api, callback);
 }
 const KOHYA_GUI_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     parseArgsToString: parseArgsToString$7,
     parseStringToArgs: parseStringToArgs$7,
     cardInfo: cardInfo$6,
@@ -26013,7 +26013,7 @@ function parseStringToArgs$5(args) {
     return argResult;
 }
 const SD_AMD_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$2,
     parseArgsToString: parseArgsToString$5,
     parseStringToArgs: parseStringToArgs$5,
@@ -26334,7 +26334,7 @@ async function cardInfo$4(api, callback) {
     return CardInfo(URL$3, '/extensions', api, callback);
 }
 const SD_NEXT_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$2,
     parseArgsToString: parseArgsToString$4,
     parseStringToArgs: parseStringToArgs$4,
@@ -26545,7 +26545,7 @@ async function cardInfo$3(api, callback) {
     return CardInfo(URL$2, '/src/Extensions', api, callback);
 }
 const SWARM_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$1,
     parseArgsToString: parseArgsToString$3,
     parseStringToArgs: parseStringToArgs$3,
@@ -26706,7 +26706,7 @@ async function cardInfo$2(api, callback) {
         descManager.updateItem(0, 3, result);
     });
 }
-function catchAddress(input) {
+function catchAddress$1(input) {
     const localhostPatterns = [
         /https?:\/\/localhost(?::\d+)?/i,
         /https?:\/\/127\.0\.0\.1(?::\d+)?/i,
@@ -26726,7 +26726,7 @@ function catchAddress(input) {
     return undefined;
 }
 const OPEN_WEBUI_RM = {
-    catchAddress,
+    catchAddress: catchAddress$1,
     cardInfo: cardInfo$2,
     parseStringToArgs: parseStringToArgs$2,
     parseArgsToString: parseArgsToString$2,
@@ -31277,7 +31277,7 @@ async function cardInfo$1(api, callback) {
     return CardInfo(URL$1, undefined, api, callback);
 }
 const SILLYTAVERN_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     parseArgsToString: parseArgsToString$1,
     parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$1,
@@ -32352,8 +32352,16 @@ function startInstall(stepper) {
 async function cardInfo(api, callback) {
     return CardInfo(URL, '/extensions', api, callback);
 }
+function catchAddress(input) {
+    const webUiPattern = /Running on local URL:\s*(https?:\/\/[^\s]+)/i;
+    const match = input.match(webUiPattern);
+    if (match) {
+        return replaceAddress(match[1]);
+    }
+    return undefined;
+}
 const TG_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -32361,4 +32369,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { parseStringToArgs$2 as $, ALLTALK_ID as A, parseArgsToString$7 as B, COMFYUI_ID as C, parseStringToArgs$7 as D, ONETRAINER_ID as E, FLOWISEAI_ID as F, GeminiCli_ID as G, A1_ID as H, INVOKEAI_INSTALL_DIR_KEY as I, parseArgsToString$6 as J, KOHYA_ID as K, parseStringToArgs$6 as L, parseArgsToString$5 as M, N8N_ID as N, OPEN_WEBUI_ID as O, parseStringToArgs$5 as P, SD_NEXT_ID as Q, parseArgsToString$4 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$4 as U, SWARM_ID as V, parseArgsToString$3 as W, parseStringToArgs$3 as X, BOLT_DIY_ID as Y, LoLLMS_ID as Z, parseArgsToString$2 as _, getVenvPythonPath as a, SILLYTAVERN_ID as a0, parseArgsToFiles as a1, parseFilesToArgs as a2, TG_ID as a3, parseArgsToString as a4, parseStringToArgs as a5, SD_FORGE_ID as a6, SD_FORGE_AMD_ID as a7, SD_UIUX_ID as a8, flowiseArguments as a9, TG_RM as aA, oobaboogaArguments as aB, openArguments as aC, OPEN_WEBUI_RM as aD, SILLYTAVERN_RM as aE, sillyArguments as aF, Flow_RM as aa, GeminiCli_RM as ab, geminiCliArguments as ac, n8nArguments as ad, N8N_RM as ae, CardInfo as af, GitInstaller as ag, AG_RM as ah, gitmyloArguments as ai, fetchExtensionList$2 as aj, catchAddress$2 as ak, lodashExports as al, automatic1111Arguments as am, COMFYUI_RM as an, comfyArguments as ao, INVOKE_RM as ap, SD_NEXT_RM as aq, vladmandicArguments as ar, KOHYA_GUI_RM as as, bmaltaisArguments as at, COMFYUI_ZLUDA_RM as au, comfyZludaArguments as av, SD_AMD_RM as aw, lshqqytigerArguments as ax, SWARM_RM as ay, mcMonkeyArguments as az, getCdCommand as b, commonjsGlobal as c, parseStringToArgs$e as d, parseFilesToArgs$1 as e, parseArgsToFiles$1 as f, getDefaultExportFromCjs as g, parseArgsToString$c as h, isWin as i, parseStringToArgs$c as j, AG_ID as k, parseArgsToString$b as l, parseStringToArgs$b as m, parseArgsToString$a as n, parseStringToArgs$a as o, parseArgsToString$e as p, COMFYUI_ZLUDA_ID as q, removeAnsi as r, parseArgsToString$9 as s, parseStringToArgs$9 as t, INVOKE_ID as u, extractGitUrl as v, INVOKEAI_UPDATE_AVAILABLE_KEY as w, Invoke_Command_ActivateVenv as x, parseArgsToString$8 as y, parseStringToArgs$8 as z };
+export { parseStringToArgs$2 as $, ALLTALK_ID as A, parseArgsToString$7 as B, COMFYUI_ID as C, parseStringToArgs$7 as D, ONETRAINER_ID as E, FLOWISEAI_ID as F, GeminiCli_ID as G, A1_ID as H, INVOKEAI_INSTALL_DIR_KEY as I, parseArgsToString$6 as J, KOHYA_ID as K, parseStringToArgs$6 as L, parseArgsToString$5 as M, N8N_ID as N, OPEN_WEBUI_ID as O, parseStringToArgs$5 as P, SD_NEXT_ID as Q, parseArgsToString$4 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$4 as U, SWARM_ID as V, parseArgsToString$3 as W, parseStringToArgs$3 as X, BOLT_DIY_ID as Y, LoLLMS_ID as Z, parseArgsToString$2 as _, getVenvPythonPath as a, SILLYTAVERN_ID as a0, parseArgsToFiles as a1, parseFilesToArgs as a2, TG_ID as a3, parseArgsToString as a4, parseStringToArgs as a5, SD_FORGE_ID as a6, SD_FORGE_AMD_ID as a7, SD_UIUX_ID as a8, flowiseArguments as a9, TG_RM as aA, oobaboogaArguments as aB, openArguments as aC, OPEN_WEBUI_RM as aD, SILLYTAVERN_RM as aE, sillyArguments as aF, Flow_RM as aa, GeminiCli_RM as ab, geminiCliArguments as ac, n8nArguments as ad, N8N_RM as ae, CardInfo as af, GitInstaller as ag, AG_RM as ah, gitmyloArguments as ai, fetchExtensionList$2 as aj, catchAddress$3 as ak, lodashExports as al, automatic1111Arguments as am, COMFYUI_RM as an, comfyArguments as ao, INVOKE_RM as ap, SD_NEXT_RM as aq, vladmandicArguments as ar, KOHYA_GUI_RM as as, bmaltaisArguments as at, COMFYUI_ZLUDA_RM as au, comfyZludaArguments as av, SD_AMD_RM as aw, lshqqytigerArguments as ax, SWARM_RM as ay, mcMonkeyArguments as az, getCdCommand as b, commonjsGlobal as c, parseStringToArgs$e as d, parseFilesToArgs$1 as e, parseArgsToFiles$1 as f, getDefaultExportFromCjs as g, parseArgsToString$c as h, isWin as i, parseStringToArgs$c as j, AG_ID as k, parseArgsToString$b as l, parseStringToArgs$b as m, parseArgsToString$a as n, parseStringToArgs$a as o, parseArgsToString$e as p, COMFYUI_ZLUDA_ID as q, removeAnsi as r, parseArgsToString$9 as s, parseStringToArgs$9 as t, INVOKE_ID as u, extractGitUrl as v, INVOKEAI_UPDATE_AVAILABLE_KEY as w, Invoke_Command_ActivateVenv as x, parseArgsToString$8 as y, parseStringToArgs$8 as z };

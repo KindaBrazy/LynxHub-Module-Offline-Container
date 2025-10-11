@@ -9,7 +9,7 @@ import {
   InstallationStepper,
 } from '../../../../../src/cross/plugin/ModuleTypes';
 import {isWin} from '../../../Utils/CrossUtils';
-import {CardInfo, catchAddress, getArgumentType, GitInstaller, isValidArg} from '../../../Utils/RendererUtils';
+import {CardInfo, getArgumentType, GitInstaller, isValidArg, replaceAddress} from '../../../Utils/RendererUtils';
 import oobaboogaArguments from './Arguments';
 import {fetchExtensionList} from './ExtensionsList';
 
@@ -81,6 +81,18 @@ function startInstall(stepper: InstallationStepper) {
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
   return CardInfo(URL, '/extensions', api, callback);
+}
+
+export function catchAddress(input: string): string | undefined {
+  const webUiPattern = /Running on local URL:\s*(https?:\/\/[^\s]+)/i;
+
+  const match = input.match(webUiPattern);
+
+  if (match) {
+    return replaceAddress(match[1]);
+  }
+
+  return undefined;
 }
 
 const TG_RM: CardRendererMethods = {

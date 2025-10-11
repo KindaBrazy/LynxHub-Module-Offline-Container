@@ -2,39 +2,43 @@
   "$schema": "https://raw.githubusercontent.com/KindaBrazy/LynxHub-Statics/refs/heads/schema/plugins/versioning.schema.json",
   "versions": [
     {
+      "version": "12.1.1",
+      "commit": "0679d6e",
+      "engines": {"moduleApi": "^2.0.0"},
+      "stage": "insider",
+      "platforms": ["win32", "linux", "darwin"]
+    },
+    {
       "version": "12.1.0",
       "commit": "724cda0",
-      "engines": { "moduleApi": "^2.0.0" },
+      "engines": {"moduleApi": "^2.0.0"},
       "stage": "insider",
       "platforms": ["win32", "linux", "darwin"]
     },
     {
       "version": "12.0.0",
       "commit": "9179b6b",
-      "engines": { "moduleApi": "^1.0.0" },
+      "engines": {"moduleApi": "^1.0.0"},
       "stage": "public",
       "platforms": ["win32", "linux", "darwin"]
     }
   ],
   "changes": [
     {
+      "version": "12.1.1",
+      "date": "2025-10-11",
+      "items": [{"🪲 Bug Fixes": ["Text Generation (oobabooga): Correct address extraction logic."]}]
+    },
+    {
       "version": "12.1.0",
       "date": "2025-09-28",
-      "items": [
-        {
-          "⚡ Improvements": [
-            "Migrate Flowise, Gemini CLI, and N8N to new Agents page."
-          ]
-        }
-      ]
+      "items": [{"⚡ Improvements": ["Migrate Flowise, Gemini CLI, and N8N to new Agents page."]}]
     },
     {
       "version": "12.0.0",
       "date": "2025-09-11",
       "items": [
-        {
-          "✨ New": ["Added n8n integration.", "Added gemini-cli integration."]
-        },
+        {"✨ New": ["Added n8n integration.", "Added gemini-cli integration."]},
         {
           "⚡ Improvements": [
             {
@@ -59,11 +63,7 @@
     {
       "version": "11.3.1",
       "date": "2025-09-04",
-      "items": [
-        {
-          "⚡ Improvements": ["Support LynxHub Version 3.2.0"]
-        }
-      ]
+      "items": [{"⚡ Improvements": ["Support LynxHub Version 3.2.0"]}]
     },
     {
       "version": "11.3.0",
@@ -91,9 +91,7 @@
       "date": "2025-05-14",
       "items": [
         {
-          "🪲 Bug Fixes": [
-            "Fix open-webui installation detection in various environments (e.g., conda)."
-          ]
+          "🪲 Bug Fixes": ["Fix open-webui installation detection in various environments (e.g., conda)."]
         }
       ]
     },
@@ -114,9 +112,7 @@
       "date": "2025-04-20",
       "items": [
         {
-          "⚡ Improvements": [
-            "Implement new InvokeAI installation and updating logic."
-          ]
+          "⚡ Improvements": ["Implement new InvokeAI installation and updating logic."]
         }
       ]
     },

@@ -1,4 +1,4 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, r as removeAnsi, b as getCdCommand, F as FLOWISEAI_ID, p as parseArgsToString, d as parseStringToArgs, e as parseFilesToArgs, f as parseArgsToFiles, G as GeminiCli_ID, N as N8N_ID, h as parseArgsToString$1, j as parseStringToArgs$1, A as ALLTALK_ID, k as AG_ID, l as parseArgsToString$2, m as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, n as parseArgsToString$3, o as parseStringToArgs$3, q as COMFYUI_ZLUDA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, u as INVOKE_ID, v as extractGitUrl, w as INVOKEAI_UPDATE_AVAILABLE_KEY, x as Invoke_Command_ActivateVenv, y as parseArgsToString$5, z as parseStringToArgs$5, K as KOHYA_ID, B as parseArgsToString$6, D as parseStringToArgs$6, E as ONETRAINER_ID, H as A1_ID, J as parseArgsToString$7, L as parseStringToArgs$7, S as SD_AMD_ID, M as parseArgsToString$8, P as parseStringToArgs$8, Q as SD_NEXT_ID, R as parseArgsToString$9, U as parseStringToArgs$9, V as SWARM_ID, W as parseArgsToString$a, X as parseStringToArgs$a, Y as BOLT_DIY_ID, Z as LoLLMS_ID, _ as parseArgsToString$b, $ as parseStringToArgs$b, a0 as SILLYTAVERN_ID, a1 as parseArgsToFiles$1, a2 as parseFilesToArgs$1, a3 as TG_ID, a4 as parseArgsToString$c, a5 as parseStringToArgs$c, a6 as SD_FORGE_ID, a7 as SD_FORGE_AMD_ID, a8 as SD_UIUX_ID } from './RendererMethods_iK-FBL.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, r as removeAnsi, b as getCdCommand, F as FLOWISEAI_ID, p as parseArgsToString, d as parseStringToArgs, e as parseFilesToArgs, f as parseArgsToFiles, G as GeminiCli_ID, N as N8N_ID, h as parseArgsToString$1, j as parseStringToArgs$1, A as AG_ID, k as parseArgsToString$2, l as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, m as parseArgsToString$3, n as parseStringToArgs$3, o as COMFYUI_ZLUDA_ID, q as parseArgsToString$4, s as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, t as INVOKE_ID, u as extractGitUrl, v as INVOKEAI_UPDATE_AVAILABLE_KEY, w as Invoke_Command_ActivateVenv, x as parseArgsToString$5, y as parseStringToArgs$5, K as KOHYA_ID, z as parseArgsToString$6, B as parseStringToArgs$6, D as ONETRAINER_ID, E as A1_ID, H as parseArgsToString$7, J as parseStringToArgs$7, S as SD_AMD_ID, L as parseArgsToString$8, M as parseStringToArgs$8, P as SD_NEXT_ID, Q as parseArgsToString$9, R as parseStringToArgs$9, U as SWARM_ID, V as parseArgsToString$a, W as parseStringToArgs$a, X as BOLT_DIY_ID, Y as LoLLMS_ID, Z as parseArgsToString$b, _ as parseStringToArgs$b, $ as SILLYTAVERN_ID, a0 as parseArgsToFiles$1, a1 as parseFilesToArgs$1, a2 as TG_ID, a3 as parseArgsToString$c, a4 as parseStringToArgs$c, a5 as SD_FORGE_ID, a6 as SD_FORGE_AMD_ID, a7 as SD_UIUX_ID, a8 as ALLTALK_ID } from './RendererMethods_DjTBKg.mjs';
 import path, { join } from 'node:path';
 import { exec, execSync } from 'node:child_process';
 import { platform as platform$2 } from 'node:os';
@@ -22071,19 +22071,19 @@ async function uninstallNpmPackage(id, packageName, utils) {
 
 const PACKAGE_NAME$2 = 'flowise';
 const CONFIG_FILE$6 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
-const DEFAULT_BATCH_DATA$e = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
+const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
 async function getRunCommands$j(configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$6));
-    await initBatchFile(filePath, DEFAULT_BATCH_DATA$e);
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$d);
     return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 async function saveArgs$e(args, configDir) {
     return await utilSaveArgs(args, CONFIG_FILE$6, parseArgsToString, configDir);
 }
 async function readArgs$e(configDir) {
-    return await utilReadArgs(CONFIG_FILE$6, DEFAULT_BATCH_DATA$e, parseStringToArgs, configDir);
+    return await utilReadArgs(CONFIG_FILE$6, DEFAULT_BATCH_DATA$d, parseStringToArgs, configDir);
 }
 async function updateAvailable$7(utils) {
     const available = await checkNpmPackageUpdate(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
@@ -22117,12 +22117,12 @@ const Flow_MM = utils => {
 
 const PACKAGE_NAME$1 = '@google/gemini-cli';
 const CONFIG_FILE$5 = isWin ? 'geminiCli_config.bat' : 'geminiCli_config.sh';
-const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
+const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
 async function getRunCommands$i(configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$5));
-    await initBatchFile(filePath, DEFAULT_BATCH_DATA$d);
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$c);
     return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 async function saveArgs$d(args, configDir) {
@@ -22145,7 +22145,7 @@ async function readArgs$d(configDir) {
     if (!configDir)
         return [];
     const scriptPath = path.join(configDir, CONFIG_FILE$5);
-    await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$d);
+    await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$c);
     const scriptData = await fs.promises.readFile(scriptPath, 'utf-8');
     return parseFilesToArgs(scriptData);
 }
@@ -22180,19 +22180,19 @@ const GeminiCli_MM = utils => {
 
 const PACKAGE_NAME = 'n8n';
 const CONFIG_FILE$4 = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
-const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
+const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
 async function getRunCommands$h(configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$4));
-    await initBatchFile(filePath, DEFAULT_BATCH_DATA$c);
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$b);
     return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
 }
 async function saveArgs$c(args, configDir) {
     return await utilSaveArgs(args, CONFIG_FILE$4, parseArgsToString$1, configDir);
 }
 async function readArgs$c(configDir) {
-    return await utilReadArgs(CONFIG_FILE$4, DEFAULT_BATCH_DATA$c, parseStringToArgs$1, configDir);
+    return await utilReadArgs(CONFIG_FILE$4, DEFAULT_BATCH_DATA$b, parseStringToArgs$1, configDir);
 }
 async function isInstalled$1(utils) {
     return isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils);
@@ -22223,15 +22223,13 @@ const N8N_MM = utils => {
     };
 };
 
-const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
-async function getRunCommands$g(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$b);
+const BAT_FILE_NAME$a = isWin ? 'start_alltalk.bat' : 'start_alltalk.sh';
+async function getRunCommands$g() {
+    return await utilRunCommands(BAT_FILE_NAME$a);
 }
-const Rrew123_MM = utils => {
-    const installDir = utils.getInstallDir(ALLTALK_ID);
+const Rrew123_MM = () => {
     return {
-        getRunCommands: () => getRunCommands$g(installDir),
+        getRunCommands: () => getRunCommands$g(),
     };
 };
 
@@ -22646,6 +22644,10 @@ function requireIdentifiers () {
 
 	const numeric = /^[0-9]+$/;
 	const compareIdentifiers = (a, b) => {
+	  if (typeof a === 'number' && typeof b === 'number') {
+	    return a === b ? 0 : a < b ? -1 : 1
+	  }
+
 	  const anum = numeric.test(a);
 	  const bnum = numeric.test(b);
 
@@ -22788,11 +22790,25 @@ function requireSemver$1 () {
 	      other = new SemVer(other, this.options);
 	    }
 
-	    return (
-	      compareIdentifiers(this.major, other.major) ||
-	      compareIdentifiers(this.minor, other.minor) ||
-	      compareIdentifiers(this.patch, other.patch)
-	    )
+	    if (this.major < other.major) {
+	      return -1
+	    }
+	    if (this.major > other.major) {
+	      return 1
+	    }
+	    if (this.minor < other.minor) {
+	      return -1
+	    }
+	    if (this.minor > other.minor) {
+	      return 1
+	    }
+	    if (this.patch < other.patch) {
+	      return -1
+	    }
+	    if (this.patch > other.patch) {
+	      return 1
+	    }
+	    return 0
 	  }
 
 	  comparePre (other) {
@@ -23813,6 +23829,7 @@ function requireRange () {
 	// already replaced the hyphen ranges
 	// turn into a set of JUST comparators.
 	const parseComparator = (comp, options) => {
+	  comp = comp.replace(re[t.BUILD], '');
 	  debug('comp', comp, options);
 	  comp = replaceCarets(comp, options);
 	  debug('caret', comp);
@@ -25418,7 +25435,7 @@ async function initialModule(utils) {
         { id: COMFYUI_ZLUDA_ID, methods: () => ComfyZluda_MM(utils) },
         { id: ONETRAINER_ID, methods: () => Nerogar_MM(utils) },
         { id: INVOKE_ID, methods: () => Invoke_MM(utils) },
-        { id: ALLTALK_ID, methods: () => Rrew123_MM(utils) },
+        { id: ALLTALK_ID, methods: () => Rrew123_MM() },
         { id: OPEN_WEBUI_ID, methods: () => OpenWebUI_MM(utils) },
         { id: FLOWISEAI_ID, methods: () => Flow_MM(utils) },
         { id: LoLLMS_ID, methods: () => LoLLM_MM(utils) },

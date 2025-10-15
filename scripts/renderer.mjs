@@ -1,4 +1,4 @@
-import { a9 as flowiseArguments, aa as Flow_RM, F as FLOWISEAI_ID, ab as GeminiCli_RM, ac as geminiCliArguments, G as GeminiCli_ID, ad as n8nArguments, ae as N8N_RM, N as N8N_ID, i as isWin, af as CardInfo, ag as GitInstaller, T as TTS_ID, ah as AG_RM, ai as gitmyloArguments, k as AG_ID, A as ALLTALK_ID, L as parseStringToArgs, J as parseArgsToString, aj as fetchExtensionList, ak as catchAddress$2, al as lodashExports, am as automatic1111Arguments, an as COMFYUI_RM, ao as comfyArguments, C as COMFYUI_ID, a6 as SD_FORGE_ID, ap as INVOKE_RM, u as INVOKE_ID, aq as SD_NEXT_RM, ar as vladmandicArguments, Q as SD_NEXT_ID, H as A1_ID, E as ONETRAINER_ID, as as KOHYA_GUI_RM, at as bmaltaisArguments, K as KOHYA_ID, au as COMFYUI_ZLUDA_RM, av as comfyZludaArguments, q as COMFYUI_ZLUDA_ID, aw as SD_AMD_RM, ax as lshqqytigerArguments, S as SD_AMD_ID, a7 as SD_FORGE_AMD_ID, ay as SWARM_RM, az as mcMonkeyArguments, V as SWARM_ID, a8 as SD_UIUX_ID, aA as TG_RM, aB as oobaboogaArguments, a3 as TG_ID, aC as openArguments, aD as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, Y as BOLT_DIY_ID, aE as SILLYTAVERN_RM, aF as sillyArguments, a0 as SILLYTAVERN_ID, Z as LoLLMS_ID } from './RendererMethods_iK-FBL.mjs';
+import { a9 as flowiseArguments, aa as Flow_RM, F as FLOWISEAI_ID, ab as GeminiCli_RM, ac as geminiCliArguments, G as GeminiCli_ID, ad as n8nArguments, ae as N8N_RM, N as N8N_ID, i as isWin, af as CardInfo, ag as GitInstaller, T as TTS_ID, ah as AG_RM, ai as gitmyloArguments, A as AG_ID, a8 as ALLTALK_ID, J as parseStringToArgs, H as parseArgsToString, aj as fetchExtensionList, ak as catchAddress$3, al as lodashExports, am as automatic1111Arguments, an as COMFYUI_RM, ao as comfyArguments, C as COMFYUI_ID, a5 as SD_FORGE_ID, ap as INVOKE_RM, t as INVOKE_ID, aq as SD_NEXT_RM, ar as vladmandicArguments, P as SD_NEXT_ID, E as A1_ID, D as ONETRAINER_ID, as as KOHYA_GUI_RM, at as bmaltaisArguments, K as KOHYA_ID, au as COMFYUI_ZLUDA_RM, av as comfyZludaArguments, o as COMFYUI_ZLUDA_ID, aw as SD_AMD_RM, ax as lshqqytigerArguments, S as SD_AMD_ID, a6 as SD_FORGE_AMD_ID, ay as SWARM_RM, az as mcMonkeyArguments, U as SWARM_ID, a7 as SD_UIUX_ID, aA as TG_RM, aB as oobaboogaArguments, a2 as TG_ID, aC as openArguments, aD as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, X as BOLT_DIY_ID, aE as SILLYTAVERN_RM, aF as sillyArguments, $ as SILLYTAVERN_ID, Y as LoLLMS_ID } from './RendererMethods_DjTBKg.mjs';
 
 const agentsPage = {
     routePath: 'agents_page',
@@ -91,8 +91,17 @@ function startUpdate$2(stepper, dir) {
 async function cardInfo$8(api, callback) {
     return CardInfo(URL$2, undefined, api, callback);
 }
+function catchAddress$2(input) {
+    const gradioDarkPattern = /Gradio Dark\s*:\s*(https?:\/\/[^\s]+)/i;
+    const match = input.match(gradioDarkPattern);
+    if (match) {
+        return match[1];
+    }
+    return undefined;
+}
 const ALLTALK_RM = {
     cardInfo: cardInfo$8,
+    catchAddress: catchAddress$2,
     manager: {
         startInstall: startInstall$8,
         updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
@@ -590,7 +599,7 @@ async function cardInfo$5(api, callback) {
     return CardInfo(A1_URL, '/extensions', api, callback);
 }
 const A1_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -606,7 +615,7 @@ async function cardInfo$4(api, callback) {
     return CardInfo(SD_FORGE_URL, '/extensions', api, callback);
 }
 const SD_FORGE_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -654,7 +663,7 @@ async function cardInfo$3(api, callback) {
     return CardInfo(SdAMD_URL$1, 'RendererMethods', api, callback);
 }
 const SD_FORGE_AMD_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -670,7 +679,7 @@ async function cardInfo$2(api, callback) {
     return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
 const SD_UIUX_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
@@ -956,7 +965,7 @@ async function cardInfo(api, callback) {
     return CardInfo(url, undefined, api, callback);
 }
 const LoLLM_RM = {
-    catchAddress: catchAddress$2,
+    catchAddress: catchAddress$3,
     cardInfo,
     manager: { startInstall, updater: { updateType: 'git' } },
 };

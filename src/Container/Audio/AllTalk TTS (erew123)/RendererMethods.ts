@@ -69,8 +69,20 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
   return CardInfo(URL, undefined, api, callback);
 }
 
+export function catchAddress(input: string): string | undefined {
+  const gradioDarkPattern = /Gradio Dark\s*:\s*(https?:\/\/[^\s]+)/i;
+
+  const match: RegExpMatchArray | null = input.match(gradioDarkPattern);
+  if (match) {
+    return match[1];
+  }
+
+  return undefined;
+}
+
 const ALLTALK_RM: CardRendererMethods = {
   cardInfo,
+  catchAddress,
   manager: {
     startInstall,
     updater: {updateType: 'stepper', startUpdate},

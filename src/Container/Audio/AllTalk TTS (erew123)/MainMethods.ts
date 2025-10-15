@@ -1,20 +1,16 @@
 import {CardMainMethodsInitial} from '../../../../../src/cross/plugin/ModuleTypes';
-import {ALLTALK_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilRunCommands} from '../../../Utils/MainUtils';
 
-const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
+const BAT_FILE_NAME = isWin ? 'start_alltalk.bat' : 'start_alltalk.sh';
 
-export async function getRunCommands(dir?: string): Promise<string | string[]> {
-  return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
+export async function getRunCommands(): Promise<string | string[]> {
+  return await utilRunCommands(BAT_FILE_NAME);
 }
 
-const Rrew123_MM: CardMainMethodsInitial = utils => {
-  const installDir = utils.getInstallDir(ALLTALK_ID);
-
+const Rrew123_MM: CardMainMethodsInitial = () => {
   return {
-    getRunCommands: () => getRunCommands(installDir),
+    getRunCommands: () => getRunCommands(),
   };
 };
 

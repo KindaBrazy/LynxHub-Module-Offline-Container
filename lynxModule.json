@@ -6,12 +6,33 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 29,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "12.0.1",
-  "updateDate": "2025-10-11",
+  "version": "12.0.2",
+  "updateDate": "2025-10-15",
   "engines": {
     "moduleApi": "^1.0.0"
   },
   "changes": [
+    {
+      "title": "V12.0.2",
+      "items": [
+        {
+          "label": "⚡ Improvements",
+          "subitems": [
+            {
+              "label": "AllTalk TTS",
+              "subitems": [
+                {
+                  "label": "Add gradio address catching."
+                },
+                {
+                  "label": "Update start batch script file to use 'start_alltalk'"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V12.0.1",
       "items": [

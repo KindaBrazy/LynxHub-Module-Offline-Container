@@ -1,4 +1,4 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, A as ALLTALK_ID, b as AG_ID, p as parseArgsToString, d as parseStringToArgs, T as TTS_ID, C as COMFYUI_ID, e as parseArgsToString$1, f as parseStringToArgs$1, h as COMFYUI_ZLUDA_ID, j as parseArgsToString$2, k as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, l as INVOKE_ID, m as extractGitUrl, n as INVOKEAI_UPDATE_AVAILABLE_KEY, o as Invoke_Command_ActivateVenv, q as parseArgsToString$3, r as parseStringToArgs$3, K as KOHYA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, u as ONETRAINER_ID, v as A1_ID, w as parseArgsToString$5, x as parseStringToArgs$5, S as SD_AMD_ID, y as parseArgsToString$6, z as parseStringToArgs$6, B as SD_NEXT_ID, D as parseArgsToString$7, E as parseStringToArgs$7, F as SWARM_ID, G as parseArgsToString$8, H as parseStringToArgs$8, J as BOLT_DIY_ID, L as removeAnsi, M as getCdCommand, N as FLOWISEAI_ID, P as parseArgsToString$9, Q as parseStringToArgs$9, R as parseFilesToArgs, U as parseArgsToFiles, V as GeminiCli_ID, W as LoLLMS_ID, X as N8N_ID, Y as parseArgsToString$a, Z as parseStringToArgs$a, _ as parseArgsToString$b, $ as parseStringToArgs$b, a0 as SILLYTAVERN_ID, a1 as parseArgsToFiles$1, a2 as parseFilesToArgs$1, a3 as TG_ID, a4 as parseArgsToString$c, a5 as parseStringToArgs$c, a6 as SD_FORGE_ID, a7 as SD_FORGE_AMD_ID, a8 as SD_UIUX_ID } from './RendererMethods_DwbIKp.mjs';
+import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, A as AG_ID, p as parseArgsToString, b as parseStringToArgs, T as TTS_ID, C as COMFYUI_ID, d as parseArgsToString$1, e as parseStringToArgs$1, f as COMFYUI_ZLUDA_ID, h as parseArgsToString$2, j as parseStringToArgs$2, I as INVOKEAI_INSTALL_DIR_KEY, k as INVOKE_ID, l as extractGitUrl, m as INVOKEAI_UPDATE_AVAILABLE_KEY, n as Invoke_Command_ActivateVenv, o as parseArgsToString$3, q as parseStringToArgs$3, K as KOHYA_ID, r as parseArgsToString$4, s as parseStringToArgs$4, t as ONETRAINER_ID, u as A1_ID, v as parseArgsToString$5, w as parseStringToArgs$5, S as SD_AMD_ID, x as parseArgsToString$6, y as parseStringToArgs$6, z as SD_NEXT_ID, B as parseArgsToString$7, D as parseStringToArgs$7, E as SWARM_ID, F as parseArgsToString$8, G as parseStringToArgs$8, H as BOLT_DIY_ID, J as removeAnsi, L as getCdCommand, M as FLOWISEAI_ID, N as parseArgsToString$9, P as parseStringToArgs$9, Q as parseFilesToArgs, R as parseArgsToFiles, U as GeminiCli_ID, V as LoLLMS_ID, W as N8N_ID, X as parseArgsToString$a, Y as parseStringToArgs$a, Z as parseArgsToString$b, _ as parseStringToArgs$b, $ as SILLYTAVERN_ID, a0 as parseArgsToFiles$1, a1 as parseFilesToArgs$1, a2 as TG_ID, a3 as parseArgsToString$c, a4 as parseStringToArgs$c, a5 as SD_FORGE_ID, a6 as SD_FORGE_AMD_ID, a7 as SD_UIUX_ID, a8 as ALLTALK_ID } from './RendererMethods_AqNjTw.mjs';
 import { exec, execSync } from 'node:child_process';
 import { platform as platform$2 } from 'node:os';
 import path, { join } from 'node:path';
@@ -21976,15 +21976,13 @@ function isVenvDirectory(dirPath) {
     }
 }
 
-const BAT_FILE_NAME$a = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA$e = isWin ? '@echo off\n\npython script.py' : '#!/bin/bash\n\npython script.py';
-async function getRunCommands$j(dir) {
-    return await utilRunCommands(BAT_FILE_NAME$a, dir, DEFAULT_BATCH_DATA$e);
+const BAT_FILE_NAME$a = isWin ? 'start_alltalk.bat' : 'start_alltalk.sh';
+async function getRunCommands$j() {
+    return await utilRunCommands(BAT_FILE_NAME$a);
 }
-const Rrew123_MM = utils => {
-    const installDir = utils.getInstallDir(ALLTALK_ID);
+const Rrew123_MM = () => {
     return {
-        getRunCommands: () => getRunCommands$j(installDir),
+        getRunCommands: () => getRunCommands$j(),
     };
 };
 
@@ -25418,7 +25416,7 @@ async function initialModule(utils) {
         { id: COMFYUI_ZLUDA_ID, methods: () => ComfyZluda_MM(utils) },
         { id: ONETRAINER_ID, methods: () => Nerogar_MM(utils) },
         { id: INVOKE_ID, methods: () => Invoke_MM(utils) },
-        { id: ALLTALK_ID, methods: () => Rrew123_MM(utils) },
+        { id: ALLTALK_ID, methods: () => Rrew123_MM() },
         { id: OPEN_WEBUI_ID, methods: () => OpenWebUI_MM(utils) },
         { id: FLOWISEAI_ID, methods: () => Flow_MM(utils) },
         { id: LoLLMS_ID, methods: () => LoLLM_MM(utils) },

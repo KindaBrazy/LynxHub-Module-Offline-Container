@@ -69,8 +69,8 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
   return CardInfo(URL, undefined, api, callback);
 }
 
-export function catchAddress(input: string): string | undefined {
-  const gradioDarkPattern = /Gradio Dark\s*:\s*(https?:\/\/[^\s]+)/i;
+function catchAddress(input: string): string | undefined {
+  const gradioDarkPattern = /Gradio Dark.*?:\s*.*?(https?:\/\/.*?)(?=\s|\u001b|$)/i;
 
   const match: RegExpMatchArray | null = input.match(gradioDarkPattern);
   if (match) {

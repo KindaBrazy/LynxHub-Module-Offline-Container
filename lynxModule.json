@@ -6,12 +6,25 @@
   "publishDate": "2024-08-21",
   "requireAppBuild": 29,
   "repoUrl": "https://github.com/KindaBrazy/LynxHub-Module-Offline-Container",
-  "version": "12.0.2",
-  "updateDate": "2025-10-15",
+  "version": "12.0.3",
+  "updateDate": "2025-10-17",
   "engines": {
     "moduleApi": "^1.0.0"
   },
   "changes": [
+    {
+      "title": "V12.0.3",
+      "items": [
+        {
+          "label": "🪲 Bug Fixes",
+          "subitems": [
+            {
+              "label": "Fixed AllTalk TTS URL extraction."
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "V12.0.2",
       "items": [

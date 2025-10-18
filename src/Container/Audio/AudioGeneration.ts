@@ -17,8 +17,6 @@ const audioPage: PagesData = {
       repoUrl: 'https://github.com/rsxdalv/TTS-WebUI',
       type: 'audio',
       extensionsDir: '/extensions',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/0816d031-1165-44aa-9f15-df613f244942/width=300/00000-4072148758.jpeg',
       methods: TTS_RM,
       installationType: 'git',
     },
@@ -30,8 +28,6 @@ const audioPage: PagesData = {
       type: 'audio',
       arguments: gitmyloArguments,
       extensionsDir: '/extensions',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/a7473108-d6fb-4c9d-97a6-b58ca82bcdfb/width=300/00002-1953665041.jpeg',
       methods: AG_RM,
       installationType: 'git',
     },
@@ -45,9 +41,6 @@ const audioPage: PagesData = {
         'software via JSON calls.',
       repoUrl: 'https://github.com/erew123/alltalk_tts',
       type: 'audio',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/d0f56692-50fc-4e8e-ac8b-02d8ec070417' +
-        '/width=300/00006-951269360.jpeg',
       methods: ALLTALK_RM,
       installationType: 'git',
     },

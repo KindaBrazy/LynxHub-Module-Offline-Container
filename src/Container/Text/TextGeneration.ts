@@ -19,8 +19,6 @@ const textPage: PagesData = {
       repoUrl: 'https://github.com/oobabooga/text-generation-webui',
       type: 'text',
       extensionsDir: '/extensions',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/71c60a56-df44-4185-8227-c285e58a3cf1/width=300/00000-3546450635.jpeg',
       arguments: oobaboogaArguments,
       methods: TG_RM,
       installationType: 'git',
@@ -34,9 +32,6 @@ const textPage: PagesData = {
         ' including Ollama and OpenAI-compatible APIs. ',
       repoUrl: 'https://github.com/open-webui/open-webui',
       type: 'text',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/223520d9-9071-4b73-9171-9628a804f89f/' +
-        'width=300/00025-4013828223.jpeg',
       methods: OPEN_WEBUI_RM,
       installationType: 'others',
       uninstallType: 'others',
@@ -48,9 +43,6 @@ const textPage: PagesData = {
       description: 'Prompt, run, edit, and deploy full-stack web applications using any LLM you want!',
       repoUrl: 'https://github.com/stackblitz-labs/bolt.diy',
       type: 'text',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/1c1750b6-e8be-4373-a303-b54b1825f268/' +
-        'width=300/00021-2487204806.jpeg',
       methods: BOLT_DIY_RM,
       installationType: 'others',
       uninstallType: 'removeFolder',
@@ -65,8 +57,6 @@ const textPage: PagesData = {
         ' ever want or need, and endless growth potential via third-party extensions.',
       repoUrl: 'https://github.com/SillyTavern/SillyTavern',
       type: 'text',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/8691d17f-0414-4280-a743-e4b840250807/width=300/00015-757708719.jpeg',
       arguments: sillyArguments,
       methods: SILLYTAVERN_RM,
       installationType: 'git',
@@ -77,9 +67,6 @@ const textPage: PagesData = {
       description: 'Lord of Large Language and Multi modal Systems Web User Interface',
       repoUrl: 'https://github.com/ParisNeo/lollms-webui',
       type: 'text',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9129f22d-70d1-4584-a7af-9aa96713debc/' +
-        'width=300/00007-1103515559.jpeg',
       methods: LoLLM_RM,
       installationType: 'git',
     },

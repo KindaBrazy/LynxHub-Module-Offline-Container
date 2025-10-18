@@ -47,8 +47,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/comfyanonymous/ComfyUI',
       extensionsDir: '/custom_nodes',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e7be14a2-5e23-41df-b653-4ba5b45ad065/width=300/00008-2000176836.jpeg',
       arguments: comfyArguments,
       methods: COMFYUI_RM,
       installationType: 'git',
@@ -63,8 +61,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
       extensionsDir: '/extensions',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/375d8999-a96f-4dae-98c7-968edcada7ea/width=300/00004-3953235735.jpeg',
       arguments: automatic1111Arguments,
       methods: SD_FORGE_RM,
       installationType: 'git',
@@ -78,9 +74,6 @@ const imagePage: PagesData = {
         ' and serves as the foundation for multiple commercial products.',
       repoUrl: 'https://github.com/invoke-ai/InvokeAI',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3a5d8728-2a0f-45d9-ade4-baceb04fa023' +
-        '/width=300/00002-3715244638.jpeg',
       methods: INVOKE_RM,
       arguments: invokeArguments,
       installationType: 'others',
@@ -92,8 +85,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/vladmandic/sdnext',
       extensionsDir: '/extensions',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e396ff35-0cf7-4121-8e69-4dd80b2429fa/width=300/00002-1070114876.jpeg',
       arguments: vladmandicArguments,
       methods: SD_NEXT_RM,
       installationType: 'git',
@@ -105,9 +96,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
       extensionsDir: '/extensions',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9608d0fa-6010-4ff8-b149-86e440ff9254/width=300/00000-3587005815.jpeg',
-
       arguments: automatic1111Arguments,
       methods: A1_RM,
       installationType: 'git',
@@ -118,9 +106,6 @@ const imagePage: PagesData = {
       description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
       repoUrl: 'https://github.com/Nerogar/OneTrainer',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/4f810fe1-775b-44c4-83f0-f1ad07c8fb09' +
-        '/width=300/00005-1318253062.jpeg',
       methods: ONETRAINER_RM,
       installationType: 'git',
     },
@@ -132,8 +117,6 @@ const imagePage: PagesData = {
         'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
       repoUrl: 'https://github.com/bmaltais/kohya_ss',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/db3575cb-162a-4436-b5d0-f9fbf9ed1140/width=300/00002-4073703889.jpeg',
       arguments: bmaltaisArguments,
       methods: KOHYA_GUI_RM,
       installationType: 'git',
@@ -147,9 +130,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
       extensionsDir: '/custom_nodes',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/c660d1cf-772f-4068-9a32-3ed76c6ee9e8' +
-        '/width=300/00023-3290977700.jpeg',
       arguments: comfyZludaArguments,
       methods: COMFYUI_ZLUDA_RM,
       installationType: 'git',
@@ -161,8 +141,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu',
       extensionsDir: '/extensions',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/3eaf306e-9edc-46bd-89d0-7f7398068e01/width=300/00002-1900763417.jpeg',
       arguments: lshqqytigerArguments,
       methods: SD_AMD_RM,
       installationType: 'git',
@@ -177,8 +155,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge',
       extensionsDir: '/extensions',
       type: 'image',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/61a9d607-08ce-409a-8d5e-e9df25c72d39/width=300/00017-2936809481.jpeg',
       arguments: lshqqytigerForgeArguments,
       methods: SD_FORGE_AMD_RM,
       installationType: 'git',
@@ -193,8 +169,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/mcmonkeyprojects/SwarmUI',
       type: 'image',
       extensionsDir: '/src/Extensions',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/9dac48c1-20fd-4fb0-b84b-f5f533c5cdc5/width=300/00014-3815479772.jpeg',
       arguments: mcMonkeyArguments,
       methods: SWARM_RM,
       installationType: 'git',
@@ -209,8 +183,6 @@ const imagePage: PagesData = {
       repoUrl: 'https://github.com/anapnoe/stable-diffusion-webui-ux',
       type: 'image',
       extensionsDir: '/extensions',
-      bgUrl:
-        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/026dfc41-f150-4b5c-9bbd-b959b833f059/width=300/00004-1682382699.jpeg',
       arguments: automatic1111Arguments,
       methods: SD_UIUX_RM,
       installationType: 'git',

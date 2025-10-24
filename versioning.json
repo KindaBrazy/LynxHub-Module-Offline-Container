@@ -2,56 +2,30 @@
   "$schema": "https://raw.githubusercontent.com/KindaBrazy/LynxHub-Statics/refs/heads/schema/plugins/versioning.schema.json",
   "versions": [
     {
-      "version": "12.1.3",
-      "commit": "22e7e83",
+      "version": "12.2.0",
+      "commit": "8ec30ff",
       "engines": {
         "moduleApi": "^2.0.0"
       },
-      "stage": "insider",
-      "platforms": ["win32", "linux", "darwin"]
-    },
-    {
-      "version": "12.1.0",
-      "commit": "724cda0",
-      "engines": {
-        "moduleApi": "^2.0.0"
-      },
-      "stage": "insider",
-      "platforms": ["win32", "linux", "darwin"]
-    },
-    {
-      "version": "12.0.0",
-      "commit": "9179b6b",
-      "engines": {
-        "moduleApi": "^1.0.0"
-      },
-      "stage": "public",
+      "stage": "early_access",
       "platforms": ["win32", "linux", "darwin"]
     }
   ],
   "changes": [
     {
-      "version": "12.1.3",
-      "date": "2025-10-17",
+      "version": "12.2.0",
+      "date": "2025-10-24",
       "items": [
         {
           "⚡ Improvements": [
             {
               "AllTalk TTS": ["Add gradio address catching.", "Update start batch script file to use 'start_alltalk'"]
-            }
+            },
+            "Migrate Flowise, Gemini CLI, and N8N to new Agents page."
           ]
         },
         {
           "🪲 Bug Fixes": ["Text Generation (oobabooga): Correct address extraction logic."]
-        }
-      ]
-    },
-    {
-      "version": "12.1.0",
-      "date": "2025-09-28",
-      "items": [
-        {
-          "⚡ Improvements": ["Migrate Flowise, Gemini CLI, and N8N to new Agents page."]
         }
       ]
     },

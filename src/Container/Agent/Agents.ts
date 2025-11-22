@@ -1,5 +1,7 @@
 import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
-import {FLOWISEAI_ID, GeminiCli_ID, N8N_ID} from '../../Constants';
+import {CLAUDE_CODE_ID, FLOWISEAI_ID, GeminiCli_ID, N8N_ID} from '../../Constants';
+import claudeCodeArguments from './Claude Code/Arguments';
+import ClaudeCode_RM from './Claude Code/RendererMethods';
 import flowiseArguments from './Flowise (FlowiseAI)/Arguments';
 import Flow_RM from './Flowise (FlowiseAI)/RendererMethods';
 import geminiCliArguments from './Gemini CLI/Arguments';
@@ -28,6 +30,16 @@ const agentsPage: PagesData = {
       type: 'text',
       arguments: geminiCliArguments,
       methods: GeminiCli_RM,
+      installationType: 'others',
+    },
+    {
+      id: CLAUDE_CODE_ID,
+      title: 'Claude Code',
+      description: `Anthropic's agentic coding tool for your terminal, integrated as an AI agent.`,
+      repoUrl: 'https://github.com/anthropics/claude-code',
+      type: 'text',
+      arguments: claudeCodeArguments,
+      methods: ClaudeCode_RM,
       installationType: 'others',
     },
     {

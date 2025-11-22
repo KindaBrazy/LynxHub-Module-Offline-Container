@@ -5,6 +5,7 @@ import {
   ALLTALK_ID,
   APPLIO_ID,
   BOLT_DIY_ID,
+  CLAUDE_CODE_ID,
   COMFYUI_ID,
   COMFYUI_ZLUDA_ID,
   FLOWISEAI_ID,
@@ -25,6 +26,7 @@ import {
   TG_ID,
   TTS_ID,
 } from './Constants';
+import ClaudeCode_MM from './Container/Agent/Claude Code/MainMethods';
 import Flow_MM from './Container/Agent/Flowise (FlowiseAI)/MainMethods';
 import GeminiCli_MM from './Container/Agent/Gemini CLI/MainMethods';
 import N8N_MM from './Container/Agent/N8N/MainMethods';
@@ -72,6 +74,7 @@ export default async function initialModule(utils: MainModuleUtils): Promise<Mai
     {id: BOLT_DIY_ID, methods: () => BOLT_DIY_MM(utils)},
     {id: N8N_ID, methods: () => N8N_MM(utils)},
     {id: GeminiCli_ID, methods: () => GeminiCli_MM(utils)},
+    {id: CLAUDE_CODE_ID, methods: () => ClaudeCode_MM(utils)},
     {id: APPLIO_ID, methods: () => Applio_MM(utils)},
   ];
 }

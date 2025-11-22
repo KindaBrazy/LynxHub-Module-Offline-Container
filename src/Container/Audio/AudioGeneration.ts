@@ -1,6 +1,7 @@
 import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
-import {AG_ID, ALLTALK_ID, TTS_ID} from '../../Constants';
+import {AG_ID, ALLTALK_ID, APPLIO_ID, TTS_ID} from '../../Constants';
 import ALLTALK_RM from './AllTalk TTS (erew123)/RendererMethods';
+import APPLIO_RM from './Applio/RendererMethods';
 import gitmyloArguments from './Audio Generation (gitmylo)/Arguments';
 import AG_RM from './Audio Generation (gitmylo)/RendererMethods';
 import TTS_RM from './Text to Speech (rsxdalv)/RendererMethods';
@@ -42,6 +43,15 @@ const audioPage: PagesData = {
       repoUrl: 'https://github.com/erew123/alltalk_tts',
       type: 'audio',
       methods: ALLTALK_RM,
+      installationType: 'git',
+    },
+    {
+      id: APPLIO_ID,
+      title: 'Applio',
+      description: 'A simple, high-quality voice conversion tool focused on ease of use and performance.',
+      repoUrl: 'https://github.com/IAHispano/Applio',
+      type: 'audio',
+      methods: APPLIO_RM,
       installationType: 'git',
     },
   ],

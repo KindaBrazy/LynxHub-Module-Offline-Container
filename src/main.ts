@@ -3,6 +3,7 @@ import {
   A1_ID,
   AG_ID,
   ALLTALK_ID,
+  APPLIO_ID,
   BOLT_DIY_ID,
   COMFYUI_ID,
   COMFYUI_ZLUDA_ID,
@@ -28,6 +29,7 @@ import Flow_MM from './Container/Agent/Flowise (FlowiseAI)/MainMethods';
 import GeminiCli_MM from './Container/Agent/Gemini CLI/MainMethods';
 import N8N_MM from './Container/Agent/N8N/MainMethods';
 import Rrew123_MM from './Container/Audio/AllTalk TTS (erew123)/MainMethods';
+import Applio_MM from './Container/Audio/Applio/MainMethods';
 import Gitmylo_MM from './Container/Audio/Audio Generation (gitmylo)/MainMethods';
 import Rsx_MM from './Container/Audio/Text to Speech (rsxdalv)/MainMethods';
 import Comfy_MM from './Container/Image/ComfyUI (comfyanonymous)/MainMethods';
@@ -70,5 +72,6 @@ export default async function initialModule(utils: MainModuleUtils): Promise<Mai
     {id: BOLT_DIY_ID, methods: () => BOLT_DIY_MM(utils)},
     {id: N8N_ID, methods: () => N8N_MM(utils)},
     {id: GeminiCli_ID, methods: () => GeminiCli_MM(utils)},
+    {id: APPLIO_ID, methods: () => Applio_MM(utils)},
   ];
 }

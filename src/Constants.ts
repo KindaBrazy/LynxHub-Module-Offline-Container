@@ -26,3 +26,4 @@ export const GeminiCli_ID = 'GeminiCli_TG';
 // Audio Generation
 export const TTS_ID = 'Rsxdalv_AG';
 export const AG_ID = 'Gitmylo_AG';
+export const APPLIO_ID = 'IAHispano_Applio';

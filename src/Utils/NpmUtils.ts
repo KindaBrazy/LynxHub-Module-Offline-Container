@@ -1,68 +1,53 @@
-import treeKill from 'tree-kill';
+import {exec} from 'node:child_process';
+import {promisify} from 'node:util';
 
 import {MainModuleUtils} from '../../../src/cross/plugin/ModuleTypes';
-import {removeAnsi} from './CrossUtils';
-import {determineShell, LINE_ENDING} from './MainUtils';
+
+const execAsync = promisify(exec);
 
 export async function isNpmPackageInstalled(id: string, packageName: string, utils: MainModuleUtils): Promise<boolean> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {env: process.env});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
+  try {
+    // Use --depth=0 to avoid scanning the entire node_modules tree
+    // Use --json for reliable parsing
+    const {stdout} = await execAsync(`npm list -g --depth=0 ${packageName} --json`);
+    const data = JSON.parse(stdout);
+    return !!(data.dependencies && data.dependencies[packageName]);
+  } catch (error: any) {
+    // npm list returns non-zero exit code if there are problems (e.g. missing peer deps)
+    // or if the package is not found. We try to parse stdout anyway.
+    if (error.stdout) {
+      try {
+        const data = JSON.parse(error.stdout);
+        return !!(data.dependencies && data.dependencies[packageName]);
+      } catch {
+        return false;
       }
-
-      const cleanOutput = removeAnsi(output).trim().replace(`npm list -g ${packageName}`, '');
-
-      const isInstalled = new RegExp(`${packageName}@.+`).test(cleanOutput);
-
-      resolve(isInstalled);
-    });
-
-    utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+    }
+    return false;
+  }
 }
 
 export async function getNpmPackageVersion(id: string, packageName: string, utils: MainModuleUtils): Promise<string> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
+  try {
+    const {stdout} = await execAsync(`npm list -g --depth=0 ${packageName} --json`);
+    const data = JSON.parse(stdout);
+    if (data.dependencies && data.dependencies[packageName] && data.dependencies[packageName].version) {
+      return data.dependencies[packageName].version;
+    }
+    return '';
+  } catch (error: any) {
+    if (error.stdout) {
+      try {
+        const data = JSON.parse(error.stdout);
+        if (data.dependencies && data.dependencies[packageName] && data.dependencies[packageName].version) {
+          return data.dependencies[packageName].version;
+        }
+      } catch {
+        return '';
       }
-
-      const match = output.match(new RegExp(`${packageName}@([\\d.]+)`, 'i'));
-      if (match && match[1]) {
-        resolve(match[1]);
-      } else {
-        resolve('');
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+    }
+    return '';
+  }
 }
 
 export async function checkNpmPackageUpdate(
@@ -70,58 +55,36 @@ export async function checkNpmPackageUpdate(
   packageName: string,
   utils: MainModuleUtils,
 ): Promise<string | null> {
-  return new Promise(resolve => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
+  try {
+    // npm outdated returns exit code 1 if there are updates, so we expect this to often "fail"
+    const {stdout} = await execAsync(`npm outdated -g ${packageName} --json`);
+    // If exit code 0, usually means no updates or empty output
+    if (!stdout) return null;
 
-    ptyProcess.onData((data: any) => {
-      output += data.toString();
-    });
-
-    ptyProcess.onExit(() => {
-      if (ptyProcess.pid) {
-        treeKill(ptyProcess.pid);
-        ptyProcess.kill();
-      }
-
-      const lines = removeAnsi(output).split(LINE_ENDING);
-      for (const line of lines) {
-        const match = line.match(new RegExp(`${packageName}\\s+[\\d.]+\\s+[\\d.]+\\s+([\\d.]+)`, 'i'));
-        if (match) {
-          resolve(match[1]);
+    const data = JSON.parse(stdout);
+    if (data[packageName] && data[packageName].latest) {
+      return data[packageName].latest;
+    }
+    return null;
+  } catch (error: any) {
+    if (error.stdout) {
+      try {
+        const data = JSON.parse(error.stdout);
+        if (data[packageName] && data[packageName].latest) {
+          return data[packageName].latest;
         }
+      } catch {
+        return null;
       }
-
-      resolve(null);
-    });
-
-    utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g outdated ${packageName}${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+    }
+    return null;
+  }
 }
 
 export async function uninstallNpmPackage(id: string, packageName: string, utils: MainModuleUtils): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-    let output = '';
-
-    ptyProcess.onData((data: any) => {
-      output += data;
-    });
-
-    ptyProcess.onExit(({exitCode}: {exitCode: number}) => {
-      if (exitCode === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Error uninstalling ${packageName}. Exit Code: ${exitCode}\nOutput:\n${output}`));
-      }
-    });
-
-    utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-
-    ptyProcess.write(`npm -g rm ${packageName}${LINE_ENDING}`);
-    ptyProcess.write(`exit${LINE_ENDING}`);
-  });
+  try {
+    await execAsync(`npm -g rm ${packageName}`);
+  } catch (error: any) {
+    throw new Error(`Error uninstalling ${packageName}. ${error.message}`);
+  }
 }

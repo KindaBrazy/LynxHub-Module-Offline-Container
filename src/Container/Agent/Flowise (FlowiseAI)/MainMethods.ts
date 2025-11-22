@@ -1,7 +1,6 @@
 import path from 'node:path';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
-import {FLOWISEAI_ID} from '../../../Constants';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
 import {checkWhich, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {
@@ -34,7 +33,7 @@ async function readArgs(configDir?: string) {
 }
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
-  const available = await checkNpmPackageUpdate(FLOWISEAI_ID, PACKAGE_NAME, utils);
+  const available = await checkNpmPackageUpdate(PACKAGE_NAME);
   if (available) {
     utils.storage.set('update-available-version-flowise', available);
     return true;
@@ -44,13 +43,13 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   return false;
 }
 
-async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME, utils);
+async function isInstalled(): Promise<boolean> {
+  return isNpmPackageInstalled(PACKAGE_NAME);
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME, utils));
-  utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(FLOWISEAI_ID, PACKAGE_NAME, utils));
+  utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(PACKAGE_NAME));
+  utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(PACKAGE_NAME));
   utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 
@@ -61,10 +60,10 @@ const Flow_MM: CardMainMethodsInitial = utils => {
     updateAvailable: () => updateAvailable(utils),
     getRunCommands: () => getRunCommands(configDir),
     mainIpc: () => mainIpc(utils),
-    isInstalled: () => isInstalled(utils),
+    isInstalled: () => isInstalled(),
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
-    uninstall: () => uninstallNpmPackage(FLOWISEAI_ID, PACKAGE_NAME, utils),
+    uninstall: () => uninstallNpmPackage(PACKAGE_NAME),
   };
 };
 

@@ -3,7 +3,6 @@ import path from 'node:path';
 import fs from 'graceful-fs';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
-import {GeminiCli_ID} from '../../../Constants';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
 import {initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
 import {
@@ -58,12 +57,12 @@ async function readArgs(configDir?: string) {
   return parseFilesToArgs(scriptData, '');
 }
 
-async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME, utils);
+async function isInstalled(): Promise<boolean> {
+  return isNpmPackageInstalled(PACKAGE_NAME);
 }
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
-  const available = await checkNpmPackageUpdate(GeminiCli_ID, PACKAGE_NAME, utils);
+  const available = await checkNpmPackageUpdate(PACKAGE_NAME);
   if (available) {
     utils.storage.set('update-available-version-geminiCli', available);
     return true;
@@ -74,8 +73,8 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME, utils));
-  utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(GeminiCli_ID, PACKAGE_NAME, utils));
+  utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(PACKAGE_NAME));
+  utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(PACKAGE_NAME));
 }
 
 const GeminiCli_MM: CardMainMethodsInitial = utils => {
@@ -84,11 +83,11 @@ const GeminiCli_MM: CardMainMethodsInitial = utils => {
   return {
     mainIpc: () => mainIpc(utils),
     getRunCommands: () => getRunCommands(configDir),
-    isInstalled: () => isInstalled(utils),
+    isInstalled: () => isInstalled(),
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),
-    uninstall: () => uninstallNpmPackage(GeminiCli_ID, PACKAGE_NAME, utils),
+    uninstall: () => uninstallNpmPackage(PACKAGE_NAME),
   };
 };
 

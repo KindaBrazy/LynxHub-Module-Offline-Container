@@ -5,7 +5,7 @@ import {MainModuleUtils} from '../../../src/cross/plugin/ModuleTypes';
 
 const execAsync = promisify(exec);
 
-export async function isNpmPackageInstalled(id: string, packageName: string, utils: MainModuleUtils): Promise<boolean> {
+export async function isNpmPackageInstalled(packageName: string): Promise<boolean> {
   try {
     // Use --depth=0 to avoid scanning the entire node_modules tree
     // Use --json for reliable parsing
@@ -27,7 +27,7 @@ export async function isNpmPackageInstalled(id: string, packageName: string, uti
   }
 }
 
-export async function getNpmPackageVersion(id: string, packageName: string, utils: MainModuleUtils): Promise<string> {
+export async function getNpmPackageVersion(packageName: string): Promise<string> {
   try {
     const {stdout} = await execAsync(`npm list -g --depth=0 ${packageName} --json`);
     const data = JSON.parse(stdout);
@@ -50,11 +50,7 @@ export async function getNpmPackageVersion(id: string, packageName: string, util
   }
 }
 
-export async function checkNpmPackageUpdate(
-  id: string,
-  packageName: string,
-  utils: MainModuleUtils,
-): Promise<string | null> {
+export async function checkNpmPackageUpdate(packageName: string): Promise<string | null> {
   try {
     // npm outdated returns exit code 1 if there are updates, so we expect this to often "fail"
     const {stdout} = await execAsync(`npm outdated -g ${packageName} --json`);
@@ -81,7 +77,7 @@ export async function checkNpmPackageUpdate(
   }
 }
 
-export async function uninstallNpmPackage(id: string, packageName: string, utils: MainModuleUtils): Promise<void> {
+export async function uninstallNpmPackage(packageName: string): Promise<void> {
   try {
     await execAsync(`npm -g rm ${packageName}`);
   } catch (error: any) {

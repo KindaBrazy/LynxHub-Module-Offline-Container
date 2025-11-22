@@ -1,7 +1,6 @@
 import path from 'node:path';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
-import {N8N_ID} from '../../../Constants';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
 import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {
@@ -33,12 +32,12 @@ async function readArgs(configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  return isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils);
+async function isInstalled(): Promise<boolean> {
+  return isNpmPackageInstalled(PACKAGE_NAME);
 }
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
-  const available = await checkNpmPackageUpdate(N8N_ID, PACKAGE_NAME, utils);
+  const available = await checkNpmPackageUpdate(PACKAGE_NAME);
   if (available) {
     utils.storage.set('update-available-version-n8n', available);
     return true;
@@ -49,8 +48,8 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 }
 
 function mainIpc(utils: MainModuleUtils) {
-  utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils));
-  utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(N8N_ID, PACKAGE_NAME, utils));
+  utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(PACKAGE_NAME));
+  utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(PACKAGE_NAME));
 }
 
 const N8N_MM: CardMainMethodsInitial = utils => {
@@ -59,11 +58,11 @@ const N8N_MM: CardMainMethodsInitial = utils => {
   return {
     mainIpc: () => mainIpc(utils),
     getRunCommands: () => getRunCommands(configDir),
-    isInstalled: () => isInstalled(utils),
+    isInstalled: () => isInstalled(),
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),
-    uninstall: () => uninstallNpmPackage(N8N_ID, PACKAGE_NAME, utils),
+    uninstall: () => uninstallNpmPackage(PACKAGE_NAME),
   };
 };
 

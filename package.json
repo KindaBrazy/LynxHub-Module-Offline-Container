@@ -1,6 +1,7 @@
 {
   "name": "lynxhub_module_offline_container",
   "type": "module",
+  "version": "13.0.0",
   "dependencies": {
     "js-yaml": "^4.1.0",
     "which": "^5.0.0"

@@ -2,16 +2,50 @@
   "$schema": "https://raw.githubusercontent.com/KindaBrazy/LynxHub-Statics/refs/heads/schema/plugins/versioning.schema.json",
   "versions": [
     {
+      "version": "13.0.0",
+      "commit": "8a48740",
+      "engines": {
+        "moduleApi": "^2.0.0"
+      },
+      "stage": "early_access",
+      "platforms": [
+        "win32",
+        "linux",
+        "darwin"
+      ]
+    },
+    {
       "version": "12.2.0",
       "commit": "8ec30ff",
       "engines": {
         "moduleApi": "^2.0.0"
       },
       "stage": "early_access",
-      "platforms": ["win32", "linux", "darwin"]
+      "platforms": [
+        "win32",
+        "linux",
+        "darwin"
+      ]
     }
   ],
   "changes": [
+    {
+      "version": "13.0.0",
+      "date": "2025-11-23",
+      "items": [
+        {
+          "✨ New": [
+            "Added Applio voice conversion tool.",
+            "Added Claude Code agent."
+          ]
+        },
+        {
+          "⚡ Improvements": [
+            "Improved Npm integrations (Gemini CLI, Flowise, N8N) performance and stability."
+          ]
+        }
+      ]
+    },
     {
       "version": "12.2.0",
       "date": "2025-10-24",
@@ -19,13 +53,18 @@
         {
           "⚡ Improvements": [
             {
-              "AllTalk TTS": ["Add gradio address catching.", "Update start batch script file to use 'start_alltalk'"]
+              "AllTalk TTS": [
+                "Add gradio address catching.",
+                "Update start batch script file to use 'start_alltalk'"
+              ]
             },
             "Migrate Flowise, Gemini CLI, and N8N to new Agents page."
           ]
         },
         {
-          "🪲 Bug Fixes": ["Text Generation (oobabooga): Correct address extraction logic."]
+          "🪲 Bug Fixes": [
+            "Text Generation (oobabooga): Correct address extraction logic."
+          ]
         }
       ]
     },
@@ -34,7 +73,10 @@
       "date": "2025-09-11",
       "items": [
         {
-          "✨ New": ["Added n8n integration.", "Added gemini-cli integration."]
+          "✨ New": [
+            "Added n8n integration.",
+            "Added gemini-cli integration."
+          ]
         },
         {
           "⚡ Improvements": [
@@ -50,10 +92,14 @@
           ]
         },
         {
-          "🪲 Bug Fixes": ["Fixed flowise updating and update check."]
+          "🪲 Bug Fixes": [
+            "Fixed flowise updating and update check."
+          ]
         },
         {
-          "📌 Minor Changes": ["Updated Sd-Next and TTS-Webui repository URL."]
+          "📌 Minor Changes": [
+            "Updated Sd-Next and TTS-Webui repository URL."
+          ]
         }
       ]
     },
@@ -62,7 +108,9 @@
       "date": "2025-09-04",
       "items": [
         {
-          "⚡ Improvements": ["Support LynxHub Version 3.2.0"]
+          "⚡ Improvements": [
+            "Support LynxHub Version 3.2.0"
+          ]
         }
       ]
     },
@@ -83,7 +131,9 @@
       "date": "2025-06-30",
       "items": [
         {
-          "⚡ Improvements": ["Support new LynxHub module API"]
+          "⚡ Improvements": [
+            "Support new LynxHub module API"
+          ]
         }
       ]
     },
@@ -92,7 +142,9 @@
       "date": "2025-05-14",
       "items": [
         {
-          "🪲 Bug Fixes": ["Fix open-webui installation detection in various environments (e.g., conda)."]
+          "🪲 Bug Fixes": [
+            "Fix open-webui installation detection in various environments (e.g., conda)."
+          ]
         }
       ]
     },
@@ -113,7 +165,9 @@
       "date": "2025-04-20",
       "items": [
         {
-          "⚡ Improvements": ["Implement new InvokeAI installation and updating logic."]
+          "⚡ Improvements": [
+            "Implement new InvokeAI installation and updating logic."
+          ]
         }
       ]
     },
@@ -122,10 +176,14 @@
       "date": "2025-03-19",
       "items": [
         {
-          "✨ New": ["Add bolt.diy integration."]
+          "✨ New": [
+            "Add bolt.diy integration."
+          ]
         },
         {
-          "⚡ Improvements": ["Faster Open WebUI installation detection."]
+          "⚡ Improvements": [
+            "Faster Open WebUI installation detection."
+          ]
         }
       ]
     },

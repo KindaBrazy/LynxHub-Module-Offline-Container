@@ -21,9 +21,17 @@ const FLOWISEAI_ID = 'FlowiseAI_TG';
 const LoLLMS_ID = 'LoLLMS_TG';
 const N8N_ID = 'N8N_TG';
 const GeminiCli_ID = 'GeminiCli_TG';
+const CLAUDE_CODE_ID = 'ClaudeCode_TG';
 // Audio Generation
 const TTS_ID = 'Rsxdalv_AG';
 const AG_ID = 'Gitmylo_AG';
+const APPLIO_ID = 'IAHispano_Applio';
+
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
 
 let isWin = true;
 async function isWinOS() {
@@ -92,12 +100,6 @@ function getVenvPythonPath(venvPath) {
     return isWin ? `${venvPath}\\Scripts\\python.exe` : `${venvPath}/bin/python`;
 }
 
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
 var lodash$2 = {exports: {}};
 
 /**
@@ -115,7 +117,7 @@ var hasRequiredLodash;
 function requireLodash () {
 	if (hasRequiredLodash) return lodash$2.exports;
 	hasRequiredLodash = 1;
-	(function (module, exports) {
+	(function (module, exports$1) {
 (function() {
 
 		  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
@@ -546,7 +548,7 @@ function requireLodash () {
 		  var root = freeGlobal || freeSelf || Function('return this')();
 
 		  /** Detect free variable `exports`. */
-		  var freeExports = exports && !exports.nodeType && exports;
+		  var freeExports = exports$1 && !exports$1.nodeType && exports$1;
 
 		  /** Detect free variable `module`. */
 		  var freeModule = freeExports && 'object' == 'object' && module && !module.nodeType && module;
@@ -17447,6 +17449,680 @@ async function CardInfo(url, extensionFolder, api, callback) {
     });
 }
 
+/* eslint max-len: 0 */
+const claudeCodeArguments = [
+    {
+        category: 'LynxHub Configuration',
+        items: [
+            {
+                name: 'Settings File Location',
+                description: 'Optional path to a claude settings.json file. If set, LynxHub writes JSON here from the Settings section.',
+                type: 'File',
+            },
+        ],
+    },
+    {
+        category: 'Environment Variables',
+        sections: [
+            {
+                section: 'Core Authentication',
+                items: [
+                    {
+                        name: 'ANTHROPIC_API_KEY',
+                        description: 'Your Anthropic API key used by Claude Code.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Telemetry & OpenTelemetry',
+                items: [
+                    {
+                        name: 'CLAUDE_CODE_ENABLE_TELEMETRY',
+                        description: 'Enable Claude Code telemetry collection when set to 1.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_METRICS_EXPORTER',
+                        description: 'OpenTelemetry metrics exporter (otlp, prometheus, console).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_LOGS_EXPORTER',
+                        description: 'OpenTelemetry logs exporter (otlp, console).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_EXPORTER_OTLP_PROTOCOL',
+                        description: 'OTLP protocol, usually grpc or http.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_EXPORTER_OTLP_ENDPOINT',
+                        description: 'OTLP collector endpoint such as http://localhost:4317.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_EXPORTER_OTLP_HEADERS',
+                        description: 'Optional OTLP authentication headers as a single string.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_METRIC_EXPORT_INTERVAL',
+                        description: 'Metric export interval in milliseconds.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'OTEL_LOGS_EXPORT_INTERVAL',
+                        description: 'Log export interval in milliseconds.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Vertex AI',
+                items: [
+                    {
+                        name: 'CLAUDE_CODE_USE_VERTEX',
+                        description: 'Set to 1 to enable Google Vertex AI integration.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CLOUD_ML_REGION',
+                        description: 'Default Vertex AI region, e.g. global or us-east5.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'ANTHROPIC_VERTEX_PROJECT_ID',
+                        description: 'Google Cloud project id used for Vertex AI.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'DISABLE_PROMPT_CACHING',
+                        description: 'Set to 1 to disable prompt caching when using Vertex AI.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Amazon Bedrock',
+                items: [
+                    {
+                        name: 'CLAUDE_CODE_USE_BEDROCK',
+                        description: 'Set to 1 to enable Amazon Bedrock integration.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AWS_REGION',
+                        description: 'Default AWS region for Bedrock, e.g. us-east-1.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AWS_PROFILE',
+                        description: 'Optional AWS profile name to use when calling Bedrock.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Networking & Proxy',
+                items: [
+                    {
+                        name: 'HTTPS_PROXY',
+                        description: 'HTTPS proxy URL for Claude Code network traffic.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'HTTP_PROXY',
+                        description: 'HTTP proxy URL for Claude Code network traffic.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'NO_PROXY',
+                        description: 'Space or comma separated list of hosts to bypass the proxy.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'CLAUDE_CODE_GIT_BASH_PATH',
+                        description: 'Custom path to bash.exe when using portable Git on Windows.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'AWS Credentials',
+                items: [
+                    {
+                        name: 'AWS_ACCESS_KEY_ID',
+                        description: 'AWS access key for Bedrock or other AWS integrations.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AWS_SECRET_ACCESS_KEY',
+                        description: 'AWS secret access key.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'AWS_SESSION_TOKEN',
+                        description: 'Optional AWS session token when using temporary credentials.',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Core',
+                items: [
+                    {
+                        name: '--model <model_name>',
+                        description: 'Claude model to use for this session (for example opus, sonnet, or a full model name).',
+                        type: 'Input',
+                    },
+                    {
+                        name: '-p <prompt>',
+                        description: 'Run in non-interactive print mode and answer the given prompt to standard output.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--resume <session_id>',
+                        description: 'Resume a previous Claude Code session by id.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--continue',
+                        description: 'Continue the most recent session without providing a new prompt.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--output-format <format>',
+                        description: 'Output format for headless usage, e.g. text or json.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Permissions',
+                items: [
+                    {
+                        name: '--permission-mode <mode>',
+                        description: 'Permission mode, e.g. plan or active, controlling how edits are applied.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--permission-prompt-tool <tool>',
+                        description: 'Tool to use when prompting for permissions in print mode, such as mcp_auth_tool.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--dangerously-skip-permissions',
+                        description: 'Skip permission prompts. Use only in trusted automated environments.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Tools and Directories',
+                items: [
+                    {
+                        name: '--allowedTools <tools>',
+                        description: 'Comma or space separated list of tools Claude may use without extra confirmation.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--disallowedTools <tools>',
+                        description: 'Comma or space separated list of tools Claude should not use automatically.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--add-dir <dir1,dir2,...>',
+                        description: 'Additional directories for Claude to treat as part of the workspace.',
+                        type: 'Directory',
+                    },
+                    {
+                        name: '--system-prompt-file <file>',
+                        description: 'File path containing a custom system prompt used in print mode.',
+                        type: 'File',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Settings',
+        sections: [
+            {
+                section: 'Core',
+                items: [
+                    {
+                        name: 'settings.raw',
+                        description: 'Optional raw JSON for settings.json. If provided, it is written as-is and other Settings keys are ignored.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'model',
+                        description: 'Default Claude model in settings.json. This is used when CLI --model is not provided.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Permissions',
+                items: [
+                    {
+                        name: 'permissions.defaultMode',
+                        description: 'Default permission mode, for example plan or active.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Telemetry & Env',
+                items: [
+                    {
+                        name: 'env.CLAUDE_CODE_ENABLE_TELEMETRY',
+                        description: 'Enable telemetry via env section in settings.json.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'env.OTEL_METRICS_EXPORTER',
+                        description: 'Telemetry metrics exporter configured in settings.json env.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'env.OTEL_LOGS_EXPORTER',
+                        description: 'Telemetry logs exporter configured in settings.json env.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Sandbox',
+                items: [
+                    {
+                        name: 'sandbox.enabled',
+                        description: 'Enable Claude Code sandbox in settings.json.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'sandbox.autoAllowBashIfSandboxed',
+                        description: 'Automatically allow bash commands when sandbox is enabled.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: 'sandbox.excludedCommands',
+                        description: 'Commands to exclude from sandbox execution, such as docker.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'sandbox.network.allowUnixSockets',
+                        description: 'Comma separated list of Unix socket paths allowed inside the sandbox.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'sandbox.network.allowLocalBinding',
+                        description: 'Whether local network binding is allowed inside the sandbox.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Plugins & Marketplaces',
+                items: [
+                    {
+                        name: 'enabledPlugins',
+                        description: 'JSON map of enabled plugins (plugin@marketplace: true/false).',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'extraKnownMarketplaces',
+                        description: 'JSON map defining extra plugin marketplaces for Claude Code.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'Status Line',
+                items: [
+                    {
+                        name: 'statusLine.type',
+                        description: 'Status line type, usually command.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'statusLine.command',
+                        description: 'Command to generate the status line content.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'statusLine.padding',
+                        description: 'Optional numeric padding value for the status line.',
+                        type: 'Input',
+                    },
+                ],
+            },
+            {
+                section: 'MCP Servers',
+                items: [
+                    {
+                        name: 'allowedMcpServers',
+                        description: 'JSON array or object describing MCP servers that are allowed by managed settings.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'deniedMcpServers',
+                        description: 'JSON array or object describing MCP servers that are denied by managed settings.',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const INSTALL_TIME_KEY$4 = 'install-time-claudeCode';
+const UPDATE_TIME_KEY$4 = 'update-time-claudeCode';
+function checkEnvLine(line) {
+    if (isWin && line.startsWith('set '))
+        return 'set';
+    if (line.startsWith('export '))
+        return 'export';
+    for (const arg of claudeCodeArguments) {
+        if (arg.category === 'Environment Variables') {
+            if (arg.sections[0].items.find(item => item.name === line.split('=')[0])) {
+                return 'var';
+            }
+            return undefined;
+        }
+    }
+    return undefined;
+}
+function getArgumentInfo$1(argName) {
+    for (const data of claudeCodeArguments) {
+        if ('sections' in data) {
+            for (const section of data.sections) {
+                for (const item of section.items) {
+                    const flag = item.name.split(' ')[0];
+                    if (flag === argName) {
+                        return { category: data.category, type: item.type, name: item.name };
+                    }
+                }
+            }
+        }
+    }
+    return undefined;
+}
+function parseArgsToFiles$2(args) {
+    const executeCommand = 'claude';
+    const envArgs = [];
+    const cliArgs = [];
+    const settingsArgs = [];
+    args.forEach(arg => {
+        const info = getArgumentInfo$1(arg.name.split(' ')[0]) || getArgumentInfo$1(arg.name);
+        if (info) {
+            switch (info.category) {
+                case 'Environment Variables':
+                    envArgs.push(arg);
+                    break;
+                case 'Command Line Arguments':
+                    cliArgs.push(arg);
+                    break;
+                case 'Settings':
+                    settingsArgs.push(arg);
+                    break;
+            }
+        }
+        else if (arg.name === 'Settings File Location') ;
+    });
+    let scriptString = '';
+    if (envArgs.length > 0) {
+        envArgs.forEach(arg => {
+            scriptString += isWin ? `set ${arg.name}=${arg.value}\n` : `export ${arg.name}="${arg.value}"\n`;
+        });
+        scriptString += '\n\n';
+    }
+    scriptString += executeCommand;
+    cliArgs.forEach(arg => {
+        const info = getArgumentInfo$1(arg.name.split(' ')[0]);
+        if (!info)
+            return;
+        const flagName = info.name.split(' ')[0];
+        if (info.type === 'CheckBox') {
+            if (arg.value === 'true') {
+                scriptString += ` ${flagName}`;
+            }
+        }
+        else if (!lodashExports.isEmpty(arg.value)) {
+            scriptString += ` ${flagName} "${arg.value}"`;
+        }
+    });
+    scriptString += '\n';
+    let settingsString = '';
+    const settingsJson = {};
+    if (settingsArgs.length > 0) {
+        const raw = settingsArgs.find(a => a.name === 'settings.raw');
+        if (raw && raw.value) {
+            try {
+                const parsed = JSON.parse(raw.value);
+                Object.assign(settingsJson, parsed);
+            }
+            catch (e) {
+                console.error('Error parsing settings.raw for Claude Code:', e);
+            }
+        }
+        else {
+            settingsArgs.forEach(arg => {
+                if (arg.name === 'settings.raw')
+                    return;
+                const keys = arg.name.split('.');
+                let current = settingsJson;
+                keys.slice(0, -1).forEach(key => {
+                    current[key] = current[key] || {};
+                    current = current[key];
+                });
+                let value = arg.value;
+                if (value === 'true') {
+                    value = true;
+                }
+                else if (value === 'false') {
+                    value = false;
+                }
+                else if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
+                    value = Number(value);
+                }
+                else if (['enabledPlugins', 'extraKnownMarketplaces', 'allowedMcpServers', 'deniedMcpServers'].includes(keys[0])) {
+                    try {
+                        value = JSON.parse(value);
+                    }
+                    catch {
+                        // keep as string if invalid JSON
+                    }
+                }
+                current[keys[keys.length - 1]] = value;
+            });
+        }
+        if (!lodashExports.isEmpty(settingsJson)) {
+            settingsString = JSON.stringify(settingsJson, null, 2);
+        }
+    }
+    return { scriptData: scriptString, settingsData: settingsString };
+}
+function parseArgsToString$f(args) {
+    const { settingsData, scriptData } = parseArgsToFiles$2(args);
+    let scriptPreview = `-------------Script File Preview (${isWin ? '.bat' : '.sh'})-------------\n`;
+    if (!lodashExports.isEmpty(scriptData)) {
+        scriptPreview += scriptData;
+    }
+    else {
+        scriptPreview += '# No environment variables or command line arguments configured.\n';
+    }
+    let settingsPreview = '---------------- Settings File (settings.json) ----------------\n';
+    if (!lodashExports.isEmpty(settingsData)) {
+        settingsPreview += settingsData;
+    }
+    else {
+        settingsPreview += '{\n  // No settings configured.\n}';
+    }
+    return `${scriptPreview}${settingsPreview}`;
+}
+function parseFilesToArgs$2(scriptContent, settingsContent) {
+    const scriptArgs = parseStringToArgs$f(scriptContent);
+    const settingsArgs = [];
+    if (settingsContent) {
+        try {
+            const settingsJson = JSON.parse(settingsContent);
+            const flatten = (obj, path = '') => {
+                let result = [];
+                for (const key in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                        const newPath = path ? `${path}.${key}` : key;
+                        if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                            result = result.concat(flatten(obj[key], newPath));
+                        }
+                        else {
+                            const value = typeof obj[key] === 'string' ? obj[key] : JSON.stringify(obj[key]);
+                            result.push({ name: newPath, value });
+                        }
+                    }
+                }
+                return result;
+            };
+            const flattened = flatten(settingsJson);
+            flattened.forEach(arg => {
+                if (isValidArg(arg.name, claudeCodeArguments)) {
+                    settingsArgs.push(arg);
+                }
+            });
+        }
+        catch (error) {
+            console.error('Error parsing settings.json content for Claude Code:', error);
+        }
+    }
+    const combinedArgs = new Map();
+    scriptArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
+    settingsArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
+    return Array.from(combinedArgs, ([name, value]) => ({ name, value }));
+}
+function parseStringToArgs$f(data) {
+    const argResult = [];
+    const lines = data.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('#'))
+            return;
+        if (line.startsWith('claude')) {
+            const clArg = line.split('claude ')[1];
+            if (!clArg)
+                return;
+            const regex = /(-{1,2}[^\s]+)(?:\s+"([^"]*)"|\s+([^\s]+))?/g;
+            let match;
+            while ((match = regex.exec(clArg)) !== null) {
+                const flag = match[1];
+                const value = match[2] || match[3] || '';
+                const info = getArgumentInfo$1(flag);
+                if (!info)
+                    continue;
+                const type = getArgumentType(info.name, claudeCodeArguments);
+                if (type === 'CheckBox') {
+                    argResult.push({ name: info.name, value: 'true' });
+                }
+                else {
+                    argResult.push({ name: info.name, value: value.replace(/"/g, '') });
+                }
+            }
+        }
+        const lineType = checkEnvLine(line);
+        if (lineType === 'export' || lineType === 'set') {
+            let [name, value] = line.replace(`${lineType} `, '').split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, claudeCodeArguments)) {
+                argResult.push({ name, value });
+            }
+        }
+        else if (checkEnvLine(line) === 'var') {
+            let [name, value] = line.split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, claudeCodeArguments)) {
+                argResult.push({ name, value });
+            }
+        }
+    });
+    return argResult;
+}
+function startInstall$e(stepper) {
+    stepper.initialSteps(['Getting Started', 'Detect Existing', 'Claude Code', 'All Done!']);
+    stepper.starterStep({ disableSelectDir: true }).then(() => {
+        stepper.nextStep().then(() => {
+            stepper.progressBar(true, 'Checking for existing Claude Code installation...');
+            stepper.ipc.invoke('is_claude_code_installed').then((isInstalled) => {
+                if (isInstalled) {
+                    stepper.setInstalled();
+                    const currentDate = new Date();
+                    stepper.storage.set(INSTALL_TIME_KEY$4, currentDate.toLocaleString());
+                    stepper.showFinalStep('success', "You're All Set!", 'Claude Code is already installed and ready to use.');
+                }
+                else {
+                    stepper.nextStep().then(() => {
+                        const installCommand = isWin
+                            ? 'irm https://claude.ai/install.ps1 | iex'
+                            : 'curl -fsSL https://claude.ai/install.sh | bash';
+                        stepper.executeTerminalCommands(installCommand).then(() => {
+                            stepper.setInstalled();
+                            const currentDate = new Date();
+                            stepper.storage.set(INSTALL_TIME_KEY$4, currentDate.toLocaleString());
+                            stepper.showFinalStep('success', 'Installation Complete!', 'Claude Code has been installed successfully.');
+                        });
+                    });
+                }
+            });
+        });
+    });
+}
+function startUpdate$5(stepper) {
+    stepper.initialSteps(['Update Claude Code', 'Complete Update']);
+    const installCommand = isWin
+        ? 'irm https://claude.ai/install.ps1 | iex'
+        : 'curl -fsSL https://claude.ai/install.sh | bash';
+    stepper.executeTerminalCommands(installCommand).then(() => {
+        const currentDate = new Date();
+        stepper.storage.set(UPDATE_TIME_KEY$4, currentDate.toLocaleString());
+        stepper.setUpdated();
+        stepper.showFinalStep('success', 'Claude Code Updated Successfully!', 'Claude Code has been updated to the latest available version.');
+    });
+}
+async function cardInfo$e(api, callback) {
+    callback.setOpenFolders(undefined);
+    const descManager = new DescriptionManager([
+        {
+            title: 'Installation Data',
+            items: [
+                { label: 'Install Date', result: 'loading' },
+                { label: 'Update Date', result: 'loading' },
+                { label: 'Current Version', result: 'loading' },
+            ],
+        },
+    ], callback);
+    api.storage.get(INSTALL_TIME_KEY$4).then(result => {
+        descManager.updateItem(0, 0, result);
+    });
+    api.storage.get(UPDATE_TIME_KEY$4).then(result => {
+        descManager.updateItem(0, 1, result);
+    });
+    api.ipc.invoke('current_claude_code_version').then(result => {
+        descManager.updateItem(0, 2, result);
+    });
+}
+const ClaudeCode_RM = {
+    cardInfo: cardInfo$e,
+    parseStringToArgs: parseStringToArgs$f,
+    parseArgsToString: parseArgsToString$f,
+    manager: { startInstall: startInstall$e, updater: { updateType: 'stepper', startUpdate: startUpdate$5 } },
+};
+
 const flowiseArguments = [
     {
         category: 'General',
@@ -32369,4 +33045,4 @@ const TG_RM = {
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { SILLYTAVERN_ID as $, AG_ID as A, parseStringToArgs$7 as B, COMFYUI_ID as C, ONETRAINER_ID as D, A1_ID as E, FLOWISEAI_ID as F, GeminiCli_ID as G, parseArgsToString$6 as H, INVOKEAI_INSTALL_DIR_KEY as I, parseStringToArgs$6 as J, KOHYA_ID as K, parseArgsToString$5 as L, parseStringToArgs$5 as M, N8N_ID as N, OPEN_WEBUI_ID as O, SD_NEXT_ID as P, parseArgsToString$4 as Q, parseStringToArgs$4 as R, SD_AMD_ID as S, TTS_ID as T, SWARM_ID as U, parseArgsToString$3 as V, parseStringToArgs$3 as W, BOLT_DIY_ID as X, LoLLMS_ID as Y, parseArgsToString$2 as Z, parseStringToArgs$2 as _, getVenvPythonPath as a, parseArgsToFiles as a0, parseFilesToArgs as a1, TG_ID as a2, parseArgsToString as a3, parseStringToArgs as a4, SD_FORGE_ID as a5, SD_FORGE_AMD_ID as a6, SD_UIUX_ID as a7, ALLTALK_ID as a8, flowiseArguments as a9, TG_RM as aA, oobaboogaArguments as aB, openArguments as aC, OPEN_WEBUI_RM as aD, SILLYTAVERN_RM as aE, sillyArguments as aF, Flow_RM as aa, GeminiCli_RM as ab, geminiCliArguments as ac, n8nArguments as ad, N8N_RM as ae, CardInfo as af, GitInstaller as ag, AG_RM as ah, gitmyloArguments as ai, fetchExtensionList$2 as aj, catchAddress$3 as ak, lodashExports as al, automatic1111Arguments as am, COMFYUI_RM as an, comfyArguments as ao, INVOKE_RM as ap, SD_NEXT_RM as aq, vladmandicArguments as ar, KOHYA_GUI_RM as as, bmaltaisArguments as at, COMFYUI_ZLUDA_RM as au, comfyZludaArguments as av, SD_AMD_RM as aw, lshqqytigerArguments as ax, SWARM_RM as ay, mcMonkeyArguments as az, getCdCommand as b, commonjsGlobal as c, parseStringToArgs$e as d, parseFilesToArgs$1 as e, parseArgsToFiles$1 as f, getDefaultExportFromCjs as g, parseArgsToString$c as h, isWin as i, parseStringToArgs$c as j, parseArgsToString$b as k, parseStringToArgs$b as l, parseArgsToString$a as m, parseStringToArgs$a as n, COMFYUI_ZLUDA_ID as o, parseArgsToString$e as p, parseArgsToString$9 as q, removeAnsi as r, parseStringToArgs$9 as s, INVOKE_ID as t, extractGitUrl as u, INVOKEAI_UPDATE_AVAILABLE_KEY as v, Invoke_Command_ActivateVenv as w, parseArgsToString$8 as x, parseStringToArgs$8 as y, parseArgsToString$7 as z };
+export { parseArgsToFiles as $, AG_ID as A, parseArgsToString$7 as B, COMFYUI_ID as C, parseStringToArgs$7 as D, ONETRAINER_ID as E, A1_ID as F, parseArgsToString$6 as G, parseStringToArgs$6 as H, INVOKEAI_INSTALL_DIR_KEY as I, parseArgsToString$5 as J, KOHYA_ID as K, parseStringToArgs$5 as L, SD_NEXT_ID as M, parseArgsToString$4 as N, OPEN_WEBUI_ID as O, parseStringToArgs$4 as P, SWARM_ID as Q, parseArgsToString$3 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$3 as U, BOLT_DIY_ID as V, LoLLMS_ID as W, removeAnsi as X, parseArgsToString$2 as Y, parseStringToArgs$2 as Z, SILLYTAVERN_ID as _, getVenvPythonPath as a, parseFilesToArgs as a0, TG_ID as a1, parseArgsToString as a2, parseStringToArgs as a3, SD_FORGE_ID as a4, SD_FORGE_AMD_ID as a5, SD_UIUX_ID as a6, ALLTALK_ID as a7, FLOWISEAI_ID as a8, N8N_ID as a9, COMFYUI_ZLUDA_RM as aA, comfyZludaArguments as aB, SD_AMD_RM as aC, lshqqytigerArguments as aD, SWARM_RM as aE, mcMonkeyArguments as aF, TG_RM as aG, oobaboogaArguments as aH, openArguments as aI, OPEN_WEBUI_RM as aJ, SILLYTAVERN_RM as aK, sillyArguments as aL, GeminiCli_ID as aa, CLAUDE_CODE_ID as ab, APPLIO_ID as ac, flowiseArguments as ad, Flow_RM as ae, GeminiCli_RM as af, geminiCliArguments as ag, ClaudeCode_RM as ah, claudeCodeArguments as ai, n8nArguments as aj, N8N_RM as ak, CardInfo as al, catchAddress$3 as am, GitInstaller as an, AG_RM as ao, gitmyloArguments as ap, fetchExtensionList$2 as aq, lodashExports as ar, automatic1111Arguments as as, COMFYUI_RM as at, comfyArguments as au, INVOKE_RM as av, SD_NEXT_RM as aw, vladmandicArguments as ax, KOHYA_GUI_RM as ay, bmaltaisArguments as az, parseArgsToFiles$2 as b, commonjsGlobal as c, getCdCommand as d, parseArgsToString$e as e, parseStringToArgs$e as f, getDefaultExportFromCjs as g, parseFilesToArgs$1 as h, isWin as i, parseArgsToFiles$1 as j, parseArgsToString$c as k, parseStringToArgs$c as l, parseArgsToString$b as m, parseStringToArgs$b as n, parseArgsToString$a as o, parseFilesToArgs$2 as p, parseStringToArgs$a as q, COMFYUI_ZLUDA_ID as r, parseArgsToString$9 as s, parseStringToArgs$9 as t, INVOKE_ID as u, extractGitUrl as v, INVOKEAI_UPDATE_AVAILABLE_KEY as w, Invoke_Command_ActivateVenv as x, parseArgsToString$8 as y, parseStringToArgs$8 as z };

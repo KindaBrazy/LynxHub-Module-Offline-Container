@@ -1,4 +1,4 @@
-import { a9 as flowiseArguments, aa as Flow_RM, F as FLOWISEAI_ID, ab as GeminiCli_RM, ac as geminiCliArguments, G as GeminiCli_ID, ad as n8nArguments, ae as N8N_RM, N as N8N_ID, i as isWin, af as CardInfo, ag as GitInstaller, T as TTS_ID, ah as AG_RM, ai as gitmyloArguments, A as AG_ID, a8 as ALLTALK_ID, J as parseStringToArgs, H as parseArgsToString, aj as fetchExtensionList, ak as catchAddress$3, al as lodashExports, am as automatic1111Arguments, an as COMFYUI_RM, ao as comfyArguments, C as COMFYUI_ID, a5 as SD_FORGE_ID, ap as INVOKE_RM, t as INVOKE_ID, aq as SD_NEXT_RM, ar as vladmandicArguments, P as SD_NEXT_ID, E as A1_ID, D as ONETRAINER_ID, as as KOHYA_GUI_RM, at as bmaltaisArguments, K as KOHYA_ID, au as COMFYUI_ZLUDA_RM, av as comfyZludaArguments, o as COMFYUI_ZLUDA_ID, aw as SD_AMD_RM, ax as lshqqytigerArguments, S as SD_AMD_ID, a6 as SD_FORGE_AMD_ID, ay as SWARM_RM, az as mcMonkeyArguments, U as SWARM_ID, a7 as SD_UIUX_ID, aA as TG_RM, aB as oobaboogaArguments, a2 as TG_ID, aC as openArguments, aD as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, X as BOLT_DIY_ID, aE as SILLYTAVERN_RM, aF as sillyArguments, $ as SILLYTAVERN_ID, Y as LoLLMS_ID } from './RendererMethods_DjTBKg.mjs';
+import { ad as flowiseArguments, ae as Flow_RM, a8 as FLOWISEAI_ID, af as GeminiCli_RM, ag as geminiCliArguments, aa as GeminiCli_ID, ah as ClaudeCode_RM, ai as claudeCodeArguments, ab as CLAUDE_CODE_ID, aj as n8nArguments, ak as N8N_RM, a9 as N8N_ID, i as isWin, al as CardInfo, am as catchAddress$3, an as GitInstaller, T as TTS_ID, ao as AG_RM, ap as gitmyloArguments, A as AG_ID, a7 as ALLTALK_ID, ac as APPLIO_ID, H as parseStringToArgs, G as parseArgsToString, aq as fetchExtensionList, ar as lodashExports, as as automatic1111Arguments, at as COMFYUI_RM, au as comfyArguments, C as COMFYUI_ID, a4 as SD_FORGE_ID, av as INVOKE_RM, u as INVOKE_ID, aw as SD_NEXT_RM, ax as vladmandicArguments, M as SD_NEXT_ID, F as A1_ID, E as ONETRAINER_ID, ay as KOHYA_GUI_RM, az as bmaltaisArguments, K as KOHYA_ID, aA as COMFYUI_ZLUDA_RM, aB as comfyZludaArguments, r as COMFYUI_ZLUDA_ID, aC as SD_AMD_RM, aD as lshqqytigerArguments, S as SD_AMD_ID, a5 as SD_FORGE_AMD_ID, aE as SWARM_RM, aF as mcMonkeyArguments, Q as SWARM_ID, a6 as SD_UIUX_ID, aG as TG_RM, aH as oobaboogaArguments, a1 as TG_ID, aI as openArguments, aJ as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, V as BOLT_DIY_ID, aK as SILLYTAVERN_RM, aL as sillyArguments, _ as SILLYTAVERN_ID, W as LoLLMS_ID } from './RendererMethods_Bbml5Y.mjs';
 
 const agentsPage = {
     routePath: 'agents_page',
@@ -24,6 +24,16 @@ const agentsPage = {
             installationType: 'others',
         },
         {
+            id: CLAUDE_CODE_ID,
+            title: 'Claude Code',
+            description: `Anthropic's agentic coding tool for your terminal, integrated as an AI agent.`,
+            repoUrl: 'https://github.com/anthropics/claude-code',
+            type: 'text',
+            arguments: claudeCodeArguments,
+            methods: ClaudeCode_RM,
+            installationType: 'others',
+        },
+        {
             id: N8N_ID,
             title: 'N8N',
             description: 'Fair-code workflow automation platform with native AI capabilities. ' +
@@ -37,13 +47,13 @@ const agentsPage = {
     ],
 };
 
-const URL$2 = 'https://github.com/erew123/alltalk_tts';
-function startInstall$8(stepper) {
+const URL$3 = 'https://github.com/erew123/alltalk_tts';
+function startInstall$9(stepper) {
     stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
             stepper.nextStep().then(() => {
-                stepper.cloneRepository(URL$2).then(dir => {
+                stepper.cloneRepository(URL$3).then(dir => {
                     stepper.nextStep().then(() => {
                         stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
                             stepper.setInstalled(dir);
@@ -54,7 +64,7 @@ function startInstall$8(stepper) {
             });
         }
         else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, URL$2).then(isValid => {
+            stepper.utils.validateGitRepository(targetDirectory, URL$3).then(isValid => {
                 if (isValid) {
                     stepper.setInstalled(targetDirectory);
                     stepper.showFinalStep('success', 'AllTalk TTS located successfully!', 'Pre-installed AllTalk TTS detected. Installation skipped as your existing setup is ready to use.');
@@ -82,8 +92,8 @@ function startUpdate$2(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
     }
 }
-async function cardInfo$8(api, callback) {
-    return CardInfo(URL$2, undefined, api, callback);
+async function cardInfo$9(api, callback) {
+    return CardInfo(URL$3, undefined, api, callback);
 }
 function catchAddress$2(input) {
     const gradioDarkPattern = /Gradio Dark.*?:\s*.*?(https?:\/\/.*?)(?=\s|\u001b|$)/i;
@@ -94,11 +104,53 @@ function catchAddress$2(input) {
     return undefined;
 }
 const ALLTALK_RM = {
-    cardInfo: cardInfo$8,
+    cardInfo: cardInfo$9,
     catchAddress: catchAddress$2,
     manager: {
-        startInstall: startInstall$8,
+        startInstall: startInstall$9,
         updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
+    },
+};
+
+const URL$2 = 'https://github.com/IAHispano/Applio';
+function startInstall$8(stepper) {
+    stepper.initialSteps(['Applio', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(URL$2).then(dir => {
+                    stepper.nextStep().then(() => {
+                        const installCmd = isWin ? '.\\run-install.bat' : 'sh run-install.sh';
+                        stepper.executeTerminalCommands(installCmd, dir).then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.showFinalStep('success', 'Applio Installation Complete!', 'Applio has been successfully installed. You can now start generating audio.');
+                        });
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, URL$2).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'Applio Found!', 'Existing Applio installation located.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Invalid Applio Directory', 'The selected directory does not appear to contain a valid Applio installation.');
+                }
+            });
+        }
+    });
+}
+async function cardInfo$8(api, callback) {
+    return CardInfo(URL$2, undefined, api, callback);
+}
+const APPLIO_RM = {
+    catchAddress: catchAddress$3,
+    cardInfo: cardInfo$8,
+    manager: {
+        startInstall: startInstall$8,
+        updater: { updateType: 'git' },
     },
 };
 
@@ -158,6 +210,15 @@ const audioPage = {
             repoUrl: 'https://github.com/erew123/alltalk_tts',
             type: 'audio',
             methods: ALLTALK_RM,
+            installationType: 'git',
+        },
+        {
+            id: APPLIO_ID,
+            title: 'Applio',
+            description: 'A simple, high-quality voice conversion tool focused on ease of use and performance.',
+            repoUrl: 'https://github.com/IAHispano/Applio',
+            type: 'audio',
+            methods: APPLIO_RM,
             installationType: 'git',
         },
     ],

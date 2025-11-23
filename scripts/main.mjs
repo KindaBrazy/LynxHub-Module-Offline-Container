@@ -1,24 +1,1015 @@
-import { g as getDefaultExportFromCjs, c as commonjsGlobal, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, r as removeAnsi, b as getCdCommand, F as FLOWISEAI_ID, p as parseArgsToString, d as parseStringToArgs, e as parseFilesToArgs, f as parseArgsToFiles, G as GeminiCli_ID, N as N8N_ID, h as parseArgsToString$1, j as parseStringToArgs$1, A as AG_ID, k as parseArgsToString$2, l as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, m as parseArgsToString$3, n as parseStringToArgs$3, o as COMFYUI_ZLUDA_ID, q as parseArgsToString$4, s as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, t as INVOKE_ID, u as extractGitUrl, v as INVOKEAI_UPDATE_AVAILABLE_KEY, w as Invoke_Command_ActivateVenv, x as parseArgsToString$5, y as parseStringToArgs$5, K as KOHYA_ID, z as parseArgsToString$6, B as parseStringToArgs$6, D as ONETRAINER_ID, E as A1_ID, H as parseArgsToString$7, J as parseStringToArgs$7, S as SD_AMD_ID, L as parseArgsToString$8, M as parseStringToArgs$8, P as SD_NEXT_ID, Q as parseArgsToString$9, R as parseStringToArgs$9, U as SWARM_ID, V as parseArgsToString$a, W as parseStringToArgs$a, X as BOLT_DIY_ID, Y as LoLLMS_ID, Z as parseArgsToString$b, _ as parseStringToArgs$b, $ as SILLYTAVERN_ID, a0 as parseArgsToFiles$1, a1 as parseFilesToArgs$1, a2 as TG_ID, a3 as parseArgsToString$c, a4 as parseStringToArgs$c, a5 as SD_FORGE_ID, a6 as SD_FORGE_AMD_ID, a7 as SD_UIUX_ID, a8 as ALLTALK_ID } from './RendererMethods_DjTBKg.mjs';
-import path, { join } from 'node:path';
+import { c as commonjsGlobal, g as getDefaultExportFromCjs, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, p as parseFilesToArgs, b as parseArgsToFiles, d as getCdCommand, e as parseArgsToString, f as parseStringToArgs, h as parseFilesToArgs$1, j as parseArgsToFiles$1, k as parseArgsToString$1, l as parseStringToArgs$1, A as AG_ID, m as parseArgsToString$2, n as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, o as parseArgsToString$3, q as parseStringToArgs$3, r as COMFYUI_ZLUDA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, u as INVOKE_ID, v as extractGitUrl, w as INVOKEAI_UPDATE_AVAILABLE_KEY, x as Invoke_Command_ActivateVenv, y as parseArgsToString$5, z as parseStringToArgs$5, K as KOHYA_ID, B as parseArgsToString$6, D as parseStringToArgs$6, E as ONETRAINER_ID, F as A1_ID, G as parseArgsToString$7, H as parseStringToArgs$7, S as SD_AMD_ID, J as parseArgsToString$8, L as parseStringToArgs$8, M as SD_NEXT_ID, N as parseArgsToString$9, P as parseStringToArgs$9, Q as SWARM_ID, R as parseArgsToString$a, U as parseStringToArgs$a, V as BOLT_DIY_ID, W as LoLLMS_ID, X as removeAnsi, Y as parseArgsToString$b, Z as parseStringToArgs$b, _ as SILLYTAVERN_ID, $ as parseArgsToFiles$2, a0 as parseFilesToArgs$2, a1 as TG_ID, a2 as parseArgsToString$c, a3 as parseStringToArgs$c, a4 as SD_FORGE_ID, a5 as SD_FORGE_AMD_ID, a6 as SD_UIUX_ID, a7 as ALLTALK_ID, a8 as FLOWISEAI_ID, a9 as N8N_ID, aa as GeminiCli_ID, ab as CLAUDE_CODE_ID, ac as APPLIO_ID } from './RendererMethods_Bbml5Y.mjs';
 import { exec, execSync } from 'node:child_process';
-import { platform as platform$2 } from 'node:os';
-import require$$1 from 'util';
+import path, { join } from 'node:path';
+import require$$0$2 from 'fs';
+import require$$0$1 from 'constants';
 import stream, { Readable } from 'stream';
+import require$$1 from 'util';
+import require$$5 from 'assert';
+import { platform as platform$2 } from 'node:os';
 import require$$1$1 from 'path';
 import require$$3 from 'http';
 import require$$4 from 'https';
-import require$$0$1 from 'url';
-import require$$0$2 from 'fs';
+import require$$0$3 from 'url';
 import require$$8 from 'crypto';
-import require$$4$1 from 'assert';
+import http2 from 'http2';
 import require$$1$2 from 'tty';
-import require$$0$3 from 'os';
+import require$$0$4 from 'os';
 import zlib from 'zlib';
 import { EventEmitter } from 'events';
-import require$$0$4 from 'constants';
 import require$$0$5 from 'child_process';
 import require$$1$3 from 'fs/promises';
+import { promisify } from 'node:util';
 
+var polyfills;
+var hasRequiredPolyfills;
+
+function requirePolyfills () {
+	if (hasRequiredPolyfills) return polyfills;
+	hasRequiredPolyfills = 1;
+	var constants = require$$0$1;
+
+	var origCwd = process.cwd;
+	var cwd = null;
+
+	var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform;
+
+	process.cwd = function() {
+	  if (!cwd)
+	    cwd = origCwd.call(process);
+	  return cwd
+	};
+	try {
+	  process.cwd();
+	} catch (er) {}
+
+	// This check is needed until node.js 12 is required
+	if (typeof process.chdir === 'function') {
+	  var chdir = process.chdir;
+	  process.chdir = function (d) {
+	    cwd = null;
+	    chdir.call(process, d);
+	  };
+	  if (Object.setPrototypeOf) Object.setPrototypeOf(process.chdir, chdir);
+	}
+
+	polyfills = patch;
+
+	function patch (fs) {
+	  // (re-)implement some things that are known busted or missing.
+
+	  // lchmod, broken prior to 0.6.2
+	  // back-port the fix here.
+	  if (constants.hasOwnProperty('O_SYMLINK') &&
+	      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
+	    patchLchmod(fs);
+	  }
+
+	  // lutimes implementation, or no-op
+	  if (!fs.lutimes) {
+	    patchLutimes(fs);
+	  }
+
+	  // https://github.com/isaacs/node-graceful-fs/issues/4
+	  // Chown should not fail on einval or eperm if non-root.
+	  // It should not fail on enosys ever, as this just indicates
+	  // that a fs doesn't support the intended operation.
+
+	  fs.chown = chownFix(fs.chown);
+	  fs.fchown = chownFix(fs.fchown);
+	  fs.lchown = chownFix(fs.lchown);
+
+	  fs.chmod = chmodFix(fs.chmod);
+	  fs.fchmod = chmodFix(fs.fchmod);
+	  fs.lchmod = chmodFix(fs.lchmod);
+
+	  fs.chownSync = chownFixSync(fs.chownSync);
+	  fs.fchownSync = chownFixSync(fs.fchownSync);
+	  fs.lchownSync = chownFixSync(fs.lchownSync);
+
+	  fs.chmodSync = chmodFixSync(fs.chmodSync);
+	  fs.fchmodSync = chmodFixSync(fs.fchmodSync);
+	  fs.lchmodSync = chmodFixSync(fs.lchmodSync);
+
+	  fs.stat = statFix(fs.stat);
+	  fs.fstat = statFix(fs.fstat);
+	  fs.lstat = statFix(fs.lstat);
+
+	  fs.statSync = statFixSync(fs.statSync);
+	  fs.fstatSync = statFixSync(fs.fstatSync);
+	  fs.lstatSync = statFixSync(fs.lstatSync);
+
+	  // if lchmod/lchown do not exist, then make them no-ops
+	  if (fs.chmod && !fs.lchmod) {
+	    fs.lchmod = function (path, mode, cb) {
+	      if (cb) process.nextTick(cb);
+	    };
+	    fs.lchmodSync = function () {};
+	  }
+	  if (fs.chown && !fs.lchown) {
+	    fs.lchown = function (path, uid, gid, cb) {
+	      if (cb) process.nextTick(cb);
+	    };
+	    fs.lchownSync = function () {};
+	  }
+
+	  // on Windows, A/V software can lock the directory, causing this
+	  // to fail with an EACCES or EPERM if the directory contains newly
+	  // created files.  Try again on failure, for up to 60 seconds.
+
+	  // Set the timeout this long because some Windows Anti-Virus, such as Parity
+	  // bit9, may lock files for up to a minute, causing npm package install
+	  // failures. Also, take care to yield the scheduler. Windows scheduling gives
+	  // CPU to a busy looping process, which can cause the program causing the lock
+	  // contention to be starved of CPU by node, so the contention doesn't resolve.
+	  if (platform === "win32") {
+	    fs.rename = typeof fs.rename !== 'function' ? fs.rename
+	    : (function (fs$rename) {
+	      function rename (from, to, cb) {
+	        var start = Date.now();
+	        var backoff = 0;
+	        fs$rename(from, to, function CB (er) {
+	          if (er
+	              && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY")
+	              && Date.now() - start < 60000) {
+	            setTimeout(function() {
+	              fs.stat(to, function (stater, st) {
+	                if (stater && stater.code === "ENOENT")
+	                  fs$rename(from, to, CB);
+	                else
+	                  cb(er);
+	              });
+	            }, backoff);
+	            if (backoff < 100)
+	              backoff += 10;
+	            return;
+	          }
+	          if (cb) cb(er);
+	        });
+	      }
+	      if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
+	      return rename
+	    })(fs.rename);
+	  }
+
+	  // if read() returns EAGAIN, then just try it again.
+	  fs.read = typeof fs.read !== 'function' ? fs.read
+	  : (function (fs$read) {
+	    function read (fd, buffer, offset, length, position, callback_) {
+	      var callback;
+	      if (callback_ && typeof callback_ === 'function') {
+	        var eagCounter = 0;
+	        callback = function (er, _, __) {
+	          if (er && er.code === 'EAGAIN' && eagCounter < 10) {
+	            eagCounter ++;
+	            return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+	          }
+	          callback_.apply(this, arguments);
+	        };
+	      }
+	      return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+	    }
+
+	    // This ensures `util.promisify` works as it does for native `fs.read`.
+	    if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
+	    return read
+	  })(fs.read);
+
+	  fs.readSync = typeof fs.readSync !== 'function' ? fs.readSync
+	  : (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
+	    var eagCounter = 0;
+	    while (true) {
+	      try {
+	        return fs$readSync.call(fs, fd, buffer, offset, length, position)
+	      } catch (er) {
+	        if (er.code === 'EAGAIN' && eagCounter < 10) {
+	          eagCounter ++;
+	          continue
+	        }
+	        throw er
+	      }
+	    }
+	  }})(fs.readSync);
+
+	  function patchLchmod (fs) {
+	    fs.lchmod = function (path, mode, callback) {
+	      fs.open( path
+	             , constants.O_WRONLY | constants.O_SYMLINK
+	             , mode
+	             , function (err, fd) {
+	        if (err) {
+	          if (callback) callback(err);
+	          return
+	        }
+	        // prefer to return the chmod error, if one occurs,
+	        // but still try to close, and report closing errors if they occur.
+	        fs.fchmod(fd, mode, function (err) {
+	          fs.close(fd, function(err2) {
+	            if (callback) callback(err || err2);
+	          });
+	        });
+	      });
+	    };
+
+	    fs.lchmodSync = function (path, mode) {
+	      var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode);
+
+	      // prefer to return the chmod error, if one occurs,
+	      // but still try to close, and report closing errors if they occur.
+	      var threw = true;
+	      var ret;
+	      try {
+	        ret = fs.fchmodSync(fd, mode);
+	        threw = false;
+	      } finally {
+	        if (threw) {
+	          try {
+	            fs.closeSync(fd);
+	          } catch (er) {}
+	        } else {
+	          fs.closeSync(fd);
+	        }
+	      }
+	      return ret
+	    };
+	  }
+
+	  function patchLutimes (fs) {
+	    if (constants.hasOwnProperty("O_SYMLINK") && fs.futimes) {
+	      fs.lutimes = function (path, at, mt, cb) {
+	        fs.open(path, constants.O_SYMLINK, function (er, fd) {
+	          if (er) {
+	            if (cb) cb(er);
+	            return
+	          }
+	          fs.futimes(fd, at, mt, function (er) {
+	            fs.close(fd, function (er2) {
+	              if (cb) cb(er || er2);
+	            });
+	          });
+	        });
+	      };
+
+	      fs.lutimesSync = function (path, at, mt) {
+	        var fd = fs.openSync(path, constants.O_SYMLINK);
+	        var ret;
+	        var threw = true;
+	        try {
+	          ret = fs.futimesSync(fd, at, mt);
+	          threw = false;
+	        } finally {
+	          if (threw) {
+	            try {
+	              fs.closeSync(fd);
+	            } catch (er) {}
+	          } else {
+	            fs.closeSync(fd);
+	          }
+	        }
+	        return ret
+	      };
+
+	    } else if (fs.futimes) {
+	      fs.lutimes = function (_a, _b, _c, cb) { if (cb) process.nextTick(cb); };
+	      fs.lutimesSync = function () {};
+	    }
+	  }
+
+	  function chmodFix (orig) {
+	    if (!orig) return orig
+	    return function (target, mode, cb) {
+	      return orig.call(fs, target, mode, function (er) {
+	        if (chownErOk(er)) er = null;
+	        if (cb) cb.apply(this, arguments);
+	      })
+	    }
+	  }
+
+	  function chmodFixSync (orig) {
+	    if (!orig) return orig
+	    return function (target, mode) {
+	      try {
+	        return orig.call(fs, target, mode)
+	      } catch (er) {
+	        if (!chownErOk(er)) throw er
+	      }
+	    }
+	  }
+
+
+	  function chownFix (orig) {
+	    if (!orig) return orig
+	    return function (target, uid, gid, cb) {
+	      return orig.call(fs, target, uid, gid, function (er) {
+	        if (chownErOk(er)) er = null;
+	        if (cb) cb.apply(this, arguments);
+	      })
+	    }
+	  }
+
+	  function chownFixSync (orig) {
+	    if (!orig) return orig
+	    return function (target, uid, gid) {
+	      try {
+	        return orig.call(fs, target, uid, gid)
+	      } catch (er) {
+	        if (!chownErOk(er)) throw er
+	      }
+	    }
+	  }
+
+	  function statFix (orig) {
+	    if (!orig) return orig
+	    // Older versions of Node erroneously returned signed integers for
+	    // uid + gid.
+	    return function (target, options, cb) {
+	      if (typeof options === 'function') {
+	        cb = options;
+	        options = null;
+	      }
+	      function callback (er, stats) {
+	        if (stats) {
+	          if (stats.uid < 0) stats.uid += 0x100000000;
+	          if (stats.gid < 0) stats.gid += 0x100000000;
+	        }
+	        if (cb) cb.apply(this, arguments);
+	      }
+	      return options ? orig.call(fs, target, options, callback)
+	        : orig.call(fs, target, callback)
+	    }
+	  }
+
+	  function statFixSync (orig) {
+	    if (!orig) return orig
+	    // Older versions of Node erroneously returned signed integers for
+	    // uid + gid.
+	    return function (target, options) {
+	      var stats = options ? orig.call(fs, target, options)
+	        : orig.call(fs, target);
+	      if (stats) {
+	        if (stats.uid < 0) stats.uid += 0x100000000;
+	        if (stats.gid < 0) stats.gid += 0x100000000;
+	      }
+	      return stats;
+	    }
+	  }
+
+	  // ENOSYS means that the fs doesn't support the op. Just ignore
+	  // that, because it doesn't matter.
+	  //
+	  // if there's no getuid, or if getuid() is something other
+	  // than 0, and the error is EINVAL or EPERM, then just ignore
+	  // it.
+	  //
+	  // This specific case is a silent failure in cp, install, tar,
+	  // and most other unix tools that manage permissions.
+	  //
+	  // When running as root, or if other types of errors are
+	  // encountered, then it's strict.
+	  function chownErOk (er) {
+	    if (!er)
+	      return true
+
+	    if (er.code === "ENOSYS")
+	      return true
+
+	    var nonroot = !process.getuid || process.getuid() !== 0;
+	    if (nonroot) {
+	      if (er.code === "EINVAL" || er.code === "EPERM")
+	        return true
+	    }
+
+	    return false
+	  }
+	}
+	return polyfills;
+}
+
+var legacyStreams;
+var hasRequiredLegacyStreams;
+
+function requireLegacyStreams () {
+	if (hasRequiredLegacyStreams) return legacyStreams;
+	hasRequiredLegacyStreams = 1;
+	var Stream = stream.Stream;
+
+	legacyStreams = legacy;
+
+	function legacy (fs) {
+	  return {
+	    ReadStream: ReadStream,
+	    WriteStream: WriteStream
+	  }
+
+	  function ReadStream (path, options) {
+	    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
+
+	    Stream.call(this);
+
+	    var self = this;
+
+	    this.path = path;
+	    this.fd = null;
+	    this.readable = true;
+	    this.paused = false;
+
+	    this.flags = 'r';
+	    this.mode = 438; /*=0666*/
+	    this.bufferSize = 64 * 1024;
+
+	    options = options || {};
+
+	    // Mixin options into this
+	    var keys = Object.keys(options);
+	    for (var index = 0, length = keys.length; index < length; index++) {
+	      var key = keys[index];
+	      this[key] = options[key];
+	    }
+
+	    if (this.encoding) this.setEncoding(this.encoding);
+
+	    if (this.start !== undefined) {
+	      if ('number' !== typeof this.start) {
+	        throw TypeError('start must be a Number');
+	      }
+	      if (this.end === undefined) {
+	        this.end = Infinity;
+	      } else if ('number' !== typeof this.end) {
+	        throw TypeError('end must be a Number');
+	      }
+
+	      if (this.start > this.end) {
+	        throw new Error('start must be <= end');
+	      }
+
+	      this.pos = this.start;
+	    }
+
+	    if (this.fd !== null) {
+	      process.nextTick(function() {
+	        self._read();
+	      });
+	      return;
+	    }
+
+	    fs.open(this.path, this.flags, this.mode, function (err, fd) {
+	      if (err) {
+	        self.emit('error', err);
+	        self.readable = false;
+	        return;
+	      }
+
+	      self.fd = fd;
+	      self.emit('open', fd);
+	      self._read();
+	    });
+	  }
+
+	  function WriteStream (path, options) {
+	    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
+
+	    Stream.call(this);
+
+	    this.path = path;
+	    this.fd = null;
+	    this.writable = true;
+
+	    this.flags = 'w';
+	    this.encoding = 'binary';
+	    this.mode = 438; /*=0666*/
+	    this.bytesWritten = 0;
+
+	    options = options || {};
+
+	    // Mixin options into this
+	    var keys = Object.keys(options);
+	    for (var index = 0, length = keys.length; index < length; index++) {
+	      var key = keys[index];
+	      this[key] = options[key];
+	    }
+
+	    if (this.start !== undefined) {
+	      if ('number' !== typeof this.start) {
+	        throw TypeError('start must be a Number');
+	      }
+	      if (this.start < 0) {
+	        throw new Error('start must be >= zero');
+	      }
+
+	      this.pos = this.start;
+	    }
+
+	    this.busy = false;
+	    this._queue = [];
+
+	    if (this.fd === null) {
+	      this._open = fs.open;
+	      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
+	      this.flush();
+	    }
+	  }
+	}
+	return legacyStreams;
+}
+
+var clone_1;
+var hasRequiredClone;
+
+function requireClone () {
+	if (hasRequiredClone) return clone_1;
+	hasRequiredClone = 1;
+
+	clone_1 = clone;
+
+	var getPrototypeOf = Object.getPrototypeOf || function (obj) {
+	  return obj.__proto__
+	};
+
+	function clone (obj) {
+	  if (obj === null || typeof obj !== 'object')
+	    return obj
+
+	  if (obj instanceof Object)
+	    var copy = { __proto__: getPrototypeOf(obj) };
+	  else
+	    var copy = Object.create(null);
+
+	  Object.getOwnPropertyNames(obj).forEach(function (key) {
+	    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key));
+	  });
+
+	  return copy
+	}
+	return clone_1;
+}
+
+var gracefulFs;
+var hasRequiredGracefulFs;
+
+function requireGracefulFs () {
+	if (hasRequiredGracefulFs) return gracefulFs;
+	hasRequiredGracefulFs = 1;
+	var fs = require$$0$2;
+	var polyfills = requirePolyfills();
+	var legacy = requireLegacyStreams();
+	var clone = requireClone();
+
+	var util = require$$1;
+
+	/* istanbul ignore next - node 0.x polyfill */
+	var gracefulQueue;
+	var previousSymbol;
+
+	/* istanbul ignore else - node 0.x polyfill */
+	if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
+	  gracefulQueue = Symbol.for('graceful-fs.queue');
+	  // This is used in testing by future versions
+	  previousSymbol = Symbol.for('graceful-fs.previous');
+	} else {
+	  gracefulQueue = '___graceful-fs.queue';
+	  previousSymbol = '___graceful-fs.previous';
+	}
+
+	function noop () {}
+
+	function publishQueue(context, queue) {
+	  Object.defineProperty(context, gracefulQueue, {
+	    get: function() {
+	      return queue
+	    }
+	  });
+	}
+
+	var debug = noop;
+	if (util.debuglog)
+	  debug = util.debuglog('gfs4');
+	else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
+	  debug = function() {
+	    var m = util.format.apply(util, arguments);
+	    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ');
+	    console.error(m);
+	  };
+
+	// Once time initialization
+	if (!fs[gracefulQueue]) {
+	  // This queue can be shared by multiple loaded instances
+	  var queue = commonjsGlobal[gracefulQueue] || [];
+	  publishQueue(fs, queue);
+
+	  // Patch fs.close/closeSync to shared queue version, because we need
+	  // to retry() whenever a close happens *anywhere* in the program.
+	  // This is essential when multiple graceful-fs instances are
+	  // in play at the same time.
+	  fs.close = (function (fs$close) {
+	    function close (fd, cb) {
+	      return fs$close.call(fs, fd, function (err) {
+	        // This function uses the graceful-fs shared queue
+	        if (!err) {
+	          resetQueue();
+	        }
+
+	        if (typeof cb === 'function')
+	          cb.apply(this, arguments);
+	      })
+	    }
+
+	    Object.defineProperty(close, previousSymbol, {
+	      value: fs$close
+	    });
+	    return close
+	  })(fs.close);
+
+	  fs.closeSync = (function (fs$closeSync) {
+	    function closeSync (fd) {
+	      // This function uses the graceful-fs shared queue
+	      fs$closeSync.apply(fs, arguments);
+	      resetQueue();
+	    }
+
+	    Object.defineProperty(closeSync, previousSymbol, {
+	      value: fs$closeSync
+	    });
+	    return closeSync
+	  })(fs.closeSync);
+
+	  if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
+	    process.on('exit', function() {
+	      debug(fs[gracefulQueue]);
+	      require$$5.equal(fs[gracefulQueue].length, 0);
+	    });
+	  }
+	}
+
+	if (!commonjsGlobal[gracefulQueue]) {
+	  publishQueue(commonjsGlobal, fs[gracefulQueue]);
+	}
+
+	gracefulFs = patch(clone(fs));
+	if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs.__patched) {
+	    gracefulFs = patch(fs);
+	    fs.__patched = true;
+	}
+
+	function patch (fs) {
+	  // Everything that references the open() function needs to be in here
+	  polyfills(fs);
+	  fs.gracefulify = patch;
+
+	  fs.createReadStream = createReadStream;
+	  fs.createWriteStream = createWriteStream;
+	  var fs$readFile = fs.readFile;
+	  fs.readFile = readFile;
+	  function readFile (path, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    return go$readFile(path, options, cb)
+
+	    function go$readFile (path, options, cb, startTime) {
+	      return fs$readFile(path, options, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$readFile, [path, options, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$writeFile = fs.writeFile;
+	  fs.writeFile = writeFile;
+	  function writeFile (path, data, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    return go$writeFile(path, data, options, cb)
+
+	    function go$writeFile (path, data, options, cb, startTime) {
+	      return fs$writeFile(path, data, options, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$writeFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$appendFile = fs.appendFile;
+	  if (fs$appendFile)
+	    fs.appendFile = appendFile;
+	  function appendFile (path, data, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    return go$appendFile(path, data, options, cb)
+
+	    function go$appendFile (path, data, options, cb, startTime) {
+	      return fs$appendFile(path, data, options, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$appendFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$copyFile = fs.copyFile;
+	  if (fs$copyFile)
+	    fs.copyFile = copyFile;
+	  function copyFile (src, dest, flags, cb) {
+	    if (typeof flags === 'function') {
+	      cb = flags;
+	      flags = 0;
+	    }
+	    return go$copyFile(src, dest, flags, cb)
+
+	    function go$copyFile (src, dest, flags, cb, startTime) {
+	      return fs$copyFile(src, dest, flags, function (err) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$copyFile, [src, dest, flags, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  var fs$readdir = fs.readdir;
+	  fs.readdir = readdir;
+	  var noReaddirOptionVersions = /^v[0-5]\./;
+	  function readdir (path, options, cb) {
+	    if (typeof options === 'function')
+	      cb = options, options = null;
+
+	    var go$readdir = noReaddirOptionVersions.test(process.version)
+	      ? function go$readdir (path, options, cb, startTime) {
+	        return fs$readdir(path, fs$readdirCallback(
+	          path, options, cb, startTime
+	        ))
+	      }
+	      : function go$readdir (path, options, cb, startTime) {
+	        return fs$readdir(path, options, fs$readdirCallback(
+	          path, options, cb, startTime
+	        ))
+	      };
+
+	    return go$readdir(path, options, cb)
+
+	    function fs$readdirCallback (path, options, cb, startTime) {
+	      return function (err, files) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([
+	            go$readdir,
+	            [path, options, cb],
+	            err,
+	            startTime || Date.now(),
+	            Date.now()
+	          ]);
+	        else {
+	          if (files && files.sort)
+	            files.sort();
+
+	          if (typeof cb === 'function')
+	            cb.call(this, err, files);
+	        }
+	      }
+	    }
+	  }
+
+	  if (process.version.substr(0, 4) === 'v0.8') {
+	    var legStreams = legacy(fs);
+	    ReadStream = legStreams.ReadStream;
+	    WriteStream = legStreams.WriteStream;
+	  }
+
+	  var fs$ReadStream = fs.ReadStream;
+	  if (fs$ReadStream) {
+	    ReadStream.prototype = Object.create(fs$ReadStream.prototype);
+	    ReadStream.prototype.open = ReadStream$open;
+	  }
+
+	  var fs$WriteStream = fs.WriteStream;
+	  if (fs$WriteStream) {
+	    WriteStream.prototype = Object.create(fs$WriteStream.prototype);
+	    WriteStream.prototype.open = WriteStream$open;
+	  }
+
+	  Object.defineProperty(fs, 'ReadStream', {
+	    get: function () {
+	      return ReadStream
+	    },
+	    set: function (val) {
+	      ReadStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+	  Object.defineProperty(fs, 'WriteStream', {
+	    get: function () {
+	      return WriteStream
+	    },
+	    set: function (val) {
+	      WriteStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+
+	  // legacy names
+	  var FileReadStream = ReadStream;
+	  Object.defineProperty(fs, 'FileReadStream', {
+	    get: function () {
+	      return FileReadStream
+	    },
+	    set: function (val) {
+	      FileReadStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+	  var FileWriteStream = WriteStream;
+	  Object.defineProperty(fs, 'FileWriteStream', {
+	    get: function () {
+	      return FileWriteStream
+	    },
+	    set: function (val) {
+	      FileWriteStream = val;
+	    },
+	    enumerable: true,
+	    configurable: true
+	  });
+
+	  function ReadStream (path, options) {
+	    if (this instanceof ReadStream)
+	      return fs$ReadStream.apply(this, arguments), this
+	    else
+	      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
+	  }
+
+	  function ReadStream$open () {
+	    var that = this;
+	    open(that.path, that.flags, that.mode, function (err, fd) {
+	      if (err) {
+	        if (that.autoClose)
+	          that.destroy();
+
+	        that.emit('error', err);
+	      } else {
+	        that.fd = fd;
+	        that.emit('open', fd);
+	        that.read();
+	      }
+	    });
+	  }
+
+	  function WriteStream (path, options) {
+	    if (this instanceof WriteStream)
+	      return fs$WriteStream.apply(this, arguments), this
+	    else
+	      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
+	  }
+
+	  function WriteStream$open () {
+	    var that = this;
+	    open(that.path, that.flags, that.mode, function (err, fd) {
+	      if (err) {
+	        that.destroy();
+	        that.emit('error', err);
+	      } else {
+	        that.fd = fd;
+	        that.emit('open', fd);
+	      }
+	    });
+	  }
+
+	  function createReadStream (path, options) {
+	    return new fs.ReadStream(path, options)
+	  }
+
+	  function createWriteStream (path, options) {
+	    return new fs.WriteStream(path, options)
+	  }
+
+	  var fs$open = fs.open;
+	  fs.open = open;
+	  function open (path, flags, mode, cb) {
+	    if (typeof mode === 'function')
+	      cb = mode, mode = null;
+
+	    return go$open(path, flags, mode, cb)
+
+	    function go$open (path, flags, mode, cb, startTime) {
+	      return fs$open(path, flags, mode, function (err, fd) {
+	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+	          enqueue([go$open, [path, flags, mode, cb], err, startTime || Date.now(), Date.now()]);
+	        else {
+	          if (typeof cb === 'function')
+	            cb.apply(this, arguments);
+	        }
+	      })
+	    }
+	  }
+
+	  return fs
+	}
+
+	function enqueue (elem) {
+	  debug('ENQUEUE', elem[0].name, elem[1]);
+	  fs[gracefulQueue].push(elem);
+	  retry();
+	}
+
+	// keep track of the timeout between retry() calls
+	var retryTimer;
+
+	// reset the startTime and lastTime to now
+	// this resets the start of the 60 second overall timeout as well as the
+	// delay between attempts so that we'll retry these jobs sooner
+	function resetQueue () {
+	  var now = Date.now();
+	  for (var i = 0; i < fs[gracefulQueue].length; ++i) {
+	    // entries that are only a length of 2 are from an older version, don't
+	    // bother modifying those since they'll be retried anyway.
+	    if (fs[gracefulQueue][i].length > 2) {
+	      fs[gracefulQueue][i][3] = now; // startTime
+	      fs[gracefulQueue][i][4] = now; // lastTime
+	    }
+	  }
+	  // call retry to make sure we're actively processing the queue
+	  retry();
+	}
+
+	function retry () {
+	  // clear the timer and remove it to help prevent unintended concurrency
+	  clearTimeout(retryTimer);
+	  retryTimer = undefined;
+
+	  if (fs[gracefulQueue].length === 0)
+	    return
+
+	  var elem = fs[gracefulQueue].shift();
+	  var fn = elem[0];
+	  var args = elem[1];
+	  // these items may be unset if they were added by an older graceful-fs
+	  var err = elem[2];
+	  var startTime = elem[3];
+	  var lastTime = elem[4];
+
+	  // if we don't have a startTime we have no way of knowing if we've waited
+	  // long enough, so go ahead and retry this item now
+	  if (startTime === undefined) {
+	    debug('RETRY', fn.name, args);
+	    fn.apply(null, args);
+	  } else if (Date.now() - startTime >= 60000) {
+	    // it's been more than 60 seconds total, bail now
+	    debug('TIMEOUT', fn.name, args);
+	    var cb = args.pop();
+	    if (typeof cb === 'function')
+	      cb.call(null, err);
+	  } else {
+	    // the amount of time between the last attempt and right now
+	    var sinceAttempt = Date.now() - lastTime;
+	    // the amount of time between when we first tried, and when we last tried
+	    // rounded up to at least 1
+	    var sinceStart = Math.max(lastTime - startTime, 1);
+	    // backoff. wait longer than the total time we've been retrying, but only
+	    // up to a maximum of 100ms
+	    var desiredDelay = Math.min(sinceStart * 1.2, 100);
+	    // it's been long enough since the last retry, do it again
+	    if (sinceAttempt >= desiredDelay) {
+	      debug('RETRY', fn.name, args);
+	      fn.apply(null, args.concat([startTime]));
+	    } else {
+	      // if we can't do this job yet, push it to the end of the queue
+	      // and let the next iteration check again
+	      fs[gracefulQueue].push(elem);
+	    }
+	  }
+
+	  // schedule our next run if one isn't already scheduled
+	  if (retryTimer === undefined) {
+	    retryTimer = setTimeout(retry, 0);
+	  }
+	}
+	return gracefulFs;
+}
+
+var gracefulFsExports = requireGracefulFs();
+var fs = /*@__PURE__*/getDefaultExportFromCjs(gracefulFsExports);
+
+/**
+ * Create a bound version of a function with a specified `this` context
+ *
+ * @param {Function} fn - The function to bind
+ * @param {*} thisArg - The value to be passed as the `this` parameter
+ * @returns {Function} A new function that will call the original function with the specified `this` context
+ */
 function bind(fn, thisArg) {
   return function wrap() {
     return fn.apply(thisArg, arguments);
@@ -11980,7 +12971,7 @@ var hasRequiredMimeTypes;
 function requireMimeTypes () {
 	if (hasRequiredMimeTypes) return mimeTypes;
 	hasRequiredMimeTypes = 1;
-	(function (exports) {
+	(function (exports$1) {
 
 		/**
 		 * Module dependencies.
@@ -12003,16 +12994,16 @@ function requireMimeTypes () {
 		 * @public
 		 */
 
-		exports.charset = charset;
-		exports.charsets = { lookup: charset };
-		exports.contentType = contentType;
-		exports.extension = extension;
-		exports.extensions = Object.create(null);
-		exports.lookup = lookup;
-		exports.types = Object.create(null);
+		exports$1.charset = charset;
+		exports$1.charsets = { lookup: charset };
+		exports$1.contentType = contentType;
+		exports$1.extension = extension;
+		exports$1.extensions = Object.create(null);
+		exports$1.lookup = lookup;
+		exports$1.types = Object.create(null);
 
 		// Populate the extensions/types maps
-		populateMaps(exports.extensions, exports.types);
+		populateMaps(exports$1.extensions, exports$1.types);
 
 		/**
 		 * Get the default charset for a MIME type.
@@ -12056,7 +13047,7 @@ function requireMimeTypes () {
 		  }
 
 		  var mime = str.indexOf('/') === -1
-		    ? exports.lookup(str)
+		    ? exports$1.lookup(str)
 		    : str;
 
 		  if (!mime) {
@@ -12065,7 +13056,7 @@ function requireMimeTypes () {
 
 		  // TODO: use content-type or other module
 		  if (mime.indexOf('charset') === -1) {
-		    var charset = exports.charset(mime);
+		    var charset = exports$1.charset(mime);
 		    if (charset) mime += '; charset=' + charset.toLowerCase();
 		  }
 
@@ -12088,7 +13079,7 @@ function requireMimeTypes () {
 		  var match = EXTRACT_TYPE_REGEXP.exec(type);
 
 		  // get extensions
-		  var exts = match && exports.extensions[match[1].toLowerCase()];
+		  var exts = match && exports$1.extensions[match[1].toLowerCase()];
 
 		  if (!exts || !exts.length) {
 		    return false
@@ -12118,7 +13109,7 @@ function requireMimeTypes () {
 		    return false
 		  }
 
-		  return exports.types[extension] || false
+		  return exports$1.types[extension] || false
 		}
 
 		/**
@@ -13732,7 +14723,7 @@ function requireForm_data () {
 	var path = require$$1$1;
 	var http = require$$3;
 	var https = require$$4;
-	var parseUrl = require$$0$1.parse;
+	var parseUrl = require$$0$3.parse;
 	var fs = require$$0$2;
 	var Stream = stream.Stream;
 	var crypto = require$$8;
@@ -14584,7 +15575,7 @@ class InterceptorManager {
    *
    * @param {Number} id The ID that was returned by `use`
    *
-   * @returns {Boolean} `true` if the interceptor was removed, `false` otherwise
+   * @returns {void}
    */
   eject(id) {
     if (this.handlers[id]) {
@@ -14628,7 +15619,7 @@ var transitionalDefaults = {
   clarifyTimeoutError: false
 };
 
-var URLSearchParams = require$$0$1.URLSearchParams;
+var URLSearchParams = require$$0$3.URLSearchParams;
 
 const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
 
@@ -15461,7 +16452,7 @@ function requireProxyFromEnv () {
 	if (hasRequiredProxyFromEnv) return proxyFromEnv$1;
 	hasRequiredProxyFromEnv = 1;
 
-	var parseUrl = require$$0$1.parse;
+	var parseUrl = require$$0$3.parse;
 
 	var DEFAULT_PORTS = {
 	  ftp: 21,
@@ -16057,17 +17048,17 @@ var hasRequiredBrowser;
 function requireBrowser () {
 	if (hasRequiredBrowser) return browser.exports;
 	hasRequiredBrowser = 1;
-	(function (module, exports) {
+	(function (module, exports$1) {
 		/**
 		 * This is the web browser implementation of `debug()`.
 		 */
 
-		exports.formatArgs = formatArgs;
-		exports.save = save;
-		exports.load = load;
-		exports.useColors = useColors;
-		exports.storage = localstorage();
-		exports.destroy = (() => {
+		exports$1.formatArgs = formatArgs;
+		exports$1.save = save;
+		exports$1.load = load;
+		exports$1.useColors = useColors;
+		exports$1.storage = localstorage();
+		exports$1.destroy = (() => {
 			let warned = false;
 
 			return () => {
@@ -16082,7 +17073,7 @@ function requireBrowser () {
 		 * Colors.
 		 */
 
-		exports.colors = [
+		exports$1.colors = [
 			'#0000CC',
 			'#0000FF',
 			'#0033CC',
@@ -16247,7 +17238,7 @@ function requireBrowser () {
 		 *
 		 * @api public
 		 */
-		exports.log = console.debug || console.log || (() => {});
+		exports$1.log = console.debug || console.log || (() => {});
 
 		/**
 		 * Save `namespaces`.
@@ -16258,9 +17249,9 @@ function requireBrowser () {
 		function save(namespaces) {
 			try {
 				if (namespaces) {
-					exports.storage.setItem('debug', namespaces);
+					exports$1.storage.setItem('debug', namespaces);
 				} else {
-					exports.storage.removeItem('debug');
+					exports$1.storage.removeItem('debug');
 				}
 			} catch (error) {
 				// Swallow
@@ -16277,7 +17268,7 @@ function requireBrowser () {
 		function load() {
 			let r;
 			try {
-				r = exports.storage.getItem('debug') || exports.storage.getItem('DEBUG') ;
+				r = exports$1.storage.getItem('debug') || exports$1.storage.getItem('DEBUG') ;
 			} catch (error) {
 				// Swallow
 				// XXX (@Qix-) should we be logging these?
@@ -16313,7 +17304,7 @@ function requireBrowser () {
 			}
 		}
 
-		module.exports = requireCommon()(exports);
+		module.exports = requireCommon()(exports$1);
 
 		const {formatters} = module.exports;
 
@@ -16356,7 +17347,7 @@ var hasRequiredSupportsColor;
 function requireSupportsColor () {
 	if (hasRequiredSupportsColor) return supportsColor_1;
 	hasRequiredSupportsColor = 1;
-	const os = require$$0$3;
+	const os = require$$0$4;
 	const tty = require$$1$2;
 	const hasFlag = requireHasFlag();
 
@@ -16502,7 +17493,7 @@ var hasRequiredNode;
 function requireNode () {
 	if (hasRequiredNode) return node.exports;
 	hasRequiredNode = 1;
-	(function (module, exports) {
+	(function (module, exports$1) {
 		const tty = require$$1$2;
 		const util = require$$1;
 
@@ -16510,13 +17501,13 @@ function requireNode () {
 		 * This is the Node.js implementation of `debug()`.
 		 */
 
-		exports.init = init;
-		exports.log = log;
-		exports.formatArgs = formatArgs;
-		exports.save = save;
-		exports.load = load;
-		exports.useColors = useColors;
-		exports.destroy = util.deprecate(
+		exports$1.init = init;
+		exports$1.log = log;
+		exports$1.formatArgs = formatArgs;
+		exports$1.save = save;
+		exports$1.load = load;
+		exports$1.useColors = useColors;
+		exports$1.destroy = util.deprecate(
 			() => {},
 			'Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.'
 		);
@@ -16525,7 +17516,7 @@ function requireNode () {
 		 * Colors.
 		 */
 
-		exports.colors = [6, 2, 3, 4, 5, 1];
+		exports$1.colors = [6, 2, 3, 4, 5, 1];
 
 		try {
 			// Optional dependency (as in, doesn't need to be installed, NOT like optionalDependencies in package.json)
@@ -16533,7 +17524,7 @@ function requireNode () {
 			const supportsColor = requireSupportsColor();
 
 			if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
-				exports.colors = [
+				exports$1.colors = [
 					20,
 					21,
 					26,
@@ -16622,7 +17613,7 @@ function requireNode () {
 		 *   $ DEBUG_COLORS=no DEBUG_DEPTH=10 DEBUG_SHOW_HIDDEN=enabled node script.js
 		 */
 
-		exports.inspectOpts = Object.keys(process.env).filter(key => {
+		exports$1.inspectOpts = Object.keys(process.env).filter(key => {
 			return /^debug_/i.test(key);
 		}).reduce((obj, key) => {
 			// Camel-case
@@ -16654,8 +17645,8 @@ function requireNode () {
 		 */
 
 		function useColors() {
-			return 'colors' in exports.inspectOpts ?
-				Boolean(exports.inspectOpts.colors) :
+			return 'colors' in exports$1.inspectOpts ?
+				Boolean(exports$1.inspectOpts.colors) :
 				tty.isatty(process.stderr.fd);
 		}
 
@@ -16681,7 +17672,7 @@ function requireNode () {
 		}
 
 		function getDate() {
-			if (exports.inspectOpts.hideDate) {
+			if (exports$1.inspectOpts.hideDate) {
 				return '';
 			}
 			return new Date().toISOString() + ' ';
@@ -16692,7 +17683,7 @@ function requireNode () {
 		 */
 
 		function log(...args) {
-			return process.stderr.write(util.formatWithOptions(exports.inspectOpts, ...args) + '\n');
+			return process.stderr.write(util.formatWithOptions(exports$1.inspectOpts, ...args) + '\n');
 		}
 
 		/**
@@ -16732,13 +17723,13 @@ function requireNode () {
 		function init(debug) {
 			debug.inspectOpts = {};
 
-			const keys = Object.keys(exports.inspectOpts);
+			const keys = Object.keys(exports$1.inspectOpts);
 			for (let i = 0; i < keys.length; i++) {
-				debug.inspectOpts[keys[i]] = exports.inspectOpts[keys[i]];
+				debug.inspectOpts[keys[i]] = exports$1.inspectOpts[keys[i]];
 			}
 		}
 
-		module.exports = requireCommon()(exports);
+		module.exports = requireCommon()(exports$1);
 
 		const {formatters} = module.exports;
 
@@ -16813,12 +17804,12 @@ var hasRequiredFollowRedirects;
 function requireFollowRedirects () {
 	if (hasRequiredFollowRedirects) return followRedirects$1.exports;
 	hasRequiredFollowRedirects = 1;
-	var url = require$$0$1;
+	var url = require$$0$3;
 	var URL = url.URL;
 	var http = require$$3;
 	var https = require$$4;
 	var Writable = stream.Writable;
-	var assert = require$$4$1;
+	var assert = require$$5;
 	var debug = requireDebug$1();
 
 	// Preventive platform detection
@@ -17312,7 +18303,7 @@ function requireFollowRedirects () {
 	// Wraps the key/value object of protocols with redirect functionality
 	function wrap(protocols) {
 	  // Default settings
-	  var exports = {
+	  var exports$1 = {
 	    maxRedirects: 21,
 	    maxBodyLength: 10 * 1024 * 1024,
 	  };
@@ -17322,7 +18313,7 @@ function requireFollowRedirects () {
 	  Object.keys(protocols).forEach(function (scheme) {
 	    var protocol = scheme + ":";
 	    var nativeProtocol = nativeProtocols[protocol] = protocols[scheme];
-	    var wrappedProtocol = exports[scheme] = Object.create(nativeProtocol);
+	    var wrappedProtocol = exports$1[scheme] = Object.create(nativeProtocol);
 
 	    // Executes a request, following redirects
 	    function request(input, options, callback) {
@@ -17345,8 +18336,8 @@ function requireFollowRedirects () {
 
 	      // Set defaults
 	      options = Object.assign({
-	        maxRedirects: exports.maxRedirects,
-	        maxBodyLength: exports.maxBodyLength,
+	        maxRedirects: exports$1.maxRedirects,
+	        maxBodyLength: exports$1.maxBodyLength,
 	      }, input, options);
 	      options.nativeProtocols = nativeProtocols;
 	      if (!isString(options.host) && !isString(options.hostname)) {
@@ -17371,7 +18362,7 @@ function requireFollowRedirects () {
 	      get: { value: get, configurable: true, enumerable: true, writable: true },
 	    });
 	  });
-	  return exports;
+	  return exports$1;
 	}
 
 	function noop() { /* empty */ }
@@ -17505,7 +18496,7 @@ function requireFollowRedirects () {
 var followRedirectsExports = requireFollowRedirects();
 var followRedirects = /*@__PURE__*/getDefaultExportFromCjs(followRedirectsExports);
 
-const VERSION$1 = "1.12.2";
+const VERSION$1 = "1.13.2";
 
 function parseProtocol(url) {
   const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
@@ -18091,6 +19082,101 @@ const flushOnFinish = (stream, [throttled, flush]) => {
   return throttled;
 };
 
+class Http2Sessions {
+  constructor() {
+    this.sessions = Object.create(null);
+  }
+
+  getSession(authority, options) {
+    options = Object.assign({
+      sessionTimeout: 1000
+    }, options);
+
+    let authoritySessions = this.sessions[authority];
+
+    if (authoritySessions) {
+      let len = authoritySessions.length;
+
+      for (let i = 0; i < len; i++) {
+        const [sessionHandle, sessionOptions] = authoritySessions[i];
+        if (!sessionHandle.destroyed && !sessionHandle.closed && require$$1.isDeepStrictEqual(sessionOptions, options)) {
+          return sessionHandle;
+        }
+      }
+    }
+
+    const session = http2.connect(authority, options);
+
+    let removed;
+
+    const removeSession = () => {
+      if (removed) {
+        return;
+      }
+
+      removed = true;
+
+      let entries = authoritySessions, len = entries.length, i = len;
+
+      while (i--) {
+        if (entries[i][0] === session) {
+          if (len === 1) {
+            delete this.sessions[authority];
+          } else {
+            entries.splice(i, 1);
+          }
+          return;
+        }
+      }
+    };
+
+    const originalRequestFn = session.request;
+
+    const {sessionTimeout} = options;
+
+    if(sessionTimeout != null) {
+
+      let timer;
+      let streamsCount = 0;
+
+      session.request = function () {
+        const stream = originalRequestFn.apply(this, arguments);
+
+        streamsCount++;
+
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+
+        stream.once('close', () => {
+          if (!--streamsCount) {
+            timer = setTimeout(() => {
+              timer = null;
+              removeSession();
+            }, sessionTimeout);
+          }
+        });
+
+        return stream;
+      };
+    }
+
+    session.once('close', removeSession);
+
+    let entry = [
+        session,
+        options
+      ];
+
+    authoritySessions ? authoritySessions.push(entry) : authoritySessions =  this.sessions[authority] = [entry];
+
+    return session;
+  }
+}
+
+const http2Sessions = new Http2Sessions();
+
 
 /**
  * If the proxy or config beforeRedirects functions are defined, call them with the options
@@ -18203,15 +19289,74 @@ const resolveFamily = ({address, family}) => {
 
 const buildAddressEntry = (address, family) => resolveFamily(utils$1.isObject(address) ? address : {address, family});
 
+const http2Transport = {
+  request(options, cb) {
+      const authority = options.protocol + '//' + options.hostname + ':' + (options.port || 80);
+
+      const {http2Options, headers} = options;
+
+      const session = http2Sessions.getSession(authority, http2Options);
+
+      const {
+        HTTP2_HEADER_SCHEME,
+        HTTP2_HEADER_METHOD,
+        HTTP2_HEADER_PATH,
+        HTTP2_HEADER_STATUS
+      } = http2.constants;
+
+      const http2Headers = {
+        [HTTP2_HEADER_SCHEME]: options.protocol.replace(':', ''),
+        [HTTP2_HEADER_METHOD]: options.method,
+        [HTTP2_HEADER_PATH]: options.path,
+      };
+
+      utils$1.forEach(headers, (header, name) => {
+        name.charAt(0) !== ':' && (http2Headers[name] = header);
+      });
+
+      const req = session.request(http2Headers);
+
+      req.once('response', (responseHeaders) => {
+        const response = req; //duplex
+
+        responseHeaders = Object.assign({}, responseHeaders);
+
+        const status = responseHeaders[HTTP2_HEADER_STATUS];
+
+        delete responseHeaders[HTTP2_HEADER_STATUS];
+
+        response.headers = responseHeaders;
+
+        response.statusCode = +status;
+
+        cb(response);
+      });
+
+      return req;
+  }
+};
+
 /*eslint consistent-return:0*/
 var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
   return wrapAsync(async function dispatchHttpRequest(resolve, reject, onDone) {
-    let {data, lookup, family} = config;
+    let {data, lookup, family, httpVersion = 1, http2Options} = config;
     const {responseType, responseEncoding} = config;
     const method = config.method.toUpperCase();
     let isDone;
     let rejected = false;
     let req;
+
+    httpVersion = +httpVersion;
+
+    if (Number.isNaN(httpVersion)) {
+      throw TypeError(`Invalid protocol version: '${config.httpVersion}' is not a number`);
+    }
+
+    if (httpVersion !== 1 && httpVersion !== 2) {
+      throw TypeError(`Unsupported protocol version '${httpVersion}'`);
+    }
+
+    const isHttp2 = httpVersion === 2;
 
     if (lookup) {
       const _lookup = callbackify(lookup, (value) => utils$1.isArray(value) ? value : [value]);
@@ -18229,8 +19374,17 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
       };
     }
 
-    // temporary internal emitter until the AxiosRequest class will be implemented
-    const emitter = new EventEmitter();
+    const abortEmitter = new EventEmitter();
+
+    function abort(reason) {
+      try {
+        abortEmitter.emit('abort', !reason || reason.type ? new CanceledError$1(null, config, req) : reason);
+      } catch(err) {
+        console.warn('emit error', err);
+      }
+    }
+
+    abortEmitter.once('abort', reject);
 
     const onFinished = () => {
       if (config.cancelToken) {
@@ -18241,22 +19395,8 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
         config.signal.removeEventListener('abort', abort);
       }
 
-      emitter.removeAllListeners();
+      abortEmitter.removeAllListeners();
     };
-
-    onDone((value, isRejected) => {
-      isDone = true;
-      if (isRejected) {
-        rejected = true;
-        onFinished();
-      }
-    });
-
-    function abort(reason) {
-      emitter.emit('abort', !reason || reason.type ? new CanceledError$1(null, config, req) : reason);
-    }
-
-    emitter.once('abort', reject);
 
     if (config.cancelToken || config.signal) {
       config.cancelToken && config.cancelToken.subscribe(abort);
@@ -18264,6 +19404,31 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
         config.signal.aborted ? abort() : config.signal.addEventListener('abort', abort);
       }
     }
+
+    onDone((response, isRejected) => {
+      isDone = true;
+
+      if (isRejected) {
+        rejected = true;
+        onFinished();
+        return;
+      }
+
+      const {data} = response;
+
+      if (data instanceof stream.Readable || data instanceof stream.Duplex) {
+        const offListeners = stream.finished(data, () => {
+          offListeners();
+          onFinished();
+        });
+      } else {
+        onFinished();
+      }
+    });
+
+
+
+
 
     // Parse url
     const fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
@@ -18469,7 +19634,8 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
       protocol,
       family,
       beforeRedirect: dispatchBeforeRedirect,
-      beforeRedirects: {}
+      beforeRedirects: {},
+      http2Options
     };
 
     // cacheable-lookup integration hotfix
@@ -18486,18 +19652,23 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
     let transport;
     const isHttpsRequest = isHttps.test(options.protocol);
     options.agent = isHttpsRequest ? config.httpsAgent : config.httpAgent;
-    if (config.transport) {
-      transport = config.transport;
-    } else if (config.maxRedirects === 0) {
-      transport = isHttpsRequest ? require$$4 : require$$3;
+
+    if (isHttp2) {
+       transport = http2Transport;
     } else {
-      if (config.maxRedirects) {
-        options.maxRedirects = config.maxRedirects;
+      if (config.transport) {
+        transport = config.transport;
+      } else if (config.maxRedirects === 0) {
+        transport = isHttpsRequest ? require$$4 : require$$3;
+      } else {
+        if (config.maxRedirects) {
+          options.maxRedirects = config.maxRedirects;
+        }
+        if (config.beforeRedirect) {
+          options.beforeRedirects.config = config.beforeRedirect;
+        }
+        transport = isHttpsRequest ? httpsFollow : httpFollow;
       }
-      if (config.beforeRedirect) {
-        options.beforeRedirects.config = config.beforeRedirect;
-      }
-      transport = isHttpsRequest ? httpsFollow : httpFollow;
     }
 
     if (config.maxBodyLength > -1) {
@@ -18517,7 +19688,7 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
 
       const streams = [res];
 
-      const responseLength = +res.headers['content-length'];
+      const responseLength = utils$1.toFiniteNumber(res.headers['content-length']);
 
       if (onDownloadProgress || maxDownloadRate) {
         const transformStream = new AxiosTransformStream({
@@ -18580,10 +19751,7 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
 
       responseStream = streams.length > 1 ? stream.pipeline(streams, utils$1.noop) : streams[0];
 
-      const offListeners = stream.finished(responseStream, () => {
-        offListeners();
-        onFinished();
-      });
+
 
       const response = {
         status: res.statusCode,
@@ -18609,7 +19777,7 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
             // stream.destroy() emit aborted event before calling reject() on Node.js v16
             rejected = true;
             responseStream.destroy();
-            reject(new AxiosError$1('maxContentLength size of ' + config.maxContentLength + ' exceeded',
+            abort(new AxiosError$1('maxContentLength size of ' + config.maxContentLength + ' exceeded',
               AxiosError$1.ERR_BAD_RESPONSE, config, lastRequest));
           }
         });
@@ -18651,7 +19819,7 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
         });
       }
 
-      emitter.once('abort', err => {
+      abortEmitter.once('abort', err => {
         if (!responseStream.destroyed) {
           responseStream.emit('error', err);
           responseStream.destroy();
@@ -18659,9 +19827,12 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
       });
     });
 
-    emitter.once('abort', err => {
-      reject(err);
-      req.destroy(err);
+    abortEmitter.once('abort', err => {
+      if (req.close) {
+        req.close();
+      } else {
+        req.destroy(err);
+      }
     });
 
     // Handle errors
@@ -18683,7 +19854,7 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
       const timeout = parseInt(config.timeout, 10);
 
       if (Number.isNaN(timeout)) {
-        reject(new AxiosError$1(
+        abort(new AxiosError$1(
           'error trying to parse `config.timeout` to int',
           AxiosError$1.ERR_BAD_OPTION_VALUE,
           config,
@@ -18705,14 +19876,16 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
         if (config.timeoutErrorMessage) {
           timeoutErrorMessage = config.timeoutErrorMessage;
         }
-        reject(new AxiosError$1(
+        abort(new AxiosError$1(
           timeoutErrorMessage,
           transitional.clarifyTimeoutError ? AxiosError$1.ETIMEDOUT : AxiosError$1.ECONNABORTED,
           config,
           req
         ));
-        abort();
       });
+    } else {
+      // explicitly reset the socket timeout value for a possible `keep-alive` request
+      req.setTimeout(0);
     }
 
 
@@ -18738,7 +19911,8 @@ var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
 
       data.pipe(req);
     } else {
-      req.end(data);
+      data && req.write(data);
+      req.end();
     }
   });
 };
@@ -18760,27 +19934,38 @@ var cookies = platform.hasStandardBrowserEnv ?
 
   // Standard browser envs support document.cookie
   {
-    write(name, value, expires, path, domain, secure) {
-      const cookie = [name + '=' + encodeURIComponent(value)];
+    write(name, value, expires, path, domain, secure, sameSite) {
+      if (typeof document === 'undefined') return;
 
-      utils$1.isNumber(expires) && cookie.push('expires=' + new Date(expires).toGMTString());
+      const cookie = [`${name}=${encodeURIComponent(value)}`];
 
-      utils$1.isString(path) && cookie.push('path=' + path);
-
-      utils$1.isString(domain) && cookie.push('domain=' + domain);
-
-      secure === true && cookie.push('secure');
+      if (utils$1.isNumber(expires)) {
+        cookie.push(`expires=${new Date(expires).toUTCString()}`);
+      }
+      if (utils$1.isString(path)) {
+        cookie.push(`path=${path}`);
+      }
+      if (utils$1.isString(domain)) {
+        cookie.push(`domain=${domain}`);
+      }
+      if (secure === true) {
+        cookie.push('secure');
+      }
+      if (utils$1.isString(sameSite)) {
+        cookie.push(`SameSite=${sameSite}`);
+      }
 
       document.cookie = cookie.join('; ');
     },
 
     read(name) {
-      const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-      return (match ? decodeURIComponent(match[3]) : null);
+      if (typeof document === 'undefined') return null;
+      const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[1]) : null;
     },
 
     remove(name) {
-      this.write(name, '', Date.now() - 86400000);
+      this.write(name, '', Date.now() - 86400000, '/');
     }
   }
 
@@ -18823,11 +20008,11 @@ function mergeConfig$1(config1, config2) {
   }
 
   // eslint-disable-next-line consistent-return
-  function mergeDeepProperties(a, b, prop , caseless) {
+  function mergeDeepProperties(a, b, prop, caseless) {
     if (!utils$1.isUndefined(b)) {
-      return getMergedValue(a, b, prop , caseless);
+      return getMergedValue(a, b, prop, caseless);
     } else if (!utils$1.isUndefined(a)) {
-      return getMergedValue(undefined, a, prop , caseless);
+      return getMergedValue(undefined, a, prop, caseless);
     }
   }
 
@@ -18885,7 +20070,7 @@ function mergeConfig$1(config1, config2) {
     socketPath: defaultToConfig2,
     responseEncoding: defaultToConfig2,
     validateStatus: mergeDirectKeys,
-    headers: (a, b , prop) => mergeDeepProperties(headersToObject(a), headersToObject(b),prop, true)
+    headers: (a, b, prop) => mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true)
   };
 
   utils$1.forEach(Object.keys({...config1, ...config2}), function computeConfigValue(prop) {
@@ -19523,7 +20708,7 @@ const factory = (env) => {
 const seedCache = new Map();
 
 const getFetch = (config) => {
-  let env = config ? config.env : {};
+  let env = (config && config.env) || {};
   const {fetch, Request, Response} = env;
   const seeds = [
     Request, Response, fetch
@@ -19546,6 +20731,15 @@ const getFetch = (config) => {
 
 getFetch();
 
+/**
+ * Known adapters mapping.
+ * Provides environment-specific adapters for Axios:
+ * - `http` for Node.js
+ * - `xhr` for browsers
+ * - `fetch` for fetch API-based requests
+ * 
+ * @type {Object<string, Function|Object>}
+ */
 const knownAdapters = {
   http: httpAdapter,
   xhr: xhrAdapter,
@@ -19554,71 +20748,107 @@ const knownAdapters = {
   }
 };
 
+// Assign adapter names for easier debugging and identification
 utils$1.forEach(knownAdapters, (fn, value) => {
   if (fn) {
     try {
-      Object.defineProperty(fn, 'name', {value});
+      Object.defineProperty(fn, 'name', { value });
     } catch (e) {
       // eslint-disable-next-line no-empty
     }
-    Object.defineProperty(fn, 'adapterName', {value});
+    Object.defineProperty(fn, 'adapterName', { value });
   }
 });
 
+/**
+ * Render a rejection reason string for unknown or unsupported adapters
+ * 
+ * @param {string} reason
+ * @returns {string}
+ */
 const renderReason = (reason) => `- ${reason}`;
 
+/**
+ * Check if the adapter is resolved (function, null, or false)
+ * 
+ * @param {Function|null|false} adapter
+ * @returns {boolean}
+ */
 const isResolvedHandle = (adapter) => utils$1.isFunction(adapter) || adapter === null || adapter === false;
 
-var adapters = {
-  getAdapter: (adapters, config) => {
-    adapters = utils$1.isArray(adapters) ? adapters : [adapters];
+/**
+ * Get the first suitable adapter from the provided list.
+ * Tries each adapter in order until a supported one is found.
+ * Throws an AxiosError if no adapter is suitable.
+ * 
+ * @param {Array<string|Function>|string|Function} adapters - Adapter(s) by name or function.
+ * @param {Object} config - Axios request configuration
+ * @throws {AxiosError} If no suitable adapter is available
+ * @returns {Function} The resolved adapter function
+ */
+function getAdapter$1(adapters, config) {
+  adapters = utils$1.isArray(adapters) ? adapters : [adapters];
 
-    const {length} = adapters;
-    let nameOrAdapter;
-    let adapter;
+  const { length } = adapters;
+  let nameOrAdapter;
+  let adapter;
 
-    const rejectedReasons = {};
+  const rejectedReasons = {};
 
-    for (let i = 0; i < length; i++) {
-      nameOrAdapter = adapters[i];
-      let id;
+  for (let i = 0; i < length; i++) {
+    nameOrAdapter = adapters[i];
+    let id;
 
-      adapter = nameOrAdapter;
+    adapter = nameOrAdapter;
 
-      if (!isResolvedHandle(nameOrAdapter)) {
-        adapter = knownAdapters[(id = String(nameOrAdapter)).toLowerCase()];
+    if (!isResolvedHandle(nameOrAdapter)) {
+      adapter = knownAdapters[(id = String(nameOrAdapter)).toLowerCase()];
 
-        if (adapter === undefined) {
-          throw new AxiosError$1(`Unknown adapter '${id}'`);
-        }
+      if (adapter === undefined) {
+        throw new AxiosError$1(`Unknown adapter '${id}'`);
       }
-
-      if (adapter && (utils$1.isFunction(adapter) || (adapter = adapter.get(config)))) {
-        break;
-      }
-
-      rejectedReasons[id || '#' + i] = adapter;
     }
 
-    if (!adapter) {
+    if (adapter && (utils$1.isFunction(adapter) || (adapter = adapter.get(config)))) {
+      break;
+    }
 
-      const reasons = Object.entries(rejectedReasons)
-        .map(([id, state]) => `adapter ${id} ` +
-          (state === false ? 'is not supported by the environment' : 'is not available in the build')
-        );
+    rejectedReasons[id || '#' + i] = adapter;
+  }
 
-      let s = length ?
-        (reasons.length > 1 ? 'since :\n' + reasons.map(renderReason).join('\n') : ' ' + renderReason(reasons[0])) :
-        'as no adapter specified';
-
-      throw new AxiosError$1(
-        `There is no suitable adapter to dispatch the request ` + s,
-        'ERR_NOT_SUPPORT'
+  if (!adapter) {
+    const reasons = Object.entries(rejectedReasons)
+      .map(([id, state]) => `adapter ${id} ` +
+        (state === false ? 'is not supported by the environment' : 'is not available in the build')
       );
-    }
 
-    return adapter;
-  },
+    let s = length ?
+      (reasons.length > 1 ? 'since :\n' + reasons.map(renderReason).join('\n') : ' ' + renderReason(reasons[0])) :
+      'as no adapter specified';
+
+    throw new AxiosError$1(
+      `There is no suitable adapter to dispatch the request ` + s,
+      'ERR_NOT_SUPPORT'
+    );
+  }
+
+  return adapter;
+}
+
+/**
+ * Exports Axios adapters and utility to resolve an adapter
+ */
+var adapters = {
+  /**
+   * Resolve an adapter from a list of adapter names or functions.
+   * @type {Function}
+   */
+  getAdapter: getAdapter$1,
+
+  /**
+   * Exposes all known adapters
+   * @type {Object<string, Function|Object>}
+   */
   adapters: knownAdapters
 };
 
@@ -20248,6 +21478,12 @@ const HttpStatusCode$1 = {
   LoopDetected: 508,
   NotExtended: 510,
   NetworkAuthenticationRequired: 511,
+  WebServerIsDown: 521,
+  ConnectionTimedOut: 522,
+  OriginIsUnreachable: 523,
+  TimeoutOccurred: 524,
+  SslHandshakeFailed: 525,
+  InvalidSslCertificate: 526,
 };
 
 Object.entries(HttpStatusCode$1).forEach(([key, value]) => {
@@ -20342,988 +21578,6 @@ const {
   getAdapter,
   mergeConfig
 } = axios;
-
-var polyfills;
-var hasRequiredPolyfills;
-
-function requirePolyfills () {
-	if (hasRequiredPolyfills) return polyfills;
-	hasRequiredPolyfills = 1;
-	var constants = require$$0$4;
-
-	var origCwd = process.cwd;
-	var cwd = null;
-
-	var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform;
-
-	process.cwd = function() {
-	  if (!cwd)
-	    cwd = origCwd.call(process);
-	  return cwd
-	};
-	try {
-	  process.cwd();
-	} catch (er) {}
-
-	// This check is needed until node.js 12 is required
-	if (typeof process.chdir === 'function') {
-	  var chdir = process.chdir;
-	  process.chdir = function (d) {
-	    cwd = null;
-	    chdir.call(process, d);
-	  };
-	  if (Object.setPrototypeOf) Object.setPrototypeOf(process.chdir, chdir);
-	}
-
-	polyfills = patch;
-
-	function patch (fs) {
-	  // (re-)implement some things that are known busted or missing.
-
-	  // lchmod, broken prior to 0.6.2
-	  // back-port the fix here.
-	  if (constants.hasOwnProperty('O_SYMLINK') &&
-	      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-	    patchLchmod(fs);
-	  }
-
-	  // lutimes implementation, or no-op
-	  if (!fs.lutimes) {
-	    patchLutimes(fs);
-	  }
-
-	  // https://github.com/isaacs/node-graceful-fs/issues/4
-	  // Chown should not fail on einval or eperm if non-root.
-	  // It should not fail on enosys ever, as this just indicates
-	  // that a fs doesn't support the intended operation.
-
-	  fs.chown = chownFix(fs.chown);
-	  fs.fchown = chownFix(fs.fchown);
-	  fs.lchown = chownFix(fs.lchown);
-
-	  fs.chmod = chmodFix(fs.chmod);
-	  fs.fchmod = chmodFix(fs.fchmod);
-	  fs.lchmod = chmodFix(fs.lchmod);
-
-	  fs.chownSync = chownFixSync(fs.chownSync);
-	  fs.fchownSync = chownFixSync(fs.fchownSync);
-	  fs.lchownSync = chownFixSync(fs.lchownSync);
-
-	  fs.chmodSync = chmodFixSync(fs.chmodSync);
-	  fs.fchmodSync = chmodFixSync(fs.fchmodSync);
-	  fs.lchmodSync = chmodFixSync(fs.lchmodSync);
-
-	  fs.stat = statFix(fs.stat);
-	  fs.fstat = statFix(fs.fstat);
-	  fs.lstat = statFix(fs.lstat);
-
-	  fs.statSync = statFixSync(fs.statSync);
-	  fs.fstatSync = statFixSync(fs.fstatSync);
-	  fs.lstatSync = statFixSync(fs.lstatSync);
-
-	  // if lchmod/lchown do not exist, then make them no-ops
-	  if (fs.chmod && !fs.lchmod) {
-	    fs.lchmod = function (path, mode, cb) {
-	      if (cb) process.nextTick(cb);
-	    };
-	    fs.lchmodSync = function () {};
-	  }
-	  if (fs.chown && !fs.lchown) {
-	    fs.lchown = function (path, uid, gid, cb) {
-	      if (cb) process.nextTick(cb);
-	    };
-	    fs.lchownSync = function () {};
-	  }
-
-	  // on Windows, A/V software can lock the directory, causing this
-	  // to fail with an EACCES or EPERM if the directory contains newly
-	  // created files.  Try again on failure, for up to 60 seconds.
-
-	  // Set the timeout this long because some Windows Anti-Virus, such as Parity
-	  // bit9, may lock files for up to a minute, causing npm package install
-	  // failures. Also, take care to yield the scheduler. Windows scheduling gives
-	  // CPU to a busy looping process, which can cause the program causing the lock
-	  // contention to be starved of CPU by node, so the contention doesn't resolve.
-	  if (platform === "win32") {
-	    fs.rename = typeof fs.rename !== 'function' ? fs.rename
-	    : (function (fs$rename) {
-	      function rename (from, to, cb) {
-	        var start = Date.now();
-	        var backoff = 0;
-	        fs$rename(from, to, function CB (er) {
-	          if (er
-	              && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY")
-	              && Date.now() - start < 60000) {
-	            setTimeout(function() {
-	              fs.stat(to, function (stater, st) {
-	                if (stater && stater.code === "ENOENT")
-	                  fs$rename(from, to, CB);
-	                else
-	                  cb(er);
-	              });
-	            }, backoff);
-	            if (backoff < 100)
-	              backoff += 10;
-	            return;
-	          }
-	          if (cb) cb(er);
-	        });
-	      }
-	      if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
-	      return rename
-	    })(fs.rename);
-	  }
-
-	  // if read() returns EAGAIN, then just try it again.
-	  fs.read = typeof fs.read !== 'function' ? fs.read
-	  : (function (fs$read) {
-	    function read (fd, buffer, offset, length, position, callback_) {
-	      var callback;
-	      if (callback_ && typeof callback_ === 'function') {
-	        var eagCounter = 0;
-	        callback = function (er, _, __) {
-	          if (er && er.code === 'EAGAIN' && eagCounter < 10) {
-	            eagCounter ++;
-	            return fs$read.call(fs, fd, buffer, offset, length, position, callback)
-	          }
-	          callback_.apply(this, arguments);
-	        };
-	      }
-	      return fs$read.call(fs, fd, buffer, offset, length, position, callback)
-	    }
-
-	    // This ensures `util.promisify` works as it does for native `fs.read`.
-	    if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
-	    return read
-	  })(fs.read);
-
-	  fs.readSync = typeof fs.readSync !== 'function' ? fs.readSync
-	  : (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
-	    var eagCounter = 0;
-	    while (true) {
-	      try {
-	        return fs$readSync.call(fs, fd, buffer, offset, length, position)
-	      } catch (er) {
-	        if (er.code === 'EAGAIN' && eagCounter < 10) {
-	          eagCounter ++;
-	          continue
-	        }
-	        throw er
-	      }
-	    }
-	  }})(fs.readSync);
-
-	  function patchLchmod (fs) {
-	    fs.lchmod = function (path, mode, callback) {
-	      fs.open( path
-	             , constants.O_WRONLY | constants.O_SYMLINK
-	             , mode
-	             , function (err, fd) {
-	        if (err) {
-	          if (callback) callback(err);
-	          return
-	        }
-	        // prefer to return the chmod error, if one occurs,
-	        // but still try to close, and report closing errors if they occur.
-	        fs.fchmod(fd, mode, function (err) {
-	          fs.close(fd, function(err2) {
-	            if (callback) callback(err || err2);
-	          });
-	        });
-	      });
-	    };
-
-	    fs.lchmodSync = function (path, mode) {
-	      var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode);
-
-	      // prefer to return the chmod error, if one occurs,
-	      // but still try to close, and report closing errors if they occur.
-	      var threw = true;
-	      var ret;
-	      try {
-	        ret = fs.fchmodSync(fd, mode);
-	        threw = false;
-	      } finally {
-	        if (threw) {
-	          try {
-	            fs.closeSync(fd);
-	          } catch (er) {}
-	        } else {
-	          fs.closeSync(fd);
-	        }
-	      }
-	      return ret
-	    };
-	  }
-
-	  function patchLutimes (fs) {
-	    if (constants.hasOwnProperty("O_SYMLINK") && fs.futimes) {
-	      fs.lutimes = function (path, at, mt, cb) {
-	        fs.open(path, constants.O_SYMLINK, function (er, fd) {
-	          if (er) {
-	            if (cb) cb(er);
-	            return
-	          }
-	          fs.futimes(fd, at, mt, function (er) {
-	            fs.close(fd, function (er2) {
-	              if (cb) cb(er || er2);
-	            });
-	          });
-	        });
-	      };
-
-	      fs.lutimesSync = function (path, at, mt) {
-	        var fd = fs.openSync(path, constants.O_SYMLINK);
-	        var ret;
-	        var threw = true;
-	        try {
-	          ret = fs.futimesSync(fd, at, mt);
-	          threw = false;
-	        } finally {
-	          if (threw) {
-	            try {
-	              fs.closeSync(fd);
-	            } catch (er) {}
-	          } else {
-	            fs.closeSync(fd);
-	          }
-	        }
-	        return ret
-	      };
-
-	    } else if (fs.futimes) {
-	      fs.lutimes = function (_a, _b, _c, cb) { if (cb) process.nextTick(cb); };
-	      fs.lutimesSync = function () {};
-	    }
-	  }
-
-	  function chmodFix (orig) {
-	    if (!orig) return orig
-	    return function (target, mode, cb) {
-	      return orig.call(fs, target, mode, function (er) {
-	        if (chownErOk(er)) er = null;
-	        if (cb) cb.apply(this, arguments);
-	      })
-	    }
-	  }
-
-	  function chmodFixSync (orig) {
-	    if (!orig) return orig
-	    return function (target, mode) {
-	      try {
-	        return orig.call(fs, target, mode)
-	      } catch (er) {
-	        if (!chownErOk(er)) throw er
-	      }
-	    }
-	  }
-
-
-	  function chownFix (orig) {
-	    if (!orig) return orig
-	    return function (target, uid, gid, cb) {
-	      return orig.call(fs, target, uid, gid, function (er) {
-	        if (chownErOk(er)) er = null;
-	        if (cb) cb.apply(this, arguments);
-	      })
-	    }
-	  }
-
-	  function chownFixSync (orig) {
-	    if (!orig) return orig
-	    return function (target, uid, gid) {
-	      try {
-	        return orig.call(fs, target, uid, gid)
-	      } catch (er) {
-	        if (!chownErOk(er)) throw er
-	      }
-	    }
-	  }
-
-	  function statFix (orig) {
-	    if (!orig) return orig
-	    // Older versions of Node erroneously returned signed integers for
-	    // uid + gid.
-	    return function (target, options, cb) {
-	      if (typeof options === 'function') {
-	        cb = options;
-	        options = null;
-	      }
-	      function callback (er, stats) {
-	        if (stats) {
-	          if (stats.uid < 0) stats.uid += 0x100000000;
-	          if (stats.gid < 0) stats.gid += 0x100000000;
-	        }
-	        if (cb) cb.apply(this, arguments);
-	      }
-	      return options ? orig.call(fs, target, options, callback)
-	        : orig.call(fs, target, callback)
-	    }
-	  }
-
-	  function statFixSync (orig) {
-	    if (!orig) return orig
-	    // Older versions of Node erroneously returned signed integers for
-	    // uid + gid.
-	    return function (target, options) {
-	      var stats = options ? orig.call(fs, target, options)
-	        : orig.call(fs, target);
-	      if (stats) {
-	        if (stats.uid < 0) stats.uid += 0x100000000;
-	        if (stats.gid < 0) stats.gid += 0x100000000;
-	      }
-	      return stats;
-	    }
-	  }
-
-	  // ENOSYS means that the fs doesn't support the op. Just ignore
-	  // that, because it doesn't matter.
-	  //
-	  // if there's no getuid, or if getuid() is something other
-	  // than 0, and the error is EINVAL or EPERM, then just ignore
-	  // it.
-	  //
-	  // This specific case is a silent failure in cp, install, tar,
-	  // and most other unix tools that manage permissions.
-	  //
-	  // When running as root, or if other types of errors are
-	  // encountered, then it's strict.
-	  function chownErOk (er) {
-	    if (!er)
-	      return true
-
-	    if (er.code === "ENOSYS")
-	      return true
-
-	    var nonroot = !process.getuid || process.getuid() !== 0;
-	    if (nonroot) {
-	      if (er.code === "EINVAL" || er.code === "EPERM")
-	        return true
-	    }
-
-	    return false
-	  }
-	}
-	return polyfills;
-}
-
-var legacyStreams;
-var hasRequiredLegacyStreams;
-
-function requireLegacyStreams () {
-	if (hasRequiredLegacyStreams) return legacyStreams;
-	hasRequiredLegacyStreams = 1;
-	var Stream = stream.Stream;
-
-	legacyStreams = legacy;
-
-	function legacy (fs) {
-	  return {
-	    ReadStream: ReadStream,
-	    WriteStream: WriteStream
-	  }
-
-	  function ReadStream (path, options) {
-	    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
-
-	    Stream.call(this);
-
-	    var self = this;
-
-	    this.path = path;
-	    this.fd = null;
-	    this.readable = true;
-	    this.paused = false;
-
-	    this.flags = 'r';
-	    this.mode = 438; /*=0666*/
-	    this.bufferSize = 64 * 1024;
-
-	    options = options || {};
-
-	    // Mixin options into this
-	    var keys = Object.keys(options);
-	    for (var index = 0, length = keys.length; index < length; index++) {
-	      var key = keys[index];
-	      this[key] = options[key];
-	    }
-
-	    if (this.encoding) this.setEncoding(this.encoding);
-
-	    if (this.start !== undefined) {
-	      if ('number' !== typeof this.start) {
-	        throw TypeError('start must be a Number');
-	      }
-	      if (this.end === undefined) {
-	        this.end = Infinity;
-	      } else if ('number' !== typeof this.end) {
-	        throw TypeError('end must be a Number');
-	      }
-
-	      if (this.start > this.end) {
-	        throw new Error('start must be <= end');
-	      }
-
-	      this.pos = this.start;
-	    }
-
-	    if (this.fd !== null) {
-	      process.nextTick(function() {
-	        self._read();
-	      });
-	      return;
-	    }
-
-	    fs.open(this.path, this.flags, this.mode, function (err, fd) {
-	      if (err) {
-	        self.emit('error', err);
-	        self.readable = false;
-	        return;
-	      }
-
-	      self.fd = fd;
-	      self.emit('open', fd);
-	      self._read();
-	    });
-	  }
-
-	  function WriteStream (path, options) {
-	    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
-
-	    Stream.call(this);
-
-	    this.path = path;
-	    this.fd = null;
-	    this.writable = true;
-
-	    this.flags = 'w';
-	    this.encoding = 'binary';
-	    this.mode = 438; /*=0666*/
-	    this.bytesWritten = 0;
-
-	    options = options || {};
-
-	    // Mixin options into this
-	    var keys = Object.keys(options);
-	    for (var index = 0, length = keys.length; index < length; index++) {
-	      var key = keys[index];
-	      this[key] = options[key];
-	    }
-
-	    if (this.start !== undefined) {
-	      if ('number' !== typeof this.start) {
-	        throw TypeError('start must be a Number');
-	      }
-	      if (this.start < 0) {
-	        throw new Error('start must be >= zero');
-	      }
-
-	      this.pos = this.start;
-	    }
-
-	    this.busy = false;
-	    this._queue = [];
-
-	    if (this.fd === null) {
-	      this._open = fs.open;
-	      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
-	      this.flush();
-	    }
-	  }
-	}
-	return legacyStreams;
-}
-
-var clone_1;
-var hasRequiredClone;
-
-function requireClone () {
-	if (hasRequiredClone) return clone_1;
-	hasRequiredClone = 1;
-
-	clone_1 = clone;
-
-	var getPrototypeOf = Object.getPrototypeOf || function (obj) {
-	  return obj.__proto__
-	};
-
-	function clone (obj) {
-	  if (obj === null || typeof obj !== 'object')
-	    return obj
-
-	  if (obj instanceof Object)
-	    var copy = { __proto__: getPrototypeOf(obj) };
-	  else
-	    var copy = Object.create(null);
-
-	  Object.getOwnPropertyNames(obj).forEach(function (key) {
-	    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key));
-	  });
-
-	  return copy
-	}
-	return clone_1;
-}
-
-var gracefulFs;
-var hasRequiredGracefulFs;
-
-function requireGracefulFs () {
-	if (hasRequiredGracefulFs) return gracefulFs;
-	hasRequiredGracefulFs = 1;
-	var fs = require$$0$2;
-	var polyfills = requirePolyfills();
-	var legacy = requireLegacyStreams();
-	var clone = requireClone();
-
-	var util = require$$1;
-
-	/* istanbul ignore next - node 0.x polyfill */
-	var gracefulQueue;
-	var previousSymbol;
-
-	/* istanbul ignore else - node 0.x polyfill */
-	if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
-	  gracefulQueue = Symbol.for('graceful-fs.queue');
-	  // This is used in testing by future versions
-	  previousSymbol = Symbol.for('graceful-fs.previous');
-	} else {
-	  gracefulQueue = '___graceful-fs.queue';
-	  previousSymbol = '___graceful-fs.previous';
-	}
-
-	function noop () {}
-
-	function publishQueue(context, queue) {
-	  Object.defineProperty(context, gracefulQueue, {
-	    get: function() {
-	      return queue
-	    }
-	  });
-	}
-
-	var debug = noop;
-	if (util.debuglog)
-	  debug = util.debuglog('gfs4');
-	else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
-	  debug = function() {
-	    var m = util.format.apply(util, arguments);
-	    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ');
-	    console.error(m);
-	  };
-
-	// Once time initialization
-	if (!fs[gracefulQueue]) {
-	  // This queue can be shared by multiple loaded instances
-	  var queue = commonjsGlobal[gracefulQueue] || [];
-	  publishQueue(fs, queue);
-
-	  // Patch fs.close/closeSync to shared queue version, because we need
-	  // to retry() whenever a close happens *anywhere* in the program.
-	  // This is essential when multiple graceful-fs instances are
-	  // in play at the same time.
-	  fs.close = (function (fs$close) {
-	    function close (fd, cb) {
-	      return fs$close.call(fs, fd, function (err) {
-	        // This function uses the graceful-fs shared queue
-	        if (!err) {
-	          resetQueue();
-	        }
-
-	        if (typeof cb === 'function')
-	          cb.apply(this, arguments);
-	      })
-	    }
-
-	    Object.defineProperty(close, previousSymbol, {
-	      value: fs$close
-	    });
-	    return close
-	  })(fs.close);
-
-	  fs.closeSync = (function (fs$closeSync) {
-	    function closeSync (fd) {
-	      // This function uses the graceful-fs shared queue
-	      fs$closeSync.apply(fs, arguments);
-	      resetQueue();
-	    }
-
-	    Object.defineProperty(closeSync, previousSymbol, {
-	      value: fs$closeSync
-	    });
-	    return closeSync
-	  })(fs.closeSync);
-
-	  if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
-	    process.on('exit', function() {
-	      debug(fs[gracefulQueue]);
-	      require$$4$1.equal(fs[gracefulQueue].length, 0);
-	    });
-	  }
-	}
-
-	if (!commonjsGlobal[gracefulQueue]) {
-	  publishQueue(commonjsGlobal, fs[gracefulQueue]);
-	}
-
-	gracefulFs = patch(clone(fs));
-	if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs.__patched) {
-	    gracefulFs = patch(fs);
-	    fs.__patched = true;
-	}
-
-	function patch (fs) {
-	  // Everything that references the open() function needs to be in here
-	  polyfills(fs);
-	  fs.gracefulify = patch;
-
-	  fs.createReadStream = createReadStream;
-	  fs.createWriteStream = createWriteStream;
-	  var fs$readFile = fs.readFile;
-	  fs.readFile = readFile;
-	  function readFile (path, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    return go$readFile(path, options, cb)
-
-	    function go$readFile (path, options, cb, startTime) {
-	      return fs$readFile(path, options, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$readFile, [path, options, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$writeFile = fs.writeFile;
-	  fs.writeFile = writeFile;
-	  function writeFile (path, data, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    return go$writeFile(path, data, options, cb)
-
-	    function go$writeFile (path, data, options, cb, startTime) {
-	      return fs$writeFile(path, data, options, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$writeFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$appendFile = fs.appendFile;
-	  if (fs$appendFile)
-	    fs.appendFile = appendFile;
-	  function appendFile (path, data, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    return go$appendFile(path, data, options, cb)
-
-	    function go$appendFile (path, data, options, cb, startTime) {
-	      return fs$appendFile(path, data, options, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$appendFile, [path, data, options, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$copyFile = fs.copyFile;
-	  if (fs$copyFile)
-	    fs.copyFile = copyFile;
-	  function copyFile (src, dest, flags, cb) {
-	    if (typeof flags === 'function') {
-	      cb = flags;
-	      flags = 0;
-	    }
-	    return go$copyFile(src, dest, flags, cb)
-
-	    function go$copyFile (src, dest, flags, cb, startTime) {
-	      return fs$copyFile(src, dest, flags, function (err) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$copyFile, [src, dest, flags, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  var fs$readdir = fs.readdir;
-	  fs.readdir = readdir;
-	  var noReaddirOptionVersions = /^v[0-5]\./;
-	  function readdir (path, options, cb) {
-	    if (typeof options === 'function')
-	      cb = options, options = null;
-
-	    var go$readdir = noReaddirOptionVersions.test(process.version)
-	      ? function go$readdir (path, options, cb, startTime) {
-	        return fs$readdir(path, fs$readdirCallback(
-	          path, options, cb, startTime
-	        ))
-	      }
-	      : function go$readdir (path, options, cb, startTime) {
-	        return fs$readdir(path, options, fs$readdirCallback(
-	          path, options, cb, startTime
-	        ))
-	      };
-
-	    return go$readdir(path, options, cb)
-
-	    function fs$readdirCallback (path, options, cb, startTime) {
-	      return function (err, files) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([
-	            go$readdir,
-	            [path, options, cb],
-	            err,
-	            startTime || Date.now(),
-	            Date.now()
-	          ]);
-	        else {
-	          if (files && files.sort)
-	            files.sort();
-
-	          if (typeof cb === 'function')
-	            cb.call(this, err, files);
-	        }
-	      }
-	    }
-	  }
-
-	  if (process.version.substr(0, 4) === 'v0.8') {
-	    var legStreams = legacy(fs);
-	    ReadStream = legStreams.ReadStream;
-	    WriteStream = legStreams.WriteStream;
-	  }
-
-	  var fs$ReadStream = fs.ReadStream;
-	  if (fs$ReadStream) {
-	    ReadStream.prototype = Object.create(fs$ReadStream.prototype);
-	    ReadStream.prototype.open = ReadStream$open;
-	  }
-
-	  var fs$WriteStream = fs.WriteStream;
-	  if (fs$WriteStream) {
-	    WriteStream.prototype = Object.create(fs$WriteStream.prototype);
-	    WriteStream.prototype.open = WriteStream$open;
-	  }
-
-	  Object.defineProperty(fs, 'ReadStream', {
-	    get: function () {
-	      return ReadStream
-	    },
-	    set: function (val) {
-	      ReadStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-	  Object.defineProperty(fs, 'WriteStream', {
-	    get: function () {
-	      return WriteStream
-	    },
-	    set: function (val) {
-	      WriteStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-
-	  // legacy names
-	  var FileReadStream = ReadStream;
-	  Object.defineProperty(fs, 'FileReadStream', {
-	    get: function () {
-	      return FileReadStream
-	    },
-	    set: function (val) {
-	      FileReadStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-	  var FileWriteStream = WriteStream;
-	  Object.defineProperty(fs, 'FileWriteStream', {
-	    get: function () {
-	      return FileWriteStream
-	    },
-	    set: function (val) {
-	      FileWriteStream = val;
-	    },
-	    enumerable: true,
-	    configurable: true
-	  });
-
-	  function ReadStream (path, options) {
-	    if (this instanceof ReadStream)
-	      return fs$ReadStream.apply(this, arguments), this
-	    else
-	      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
-	  }
-
-	  function ReadStream$open () {
-	    var that = this;
-	    open(that.path, that.flags, that.mode, function (err, fd) {
-	      if (err) {
-	        if (that.autoClose)
-	          that.destroy();
-
-	        that.emit('error', err);
-	      } else {
-	        that.fd = fd;
-	        that.emit('open', fd);
-	        that.read();
-	      }
-	    });
-	  }
-
-	  function WriteStream (path, options) {
-	    if (this instanceof WriteStream)
-	      return fs$WriteStream.apply(this, arguments), this
-	    else
-	      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
-	  }
-
-	  function WriteStream$open () {
-	    var that = this;
-	    open(that.path, that.flags, that.mode, function (err, fd) {
-	      if (err) {
-	        that.destroy();
-	        that.emit('error', err);
-	      } else {
-	        that.fd = fd;
-	        that.emit('open', fd);
-	      }
-	    });
-	  }
-
-	  function createReadStream (path, options) {
-	    return new fs.ReadStream(path, options)
-	  }
-
-	  function createWriteStream (path, options) {
-	    return new fs.WriteStream(path, options)
-	  }
-
-	  var fs$open = fs.open;
-	  fs.open = open;
-	  function open (path, flags, mode, cb) {
-	    if (typeof mode === 'function')
-	      cb = mode, mode = null;
-
-	    return go$open(path, flags, mode, cb)
-
-	    function go$open (path, flags, mode, cb, startTime) {
-	      return fs$open(path, flags, mode, function (err, fd) {
-	        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-	          enqueue([go$open, [path, flags, mode, cb], err, startTime || Date.now(), Date.now()]);
-	        else {
-	          if (typeof cb === 'function')
-	            cb.apply(this, arguments);
-	        }
-	      })
-	    }
-	  }
-
-	  return fs
-	}
-
-	function enqueue (elem) {
-	  debug('ENQUEUE', elem[0].name, elem[1]);
-	  fs[gracefulQueue].push(elem);
-	  retry();
-	}
-
-	// keep track of the timeout between retry() calls
-	var retryTimer;
-
-	// reset the startTime and lastTime to now
-	// this resets the start of the 60 second overall timeout as well as the
-	// delay between attempts so that we'll retry these jobs sooner
-	function resetQueue () {
-	  var now = Date.now();
-	  for (var i = 0; i < fs[gracefulQueue].length; ++i) {
-	    // entries that are only a length of 2 are from an older version, don't
-	    // bother modifying those since they'll be retried anyway.
-	    if (fs[gracefulQueue][i].length > 2) {
-	      fs[gracefulQueue][i][3] = now; // startTime
-	      fs[gracefulQueue][i][4] = now; // lastTime
-	    }
-	  }
-	  // call retry to make sure we're actively processing the queue
-	  retry();
-	}
-
-	function retry () {
-	  // clear the timer and remove it to help prevent unintended concurrency
-	  clearTimeout(retryTimer);
-	  retryTimer = undefined;
-
-	  if (fs[gracefulQueue].length === 0)
-	    return
-
-	  var elem = fs[gracefulQueue].shift();
-	  var fn = elem[0];
-	  var args = elem[1];
-	  // these items may be unset if they were added by an older graceful-fs
-	  var err = elem[2];
-	  var startTime = elem[3];
-	  var lastTime = elem[4];
-
-	  // if we don't have a startTime we have no way of knowing if we've waited
-	  // long enough, so go ahead and retry this item now
-	  if (startTime === undefined) {
-	    debug('RETRY', fn.name, args);
-	    fn.apply(null, args);
-	  } else if (Date.now() - startTime >= 60000) {
-	    // it's been more than 60 seconds total, bail now
-	    debug('TIMEOUT', fn.name, args);
-	    var cb = args.pop();
-	    if (typeof cb === 'function')
-	      cb.call(null, err);
-	  } else {
-	    // the amount of time between the last attempt and right now
-	    var sinceAttempt = Date.now() - lastTime;
-	    // the amount of time between when we first tried, and when we last tried
-	    // rounded up to at least 1
-	    var sinceStart = Math.max(lastTime - startTime, 1);
-	    // backoff. wait longer than the total time we've been retrying, but only
-	    // up to a maximum of 100ms
-	    var desiredDelay = Math.min(sinceStart * 1.2, 100);
-	    // it's been long enough since the last retry, do it again
-	    if (sinceAttempt >= desiredDelay) {
-	      debug('RETRY', fn.name, args);
-	      fn.apply(null, args.concat([startTime]));
-	    } else {
-	      // if we can't do this job yet, push it to the end of the queue
-	      // and let the next iteration check again
-	      fs[gracefulQueue].push(elem);
-	    }
-	  }
-
-	  // schedule our next run if one isn't already scheduled
-	  if (retryTimer === undefined) {
-	    retryTimer = setTimeout(retry, 0);
-	  }
-	}
-	return gracefulFs;
-}
-
-var gracefulFsExports = requireGracefulFs();
-var fs = /*@__PURE__*/getDefaultExportFromCjs(gracefulFsExports);
 
 var treeKill$1;
 var hasRequiredTreeKill;
@@ -21620,7 +21874,7 @@ var hasRequiredCjs;
 function requireCjs () {
 	if (hasRequiredCjs) return cjs;
 	hasRequiredCjs = 1;
-	(function (exports) {
+	(function (exports$1) {
 		var __createBinding = (cjs && cjs.__createBinding) || (Object.create ? (function(o, m, k, k2) {
 		    if (k2 === undefined) k2 = k;
 		    var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -21644,27 +21898,27 @@ function requireCjs () {
 		    __setModuleDefault(result, mod);
 		    return result;
 		};
-		var __exportStar = (cjs && cjs.__exportStar) || function(m, exports) {
-		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+		var __exportStar = (cjs && cjs.__exportStar) || function(m, exports$1) {
+		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports$1, p)) __createBinding(exports$1, m, p);
 		};
-		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
+		Object.defineProperty(exports$1, "__esModule", { value: true });
+		exports$1.sync = exports$1.isexe = exports$1.posix = exports$1.win32 = void 0;
 		const posix = __importStar(requirePosix());
-		exports.posix = posix;
+		exports$1.posix = posix;
 		const win32 = __importStar(requireWin32());
-		exports.win32 = win32;
-		__exportStar(requireOptions(), exports);
+		exports$1.win32 = win32;
+		__exportStar(requireOptions(), exports$1);
 		const platform = process.env._ISEXE_TEST_PLATFORM_ || process.platform;
 		const impl = platform === 'win32' ? win32 : posix;
 		/**
 		 * Determine whether a path is executable on the current platform.
 		 */
-		exports.isexe = impl.isexe;
+		exports$1.isexe = impl.isexe;
 		/**
 		 * Synchronously determine whether a path is executable on the
 		 * current platform.
 		 */
-		exports.sync = impl.sync;
+		exports$1.sync = impl.sync;
 		
 	} (cjs));
 	return cjs;
@@ -21976,103 +22230,190 @@ function isVenvDirectory(dirPath) {
     }
 }
 
-async function isNpmPackageInstalled(id, packageName, utils) {
+const CONFIG_FILE$7 = isWin ? 'claude_config.bat' : 'claude_config.sh';
+const DEFAULT_BATCH_DATA$e = isWin ? '@echo off\n\nclaude' : '#!/bin/bash\n\nclaude';
+async function getRunCommands$l(configDir) {
+    if (!configDir)
+        return '';
+    const filePath = path.resolve(path.join(configDir, CONFIG_FILE$7));
+    await initBatchFile(filePath, DEFAULT_BATCH_DATA$e);
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+}
+async function saveArgs$f(args, configDir) {
+    if (!configDir)
+        return;
+    const { scriptData, settingsData } = parseArgsToFiles(args);
+    const scriptPath = path.join(configDir, CONFIG_FILE$7);
+    const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
+    let finalScript = scriptData;
+    if (settingsPath) {
+        const marker = isWin ? `REM SETTINGS_FILE="${settingsPath}"\n` : `# SETTINGS_FILE="${settingsPath}"\n`;
+        finalScript = marker + scriptData;
+    }
+    await fs.promises.writeFile(scriptPath, finalScript);
+    if (settingsPath && settingsData) {
+        try {
+            await fs.promises.writeFile(settingsPath, settingsData);
+        }
+        catch (e) {
+            console.error('Error saving settings.json file for Claude Code', e);
+        }
+    }
+}
+async function readArgs$f(configDir) {
+    if (!configDir)
+        return [];
+    const scriptPath = path.join(configDir, CONFIG_FILE$7);
+    await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$e);
+    const scriptDataFull = await fs.promises.readFile(scriptPath, 'utf-8');
+    const lines = scriptDataFull.split('\n');
+    let settingsPath;
+    const filteredLines = [];
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('REM SETTINGS_FILE=') || trimmed.startsWith('# SETTINGS_FILE=')) {
+            const [, rawPath] = trimmed.split('=');
+            settingsPath = rawPath?.replace(/^"|"$/g, '');
+        }
+        else {
+            filteredLines.push(line);
+        }
+    });
+    const scriptData = filteredLines.join('\n');
+    let settingsContent = '';
+    if (settingsPath) {
+        try {
+            settingsContent = await fs.promises.readFile(settingsPath, 'utf-8');
+        }
+        catch (e) {
+            console.error('Error reading settings.json file for Claude Code', e);
+        }
+    }
+    return parseFilesToArgs(scriptData, settingsContent);
+}
+async function isInstalled$4() {
+    return checkWhich('claude');
+}
+async function updateAvailable$8(utils) {
+    return false;
+}
+function mainIpc$6(utils) {
+    utils.ipc.handle('is_claude_code_installed', () => checkWhich('claude'));
+    utils.ipc.handle('current_claude_code_version', () => getClaudeCodeVersion());
+}
+function getClaudeCodeVersion() {
     return new Promise(resolve => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], { env: process.env });
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(() => {
-            if (ptyProcess.pid) {
-                treeKill(ptyProcess.pid);
-                ptyProcess.kill();
+        exec('claude --version', (error, stdout) => {
+            if (error) {
+                resolve('unknown');
+                return;
             }
-            const cleanOutput = removeAnsi(output).trim().replace(`npm list -g ${packageName}`, '');
-            const isInstalled = new RegExp(`${packageName}@.+`).test(cleanOutput);
-            resolve(isInstalled);
+            const version = stdout.trim();
+            resolve(version || 'unknown');
         });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
     });
 }
-async function getNpmPackageVersion(id, packageName, utils) {
-    return new Promise(resolve => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(() => {
-            if (ptyProcess.pid) {
-                treeKill(ptyProcess.pid);
-                ptyProcess.kill();
+const ClaudeCode_MM = utils => {
+    const configDir = utils.getConfigDir();
+    return {
+        mainIpc: () => mainIpc$6(utils),
+        getRunCommands: () => getRunCommands$l(configDir),
+        isInstalled: () => isInstalled$4(),
+        saveArgs: args => saveArgs$f(args, configDir),
+        readArgs: () => readArgs$f(configDir),
+        updateAvailable: () => updateAvailable$8(),
+    };
+};
+
+const execAsync = promisify(exec);
+async function isNpmPackageInstalled(packageName) {
+    try {
+        // Use --depth=0 to avoid scanning the entire node_modules tree
+        // Use --json for reliable parsing
+        const { stdout } = await execAsync(`npm list -g --depth=0 ${packageName} --json`);
+        const data = JSON.parse(stdout);
+        return !!(data.dependencies && data.dependencies[packageName]);
+    }
+    catch (error) {
+        // npm list returns non-zero exit code if there are problems (e.g. missing peer deps)
+        // or if the package is not found. We try to parse stdout anyway.
+        if (error.stdout) {
+            try {
+                const data = JSON.parse(error.stdout);
+                return !!(data.dependencies && data.dependencies[packageName]);
             }
-            const match = output.match(new RegExp(`${packageName}@([\\d.]+)`, 'i'));
-            if (match && match[1]) {
-                resolve(match[1]);
+            catch {
+                return false;
             }
-            else {
-                resolve('');
-            }
-        });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm list -g ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
+        }
+        return false;
+    }
 }
-async function checkNpmPackageUpdate(id, packageName, utils) {
-    return new Promise(resolve => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data.toString();
-        });
-        ptyProcess.onExit(() => {
-            if (ptyProcess.pid) {
-                treeKill(ptyProcess.pid);
-                ptyProcess.kill();
-            }
-            const lines = removeAnsi(output).split(LINE_ENDING);
-            for (const line of lines) {
-                const match = line.match(new RegExp(`${packageName}\\s+[\\d.]+\\s+[\\d.]+\\s+([\\d.]+)`, 'i'));
-                if (match) {
-                    resolve(match[1]);
+async function getNpmPackageVersion(packageName) {
+    try {
+        const { stdout } = await execAsync(`npm list -g --depth=0 ${packageName} --json`);
+        const data = JSON.parse(stdout);
+        if (data.dependencies && data.dependencies[packageName] && data.dependencies[packageName].version) {
+            return data.dependencies[packageName].version;
+        }
+        return '';
+    }
+    catch (error) {
+        if (error.stdout) {
+            try {
+                const data = JSON.parse(error.stdout);
+                if (data.dependencies && data.dependencies[packageName] && data.dependencies[packageName].version) {
+                    return data.dependencies[packageName].version;
                 }
             }
-            resolve(null);
-        });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm -g outdated ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
+            catch {
+                return '';
+            }
+        }
+        return '';
+    }
 }
-async function uninstallNpmPackage(id, packageName, utils) {
-    return new Promise((resolve, reject) => {
-        const ptyProcess = utils.pty.spawn(determineShell(), [], {});
-        let output = '';
-        ptyProcess.onData((data) => {
-            output += data;
-        });
-        ptyProcess.onExit(({ exitCode }) => {
-            if (exitCode === 0) {
-                resolve();
+async function checkNpmPackageUpdate(packageName) {
+    try {
+        // npm outdated returns exit code 1 if there are updates, so we expect this to often "fail"
+        const { stdout } = await execAsync(`npm outdated -g ${packageName} --json`);
+        // If exit code 0, usually means no updates or empty output
+        if (!stdout)
+            return null;
+        const data = JSON.parse(stdout);
+        if (data[packageName] && data[packageName].latest) {
+            return data[packageName].latest;
+        }
+        return null;
+    }
+    catch (error) {
+        if (error.stdout) {
+            try {
+                const data = JSON.parse(error.stdout);
+                if (data[packageName] && data[packageName].latest) {
+                    return data[packageName].latest;
+                }
             }
-            else {
-                reject(new Error(`Error uninstalling ${packageName}. Exit Code: ${exitCode}\nOutput:\n${output}`));
+            catch {
+                return null;
             }
-        });
-        utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
-        ptyProcess.write(`npm -g rm ${packageName}${LINE_ENDING}`);
-        ptyProcess.write(`exit${LINE_ENDING}`);
-    });
+        }
+        return null;
+    }
+}
+async function uninstallNpmPackage(packageName) {
+    try {
+        await execAsync(`npm -g rm ${packageName}`);
+    }
+    catch (error) {
+        throw new Error(`Error uninstalling ${packageName}. ${error.message}`);
+    }
 }
 
 const PACKAGE_NAME$2 = 'flowise';
 const CONFIG_FILE$6 = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
 const DEFAULT_BATCH_DATA$d = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
-async function getRunCommands$j(configDir) {
+async function getRunCommands$k(configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$6));
@@ -22086,7 +22427,7 @@ async function readArgs$e(configDir) {
     return await utilReadArgs(CONFIG_FILE$6, DEFAULT_BATCH_DATA$d, parseStringToArgs, configDir);
 }
 async function updateAvailable$7(utils) {
-    const available = await checkNpmPackageUpdate(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
+    const available = await checkNpmPackageUpdate(PACKAGE_NAME$2);
     if (available) {
         utils.storage.set('update-available-version-flowise', available);
         return true;
@@ -22094,31 +22435,31 @@ async function updateAvailable$7(utils) {
     utils.storage.set('update-available-version-flowise', undefined);
     return false;
 }
-async function isInstalled$3(utils) {
-    return isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils);
+async function isInstalled$3() {
+    return isNpmPackageInstalled(PACKAGE_NAME$2);
 }
 function mainIpc$5(utils) {
-    utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
-    utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(FLOWISEAI_ID, PACKAGE_NAME$2, utils));
+    utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(PACKAGE_NAME$2));
+    utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(PACKAGE_NAME$2));
     utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
 const Flow_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
         updateAvailable: () => updateAvailable$7(utils),
-        getRunCommands: () => getRunCommands$j(configDir),
+        getRunCommands: () => getRunCommands$k(configDir),
         mainIpc: () => mainIpc$5(utils),
-        isInstalled: () => isInstalled$3(utils),
+        isInstalled: () => isInstalled$3(),
         saveArgs: args => saveArgs$e(args, configDir),
         readArgs: () => readArgs$e(configDir),
-        uninstall: () => uninstallNpmPackage(FLOWISEAI_ID, PACKAGE_NAME$2, utils),
+        uninstall: () => uninstallNpmPackage(PACKAGE_NAME$2),
     };
 };
 
 const PACKAGE_NAME$1 = '@google/gemini-cli';
 const CONFIG_FILE$5 = isWin ? 'geminiCli_config.bat' : 'geminiCli_config.sh';
 const DEFAULT_BATCH_DATA$c = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
-async function getRunCommands$i(configDir) {
+async function getRunCommands$j(configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$5));
@@ -22128,7 +22469,7 @@ async function getRunCommands$i(configDir) {
 async function saveArgs$d(args, configDir) {
     if (!configDir)
         return;
-    const { scriptData, settingsData } = parseArgsToFiles(args);
+    const { scriptData, settingsData } = parseArgsToFiles$1(args);
     const scriptPath = path.join(configDir, CONFIG_FILE$5);
     const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
     await fs.promises.writeFile(scriptPath, scriptData);
@@ -22147,13 +22488,13 @@ async function readArgs$d(configDir) {
     const scriptPath = path.join(configDir, CONFIG_FILE$5);
     await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$c);
     const scriptData = await fs.promises.readFile(scriptPath, 'utf-8');
-    return parseFilesToArgs(scriptData);
+    return parseFilesToArgs$1(scriptData);
 }
-async function isInstalled$2(utils) {
-    return isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils);
+async function isInstalled$2() {
+    return isNpmPackageInstalled(PACKAGE_NAME$1);
 }
 async function updateAvailable$6(utils) {
-    const available = await checkNpmPackageUpdate(GeminiCli_ID, PACKAGE_NAME$1, utils);
+    const available = await checkNpmPackageUpdate(PACKAGE_NAME$1);
     if (available) {
         utils.storage.set('update-available-version-geminiCli', available);
         return true;
@@ -22162,26 +22503,26 @@ async function updateAvailable$6(utils) {
     return false;
 }
 function mainIpc$4(utils) {
-    utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(GeminiCli_ID, PACKAGE_NAME$1, utils));
-    utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(GeminiCli_ID, PACKAGE_NAME$1, utils));
+    utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(PACKAGE_NAME$1));
+    utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(PACKAGE_NAME$1));
 }
 const GeminiCli_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
         mainIpc: () => mainIpc$4(utils),
-        getRunCommands: () => getRunCommands$i(configDir),
-        isInstalled: () => isInstalled$2(utils),
+        getRunCommands: () => getRunCommands$j(configDir),
+        isInstalled: () => isInstalled$2(),
         saveArgs: args => saveArgs$d(args, configDir),
         readArgs: () => readArgs$d(configDir),
         updateAvailable: () => updateAvailable$6(utils),
-        uninstall: () => uninstallNpmPackage(GeminiCli_ID, PACKAGE_NAME$1, utils),
+        uninstall: () => uninstallNpmPackage(PACKAGE_NAME$1),
     };
 };
 
 const PACKAGE_NAME = 'n8n';
 const CONFIG_FILE$4 = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
 const DEFAULT_BATCH_DATA$b = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
-async function getRunCommands$h(configDir) {
+async function getRunCommands$i(configDir) {
     if (!configDir)
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$4));
@@ -22194,11 +22535,11 @@ async function saveArgs$c(args, configDir) {
 async function readArgs$c(configDir) {
     return await utilReadArgs(CONFIG_FILE$4, DEFAULT_BATCH_DATA$b, parseStringToArgs$1, configDir);
 }
-async function isInstalled$1(utils) {
-    return isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils);
+async function isInstalled$1() {
+    return isNpmPackageInstalled(PACKAGE_NAME);
 }
 async function updateAvailable$5(utils) {
-    const available = await checkNpmPackageUpdate(N8N_ID, PACKAGE_NAME, utils);
+    const available = await checkNpmPackageUpdate(PACKAGE_NAME);
     if (available) {
         utils.storage.set('update-available-version-n8n', available);
         return true;
@@ -22207,29 +22548,40 @@ async function updateAvailable$5(utils) {
     return false;
 }
 function mainIpc$3(utils) {
-    utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(N8N_ID, PACKAGE_NAME, utils));
-    utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(N8N_ID, PACKAGE_NAME, utils));
+    utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(PACKAGE_NAME));
+    utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(PACKAGE_NAME));
 }
 const N8N_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
         mainIpc: () => mainIpc$3(utils),
-        getRunCommands: () => getRunCommands$h(configDir),
-        isInstalled: () => isInstalled$1(utils),
+        getRunCommands: () => getRunCommands$i(configDir),
+        isInstalled: () => isInstalled$1(),
         saveArgs: args => saveArgs$c(args, configDir),
         readArgs: () => readArgs$c(configDir),
         updateAvailable: () => updateAvailable$5(utils),
-        uninstall: () => uninstallNpmPackage(N8N_ID, PACKAGE_NAME, utils),
+        uninstall: () => uninstallNpmPackage(PACKAGE_NAME),
     };
 };
 
 const BAT_FILE_NAME$a = isWin ? 'start_alltalk.bat' : 'start_alltalk.sh';
-async function getRunCommands$g() {
+async function getRunCommands$h() {
     return await utilRunCommands(BAT_FILE_NAME$a);
 }
 const Rrew123_MM = () => {
     return {
-        getRunCommands: () => getRunCommands$g(),
+        getRunCommands: () => getRunCommands$h(),
+    };
+};
+
+const BAT_FILE = isWin ? 'run-applio.bat' : 'run-applio.sh';
+async function getRunCommands$g(dir) {
+    return await utilRunCommands(BAT_FILE, dir);
+}
+const Applio_MM = utils => {
+    const installDir = utils.getInstallDir(AG_ID);
+    return {
+        getRunCommands: () => getRunCommands$g(installDir),
     };
 };
 
@@ -22383,7 +22735,7 @@ var hasRequiredRe;
 function requireRe () {
 	if (hasRequiredRe) return re.exports;
 	hasRequiredRe = 1;
-	(function (module, exports) {
+	(function (module, exports$1) {
 
 		const {
 		  MAX_SAFE_COMPONENT_LENGTH,
@@ -22391,14 +22743,14 @@ function requireRe () {
 		  MAX_LENGTH,
 		} = requireConstants();
 		const debug = requireDebug();
-		exports = module.exports = {};
+		exports$1 = module.exports = {};
 
 		// The actual regexps go on exports.re
-		const re = exports.re = [];
-		const safeRe = exports.safeRe = [];
-		const src = exports.src = [];
-		const safeSrc = exports.safeSrc = [];
-		const t = exports.t = {};
+		const re = exports$1.re = [];
+		const safeRe = exports$1.safeRe = [];
+		const src = exports$1.src = [];
+		const safeSrc = exports$1.safeSrc = [];
+		const t = exports$1.t = {};
 		let R = 0;
 
 		const LETTERDASHNUMBER = '[a-zA-Z0-9-]';
@@ -22562,7 +22914,7 @@ function requireRe () {
 		createToken('LONETILDE', '(?:~>?)');
 
 		createToken('TILDETRIM', `(\\s*)${src[t.LONETILDE]}\\s+`, true);
-		exports.tildeTrimReplace = '$1~';
+		exports$1.tildeTrimReplace = '$1~';
 
 		createToken('TILDE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAIN]}$`);
 		createToken('TILDELOOSE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAINLOOSE]}$`);
@@ -22572,7 +22924,7 @@ function requireRe () {
 		createToken('LONECARET', '(?:\\^)');
 
 		createToken('CARETTRIM', `(\\s*)${src[t.LONECARET]}\\s+`, true);
-		exports.caretTrimReplace = '$1^';
+		exports$1.caretTrimReplace = '$1^';
 
 		createToken('CARET', `^${src[t.LONECARET]}${src[t.XRANGEPLAIN]}$`);
 		createToken('CARETLOOSE', `^${src[t.LONECARET]}${src[t.XRANGEPLAINLOOSE]}$`);
@@ -22585,7 +22937,7 @@ function requireRe () {
 		// it modifies, so that `> 1.2.3` ==> `>1.2.3`
 		createToken('COMPARATORTRIM', `(\\s*)${src[t.GTLT]
 		}\\s*(${src[t.LOOSEPLAIN]}|${src[t.XRANGEPLAIN]})`, true);
-		exports.comparatorTrimReplace = '$1$2$3';
+		exports$1.comparatorTrimReplace = '$1$2$3';
 
 		// Something like `1.2.3 - 1.2.4`
 		// Note that these all use the loose form, because they'll be
@@ -25370,7 +25722,7 @@ async function getRunCommands$1(dir) {
 async function saveArgs$1(args, dir) {
     if (!dir)
         return;
-    const { commands, configs } = parseArgsToFiles$1(args);
+    const { commands, configs } = parseArgsToFiles$2(args);
     const batPath = path.join(dir, BAT_FILE_NAME$1);
     const configPath = path.join(dir, CONFIG_FILE_NAME);
     await fs.promises.writeFile(batPath, commands);
@@ -25384,7 +25736,7 @@ async function readArgs$1(dir) {
     await initBatchFile(batPath, DEFAULT_BATCH_DATA$1);
     const batData = await fs.promises.readFile(batPath, 'utf-8');
     const configData = await fs.promises.readFile(configPath, 'utf-8');
-    return parseFilesToArgs$1(batData, configData);
+    return parseFilesToArgs$2(batData, configData);
 }
 const Silly_MM = utils => {
     const installDir = utils.getInstallDir(SILLYTAVERN_ID);
@@ -25442,6 +25794,8 @@ async function initialModule(utils) {
         { id: BOLT_DIY_ID, methods: () => BOLT_DIY_MM(utils) },
         { id: N8N_ID, methods: () => N8N_MM(utils) },
         { id: GeminiCli_ID, methods: () => GeminiCli_MM(utils) },
+        { id: CLAUDE_CODE_ID, methods: () => ClaudeCode_MM(utils) },
+        { id: APPLIO_ID, methods: () => Applio_MM(utils) },
     ];
 }
 

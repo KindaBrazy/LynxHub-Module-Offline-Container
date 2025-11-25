@@ -2,6 +2,19 @@
   "$schema": "https://raw.githubusercontent.com/KindaBrazy/LynxHub-Statics/refs/heads/schema/plugins/versioning.schema.json",
   "versions": [
     {
+      "version": "13.1.0",
+      "commit": "93a516e",
+      "engines": {
+        "moduleApi": "^2.0.0"
+      },
+      "stage": "early_access",
+      "platforms": [
+        "win32",
+        "linux",
+        "darwin"
+      ]
+    },
+    {
       "version": "13.0.0",
       "commit": "8a48740",
       "engines": {
@@ -29,6 +42,23 @@
     }
   ],
   "changes": [
+    {
+      "version": "13.1.0",
+      "date": "2025-11-25",
+      "items": [
+        {
+          "⚡ Improvements": [
+            {
+              "ComfyUI": [
+                "Added support for Mac (Apple silicon & x86).",
+                "Added support for AMD GPUs on windows.",
+                "Updated PyTorch Versions to latest."
+              ]
+            }
+          ]
+        }
+      ]
+    },
     {
       "version": "13.0.0",
       "date": "2025-11-23",

@@ -93,6 +93,7 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
 
 function startInstall(stepper: InstallationStepper) {
   const selectOptions = [
+    'NONE',
     'NVIDIA CU130',
     'NVIDIA CU130 Nightly',
     'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)',
@@ -159,6 +160,19 @@ function startInstall(stepper: InstallationStepper) {
 
   stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
 
+  const installReqs = (dir: string) => {
+    stepper.nextStep().then(() => {
+      stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+        stepper.setInstalled(dir);
+        stepper.showFinalStep(
+          'success',
+          'ComfyUI installation complete!',
+          'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.',
+        );
+      });
+    });
+  };
+
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
       stepper.nextStep().then(() => {
@@ -177,19 +191,13 @@ function startInstall(stepper: InstallationStepper) {
               ])
               .then(result => {
                 stepper.nextStep().then(() => {
-                  stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result as string)).then(() => {
-                    stepper.nextStep().then(() => {
-                      stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                        stepper.setInstalled(dir);
-                        stepper.showFinalStep(
-                          'success',
-                          'ComfyUI installation complete!',
-                          'All installation steps completed successfully. ' +
-                            'Your ComfyUI environment is now ready for use.',
-                        );
-                      });
+                  if (result[0].result === 'NONE') {
+                    installReqs(dir);
+                  } else {
+                    stepper.executeTerminalCommands(result[0].result as string).then(() => {
+                      installReqs(dir);
                     });
-                  });
+                  }
                 });
               });
           });

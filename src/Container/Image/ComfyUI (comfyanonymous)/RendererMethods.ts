@@ -93,30 +93,67 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
 
 function startInstall(stepper: InstallationStepper) {
   const selectOptions = [
-    'NVIDIA CU129',
-    'NVIDIA CU129 Nightly',
-    'AMD GPUs (Linux only) ROCm 6.4',
-    'AMD GPUs (Linux only) ROCm 6.4 Nightly',
+    'NVIDIA CU130',
+    'NVIDIA CU130 Nightly',
+    'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)',
+    'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)',
+    'RDNA 4 (RX 9000 series)',
+    'AMD GPUs (Linux only) ROCm 6.2',
+    'AMD GPUs (Linux only) ROCm 7.1 Nightly',
+    'Apple Mac silicon',
+    'Apple Mac silicon (Conda)',
     'Intel GPUs (Windows and Linux)',
     'Intel GPUs Nightly (Windows and Linux)',
   ];
 
   const getPyTorchInstallCommand = (selectedOption: string) => {
     switch (selectedOption) {
+      case 'Apple Mac silicon':
+        return (
+          'pip3 install --pre torch torchvision torchaudio --extra-index-url ' +
+          'https://download.pytorch.org/whl/nightly/cpu'
+        );
+      case 'Apple Mac silicon (Conda)':
+        return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
+
       case 'AMD GPUs (Linux only) ROCm 6.2':
         return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
-      case 'AMD GPUs (Linux only) ROCm 6.4 Nightly':
-        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.4';
+      case 'AMD GPUs (Linux only) ROCm 7.1 Nightly':
+        return (
+          'pip install --pre torch torchvision torchaudio --index-url ' +
+          'https://download.pytorch.org/whl/nightly/rocm7.1'
+        );
+
+      case 'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)':
+        return (
+          'pip install --pre torch torchvision torchaudio --index-url ' +
+          'https://rocm.nightlies.amd.com/v2/gfx110X-dgpu/'
+        );
+      case 'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)':
+        return (
+          'pip install --pre torch torchvision torchaudio --index-url ' + 'https://rocm.nightlies.amd.com/v2/gfx1151/'
+        );
+      case 'RDNA 4 (RX 9000 series)':
+        return (
+          'pip install --pre torch torchvision torchaudio --index-url ' +
+          'https://rocm.nightlies.amd.com/v2/gfx120X-all/'
+        );
+
       case 'Intel GPUs (Windows and Linux)':
         return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu';
       case 'Intel GPUs Nightly (Windows and Linux)':
-        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/xpu';
-      case 'NVIDIA CU129':
-        return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129';
-      case 'NVIDIA CU129 Nightly':
-        return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu129';
+        return (
+          'pip install --pre torch torchvision torchaudio --index-url ' + 'https://download.pytorch.org/whl/nightly/xpu'
+        );
+
       default:
-        return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
+      case 'NVIDIA CU130':
+        return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu130';
+      case 'NVIDIA CU130 Nightly':
+        return (
+          'pip install --pre torch torchvision torchaudio --index-url ' +
+          'https://download.pytorch.org/whl/nightly/cu130'
+        );
     }
   };
 
@@ -147,7 +184,8 @@ function startInstall(stepper: InstallationStepper) {
                         stepper.showFinalStep(
                           'success',
                           'ComfyUI installation complete!',
-                          'All installation steps completed successfully. Your ComfyUI environment is now ready for use.',
+                          'All installation steps completed successfully. ' +
+                            'Your ComfyUI environment is now ready for use.',
                         );
                       });
                     });

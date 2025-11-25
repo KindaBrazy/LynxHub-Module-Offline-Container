@@ -24320,29 +24320,75 @@ async function fetchExtensionList$4() {
 }
 function startInstall$9(stepper) {
     const selectOptions = [
-        'NVIDIA CU129',
-        'NVIDIA CU129 Nightly',
-        'AMD GPUs (Linux only) ROCm 6.4',
-        'AMD GPUs (Linux only) ROCm 6.4 Nightly',
+        'NONE',
+        'NVIDIA CU130',
+        'NVIDIA CU130 Nightly',
+        'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)',
+        'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)',
+        'RDNA 4 (RX 9000 series)',
+        'AMD GPUs (Linux only) ROCm 6.2',
+        'AMD GPUs (Linux only) ROCm 7.1 Nightly',
+        'Mac Apple silicon',
+        'Mac Apple silicon (Conda)',
+        'Mac x86 (Conda)',
         'Intel GPUs (Windows and Linux)',
         'Intel GPUs Nightly (Windows and Linux)',
     ];
     const getPyTorchInstallCommand = (selectedOption) => {
         switch (selectedOption) {
+            case 'Mac Apple silicon':
+                return ('pip3 install --pre torch torchvision torchaudio --extra-index-url ' +
+                    'https://download.pytorch.org/whl/nightly/cpu');
+            case 'Mac Apple silicon (Conda)':
+                return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
+            case 'Mac x86 (Conda)':
+                return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
             case 'AMD GPUs (Linux only) ROCm 6.2':
                 return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
-            case 'AMD GPUs (Linux only) ROCm 6.4 Nightly':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.4';
+            case 'AMD GPUs (Linux only) ROCm 7.1 Nightly':
+                return ('pip install --pre torch torchvision torchaudio --index-url ' +
+                    'https://download.pytorch.org/whl/nightly/rocm7.1');
+            case 'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)':
+                return ('pip install --pre torch torchvision torchaudio --index-url ' +
+                    'https://rocm.nightlies.amd.com/v2/gfx110X-dgpu/');
+            case 'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)':
+                return ('pip install --pre torch torchvision torchaudio --index-url ' + 'https://rocm.nightlies.amd.com/v2/gfx1151/');
+            case 'RDNA 4 (RX 9000 series)':
+                return ('pip install --pre torch torchvision torchaudio --index-url ' +
+                    'https://rocm.nightlies.amd.com/v2/gfx120X-all/');
             case 'Intel GPUs (Windows and Linux)':
                 return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu';
             case 'Intel GPUs Nightly (Windows and Linux)':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/xpu';
-            case 'NVIDIA CU129':
-                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129';
-            case 'NVIDIA CU129 Nightly':
-                return 'pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu129';
+                return ('pip install --pre torch torchvision torchaudio --index-url ' + 'https://download.pytorch.org/whl/nightly/xpu');
             default:
-                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124';
+            case 'NVIDIA CU130':
+                return 'pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu130';
+            case 'NVIDIA CU130 Nightly':
+                return ('pip install --pre torch torchvision torchaudio --index-url ' +
+                    'https://download.pytorch.org/whl/nightly/cu130');
+        }
+    };
+    const installReqs = (dir) => {
+        stepper.nextStep().then(() => {
+            stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+                stepper.setInstalled(dir);
+                stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.');
+            });
+        });
+    };
+    const getMacCondaInstallCommand = (selectedOption) => {
+        switch (selectedOption) {
+            case 'Mac x86 (Conda)':
+                return [
+                    'curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh',
+                    'sh Miniconda3-latest-MacOSX-x86_64.sh',
+                ];
+            case 'Mac Apple silicon (Conda)':
+            default:
+                return [
+                    'curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh',
+                    'sh Miniconda3-latest-MacOSX-arm64.sh',
+                ];
         }
     };
     stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
@@ -24363,15 +24409,45 @@ function startInstall$9(stepper) {
                             },
                         ])
                             .then(result => {
+                            const selectedOption = result[0].result;
                             stepper.nextStep().then(() => {
-                                stepper.executeTerminalCommands(getPyTorchInstallCommand(result[0].result)).then(() => {
-                                    stepper.nextStep().then(() => {
-                                        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                                            stepper.setInstalled(dir);
-                                            stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. Your ComfyUI environment is now ready for use.');
-                                        });
+                                if (selectedOption === 'NONE') {
+                                    installReqs(dir);
+                                }
+                                else if (selectedOption === 'Mac x86 (Conda)' || selectedOption === 'Mac Apple silicon (Conda)') {
+                                    stepper.ipc.invoke('Comfy_isCondaInstalled').then((isInstalled) => {
+                                        if (isInstalled) {
+                                            stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
+                                                installReqs(dir);
+                                            });
+                                        }
+                                        else {
+                                            stepper.initialSteps([
+                                                'ComfyUI',
+                                                'Clone',
+                                                'PyTorch Version',
+                                                'Conda',
+                                                'Install PyTorch',
+                                                'Dependencies',
+                                                'Finish',
+                                            ]);
+                                            stepper.nextStep().then(() => {
+                                                stepper.executeTerminalCommands(getMacCondaInstallCommand(selectedOption)).then(() => {
+                                                    stepper.nextStep().then(() => {
+                                                        stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
+                                                            installReqs(dir);
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        }
                                     });
-                                });
+                                }
+                                else {
+                                    stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
+                                        installReqs(dir);
+                                    });
+                                }
                             });
                         });
                     });

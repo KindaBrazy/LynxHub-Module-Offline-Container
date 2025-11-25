@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, g as getDefaultExportFromCjs, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, p as parseFilesToArgs, b as parseArgsToFiles, d as getCdCommand, e as parseArgsToString, f as parseStringToArgs, h as parseFilesToArgs$1, j as parseArgsToFiles$1, k as parseArgsToString$1, l as parseStringToArgs$1, A as AG_ID, m as parseArgsToString$2, n as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, o as parseArgsToString$3, q as parseStringToArgs$3, r as COMFYUI_ZLUDA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, u as INVOKE_ID, v as extractGitUrl, w as INVOKEAI_UPDATE_AVAILABLE_KEY, x as Invoke_Command_ActivateVenv, y as parseArgsToString$5, z as parseStringToArgs$5, K as KOHYA_ID, B as parseArgsToString$6, D as parseStringToArgs$6, E as ONETRAINER_ID, F as A1_ID, G as parseArgsToString$7, H as parseStringToArgs$7, S as SD_AMD_ID, J as parseArgsToString$8, L as parseStringToArgs$8, M as SD_NEXT_ID, N as parseArgsToString$9, P as parseStringToArgs$9, Q as SWARM_ID, R as parseArgsToString$a, U as parseStringToArgs$a, V as BOLT_DIY_ID, W as LoLLMS_ID, X as removeAnsi, Y as parseArgsToString$b, Z as parseStringToArgs$b, _ as SILLYTAVERN_ID, $ as parseArgsToFiles$2, a0 as parseFilesToArgs$2, a1 as TG_ID, a2 as parseArgsToString$c, a3 as parseStringToArgs$c, a4 as SD_FORGE_ID, a5 as SD_FORGE_AMD_ID, a6 as SD_UIUX_ID, a7 as ALLTALK_ID, a8 as FLOWISEAI_ID, a9 as N8N_ID, aa as GeminiCli_ID, ab as CLAUDE_CODE_ID, ac as APPLIO_ID } from './RendererMethods_Bbml5Y.mjs';
+import { c as commonjsGlobal, g as getDefaultExportFromCjs, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, p as parseFilesToArgs, b as parseArgsToFiles, d as getCdCommand, e as parseArgsToString, f as parseStringToArgs, h as parseFilesToArgs$1, j as parseArgsToFiles$1, k as parseArgsToString$1, l as parseStringToArgs$1, A as AG_ID, m as parseArgsToString$2, n as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, o as parseArgsToString$3, q as parseStringToArgs$3, r as COMFYUI_ZLUDA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, u as INVOKE_ID, v as extractGitUrl, w as INVOKEAI_UPDATE_AVAILABLE_KEY, x as Invoke_Command_ActivateVenv, y as parseArgsToString$5, z as parseStringToArgs$5, K as KOHYA_ID, B as parseArgsToString$6, D as parseStringToArgs$6, E as ONETRAINER_ID, F as A1_ID, G as parseArgsToString$7, H as parseStringToArgs$7, S as SD_AMD_ID, J as parseArgsToString$8, L as parseStringToArgs$8, M as SD_NEXT_ID, N as parseArgsToString$9, P as parseStringToArgs$9, Q as SWARM_ID, R as parseArgsToString$a, U as parseStringToArgs$a, V as BOLT_DIY_ID, W as LoLLMS_ID, X as removeAnsi, Y as parseArgsToString$b, Z as parseStringToArgs$b, _ as SILLYTAVERN_ID, $ as parseArgsToFiles$2, a0 as parseFilesToArgs$2, a1 as TG_ID, a2 as parseArgsToString$c, a3 as parseStringToArgs$c, a4 as SD_FORGE_ID, a5 as SD_FORGE_AMD_ID, a6 as SD_UIUX_ID, a7 as ALLTALK_ID, a8 as FLOWISEAI_ID, a9 as N8N_ID, aa as GeminiCli_ID, ab as CLAUDE_CODE_ID, ac as APPLIO_ID } from './RendererMethods_8qfNyt.mjs';
 import { exec, execSync } from 'node:child_process';
 import path, { join } from 'node:path';
 import require$$0$2 from 'fs';
@@ -22297,7 +22297,7 @@ async function isInstalled$4() {
 async function updateAvailable$8(utils) {
     return false;
 }
-function mainIpc$6(utils) {
+function mainIpc$7(utils) {
     utils.ipc.handle('is_claude_code_installed', () => checkWhich('claude'));
     utils.ipc.handle('current_claude_code_version', () => getClaudeCodeVersion());
 }
@@ -22316,7 +22316,7 @@ function getClaudeCodeVersion() {
 const ClaudeCode_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
-        mainIpc: () => mainIpc$6(utils),
+        mainIpc: () => mainIpc$7(utils),
         getRunCommands: () => getRunCommands$l(configDir),
         isInstalled: () => isInstalled$4(),
         saveArgs: args => saveArgs$f(args, configDir),
@@ -22438,7 +22438,7 @@ async function updateAvailable$7(utils) {
 async function isInstalled$3() {
     return isNpmPackageInstalled(PACKAGE_NAME$2);
 }
-function mainIpc$5(utils) {
+function mainIpc$6(utils) {
     utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(PACKAGE_NAME$2));
     utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(PACKAGE_NAME$2));
     utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
@@ -22448,7 +22448,7 @@ const Flow_MM = utils => {
     return {
         updateAvailable: () => updateAvailable$7(utils),
         getRunCommands: () => getRunCommands$k(configDir),
-        mainIpc: () => mainIpc$5(utils),
+        mainIpc: () => mainIpc$6(utils),
         isInstalled: () => isInstalled$3(),
         saveArgs: args => saveArgs$e(args, configDir),
         readArgs: () => readArgs$e(configDir),
@@ -22502,14 +22502,14 @@ async function updateAvailable$6(utils) {
     utils.storage.set('update-available-version-geminiCli', undefined);
     return false;
 }
-function mainIpc$4(utils) {
+function mainIpc$5(utils) {
     utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(PACKAGE_NAME$1));
     utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(PACKAGE_NAME$1));
 }
 const GeminiCli_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
-        mainIpc: () => mainIpc$4(utils),
+        mainIpc: () => mainIpc$5(utils),
         getRunCommands: () => getRunCommands$j(configDir),
         isInstalled: () => isInstalled$2(),
         saveArgs: args => saveArgs$d(args, configDir),
@@ -22547,14 +22547,14 @@ async function updateAvailable$5(utils) {
     utils.storage.set('update-available-version-n8n', undefined);
     return false;
 }
-function mainIpc$3(utils) {
+function mainIpc$4(utils) {
     utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(PACKAGE_NAME));
     utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(PACKAGE_NAME));
 }
 const N8N_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
-        mainIpc: () => mainIpc$3(utils),
+        mainIpc: () => mainIpc$4(utils),
         getRunCommands: () => getRunCommands$i(configDir),
         isInstalled: () => isInstalled$1(),
         saveArgs: args => saveArgs$c(args, configDir),
@@ -22627,12 +22627,16 @@ async function saveArgs$a(args, dir) {
 async function readArgs$a(dir) {
     return await utilReadArgs(BAT_FILE_NAME$7, DEFAULT_BATCH_DATA$9, parseStringToArgs$3, dir);
 }
+function mainIpc$3(ipc) {
+    ipc.handle('Comfy_isCondaInstalled', async () => checkWhich('conda'));
+}
 const Comfy_MM = utils => {
     const installDir = utils.getInstallDir(COMFYUI_ID);
     return {
         getRunCommands: () => getRunCommands$d(installDir),
         readArgs: () => readArgs$a(installDir),
         saveArgs: args => saveArgs$a(args, installDir),
+        mainIpc: () => mainIpc$3(utils.ipc),
     };
 };
 

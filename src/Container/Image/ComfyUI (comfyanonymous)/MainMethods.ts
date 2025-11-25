@@ -1,7 +1,7 @@
-import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/plugin/ModuleTypes';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {COMFYUI_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {checkWhich, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -19,6 +19,10 @@ export async function readArgs(dir?: string) {
   return await utilReadArgs(BAT_FILE_NAME, DEFAULT_BATCH_DATA, parseStringToArgs, dir);
 }
 
+function mainIpc(ipc: MainModuleUtils['ipc']) {
+  ipc.handle('Comfy_isCondaInstalled', async () => checkWhich('conda'));
+}
+
 const Comfy_MM: CardMainMethodsInitial = utils => {
   const installDir = utils.getInstallDir(COMFYUI_ID);
 
@@ -26,6 +30,7 @@ const Comfy_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
+    mainIpc: () => mainIpc(utils.ipc),
   };
 };
 

@@ -101,20 +101,23 @@ function startInstall(stepper: InstallationStepper) {
     'RDNA 4 (RX 9000 series)',
     'AMD GPUs (Linux only) ROCm 6.2',
     'AMD GPUs (Linux only) ROCm 7.1 Nightly',
-    'Apple Mac silicon',
-    'Apple Mac silicon (Conda)',
+    'Mac Apple silicon',
+    'Mac Apple silicon (Conda)',
+    'Mac x86 (Conda)',
     'Intel GPUs (Windows and Linux)',
     'Intel GPUs Nightly (Windows and Linux)',
   ];
 
   const getPyTorchInstallCommand = (selectedOption: string) => {
     switch (selectedOption) {
-      case 'Apple Mac silicon':
+      case 'Mac Apple silicon':
         return (
           'pip3 install --pre torch torchvision torchaudio --extra-index-url ' +
           'https://download.pytorch.org/whl/nightly/cpu'
         );
-      case 'Apple Mac silicon (Conda)':
+      case 'Mac Apple silicon (Conda)':
+        return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
+      case 'Mac x86 (Conda)':
         return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
 
       case 'AMD GPUs (Linux only) ROCm 6.2':
@@ -158,8 +161,6 @@ function startInstall(stepper: InstallationStepper) {
     }
   };
 
-  stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
-
   const installReqs = (dir: string) => {
     stepper.nextStep().then(() => {
       stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
@@ -172,6 +173,24 @@ function startInstall(stepper: InstallationStepper) {
       });
     });
   };
+
+  const getMacCondaInstallCommand = (selectedOption: string) => {
+    switch (selectedOption) {
+      case 'Mac x86 (Conda)':
+        return [
+          'curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh',
+          'sh Miniconda3-latest-MacOSX-x86_64.sh',
+        ];
+      case 'Mac Apple silicon (Conda)':
+      default:
+        return [
+          'curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh',
+          'sh Miniconda3-latest-MacOSX-arm64.sh',
+        ];
+    }
+  };
+
+  stepper.initialSteps(['ComfyUI', 'Clone', 'PyTorch Version', 'Install PyTorch', 'Install Dependencies', 'Finish']);
 
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
@@ -190,11 +209,39 @@ function startInstall(stepper: InstallationStepper) {
                 },
               ])
               .then(result => {
+                const selectedOption = result[0].result as string;
                 stepper.nextStep().then(() => {
-                  if (result[0].result === 'NONE') {
+                  if (selectedOption === 'NONE') {
                     installReqs(dir);
+                  } else if (selectedOption === 'Mac x86 (Conda)' || selectedOption === 'Mac Apple silicon (Conda)') {
+                    stepper.ipc.invoke('Comfy_isCondaInstalled').then((isInstalled: boolean) => {
+                      if (isInstalled) {
+                        stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
+                          installReqs(dir);
+                        });
+                      } else {
+                        stepper.initialSteps([
+                          'ComfyUI',
+                          'Clone',
+                          'PyTorch Version',
+                          'Conda',
+                          'Install PyTorch',
+                          'Dependencies',
+                          'Finish',
+                        ]);
+                        stepper.nextStep().then(() => {
+                          stepper.executeTerminalCommands(getMacCondaInstallCommand(selectedOption)).then(() => {
+                            stepper.nextStep().then(() => {
+                              stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
+                                installReqs(dir);
+                              });
+                            });
+                          });
+                        });
+                      }
+                    });
                   } else {
-                    stepper.executeTerminalCommands(result[0].result as string).then(() => {
+                    stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
                       installReqs(dir);
                     });
                   }

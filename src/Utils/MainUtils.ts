@@ -12,14 +12,42 @@ import {ChosenArgument, MainModuleUtils} from '../../../src/cross/plugin/ModuleT
 import {OPEN_WEBUI_ID} from '../Constants';
 import {getVenvPythonPath, isWin} from './CrossUtils';
 
-export const LINE_ENDING = isWin ? '\r' : '\n';
+export const LINE_ENDING = isWin ? '\r\n' : '\n';
 
-export async function initBatchFile(path: string, data: string) {
+export async function initBatchFile(filePath: string, data: string) {
   try {
-    await fs.promises.access(path);
+    await fs.promises.access(filePath);
   } catch (error) {
     console.log(error);
-    await fs.promises.writeFile(path, data, {encoding: 'utf-8'});
+    await fs.promises.writeFile(filePath, data, {encoding: 'utf-8'});
+    // Make shell scripts executable on Unix systems
+    if (!isWin && (filePath.endsWith('.sh') || !filePath.includes('.'))) {
+      await fs.promises.chmod(filePath, 0o755);
+    }
+  }
+}
+
+/**
+ * Ensures a shell script file has proper shebang and is executable on Unix systems.
+ * @param filePath Path to the script file
+ */
+export async function ensureScriptExecutable(filePath: string): Promise<void> {
+  if (isWin) return;
+
+  try {
+    // Read current content
+    const content = await fs.promises.readFile(filePath, 'utf-8');
+
+    // Check if shebang is missing for .sh files
+    if (filePath.endsWith('.sh') && !content.startsWith('#!')) {
+      // Prepend shebang if missing
+      await fs.promises.writeFile(filePath, `#!/bin/bash\n${content}`, {encoding: 'utf-8'});
+    }
+
+    // Make executable
+    await fs.promises.chmod(filePath, 0o755);
+  } catch (error) {
+    console.error(`Error ensuring script executable: ${filePath}`, error);
   }
 }
 
@@ -28,9 +56,16 @@ export async function utilRunCommands(
   dir?: string,
   defaultData?: string,
 ): Promise<string | string[]> {
-  if (dir && defaultData) await initBatchFile(path.join(dir, batFileName), defaultData);
+  if (dir && defaultData) {
+    const filePath = path.join(dir, batFileName);
+    await initBatchFile(filePath, defaultData);
+    // Ensure script is executable on Unix
+    if (!isWin) {
+      await ensureScriptExecutable(filePath);
+    }
+  }
 
-  return `${isWin ? './' : 'bash ./'}${batFileName}${LINE_ENDING}`;
+  return `${isWin ? '.\\' : 'bash ./'}${batFileName}${LINE_ENDING}`;
 }
 
 export async function utilSaveArgs(
@@ -41,9 +76,14 @@ export async function utilSaveArgs(
 ) {
   if (!cardDir) return;
   const result = parser(args);
-  const finalDir = path.join(cardDir, batFileName);
+  const filePath = path.join(cardDir, batFileName);
 
-  await fs.promises.writeFile(finalDir, result);
+  await fs.promises.writeFile(filePath, result);
+
+  // Ensure script is executable on Unix
+  if (!isWin && batFileName.endsWith('.sh')) {
+    await ensureScriptExecutable(filePath);
+  }
 }
 
 export async function utilReadArgs(
@@ -53,11 +93,16 @@ export async function utilReadArgs(
   cardDir?: string,
 ) {
   if (!cardDir) return [];
-  const finalDir = path.join(cardDir, batFileName);
+  const filePath = path.join(cardDir, batFileName);
 
-  await initBatchFile(finalDir, defaultData);
+  await initBatchFile(filePath, defaultData);
 
-  const data = await fs.promises.readFile(finalDir, 'utf-8');
+  // Ensure script is executable on Unix
+  if (!isWin && batFileName.endsWith('.sh')) {
+    await ensureScriptExecutable(filePath);
+  }
+
+  const data = await fs.promises.readFile(filePath, 'utf-8');
 
   if (!data) return [];
 

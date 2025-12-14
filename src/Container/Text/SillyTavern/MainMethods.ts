@@ -5,7 +5,7 @@ import fs from 'graceful-fs';
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/plugin/ModuleTypes';
 import {SILLYTAVERN_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {initBatchFile, utilRunCommands} from '../../../Utils/MainUtils';
+import {ensureScriptExecutable, initBatchFile, utilRunCommands} from '../../../Utils/MainUtils';
 import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -26,6 +26,11 @@ async function saveArgs(args: ChosenArgument[], dir?: string) {
 
   await fs.promises.writeFile(batPath, commands);
   await fs.promises.writeFile(configPath, configs);
+
+  // Ensure script is executable on Unix
+  if (!isWin) {
+    await ensureScriptExecutable(batPath);
+  }
 }
 
 async function readArgs(dir?: string) {
@@ -35,8 +40,18 @@ async function readArgs(dir?: string) {
 
   await initBatchFile(batPath, DEFAULT_BATCH_DATA);
 
+  // Ensure script is executable on Unix
+  if (!isWin) {
+    await ensureScriptExecutable(batPath);
+  }
+
   const batData = await fs.promises.readFile(batPath, 'utf-8');
-  const configData = await fs.promises.readFile(configPath, 'utf-8');
+  let configData = '';
+  try {
+    configData = await fs.promises.readFile(configPath, 'utf-8');
+  } catch {
+    // Config file may not exist yet
+  }
 
   return parseFilesToArgs(batData, configData);
 }

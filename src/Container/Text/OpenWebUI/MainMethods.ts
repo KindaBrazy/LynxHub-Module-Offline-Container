@@ -8,6 +8,7 @@ import {OPEN_WEBUI_ID} from '../../../Constants';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {
   determineShell,
+  ensureScriptExecutable,
   getLatestPipPackageVersion,
   getPipPackageVersion,
   initBatchFile,
@@ -18,7 +19,7 @@ import {
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';
@@ -26,7 +27,12 @@ async function getRunCommands(configDir?: string): Promise<string | string[]> {
   const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
   await initBatchFile(filePath, DEFAULT_BATCH_DATA);
 
-  return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+  // Ensure script is executable on Unix
+  if (!isWin) {
+    await ensureScriptExecutable(filePath);
+  }
+
+  return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 
 async function saveArgs(args: ChosenArgument[], configDir?: string) {

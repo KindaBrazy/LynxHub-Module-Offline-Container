@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
-import {initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
+import {ensureScriptExecutable, initBatchFile, LINE_ENDING, utilReadArgs, utilSaveArgs} from '../../../Utils/MainUtils';
 import {
   checkNpmPackageUpdate,
   getNpmPackageVersion,
@@ -13,7 +13,7 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const PACKAGE_NAME = 'n8n';
 const CONFIG_FILE = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nn8n start' : '#!/bin/bash\n\nn8n start';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';
@@ -21,7 +21,12 @@ async function getRunCommands(configDir?: string): Promise<string | string[]> {
   const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
   await initBatchFile(filePath, DEFAULT_BATCH_DATA);
 
-  return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+  // Ensure script is executable on Unix
+  if (!isWin) {
+    await ensureScriptExecutable(filePath);
+  }
+
+  return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 
 async function saveArgs(args: ChosenArgument[], configDir?: string) {

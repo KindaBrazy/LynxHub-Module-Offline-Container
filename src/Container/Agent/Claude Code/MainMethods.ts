@@ -5,11 +5,11 @@ import fs from 'graceful-fs';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
-import {checkWhich, initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
+import {checkWhich, ensureScriptExecutable, initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
 import {parseArgsToFiles, parseFilesToArgs, parseStringToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'claude_config.bat' : 'claude_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nclaude' : '#!/bin/bash\n\nclaude';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nclaude' : '#!/bin/bash\n\nclaude';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';
@@ -17,7 +17,12 @@ async function getRunCommands(configDir?: string): Promise<string | string[]> {
   const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
   await initBatchFile(filePath, DEFAULT_BATCH_DATA);
 
-  return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+  // Ensure script is executable on Unix
+  if (!isWin) {
+    await ensureScriptExecutable(filePath);
+  }
+
+  return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 
 async function saveArgs(args: ChosenArgument[], configDir?: string) {
@@ -30,11 +35,16 @@ async function saveArgs(args: ChosenArgument[], configDir?: string) {
 
   let finalScript = scriptData;
   if (settingsPath) {
-    const marker = isWin ? `REM SETTINGS_FILE="${settingsPath}"\n` : `# SETTINGS_FILE="${settingsPath}"\n`;
+    const marker = isWin ? `REM SETTINGS_FILE="${settingsPath}"\r\n` : `# SETTINGS_FILE="${settingsPath}"\n`;
     finalScript = marker + scriptData;
   }
 
   await fs.promises.writeFile(scriptPath, finalScript);
+
+  // Ensure script is executable on Unix
+  if (!isWin) {
+    await ensureScriptExecutable(scriptPath);
+  }
 
   if (settingsPath && settingsData) {
     try {
@@ -51,6 +61,11 @@ async function readArgs(configDir?: string) {
   const scriptPath = path.join(configDir, CONFIG_FILE);
 
   await initBatchFile(scriptPath, DEFAULT_BATCH_DATA);
+
+  // Ensure script is executable on Unix
+  if (!isWin) {
+    await ensureScriptExecutable(scriptPath);
+  }
 
   const scriptDataFull = await fs.promises.readFile(scriptPath, 'utf-8');
 

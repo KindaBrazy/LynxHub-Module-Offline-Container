@@ -162,15 +162,13 @@ function startInstall(stepper: InstallationStepper) {
   };
 
   const installReqs = (dir: string) => {
-    stepper.nextStep().then(() => {
-      stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-        stepper.setInstalled(dir);
-        stepper.showFinalStep(
-          'success',
-          'ComfyUI installation complete!',
-          'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.',
-        );
-      });
+    stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+      stepper.setInstalled(dir);
+      stepper.showFinalStep(
+        'success',
+        'ComfyUI installation complete!',
+        'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.',
+      );
     });
   };
 
@@ -210,42 +208,55 @@ function startInstall(stepper: InstallationStepper) {
               ])
               .then(result => {
                 const selectedOption = result[0].result as string;
-                stepper.nextStep().then(() => {
-                  if (selectedOption === 'NONE') {
-                    installReqs(dir);
-                  } else if (selectedOption === 'Mac x86 (Conda)' || selectedOption === 'Mac Apple silicon (Conda)') {
-                    stepper.ipc.invoke('Comfy_isCondaInstalled').then((isInstalled: boolean) => {
-                      if (isInstalled) {
-                        stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
-                          installReqs(dir);
+                if (selectedOption === 'NONE') {
+                  // Skip PyTorch install, go directly to dependencies
+                  stepper.nextStep().then(() => {
+                    stepper.nextStep().then(() => {
+                      installReqs(dir);
+                    });
+                  });
+                } else if (selectedOption === 'Mac x86 (Conda)' || selectedOption === 'Mac Apple silicon (Conda)') {
+                  stepper.ipc.invoke('Comfy_isCondaInstalled').then((isInstalled: boolean) => {
+                    if (isInstalled) {
+                      stepper.nextStep().then(() => {
+                        stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption), dir).then(() => {
+                          stepper.nextStep().then(() => {
+                            installReqs(dir);
+                          });
                         });
-                      } else {
-                        stepper.initialSteps([
-                          'ComfyUI',
-                          'Clone',
-                          'PyTorch Version',
-                          'Conda',
-                          'Install PyTorch',
-                          'Dependencies',
-                          'Finish',
-                        ]);
-                        stepper.nextStep().then(() => {
-                          stepper.executeTerminalCommands(getMacCondaInstallCommand(selectedOption)).then(() => {
-                            stepper.nextStep().then(() => {
-                              stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
+                      });
+                    } else {
+                      stepper.initialSteps([
+                        'ComfyUI',
+                        'Clone',
+                        'PyTorch Version',
+                        'Conda',
+                        'Install PyTorch',
+                        'Dependencies',
+                        'Finish',
+                      ]);
+                      stepper.nextStep().then(() => {
+                        stepper.executeTerminalCommands(getMacCondaInstallCommand(selectedOption), dir).then(() => {
+                          stepper.nextStep().then(() => {
+                            stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption), dir).then(() => {
+                              stepper.nextStep().then(() => {
                                 installReqs(dir);
                               });
                             });
                           });
                         });
-                      }
+                      });
+                    }
+                  });
+                } else {
+                  stepper.nextStep().then(() => {
+                    stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption), dir).then(() => {
+                      stepper.nextStep().then(() => {
+                        installReqs(dir);
+                      });
                     });
-                  } else {
-                    stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
-                      installReqs(dir);
-                    });
-                  }
-                });
+                  });
+                }
               });
           });
         });

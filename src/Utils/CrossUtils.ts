@@ -1,19 +1,19 @@
 import {CardInfoCallback, CardInfoDescriptions} from '../../../src/cross/plugin/ModuleTypes';
 
-export let isWin: boolean = true;
-
-async function isWinOS(): Promise<boolean> {
+function detectIsWin(): boolean {
+  // Renderer process - use preload-exposed platform
   if (typeof window !== 'undefined' && window.osPlatform) {
-    isWin = window.osPlatform === 'win32';
-  } else if (typeof process !== 'undefined') {
-    const result = await import('os');
-    isWin = result.platform() === 'win32';
+    return window.osPlatform === 'win32';
   }
-
-  return isWin;
+  // Main process - use process.platform directly (synchronous)
+  if (typeof process !== 'undefined' && process.platform) {
+    return process.platform === 'win32';
+  }
+  // Fallback (shouldn't happen in Electron)
+  return true;
 }
 
-isWinOS();
+export const isWin: boolean = detectIsWin();
 
 export function formatSize(size: number | undefined): string {
   if (!size) return '0KB';

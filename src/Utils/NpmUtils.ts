@@ -1,8 +1,6 @@
 import {exec} from 'node:child_process';
 import {promisify} from 'node:util';
 
-import {MainModuleUtils} from '../../../src/cross/plugin/ModuleTypes';
-
 const execAsync = promisify(exec);
 
 export async function isNpmPackageInstalled(packageName: string): Promise<boolean> {

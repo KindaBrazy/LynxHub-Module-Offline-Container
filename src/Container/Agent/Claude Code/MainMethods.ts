@@ -6,7 +6,7 @@ import fs from 'graceful-fs';
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
 import {checkWhich, ensureScriptExecutable, initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
-import {parseArgsToFiles, parseFilesToArgs, parseStringToArgs} from './RendererMethods';
+import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'claude_config.bat' : 'claude_config.sh';
 const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nclaude' : '#!/bin/bash\n\nclaude';

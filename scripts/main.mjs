@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, g as getDefaultExportFromCjs, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, p as parseFilesToArgs, b as parseArgsToFiles, d as getCdCommand, e as parseArgsToString, f as parseStringToArgs, h as parseFilesToArgs$1, j as parseArgsToFiles$1, k as parseArgsToString$1, l as parseStringToArgs$1, A as AG_ID, m as parseArgsToString$2, n as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, o as parseArgsToString$3, q as parseStringToArgs$3, r as COMFYUI_ZLUDA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, u as INVOKE_ID, v as extractGitUrl, w as INVOKEAI_UPDATE_AVAILABLE_KEY, x as Invoke_Command_ActivateVenv, y as parseArgsToString$5, z as parseStringToArgs$5, K as KOHYA_ID, B as parseArgsToString$6, D as parseStringToArgs$6, E as ONETRAINER_ID, F as A1_ID, G as parseArgsToString$7, H as parseStringToArgs$7, S as SD_AMD_ID, J as parseArgsToString$8, L as parseStringToArgs$8, M as SD_NEXT_ID, N as parseArgsToString$9, P as parseStringToArgs$9, Q as SWARM_ID, R as parseArgsToString$a, U as parseStringToArgs$a, V as BOLT_DIY_ID, W as LoLLMS_ID, X as removeAnsi, Y as parseArgsToString$b, Z as parseStringToArgs$b, _ as SILLYTAVERN_ID, $ as parseArgsToFiles$2, a0 as parseFilesToArgs$2, a1 as TG_ID, a2 as parseArgsToString$c, a3 as parseStringToArgs$c, a4 as SD_FORGE_ID, a5 as SD_FORGE_AMD_ID, a6 as SD_UIUX_ID, a7 as ALLTALK_ID, a8 as FLOWISEAI_ID, a9 as N8N_ID, aa as GeminiCli_ID, ab as CLAUDE_CODE_ID, ac as APPLIO_ID } from './RendererMethods_8qfNyt.mjs';
+import { c as commonjsGlobal, g as getDefaultExportFromCjs, i as isWin, a as getVenvPythonPath, O as OPEN_WEBUI_ID, p as parseFilesToArgs, b as parseArgsToFiles, d as getCdCommand, e as parseArgsToString, f as parseStringToArgs, h as parseFilesToArgs$1, j as parseArgsToFiles$1, k as parseArgsToString$1, l as parseStringToArgs$1, A as AG_ID, m as parseArgsToString$2, n as parseStringToArgs$2, T as TTS_ID, C as COMFYUI_ID, o as parseArgsToString$3, q as parseStringToArgs$3, r as COMFYUI_ZLUDA_ID, s as parseArgsToString$4, t as parseStringToArgs$4, I as INVOKEAI_INSTALL_DIR_KEY, u as INVOKE_ID, v as extractGitUrl, w as INVOKEAI_UPDATE_AVAILABLE_KEY, x as Invoke_Command_ActivateVenv, y as parseArgsToString$5, z as parseStringToArgs$5, K as KOHYA_ID, B as parseArgsToString$6, D as parseStringToArgs$6, E as ONETRAINER_ID, F as A1_ID, G as parseArgsToString$7, H as parseStringToArgs$7, S as SD_AMD_ID, J as parseArgsToString$8, L as parseStringToArgs$8, M as SD_NEXT_ID, N as parseArgsToString$9, P as parseStringToArgs$9, Q as SWARM_ID, R as parseArgsToString$a, U as parseStringToArgs$a, V as BOLT_DIY_ID, W as LoLLMS_ID, X as removeAnsi, Y as parseArgsToString$b, Z as parseStringToArgs$b, _ as SILLYTAVERN_ID, $ as parseArgsToFiles$2, a0 as parseFilesToArgs$2, a1 as TG_ID, a2 as parseArgsToString$c, a3 as parseStringToArgs$c, a4 as SD_FORGE_ID, a5 as SD_FORGE_AMD_ID, a6 as SD_UIUX_ID, a7 as ALLTALK_ID, a8 as FLOWISEAI_ID, a9 as N8N_ID, aa as GeminiCli_ID, ab as CLAUDE_CODE_ID, ac as APPLIO_ID } from './RendererMethods_D5F5lq.mjs';
 import { exec, execSync } from 'node:child_process';
 import path, { join } from 'node:path';
 import require$$0$2 from 'fs';
@@ -15182,7 +15182,7 @@ function requireForm_data () {
 	        request.removeListener('error', callback);
 	        request.removeListener('response', onResponse);
 
-	        return cb.call(this, error, responce); // eslint-disable-line no-invalid-this
+	        return cb.call(this, error, responce);
 	      };
 
 	      onResponse = callback.bind(this, null);
@@ -15206,7 +15206,7 @@ function requireForm_data () {
 	FormData.prototype.toString = function () {
 	  return '[object FormData]';
 	};
-	setToStringTag(FormData, 'FormData');
+	setToStringTag(FormData.prototype, 'FormData');
 
 	// Public API
 	form_data = FormData;
@@ -22048,33 +22048,73 @@ var libExports = requireLib();
 var which = /*@__PURE__*/getDefaultExportFromCjs(libExports);
 
 const LINE_ENDING = isWin ? '\r' : '\n';
-async function initBatchFile(path, data) {
+async function initBatchFile(filePath, data) {
     try {
-        await fs.promises.access(path);
+        await fs.promises.access(filePath);
     }
     catch (error) {
         console.log(error);
-        await fs.promises.writeFile(path, data, { encoding: 'utf-8' });
+        await fs.promises.writeFile(filePath, data, { encoding: 'utf-8' });
+        // Make shell scripts executable on Unix systems
+        if (!isWin && (filePath.endsWith('.sh') || !filePath.includes('.'))) {
+            await fs.promises.chmod(filePath, 0o755);
+        }
+    }
+}
+/**
+ * Ensures a shell script file has proper shebang and is executable on Unix systems.
+ * @param filePath Path to the script file
+ */
+async function ensureScriptExecutable(filePath) {
+    if (isWin)
+        return;
+    try {
+        // Read current content
+        const content = await fs.promises.readFile(filePath, 'utf-8');
+        // Check if shebang is missing for .sh files
+        if (filePath.endsWith('.sh') && !content.startsWith('#!')) {
+            // Prepend shebang if missing
+            await fs.promises.writeFile(filePath, `#!/bin/bash\n${content}`, { encoding: 'utf-8' });
+        }
+        // Make executable
+        await fs.promises.chmod(filePath, 0o755);
+    }
+    catch (error) {
+        console.error(`Error ensuring script executable: ${filePath}`, error);
     }
 }
 async function utilRunCommands(batFileName, dir, defaultData) {
-    if (dir && defaultData)
-        await initBatchFile(path.join(dir, batFileName), defaultData);
-    return `${isWin ? './' : 'bash ./'}${batFileName}${LINE_ENDING}`;
+    if (dir && defaultData) {
+        const filePath = path.join(dir, batFileName);
+        await initBatchFile(filePath, defaultData);
+        // Ensure script is executable on Unix
+        if (!isWin) {
+            await ensureScriptExecutable(filePath);
+        }
+    }
+    return `${isWin ? '.\\' : 'bash ./'}${batFileName}${LINE_ENDING}`;
 }
 async function utilSaveArgs(args, batFileName, parser, cardDir) {
     if (!cardDir)
         return;
     const result = parser(args);
-    const finalDir = path.join(cardDir, batFileName);
-    await fs.promises.writeFile(finalDir, result);
+    const filePath = path.join(cardDir, batFileName);
+    await fs.promises.writeFile(filePath, result);
+    // Ensure script is executable on Unix
+    if (!isWin && batFileName.endsWith('.sh')) {
+        await ensureScriptExecutable(filePath);
+    }
 }
 async function utilReadArgs(batFileName, defaultData, parser, cardDir) {
     if (!cardDir)
         return [];
-    const finalDir = path.join(cardDir, batFileName);
-    await initBatchFile(finalDir, defaultData);
-    const data = await fs.promises.readFile(finalDir, 'utf-8');
+    const filePath = path.join(cardDir, batFileName);
+    await initBatchFile(filePath, defaultData);
+    // Ensure script is executable on Unix
+    if (!isWin && batFileName.endsWith('.sh')) {
+        await ensureScriptExecutable(filePath);
+    }
+    const data = await fs.promises.readFile(filePath, 'utf-8');
     if (!data)
         return [];
     return parser(data);
@@ -22237,7 +22277,11 @@ async function getRunCommands$l(configDir) {
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$7));
     await initBatchFile(filePath, DEFAULT_BATCH_DATA$e);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(filePath);
+    }
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 async function saveArgs$f(args, configDir) {
     if (!configDir)
@@ -22251,6 +22295,10 @@ async function saveArgs$f(args, configDir) {
         finalScript = marker + scriptData;
     }
     await fs.promises.writeFile(scriptPath, finalScript);
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(scriptPath);
+    }
     if (settingsPath && settingsData) {
         try {
             await fs.promises.writeFile(settingsPath, settingsData);
@@ -22265,6 +22313,10 @@ async function readArgs$f(configDir) {
         return [];
     const scriptPath = path.join(configDir, CONFIG_FILE$7);
     await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$e);
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(scriptPath);
+    }
     const scriptDataFull = await fs.promises.readFile(scriptPath, 'utf-8');
     const lines = scriptDataFull.split('\n');
     let settingsPath;
@@ -22418,7 +22470,11 @@ async function getRunCommands$k(configDir) {
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$6));
     await initBatchFile(filePath, DEFAULT_BATCH_DATA$d);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(filePath);
+    }
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 async function saveArgs$e(args, configDir) {
     return await utilSaveArgs(args, CONFIG_FILE$6, parseArgsToString, configDir);
@@ -22464,7 +22520,11 @@ async function getRunCommands$j(configDir) {
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$5));
     await initBatchFile(filePath, DEFAULT_BATCH_DATA$c);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(filePath);
+    }
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 async function saveArgs$d(args, configDir) {
     if (!configDir)
@@ -22473,6 +22533,10 @@ async function saveArgs$d(args, configDir) {
     const scriptPath = path.join(configDir, CONFIG_FILE$5);
     const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
     await fs.promises.writeFile(scriptPath, scriptData);
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(scriptPath);
+    }
     if (settingsPath) {
         try {
             await fs.promises.writeFile(settingsPath, settingsData);
@@ -22487,6 +22551,10 @@ async function readArgs$d(configDir) {
         return [];
     const scriptPath = path.join(configDir, CONFIG_FILE$5);
     await initBatchFile(scriptPath, DEFAULT_BATCH_DATA$c);
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(scriptPath);
+    }
     const scriptData = await fs.promises.readFile(scriptPath, 'utf-8');
     return parseFilesToArgs$1(scriptData);
 }
@@ -22527,7 +22595,11 @@ async function getRunCommands$i(configDir) {
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE$4));
     await initBatchFile(filePath, DEFAULT_BATCH_DATA$b);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(filePath);
+    }
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 async function saveArgs$c(args, configDir) {
     return await utilSaveArgs(args, CONFIG_FILE$4, parseArgsToString$1, configDir);
@@ -25640,7 +25712,11 @@ async function getRunCommands$2(configDir) {
         return '';
     const filePath = path.resolve(path.join(configDir, CONFIG_FILE));
     await initBatchFile(filePath, DEFAULT_BATCH_DATA$2);
-    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash ${filePath}`}${LINE_ENDING}`];
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(filePath);
+    }
+    return [getCdCommand(configDir) + LINE_ENDING, `${isWin ? `& "${filePath}"` : `bash "${filePath}"`}${LINE_ENDING}`];
 }
 async function saveArgs$2(args, configDir) {
     return await utilSaveArgs(args, CONFIG_FILE, parseArgsToString$b, configDir);
@@ -25731,6 +25807,10 @@ async function saveArgs$1(args, dir) {
     const configPath = path.join(dir, CONFIG_FILE_NAME);
     await fs.promises.writeFile(batPath, commands);
     await fs.promises.writeFile(configPath, configs);
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(batPath);
+    }
 }
 async function readArgs$1(dir) {
     if (!dir)
@@ -25738,8 +25818,18 @@ async function readArgs$1(dir) {
     const batPath = path.join(dir, BAT_FILE_NAME$1);
     const configPath = path.join(dir, CONFIG_FILE_NAME);
     await initBatchFile(batPath, DEFAULT_BATCH_DATA$1);
+    // Ensure script is executable on Unix
+    if (!isWin) {
+        await ensureScriptExecutable(batPath);
+    }
     const batData = await fs.promises.readFile(batPath, 'utf-8');
-    const configData = await fs.promises.readFile(configPath, 'utf-8');
+    let configData = '';
+    try {
+        configData = await fs.promises.readFile(configPath, 'utf-8');
+    }
+    catch {
+        // Config file may not exist yet
+    }
     return parseFilesToArgs$2(batData, configData);
 }
 const Silly_MM = utils => {

@@ -33,18 +33,19 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-let isWin = true;
-async function isWinOS() {
+function detectIsWin() {
+    // Renderer process - use preload-exposed platform
     if (typeof window !== 'undefined' && window.osPlatform) {
-        isWin = window.osPlatform === 'win32';
+        return window.osPlatform === 'win32';
     }
-    else if (typeof process !== 'undefined') {
-        const result = await import('os');
-        isWin = result.platform() === 'win32';
+    // Main process - use process.platform directly (synchronous)
+    if (typeof process !== 'undefined' && process.platform) {
+        return process.platform === 'win32';
     }
-    return isWin;
+    // Fallback (shouldn't happen in Electron)
+    return true;
 }
-isWinOS();
+const isWin = detectIsWin();
 function formatSize(size) {
     if (!size)
         return '0KB';
@@ -24369,11 +24370,9 @@ function startInstall$9(stepper) {
         }
     };
     const installReqs = (dir) => {
-        stepper.nextStep().then(() => {
-            stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                stepper.setInstalled(dir);
-                stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.');
-            });
+        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+            stepper.setInstalled(dir);
+            stepper.showFinalStep('success', 'ComfyUI installation complete!', 'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.');
         });
     };
     const getMacCondaInstallCommand = (selectedOption) => {
@@ -24410,45 +24409,58 @@ function startInstall$9(stepper) {
                         ])
                             .then(result => {
                             const selectedOption = result[0].result;
-                            stepper.nextStep().then(() => {
-                                if (selectedOption === 'NONE') {
-                                    installReqs(dir);
-                                }
-                                else if (selectedOption === 'Mac x86 (Conda)' || selectedOption === 'Mac Apple silicon (Conda)') {
-                                    stepper.ipc.invoke('Comfy_isCondaInstalled').then((isInstalled) => {
-                                        if (isInstalled) {
-                                            stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
-                                                installReqs(dir);
+                            if (selectedOption === 'NONE') {
+                                // Skip PyTorch install, go directly to dependencies
+                                stepper.nextStep().then(() => {
+                                    stepper.nextStep().then(() => {
+                                        installReqs(dir);
+                                    });
+                                });
+                            }
+                            else if (selectedOption === 'Mac x86 (Conda)' || selectedOption === 'Mac Apple silicon (Conda)') {
+                                stepper.ipc.invoke('Comfy_isCondaInstalled').then((isInstalled) => {
+                                    if (isInstalled) {
+                                        stepper.nextStep().then(() => {
+                                            stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption), dir).then(() => {
+                                                stepper.nextStep().then(() => {
+                                                    installReqs(dir);
+                                                });
                                             });
-                                        }
-                                        else {
-                                            stepper.initialSteps([
-                                                'ComfyUI',
-                                                'Clone',
-                                                'PyTorch Version',
-                                                'Conda',
-                                                'Install PyTorch',
-                                                'Dependencies',
-                                                'Finish',
-                                            ]);
-                                            stepper.nextStep().then(() => {
-                                                stepper.executeTerminalCommands(getMacCondaInstallCommand(selectedOption)).then(() => {
-                                                    stepper.nextStep().then(() => {
-                                                        stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
+                                        });
+                                    }
+                                    else {
+                                        stepper.initialSteps([
+                                            'ComfyUI',
+                                            'Clone',
+                                            'PyTorch Version',
+                                            'Conda',
+                                            'Install PyTorch',
+                                            'Dependencies',
+                                            'Finish',
+                                        ]);
+                                        stepper.nextStep().then(() => {
+                                            stepper.executeTerminalCommands(getMacCondaInstallCommand(selectedOption), dir).then(() => {
+                                                stepper.nextStep().then(() => {
+                                                    stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption), dir).then(() => {
+                                                        stepper.nextStep().then(() => {
                                                             installReqs(dir);
                                                         });
                                                     });
                                                 });
                                             });
-                                        }
+                                        });
+                                    }
+                                });
+                            }
+                            else {
+                                stepper.nextStep().then(() => {
+                                    stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption), dir).then(() => {
+                                        stepper.nextStep().then(() => {
+                                            installReqs(dir);
+                                        });
                                     });
-                                }
-                                else {
-                                    stepper.executeTerminalCommands(getPyTorchInstallCommand(selectedOption)).then(() => {
-                                        installReqs(dir);
-                                    });
-                                }
-                            });
+                                });
+                            }
                         });
                     });
                 });
@@ -27485,7 +27497,7 @@ const OPEN_WEBUI_RM = {
     manager: { startInstall: startInstall$2, updater: { updateType: 'stepper', startUpdate } },
 };
 
-/*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
+/*! js-yaml 4.1.1 https://github.com/nodeca/js-yaml @license MIT */
 function isNothing(subject) {
   return (typeof subject === 'undefined') || (subject === null);
 }
@@ -28696,6 +28708,22 @@ function charFromCodepoint(c) {
   );
 }
 
+// set a property of a literal object, while protecting against prototype pollution,
+// see https://github.com/nodeca/js-yaml/issues/164 for more details
+function setProperty(object, key, value) {
+  // used for this specific key only because Object.defineProperty is slow
+  if (key === '__proto__') {
+    Object.defineProperty(object, key, {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: value
+    });
+  } else {
+    object[key] = value;
+  }
+}
+
 var simpleEscapeCheck = new Array(256); // integer, for fast access
 var simpleEscapeMap = new Array(256);
 for (var i = 0; i < 256; i++) {
@@ -28874,7 +28902,7 @@ function mergeMappings(state, destination, source, overridableKeys) {
     key = sourceKeys[index];
 
     if (!_hasOwnProperty$1.call(destination, key)) {
-      destination[key] = source[key];
+      setProperty(destination, key, source[key]);
       overridableKeys[key] = true;
     }
   }
@@ -28934,17 +28962,7 @@ function storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valu
       throwError(state, 'duplicated mapping key');
     }
 
-    // used for this specific key only because Object.defineProperty is slow
-    if (keyNode === '__proto__') {
-      Object.defineProperty(_result, keyNode, {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: valueNode
-      });
-    } else {
-      _result[keyNode] = valueNode;
-    }
+    setProperty(_result, keyNode, valueNode);
     delete overridableKeys[keyNode];
   }
 

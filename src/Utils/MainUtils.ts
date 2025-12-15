@@ -12,7 +12,7 @@ import {ChosenArgument, MainModuleUtils} from '../../../src/cross/plugin/ModuleT
 import {OPEN_WEBUI_ID} from '../Constants';
 import {getVenvPythonPath, isWin} from './CrossUtils';
 
-export const LINE_ENDING = isWin ? '\r\n' : '\n';
+export const LINE_ENDING = isWin ? '\r' : '\n';
 
 export async function initBatchFile(filePath: string, data: string) {
   try {

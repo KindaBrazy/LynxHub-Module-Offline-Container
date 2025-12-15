@@ -19,7 +19,7 @@ import {
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'open-webui_config.bat' : 'open-webui_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nopen-webui serve' : '#!/bin/bash\n\nopen-webui serve';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';

@@ -15,7 +15,7 @@ import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';
 
 const PACKAGE_NAME = '@google/gemini-cli';
 const CONFIG_FILE = isWin ? 'geminiCli_config.bat' : 'geminiCli_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\ngemini' : '#!/bin/bash\n\ngemini';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\ngemini' : '#!/bin/bash\n\ngemini';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';

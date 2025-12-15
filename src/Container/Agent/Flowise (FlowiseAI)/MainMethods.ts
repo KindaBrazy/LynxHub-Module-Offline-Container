@@ -20,7 +20,7 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const PACKAGE_NAME = 'flowise';
 const CONFIG_FILE = isWin ? 'flowise_config.bat' : 'flowise_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nnpx flowise start' : '#!/bin/bash\n\nnpx flowise start';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';

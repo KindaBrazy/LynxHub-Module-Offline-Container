@@ -9,7 +9,7 @@ import {checkWhich, ensureScriptExecutable, initBatchFile, LINE_ENDING} from '..
 import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';
 
 const CONFIG_FILE = isWin ? 'claude_config.bat' : 'claude_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nclaude' : '#!/bin/bash\n\nclaude';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nclaude' : '#!/bin/bash\n\nclaude';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';
@@ -35,7 +35,7 @@ async function saveArgs(args: ChosenArgument[], configDir?: string) {
 
   let finalScript = scriptData;
   if (settingsPath) {
-    const marker = isWin ? `REM SETTINGS_FILE="${settingsPath}"\r\n` : `# SETTINGS_FILE="${settingsPath}"\n`;
+    const marker = isWin ? `REM SETTINGS_FILE="${settingsPath}"\n` : `# SETTINGS_FILE="${settingsPath}"\n`;
     finalScript = marker + scriptData;
   }
 

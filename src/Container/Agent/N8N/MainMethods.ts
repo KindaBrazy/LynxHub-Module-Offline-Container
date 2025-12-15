@@ -13,7 +13,7 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const PACKAGE_NAME = 'n8n';
 const CONFIG_FILE = isWin ? 'n8n_config.bat' : 'n8n_config.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\r\n\r\nn8n start' : '#!/bin/bash\n\nn8n start';
+const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\nn8n start' : '#!/bin/bash\n\nn8n start';
 
 async function getRunCommands(configDir?: string): Promise<string | string[]> {
   if (!configDir) return '';

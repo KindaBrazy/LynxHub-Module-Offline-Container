@@ -1,13 +1,25 @@
 {
-  "$schema": "https://raw.githubusercontent.com/KindaBrazy/LynxHub-Statics/refs/heads/schema/plugins/versioning.schema.json",
   "versions": [
+    {
+      "version": "13.1.1",
+      "commit": "be96cab",
+      "engines": {
+        "moduleApi": "^2.0.0"
+      },
+      "stage": "public",
+      "platforms": [
+        "win32",
+        "linux",
+        "darwin"
+      ]
+    },
     {
       "version": "13.1.0",
       "commit": "93a516e",
       "engines": {
         "moduleApi": "^2.0.0"
       },
-      "stage": "early_access",
+      "stage": "public",
       "platforms": [
         "win32",
         "linux",
@@ -20,7 +32,7 @@
       "engines": {
         "moduleApi": "^2.0.0"
       },
-      "stage": "early_access",
+      "stage": "public",
       "platforms": [
         "win32",
         "linux",
@@ -42,6 +54,28 @@
     }
   ],
   "changes": [
+    {
+      "version": "13.1.1",
+      "date": "2025-12-15",
+      "items": [
+        {
+          "⚡ Improvements": [
+            "Ensure shell scripts are executable on Unix systems (Linux,macOS)."
+          ]
+        },
+        {
+          "🪲 Bug Fixes": [
+            "Fixed Unix systems (Linux,macOS) was using wrong shell scripts.",
+            "Fixed shebang missing on Unix systems (Linux,macOS)."
+          ]
+        },
+        {
+          "📌 Minor Changes": [
+            "Fixed ComfyUI steps on macOS."
+          ]
+        }
+      ]
+    },
     {
       "version": "13.1.0",
       "date": "2025-11-25",

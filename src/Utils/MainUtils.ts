@@ -8,7 +8,7 @@ import {existsSync} from 'graceful-fs';
 import treeKill from 'tree-kill';
 import which from 'which';
 
-import {ChosenArgument, MainModuleUtils} from '../../../src/cross/plugin/ModuleTypes';
+import {ChosenArgument, MainModuleUtils} from '../../../src/cross/types/plugins/module';
 import {OPEN_WEBUI_ID} from '../Constants';
 import {getVenvPythonPath, isWin} from './CrossUtils';
 

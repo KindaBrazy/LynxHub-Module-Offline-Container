@@ -1,4 +1,4 @@
-import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
+import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/cross/types/plugins/module';
 import {LoLLMS_ID} from '../../../Constants';
 import {LINE_ENDING} from '../../../Utils/MainUtils';
 

@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import fs from 'graceful-fs';
 
-import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/types/plugins/module';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
 import {checkWhich, ensureScriptExecutable, initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
 import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';

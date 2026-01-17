@@ -1,4 +1,4 @@
-import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/plugin/ModuleTypes';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/types/plugins/module';
 import {COMFYUI_ZLUDA_ID} from '../../../Constants';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';

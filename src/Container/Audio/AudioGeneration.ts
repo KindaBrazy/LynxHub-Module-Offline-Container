@@ -1,4 +1,4 @@
-import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
+import {PagesData} from '../../../../src/cross/types/plugins/module';
 import {AG_ID, ALLTALK_ID, APPLIO_ID, TTS_ID} from '../../Constants';
 import ALLTALK_RM from './AllTalk TTS (erew123)/RendererMethods';
 import APPLIO_RM from './Applio/RendererMethods';

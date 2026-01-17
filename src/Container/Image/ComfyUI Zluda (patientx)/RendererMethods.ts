@@ -8,7 +8,7 @@ import {
   ChosenArgument,
   ExtensionData,
   InstallationStepper,
-} from '../../../../../src/cross/plugin/ModuleTypes';
+} from '../../../../../src/cross/types/plugins/module';
 import {CardInfo, catchAddress, getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
 import comfyZludaArguments from './Arguments';
 

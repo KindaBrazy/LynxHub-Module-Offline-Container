@@ -3,7 +3,7 @@ import {
   CardInfoCallback,
   CardRendererMethods,
   InstallationStepper,
-} from '../../../../../src/cross/plugin/ModuleTypes';
+} from '../../../../../src/cross/types/plugins/module';
 import {CardInfo} from '../../../Utils/RendererUtils';
 
 const REPO_URL = 'https://github.com/stackblitz-labs/bolt.diy';

@@ -7,7 +7,7 @@ import {
   ChosenArgument,
   DataSection,
   InstallationStepper,
-} from '../../../../../src/cross/plugin/ModuleTypes';
+} from '../../../../../src/cross/types/plugins/module';
 import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import claudeCodeArguments from './Arguments';

@@ -1,4 +1,4 @@
-import {CardInfoCallback, CardInfoDescriptions} from '../../../src/cross/plugin/ModuleTypes';
+import {CardInfoCallback, CardInfoDescriptions} from '../../../src/cross/types/plugins/module';
 
 function detectIsWin(): boolean {
   // Renderer process - use preload-exposed platform

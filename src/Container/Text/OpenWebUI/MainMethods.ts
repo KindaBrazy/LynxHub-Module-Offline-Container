@@ -3,7 +3,7 @@ import path from 'node:path';
 import {compare} from 'semver';
 import treeKill from 'tree-kill';
 
-import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/plugin/ModuleTypes';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/types/plugins/module';
 import {OPEN_WEBUI_ID} from '../../../Constants';
 import {getCdCommand, isWin, removeAnsi} from '../../../Utils/CrossUtils';
 import {

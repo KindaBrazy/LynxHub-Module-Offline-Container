@@ -1,7 +1,7 @@
 // noinspection SpellCheckingInspection
 /* eslint max-len: 0 */
 
-import {ArgumentsData} from '../../../../../src/cross/plugin/ModuleTypes';
+import {ArgumentsData} from '../../../../../src/cross/types/plugins/module';
 
 const openArguments: ArgumentsData = [
   {

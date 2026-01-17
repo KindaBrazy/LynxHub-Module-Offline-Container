@@ -3,7 +3,7 @@ import {
   CardInfoCallback,
   CardRendererMethods,
   InstallationStepper,
-} from '../../../../../src/cross/plugin/ModuleTypes';
+} from '../../../../../src/cross/types/plugins/module';
 import {CardInfo, catchAddress, GitInstaller} from '../../../Utils/RendererUtils';
 import {fetchExtensionList, parseArgsToString, parseStringToArgs} from '../SD (AUTOMATIC1111)/SharedRenderer';
 

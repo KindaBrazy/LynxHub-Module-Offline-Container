@@ -1,4 +1,4 @@
-import {PagesData} from '../../../../src/cross/plugin/ModuleTypes';
+import {PagesData} from '../../../../src/cross/types/plugins/module';
 import {
   A1_ID,
   COMFYUI_ID,

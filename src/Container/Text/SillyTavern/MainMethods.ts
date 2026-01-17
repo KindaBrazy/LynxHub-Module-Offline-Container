@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import fs from 'graceful-fs';
 
-import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/plugin/ModuleTypes';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/types/plugins/module';
 import {SILLYTAVERN_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
 import {ensureScriptExecutable, initBatchFile, utilRunCommands} from '../../../Utils/MainUtils';

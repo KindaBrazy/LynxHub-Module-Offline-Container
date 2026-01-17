@@ -1,4 +1,4 @@
-import {CardModules} from '../../src/cross/plugin/ModuleTypes';
+import {CardModules} from '../../src/cross/types/plugins/module';
 import agentsPage from './Container/Agent/Agents';
 import audioPage from './Container/Audio/AudioGeneration';
 import imagePage from './Container/Image/ImageGeneration';

@@ -1,6 +1,6 @@
 import {cloneDeep} from 'lodash';
 
-import {ArgumentItem, ArgumentSection, DataSection} from '../../../../../src/cross/plugin/ModuleTypes';
+import {ArgumentItem, ArgumentSection, DataSection} from '../../../../../src/cross/types/plugins/module';
 import automatic1111Arguments from '../SD (AUTOMATIC1111)/Arguments';
 
 const lshqqytigerArguments = cloneDeep(automatic1111Arguments);

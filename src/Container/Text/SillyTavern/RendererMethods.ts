@@ -8,7 +8,7 @@ import {
   CardRendererMethods,
   ChosenArgument,
   InstallationStepper,
-} from '../../../../../src/cross/plugin/ModuleTypes';
+} from '../../../../../src/cross/types/plugins/module';
 import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, GitInstaller, isValidArg} from '../../../Utils/RendererUtils';
 import sillyArguments from './Arguments';

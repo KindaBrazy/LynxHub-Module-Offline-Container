@@ -22,6 +22,6 @@
   },
   "include": [
     "src/**/*",
-    "../src/cross/plugin/ModuleTypes.ts"
+    "../src/cross/types/plugins/module.ts"
   ]
 }

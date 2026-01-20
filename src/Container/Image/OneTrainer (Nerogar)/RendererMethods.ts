@@ -3,7 +3,7 @@ import {
   CardInfoCallback,
   CardRendererMethods,
   InstallationStepper,
-} from '../../../../../src/cross/types/plugins/module';
+} from '../../../../../src/cross/types/plugins/modules';
 import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo} from '../../../Utils/RendererUtils';
 

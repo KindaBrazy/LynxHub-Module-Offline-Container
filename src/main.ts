@@ -1,4 +1,4 @@
-import {MainModules, MainModuleUtils} from '../../src/cross/types/plugins/module';
+import {MainModules, MainModuleUtils} from '../../src/cross/types/plugins/modules';
 import {
   A1_ID,
   AG_ID,

@@ -5,7 +5,7 @@ import {
   CardInfoApi,
   CardInfoCallback,
   InstallationStepper,
-} from '../../../src/cross/types/plugins/module';
+} from '../../../src/cross/types/plugins/modules';
 import {DescriptionManager, formatSize} from './CrossUtils';
 
 export function isValidArg(name: string, Arguments: ArgumentsData): boolean {

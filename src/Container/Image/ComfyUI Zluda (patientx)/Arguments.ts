@@ -1,4 +1,4 @@
-import {ArgumentsData} from '../../../../../src/cross/types/plugins/module';
+import {ArgumentsData} from '../../../../../src/cross/types/plugins/modules';
 
 const comfyZludaArguments: ArgumentsData = [
   {

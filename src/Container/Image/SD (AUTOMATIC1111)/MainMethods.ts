@@ -1,4 +1,4 @@
-import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/types/plugins/module';
+import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/cross/types/plugins/modules';
 import {A1_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';

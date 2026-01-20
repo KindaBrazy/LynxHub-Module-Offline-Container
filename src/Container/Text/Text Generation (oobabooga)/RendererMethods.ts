@@ -7,7 +7,7 @@ import {
   CardRendererMethods,
   ChosenArgument,
   InstallationStepper,
-} from '../../../../../src/cross/types/plugins/module';
+} from '../../../../../src/cross/types/plugins/modules';
 import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, getArgumentType, GitInstaller, isValidArg, replaceAddress} from '../../../Utils/RendererUtils';
 import oobaboogaArguments from './Arguments';

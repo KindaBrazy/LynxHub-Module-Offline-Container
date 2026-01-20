@@ -6,7 +6,7 @@ import {
   ChosenArgument,
   DataSection,
   InstallationStepper,
-} from '../../../../../src/cross/types/plugins/module';
+} from '../../../../../src/cross/types/plugins/modules';
 import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes, replaceAddress} from '../../../Utils/RendererUtils';
 import openArguments from './Arguments';

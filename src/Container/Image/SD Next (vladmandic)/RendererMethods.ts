@@ -7,7 +7,7 @@ import {
   CardRendererMethods,
   ChosenArgument,
   InstallationStepper,
-} from '../../../../../src/cross/types/plugins/modules';
+} from '../../../../../src/common/types/plugins/modules';
 import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, GitInstaller, isValidArg} from '../../../Utils/RendererUtils';
 import {fetchExtensionList} from '../SD (AUTOMATIC1111)/SharedRenderer';

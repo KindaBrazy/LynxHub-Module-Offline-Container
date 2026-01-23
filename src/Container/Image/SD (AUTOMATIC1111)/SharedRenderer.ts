@@ -6,7 +6,7 @@ import {
   ChosenArgument,
   DataSection,
   ExtensionData,
-} from '../../../../../src/cross/types/plugins/modules';
+} from '../../../../../src/common/types/plugins/modules';
 import {isWin} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import automatic1111Arguments from './Arguments';

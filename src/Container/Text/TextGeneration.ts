@@ -1,4 +1,4 @@
-import {PagesData} from '../../../../src/cross/types/plugins/modules';
+import {PagesData} from '../../../../src/common/types/plugins/modules';
 import {BOLT_DIY_ID, LoLLMS_ID, OPEN_WEBUI_ID, SILLYTAVERN_ID, TG_ID} from '../../Constants';
 import BOLT_DIY_RM from './BoltDiy (StackblitzLabs)/RendererMethods';
 import LoLLM_RM from './LoLLMs (ParisNeo)/RendererMethods';

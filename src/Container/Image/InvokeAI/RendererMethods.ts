@@ -6,7 +6,7 @@ import {
   CardRendererMethods,
   ChosenArgument,
   InstallationStepper,
-} from '../../../../../src/cross/types/plugins/modules';
+} from '../../../../../src/common/types/plugins/modules';
 import {DescriptionManager, getVenvPythonPath, isWin} from '../../../Utils/CrossUtils';
 import {catchAddress} from '../../../Utils/RendererUtils';
 import {

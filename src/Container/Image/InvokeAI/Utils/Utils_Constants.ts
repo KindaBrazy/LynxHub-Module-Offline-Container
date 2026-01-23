@@ -1,4 +1,4 @@
-import {RendererIpcTypes, UserInputField, UserInputResult} from '../../../../../../src/cross/types/plugins/modules';
+import {RendererIpcTypes, UserInputField, UserInputResult} from '../../../../../../src/common/types/plugins/modules';
 import {isWin} from '../../../../Utils/CrossUtils';
 
 export const Invoke_Command_CreateVenv: string =

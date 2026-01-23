@@ -1,4 +1,4 @@
-import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/cross/types/plugins/modules';
+import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {BOLT_DIY_ID} from '../../../Constants';
 import {checkWhich, LINE_ENDING} from '../../../Utils/MainUtils';
 

@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import fs from 'graceful-fs';
 
-import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/types/plugins/modules';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {getCdCommand, isWin} from '../../../Utils/CrossUtils';
 import {ensureScriptExecutable, initBatchFile, LINE_ENDING} from '../../../Utils/MainUtils';
 import {

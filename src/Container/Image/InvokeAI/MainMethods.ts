@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import {compare} from 'semver';
 
-import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/cross/types/plugins/modules';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {INVOKE_ID} from '../../../Constants';
 import {extractGitUrl} from '../../../Utils/CrossUtils';
 import {

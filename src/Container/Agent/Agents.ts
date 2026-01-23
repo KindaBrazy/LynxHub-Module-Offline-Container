@@ -1,4 +1,4 @@
-import {PagesData} from '../../../../src/cross/types/plugins/modules';
+import {PagesData} from '../../../../src/common/types/plugins/modules';
 import {CLAUDE_CODE_ID, FLOWISEAI_ID, GeminiCli_ID, N8N_ID} from '../../Constants';
 import claudeCodeArguments from './Claude Code/Arguments';
 import ClaudeCode_RM from './Claude Code/RendererMethods';

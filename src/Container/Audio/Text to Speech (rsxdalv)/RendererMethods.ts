@@ -3,7 +3,7 @@ import {
   CardInfoCallback,
   CardRendererMethods,
   InstallationStepper,
-} from '../../../../../src/cross/types/plugins/modules';
+} from '../../../../../src/common/types/plugins/modules';
 import {CardInfo, GitInstaller} from '../../../Utils/RendererUtils';
 
 const URL = 'https://github.com/rsxdalv/TTS-WebUI';

@@ -1,4 +1,4 @@
-import {ArgumentsData} from '../../../../../src/cross/types/plugins/modules';
+import {ArgumentsData} from '../../../../../src/common/types/plugins/modules';
 
 const vladmandicArguments: ArgumentsData = [
   {

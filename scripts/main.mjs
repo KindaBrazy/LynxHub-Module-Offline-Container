@@ -25725,7 +25725,7 @@ async function readArgs$2(configDir) {
     return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA$2, parseStringToArgs$b, configDir);
 }
 async function isInstalled(utils) {
-    const result = getPipPackageVersion('open-webui', utils);
+    const result = await getPipPackageVersion('open-webui', utils);
     return !!result;
 }
 async function updateAvailable(utils) {

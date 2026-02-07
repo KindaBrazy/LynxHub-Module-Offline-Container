@@ -8,6 +8,17 @@ const n8nArguments: ArgumentsData = [
     category: 'Environment Variables',
     sections: [
       {
+        section: 'AI Assistant',
+        items: [
+          {
+            name: 'N8N_AI_ASSISTANT_BASE_URL',
+            type: 'Input',
+            description:
+              'Base URL of the AI assistant service, specified as `https://ai-assistant.n8n.io`. Required if you self-host n8n and want to enable the AI Assistant.',
+          },
+        ],
+      },
+      {
         section: 'Nodes',
         items: [
           {
@@ -71,8 +82,9 @@ const n8nArguments: ArgumentsData = [
           {
             name: 'NODES_EXCLUDE',
             type: 'Input',
+            defaultValue: '["n8n-nodes-base.executeCommand", "n8n-nodes-base.localFileTrigger"]',
             description:
-              'Specify which nodes not to load. For example, to block nodes that can be a security risk if users aren\'t trustworthy: NODES_EXCLUDE: "["n8n-nodes-base.executeCommand", "@n8n/n8n-nodes-langchain.lmChatDeepSeek"]"',
+              'Specify which nodes not to load. For example, to block nodes that can be a security risk if users aren\'t trustworthy: NODES_EXCLUDE: "["n8n-nodes-base.executeCommand", "@n8n/n8n-nodes-langchain.lmChatDeepSeek"]". To enable all nodes, specify NODES_EXCLUDE: "[]".',
           },
           {name: 'NODES_INCLUDE', type: 'Input', description: 'Specify which nodes to load.'},
         ],
@@ -101,10 +113,16 @@ const n8nArguments: ArgumentsData = [
             description:
               'Sender email address. You can optionally include the sender name. Example with name: N8N <contact@n8n.com>',
           },
-          {name: 'N8N_SMTP_SSL', type: 'CheckBox', description: 'Whether to use SSL for SMTP (true) or not (false).'},
+          {
+            name: 'N8N_SMTP_SSL',
+            type: 'CheckBox',
+            defaultValue: true,
+            description: 'Whether to use SSL for SMTP (true) or not (false).',
+          },
           {
             name: 'N8N_SMTP_STARTTLS',
             type: 'CheckBox',
+            defaultValue: true,
             description: 'Whether to use STARTTLS for SMTP (true) or not (false).',
           },
           {
@@ -158,8 +176,15 @@ const n8nArguments: ArgumentsData = [
           {
             name: 'N8N_MFA_ENABLED',
             type: 'CheckBox',
+            defaultValue: true,
             description:
               'Whether to enable two-factor authentication (true) or disable (false). n8n ignores this if existing users have 2FA enabled.',
+          },
+          {
+            name: 'N8N_INVITE_LINKS_EMAIL_ONLY',
+            type: 'CheckBox',
+            description:
+              'When set to true, n8n will only deliver invite links via email and will not expose them through the API. This option enhances security by preventing invite URLs from being accessible programmatically, or to high privileged users.',
           },
         ],
       },
@@ -175,7 +200,7 @@ const n8nArguments: ArgumentsData = [
             name: 'N8N_WORKFLOW_ACTIVATION_BATCH_SIZE',
             type: 'Input',
             defaultValue: 1,
-            description: 'How many workflows to activate simultaneously during startup.',
+            description: 'How many workflows to publish simultaneously during startup.',
           },
           {
             name: 'N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION',
@@ -194,6 +219,18 @@ const n8nArguments: ArgumentsData = [
             type: 'Input',
             defaultValue: 'My workflow',
             description: 'The default name used for new workflows.',
+          },
+        ],
+      },
+      {
+        section: 'Workflow History',
+        items: [
+          {
+            name: 'N8N_WORKFLOW_HISTORY_PRUNE_TIME',
+            type: 'Input',
+            defaultValue: -1,
+            description:
+              'How long to keep workflow history versions before automatically deleting them (in hours). Set to `-1` to keep all versions indefinitely.',
           },
         ],
       },
@@ -249,22 +286,29 @@ const n8nArguments: ArgumentsData = [
           {
             name: 'N8N_RUNNERS_TASK_TIMEOUT',
             type: 'Input',
-            defaultValue: 60,
+            defaultValue: 300,
             description:
-              'How long (in seconds) a task can take to complete before the task aborts and the runner restarts. Must be greater than 0.',
+              'The maximum time, in seconds, a task can run before the runner stops it and restarts. This value must be greater than 0.',
           },
           {
             name: 'N8N_RUNNERS_HEARTBEAT_INTERVAL',
             type: 'Input',
             defaultValue: 30,
             description:
-              'How often (in seconds) the runner must send a heartbeat to the broker, else the task aborts and the runner restarts. Must be greater than 0.',
+              "The interval, in seconds, at which the runner must send a heartbeat to the broker. If the runner doesn't send a heartbeat in time, the task stops and the runner restarts. This value must be greater than 0.",
           },
           {
             name: 'N8N_RUNNERS_INSECURE_MODE',
             type: 'CheckBox',
             description:
               'Whether to disable all security measures in the task runner, for compatibility with modules that rely on insecure JS features. **Discouraged for production use.**',
+          },
+          {
+            name: 'N8N_RUNNERS_TASK_REQUEST_TIMEOUT',
+            type: 'Input',
+            defaultValue: 20,
+            description:
+              'How long (in seconds) a task request can wait for a runner to become available before timing out. This prevents workflows from hanging indefinitely when no runners are available. Must be greater than 0.',
           },
           {
             name: 'N8N_RUNNERS_LAUNCHER_LOG_LEVEL',
@@ -304,6 +348,33 @@ const n8nArguments: ArgumentsData = [
             type: 'CheckBox',
             description:
               'Whether to allow prototype mutation for external libraries. Set to `true` to allow modules that rely on runtime prototype mutation (for example, `puppeteer`) at the cost of relaxing security.',
+          },
+          {
+            name: 'N8N_RUNNERS_STDLIB_ALLOW',
+            type: 'Input',
+            description:
+              'Python standard library modules that you can use in the Code node, including their submodules. Use `*` to allow all stdlib modules. n8n disables all Python standard library imports by default.',
+          },
+          {
+            name: 'N8N_RUNNERS_EXTERNAL_ALLOW',
+            type: 'Input',
+            description:
+              'Third-party Python modules that are allowed to be used in the Code node, including their submodules. Use `*` to allow all external modules. n8n disables all third-party Python modules by default. Third-party Python modules must be included in the `n8nio/runners` image.',
+          },
+          {
+            name: 'N8N_RUNNERS_BUILTINS_DENY',
+            type: 'Input',
+            defaultValue:
+              'eval,exec,compile,open,input,breakpoint,getattr,object,type,vars,setattr,delattr,hasattr,dir,memoryview,__build_class__,globals,locals',
+            description:
+              "Python built-ins that you can't use in the Code node. Set to an empty string to allow all built-ins.",
+          },
+          {
+            name: 'N8N_BLOCK_RUNNER_ENV_ACCESS',
+            type: 'CheckBox',
+            defaultValue: true,
+            description:
+              "Whether to block access to the runner's environment from within Python code tasks. Set to `false` to enable all Python code node users access to the runner's environment via `os.environ`. For security reasons, environment variable access is blocked by default.",
           },
           {
             name: 'GENERIC_TIMEZONE',
@@ -382,7 +453,7 @@ const n8nArguments: ArgumentsData = [
             name: 'CODE_ENABLE_STDOUT',
             type: 'CheckBox',
             description:
-              "Set to `true` to send Code node logs to process's stdout for debugging, monitoring, or logging purposes.",
+              "Set to `true` to send Code node logs from `console.log` or `print` to the process's stdout, only for production executions.",
           },
           {
             name: 'NO_COLOR',
@@ -621,7 +692,24 @@ const n8nArguments: ArgumentsData = [
             name: 'N8N_RESTRICT_FILE_ACCESS_TO',
             type: 'Input',
             description:
-              'Limits access to files in these directories. Provide multiple files as a colon-separated list (":").',
+              'Limits access to files in these directories. Provide multiple files as a semicolon-separated list (";").',
+          },
+          {
+            name: 'N8N_CONTENT_SECURITY_POLICY',
+            type: 'Input',
+            description:
+              'Set Content-Security-Policy headers as helmet.js nested directives object. For example, `{ "frame-ancestors": ["http://localhost:3000"] }`',
+          },
+          {
+            name: 'N8N_GIT_NODE_DISABLE_BARE_REPOS',
+            type: 'CheckBox',
+            description:
+              'Set to `true` to prevent the Git node from working with bare repositories, enhancing security.',
+          },
+          {
+            name: 'N8N_GIT_NODE_ENABLE_HOOKS',
+            type: 'CheckBox',
+            description: 'Set to `true` to allow the Git node to execute Git hooks.',
           },
           {
             name: 'N8N_SECURITY_AUDIT_DAYS_ABANDONED_WORKFLOW',
@@ -715,6 +803,7 @@ const n8nArguments: ArgumentsData = [
           {
             name: 'N8N_TEMPLATES_ENABLED',
             type: 'CheckBox',
+            defaultValue: false,
             description: 'Enables workflow templates (true) or disable (false).',
           },
           {
@@ -963,6 +1052,13 @@ const n8nArguments: ArgumentsData = [
             description: 'The maximum execution time (in seconds) that users can set for an individual workflow.',
           },
           {
+            name: 'N8N_AI_TIMEOUT_MAX',
+            type: 'Input',
+            defaultValue: 3600000,
+            description:
+              'Sets the HTTP request timeout in milliseconds for AI and LLM nodes (such as OpenAI, Anthropic, Mistral, and Ollama). This controls how long n8n waits for responses from AI services before timing out. Useful for slower local AI services or complex prompts that require longer processing time.',
+          },
+          {
             name: 'EXECUTIONS_DATA_SAVE_ON_ERROR',
             type: 'DropDown',
             defaultValue: 'all',
@@ -1029,6 +1125,17 @@ const n8nArguments: ArgumentsData = [
             description:
               'Max production executions allowed to run concurrently, in both regular and scaling modes. -1 to disable in regular mode.',
           },
+          {
+            name: 'N8N_WORKFLOW_AUTODEACTIVATION_ENABLED',
+            type: 'CheckBox',
+            description: 'Whether workflows are automatically unpublished after repeated crashed executions.',
+          },
+          {
+            name: 'N8N_WORKFLOW_AUTODEACTIVATION_MAX_LAST_EXECUTIONS',
+            type: 'Input',
+            defaultValue: 3,
+            description: 'Number of crashed executions before unpublishing a workflow.',
+          },
         ],
       },
       {
@@ -1039,6 +1146,12 @@ const n8nArguments: ArgumentsData = [
             name: 'CREDENTIALS_OVERWRITE_ENDPOINT',
             type: 'Input',
             description: 'The API endpoint to fetch credentials.',
+          },
+          {
+            name: 'CREDENTIALS_OVERWRITE_PERSISTENCE',
+            type: 'CheckBox',
+            description:
+              'Enable database persistence for credential overwrites. Required for multiinstance or queue mode to propagate overwrites to workers through a publish/subscribe approach.',
           },
           {
             name: 'CREDENTIALS_DEFAULT_NAME',
@@ -1114,7 +1227,7 @@ const n8nArguments: ArgumentsData = [
             type: 'Input',
             defaultValue: 'default',
             description:
-              'The default binary data mode. `default` keeps binary data in memory. Set to `filesystem` to use the filesystem, or `s3` to AWS S3. Note that binary data pruning operates on the active binary data mode. For example, if your instance stored data in S3, and you later switched to filesystem mode, n8n only prunes binary data in the filesystem. This may change in future.',
+              'The default binary data mode. `default` keeps binary data in memory. Set to `filesystem` to use the filesystem, or `s3` to AWS S3, or `database` to use the DB. Note that binary data pruning operates on the active binary data mode. For example, if your instance stored data in S3, and you later switched to filesystem mode, n8n only prunes binary data in the filesystem. This may change in future.',
           },
         ],
       },
@@ -1230,7 +1343,7 @@ const n8nArguments: ArgumentsData = [
           {
             name: 'N8N_METRICS_INCLUDE_QUEUE_METRICS',
             type: 'CheckBox',
-            description: 'Whether to include metrics for jobs in scaling mode. Not supported in multi-main setup.',
+            description: 'Whether to include metrics for jobs in scaling mode.',
           },
           {
             name: 'N8N_METRICS_QUEUE_METRICS_INTERVAL',

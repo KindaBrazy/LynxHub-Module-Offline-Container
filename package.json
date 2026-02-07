@@ -2,6 +2,9 @@
   "name": "lynxhub_module_offline_container",
   "type": "module",
   "version": "13.1.1",
+  "scripts": {
+    "fetch-commands": "tsx src/Utils/FetchLatestCommands.ts"
+  },
   "dependencies": {
     "js-yaml": "^4.1.1",
     "which": "^6.0.0"

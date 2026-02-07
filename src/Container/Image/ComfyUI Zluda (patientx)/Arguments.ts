@@ -7,10 +7,28 @@ const comfyuizludaArguments: ArgumentsData = [
     category: 'Environment Variables',
     items: [
       {
+        name: 'MIOPEN_FIND_MODE',
+        description: 'MIOpen find mode for AMD GPUs.',
+        type: 'Input',
+        defaultValue: '2',
+      },
+      {
+        name: 'MIOPEN_LOG_LEVEL',
+        description: 'MIOpen log level for AMD GPUs.',
+        type: 'Input',
+        defaultValue: '3',
+      },
+      {
         name: 'PYTHON',
         description: 'Sets a custom path for Python executable.',
         type: 'File',
         defaultValue: '"%~dp0/venv/Scripts/python.exe"',
+      },
+      {
+        name: 'GIT',
+        description: 'Sets a custom path for Git executable. Leave empty to use system Git.',
+        type: 'File',
+        defaultValue: '',
       },
       {
         name: 'VENV_DIR',
@@ -18,6 +36,13 @@ const comfyuizludaArguments: ArgumentsData = [
           'Specifies the path for the virtual environment. Default is venv. Special value - runs the script without creating virtual environment.',
         type: 'Directory',
         defaultValue: './venv',
+      },
+      {
+        name: 'TRITON_OVERRIDE_ARCH',
+        description:
+          'Override GPU architecture for Triton (e.g., gfx1030, gfx1031). Find yours at https://llvm.org/docs/AMDGPUUsage.html#processors',
+        type: 'Input',
+        defaultValue: '',
       },
       {
         name: 'ZLUDA_COMGR_LOG_LEVEL',

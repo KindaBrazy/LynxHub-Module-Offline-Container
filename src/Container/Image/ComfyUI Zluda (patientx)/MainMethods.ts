@@ -30,6 +30,30 @@ export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 
+export async function isInstalled(dir?: string): Promise<boolean> {
+  if (!dir) return false;
+
+  try {
+    // Check if the required batch files exist
+    const comfyuiNBat = path.join(dir, 'comfyui-n.bat');
+    const comfyuiUserBat = path.join(dir, BAT_FILE_NAME);
+
+    const nBatExists = await fs.promises
+      .access(comfyuiNBat)
+      .then(() => true)
+      .catch(() => false);
+    const userBatExists = await fs.promises
+      .access(comfyuiUserBat)
+      .then(() => true)
+      .catch(() => false);
+
+    return nBatExists && userBatExists;
+  } catch (error) {
+    console.error('Error checking ComfyUI Zluda installation:', error);
+    return false;
+  }
+}
+
 async function saveArgs(args: ChosenArgument[], dir?: string) {
   if (!dir) return;
 
@@ -72,10 +96,15 @@ async function saveArgs(args: ChosenArgument[], dir?: string) {
 
   // Read the original comfyui-n.bat to get default values
   const originalFilePath = path.join(dir, 'comfyui-n.bat');
-  let originalDefaults: Record<string, string> = {};
+  const originalDefaults: Record<string, string> = {};
 
   try {
-    if (await fs.promises.access(originalFilePath).then(() => true).catch(() => false)) {
+    if (
+      await fs.promises
+        .access(originalFilePath)
+        .then(() => true)
+        .catch(() => false)
+    ) {
       const originalContent = await fs.promises.readFile(originalFilePath, 'utf-8');
       const originalLines = originalContent.split('\n');
 
@@ -281,6 +310,7 @@ const ComfyZluda_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
+    isInstalled: onInstalledDirExist => isInstalled(installDir),
   };
 };
 

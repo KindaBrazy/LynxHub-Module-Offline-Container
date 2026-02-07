@@ -1,5 +1,3 @@
-import {isEmpty} from 'lodash';
-
 import {
   ArgType,
   CardInfoApi,
@@ -196,6 +194,7 @@ function startInstall(stepper: InstallationStepper) {
         });
       });
     } else if (targetDirectory) {
+      // First try git validation
       stepper.utils.validateGitRepository(targetDirectory, COMFYUI_ZLUDA_URL).then(isValid => {
         if (isValid) {
           stepper.setInstalled(targetDirectory);
@@ -211,11 +210,30 @@ function startInstall(stepper: InstallationStepper) {
             'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.',
           );
         } else {
-          stepper.showFinalStep(
-            'error',
-            'Unable to locate ComfyUI-Zluda!',
-            'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.',
-          );
+          // Fallback to file-based detection if git validation fails
+          stepper.utils.verifyFilesExist(targetDirectory, ['comfyui-n.bat', 'comfyui-user.bat']).then(filesExist => {
+            if (filesExist) {
+              stepper.setInstalled(targetDirectory);
+              stepper.postInstall.config({
+                customArguments: {
+                  presetName: 'Zluda Config',
+                  customArguments,
+                },
+              });
+              stepper.showFinalStep(
+                'success',
+                'ComfyUI-Zluda located successfully!',
+                'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.' +
+                  ' Note: Git repository not detected - updating may not work as expected.',
+              );
+            } else {
+              stepper.showFinalStep(
+                'error',
+                'Unable to locate ComfyUI-Zluda!',
+                'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.',
+              );
+            }
+          });
         }
       });
     }

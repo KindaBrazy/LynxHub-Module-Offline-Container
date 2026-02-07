@@ -1,6 +1,8 @@
 import {ArgumentsData} from '../../../../../src/common/types/plugins/modules';
 
-const comfyZludaArguments: ArgumentsData = [
+/* eslint max-len: 0 */
+
+const comfyuizludaArguments: ArgumentsData = [
   {
     category: 'Environment Variables',
     items: [
@@ -13,8 +15,7 @@ const comfyZludaArguments: ArgumentsData = [
       {
         name: 'VENV_DIR',
         description:
-          'Specifies the path for the virtual environment. Default is venv.' +
-          ' Special value - runs the script without creating virtual environment.',
+          'Specifies the path for the virtual environment. Default is venv. Special value - runs the script without creating virtual environment.',
         type: 'Directory',
         defaultValue: './venv',
       },
@@ -35,9 +36,7 @@ const comfyZludaArguments: ArgumentsData = [
           {
             name: '--listen',
             description:
-              'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
-              ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
-              ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
+              'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
             type: 'Input',
             defaultValue: '127.0.0.1',
           },
@@ -50,21 +49,18 @@ const comfyZludaArguments: ArgumentsData = [
           {
             name: '--tls-keyfile',
             description:
-              'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
-              ' requires --tls-certfile to function',
+              'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://... requires --tls-certfile to function',
             type: 'File',
           },
           {
             name: '--tls-certfile',
             description:
-              'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
-              ' requires --tls-keyfile to function',
+              'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://... requires --tls-keyfile to function',
             type: 'File',
           },
           {
             name: '--enable-cors-header',
-            description:
-              "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
+            description: 'Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default',
             type: 'Input',
           },
           {
@@ -74,15 +70,25 @@ const comfyZludaArguments: ArgumentsData = [
             defaultValue: 100,
           },
           {
-            name: '--enable-compress-response-body',
-            description: 'Enable compressing response body.',
+            name: '--oneapi-device-selector',
+            description: 'Sets the oneAPI device(s) this instance will use.',
+            type: 'Input',
+          },
+          {
+            name: '--supports-fp8-compute',
+            description: 'ComfyUI will act like if the device supports fp8 compute.',
             type: 'CheckBox',
           },
           {
-            name: '--comfy-api-base',
-            description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
-            type: 'Input',
-            defaultValue: 'https://api.comfy.org',
+            name: '--disable-api-nodes',
+            description:
+              'Disable loading all api nodes. Also prevents the frontend from communicating with the internet.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--enable-compress-response-body',
+            description: 'Enable compressing response body.',
+            type: 'CheckBox',
           },
         ],
       },
@@ -172,16 +178,6 @@ const comfyZludaArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--bf16-unet',
-            description: 'Run the diffusion model in bf16.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--fp16-unet',
-            description: 'Run the diffusion model in fp16',
-            type: 'CheckBox',
-          },
-          {
             name: '--fp32-unet',
             description: 'Run the diffusion model in fp32.',
             type: 'CheckBox',
@@ -189,6 +185,16 @@ const comfyZludaArguments: ArgumentsData = [
           {
             name: '--fp64-unet',
             description: 'Run the diffusion model in fp64.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--bf16-unet',
+            description: 'Run the diffusion model in bf16.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--fp16-unet',
+            description: 'Run the diffusion model in fp16',
             type: 'CheckBox',
           },
           {
@@ -267,26 +273,15 @@ const comfyZludaArguments: ArgumentsData = [
             type: 'Input',
           },
           {
-            name: '--oneapi-device-selector',
-            description: 'Sets the oneAPI device(s) this instance will use.',
-            type: 'Input',
-          },
-          {
             name: '--disable-ipex-optimize',
-            description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
-            type: 'CheckBox',
-          },
-          {
-            name: '--supports-fp8-compute',
-            description: 'ComfyUI will act like if the device supports fp8 compute.',
+            description: 'Disables ipex.optimize default when loading models with Intel',
             type: 'CheckBox',
           },
           {
             name: '--preview-method',
             description: 'Default preview method for sampler nodes.',
-            type: 'DropDown',
-            values: ['none', 'auto', 'latent2rgb', 'taesd'],
-            defaultValue: 'none',
+            type: 'Input',
+            defaultValue: 'LatentPreviewMethod.NoPreviews',
           },
           {
             name: '--preview-size',
@@ -309,6 +304,13 @@ const comfyZludaArguments: ArgumentsData = [
             name: '--cache-none',
             description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
             type: 'CheckBox',
+          },
+          {
+            name: '--cache-ram',
+            description:
+              'Use RAM pressure caching with the specified headroom threshold. If available RAM drops below the threhold the cache remove large items to free RAM. Default 4GB',
+            type: 'Input',
+            defaultValue: 0,
           },
           {
             name: '--use-split-cross-attention',
@@ -353,63 +355,13 @@ const comfyZludaArguments: ArgumentsData = [
           {
             name: '--force-non-blocking',
             description:
-              'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve' +
-              ' performance on some non-Nvidia systems but can cause issues with some workflows.',
-            type: 'CheckBox',
-          },
-        ],
-      },
-      {
-        section: 'Memory Management',
-        items: [
-          {
-            name: '--gpu-only',
-            description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
+              'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
             type: 'CheckBox',
           },
           {
-            name: '--highvram',
+            name: '--fast',
             description:
-              'By default models will be unloaded to CPU memory after being used.' +
-              ' This option keeps them in GPU memory.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--normalvram',
-            description: 'Used to force normal vram use if lowvram gets automatically enabled.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--lowvram',
-            description: 'Split the unet in parts to use less vram.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--novram',
-            description: "When lowvram isn't enough.",
-            type: 'CheckBox',
-          },
-          {
-            name: '--cpu',
-            description: 'To use the CPU for everything (slow).',
-            type: 'CheckBox',
-          },
-          {
-            name: '--async-offload',
-            description: 'Use async weight offloading.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--disable-smart-memory',
-            description:
-              'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--reserve-vram',
-            description:
-              'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
-              ' amount is reserved depending on your OS.',
+              'Enable some untested and potentially quality deteriorating optimizations. This is used to test new features so using it might crash your comfyui. --fast with no arguments enables everything. You can pass a list specific optimizations if you only want to enable specific ones. Current valid optimizations: {}',
             type: 'Input',
           },
         ],
@@ -418,19 +370,33 @@ const comfyZludaArguments: ArgumentsData = [
         section: 'Miscellaneous',
         items: [
           {
+            name: '--enable-manager',
+            description: 'Enable the ComfyUI-Manager feature.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--disable-manager-ui',
+            description:
+              'Disables only the ComfyUI-Manager UI and endpoints. Scheduled installations and similar background tasks will still operate.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--enable-manager-legacy-ui',
+            description: 'Enables the legacy UI of ComfyUI-Manager',
+            type: 'CheckBox',
+          },
+          {
             name: '--default-hashing-function',
             description:
-              'Allows you to choose the hash function to use for duplicate filename /' +
-              ' contents comparison. Default is sha256.',
+              'Allows you to choose the hash function to use for duplicate filename / contents comparison. Default is sha256.',
             type: 'DropDown',
-            values: ['md5', 'sha1', 'sha256', 'sha512'],
             defaultValue: 'sha256',
+            values: ['md5', 'sha1', 'sha256', 'sha512'],
           },
           {
             name: '--deterministic',
             description:
-              'Make pytorch use slower deterministic algorithms when it can. Note that this' +
-              ' might not make images deterministic in all cases.',
+              'Make pytorch use slower deterministic algorithms when it can. Note that this might not make images deterministic in all cases.',
             type: 'CheckBox',
           },
           {
@@ -440,12 +406,12 @@ const comfyZludaArguments: ArgumentsData = [
           },
           {
             name: '--disable-mmap',
-            description: "Don't use mmap when loading safetensors.",
+            description: 'Don',
             type: 'CheckBox',
           },
           {
             name: '--dont-print-server',
-            description: "Don't print server output.",
+            description: 'Don',
             type: 'CheckBox',
           },
           {
@@ -456,8 +422,7 @@ const comfyZludaArguments: ArgumentsData = [
           {
             name: '--windows-standalone-build',
             description:
-              'Windows standalone build: Enable convenient things that most people using the' +
-              ' standalone windows build will probably enjoy (like auto opening the page on startup).',
+              'Windows standalone build: Enable convenient things that most people using the standalone windows build will probably enjoy (like auto opening the page on startup).',
             type: 'CheckBox',
           },
           {
@@ -474,11 +439,7 @@ const comfyZludaArguments: ArgumentsData = [
             name: '--whitelist-custom-nodes',
             description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
             type: 'Input',
-          },
-          {
-            name: '--disable-api-nodes',
-            description: 'Disable loading all api nodes.',
-            type: 'CheckBox',
+            defaultValue: '[]',
           },
           {
             name: '--multi-user',
@@ -489,8 +450,8 @@ const comfyZludaArguments: ArgumentsData = [
             name: '--verbose',
             description: 'Set the logging level',
             type: 'DropDown',
-            values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
             defaultValue: 'INFO',
+            values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
           },
           {
             name: '--log-stdout',
@@ -498,32 +459,79 @@ const comfyZludaArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--front-end-version',
+            name: '--disable-assets-autoscan',
+            description: 'Disable asset scanning on startup for database synchronization.',
+            type: 'CheckBox',
+          },
+        ],
+      },
+      {
+        section: 'Memory Management',
+        items: [
+          {
+            name: '--gpu-only',
+            description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
+            type: 'CheckBox',
+          },
+          {
+            name: '--highvram',
             description:
-              'Specifies the version of the frontend to be used. This command needs internet' +
-              ' connectivity to query and download available frontend implementations from' +
-              ' GitHub releases. The version string should be in the format of: [repoOwner]/[repoName]@[version]',
+              'By default models will be unloaded to CPU memory after being used. This option keeps them in GPU memory.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--normalvram',
+            description: 'Used to force normal vram use if lowvram gets automatically enabled.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--lowvram',
+            description: 'Split the unet in parts to use less vram.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--novram',
+            description: 'When lowvram isn',
+            type: 'CheckBox',
+          },
+          {
+            name: '--cpu',
+            description: 'To use the CPU for everything (slow).',
+            type: 'CheckBox',
+          },
+          {
+            name: '--reserve-vram',
+            description:
+              'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some amount is reserved depending on your OS.',
             type: 'Input',
-            defaultValue: 'comfyanonymous/ComfyUI@latest',
           },
           {
-            name: '--front-end-root',
+            name: '--async-offload',
             description:
-              'The local filesystem path to the directory where the frontend is' +
-              ' located. Overrides --front-end-version.',
-            type: 'Directory',
+              'Use async weight offloading. An optional argument controls the amount of offload streams. Default is 2. Enabled by default on Nvidia.',
+            type: 'Input',
           },
           {
-            name: '--fast',
+            name: '--disable-async-offload',
+            description: 'Disable async weight offloading.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--disable-smart-memory',
             description:
-              'Enable some untested and potentially quality deteriorating optimizations.' +
-              ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
+              'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--disable-pinned-memory',
+            description: 'Disable pinned memory use.',
             type: 'CheckBox',
           },
           {
             name: '--database-url',
-            description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
+            description: 'Specify the database URL, e.g. for an in-memory database you can use',
             type: 'Input',
+            defaultValue: 'f"sqlite:///{database_default_path}',
           },
         ],
       },
@@ -531,4 +539,4 @@ const comfyZludaArguments: ArgumentsData = [
   },
 ];
 
-export default comfyZludaArguments;
+export default comfyuizludaArguments;

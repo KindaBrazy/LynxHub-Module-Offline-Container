@@ -146,10 +146,26 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
 
 const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
 const customArguments = [
-  {name: 'PYTHON', value: '"%~dp0/venv/Scripts/python.exe"'},
+  {name: 'PYTHON', value: '%~dp0venv\\Scripts\\python.exe'},
   {name: 'VENV_DIR', value: './venv'},
   {
+    name: '--disable-auto-launch',
+    value: '',
+  },
+  {
     name: '--use-quad-cross-attention',
+    value: '',
+  },
+  {
+    name: '--reserve-vram',
+    value: '0.9',
+  },
+  {
+    name: '--disable-async-offload',
+    value: '',
+  },
+  {
+    name: '--disable-pinned-memory',
     value: '',
   },
 ];
@@ -162,7 +178,7 @@ function startInstall(stepper: InstallationStepper) {
       stepper.nextStep().then(() => {
         stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
           stepper.nextStep().then(() => {
-            stepper.runTerminalScript(dir, 'install.bat').then(() => {
+            stepper.runTerminalScript(dir, 'install-n.bat').then(() => {
               stepper.setInstalled(dir);
               stepper.postInstall.config({
                 customArguments: {

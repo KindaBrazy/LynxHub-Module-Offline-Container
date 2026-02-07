@@ -98,8 +98,8 @@ function startInstall(stepper: InstallationStepper) {
     'NVIDIA CU130 Nightly',
     'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)',
     'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)',
-    'RDNA 4 (RX 9000 series)',
-    'AMD GPUs (Linux only) ROCm 6.2',
+    'AMD GPUs (Windows and Linux) RDNA 4 (RX 9000 series)',
+    'AMD GPUs (Linux only) ROCm 6.4',
     'AMD GPUs (Linux only) ROCm 7.1 Nightly',
     'Mac Apple silicon',
     'Mac Apple silicon (Conda)',
@@ -120,7 +120,7 @@ function startInstall(stepper: InstallationStepper) {
       case 'Mac x86 (Conda)':
         return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
 
-      case 'AMD GPUs (Linux only) ROCm 6.2':
+      case 'AMD GPUs (Linux only) ROCm 6.4':
         return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
       case 'AMD GPUs (Linux only) ROCm 7.1 Nightly':
         return (
@@ -131,13 +131,13 @@ function startInstall(stepper: InstallationStepper) {
       case 'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)':
         return (
           'pip install --pre torch torchvision torchaudio --index-url ' +
-          'https://rocm.nightlies.amd.com/v2/gfx110X-dgpu/'
+          'https://rocm.nightlies.amd.com/v2/gfx110X-all/'
         );
       case 'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)':
         return (
           'pip install --pre torch torchvision torchaudio --index-url ' + 'https://rocm.nightlies.amd.com/v2/gfx1151/'
         );
-      case 'RDNA 4 (RX 9000 series)':
+      case 'AMD GPUs (Windows and Linux) RDNA 4 (RX 9000 series)':
         return (
           'pip install --pre torch torchvision torchaudio --index-url ' +
           'https://rocm.nightlies.amd.com/v2/gfx120X-all/'

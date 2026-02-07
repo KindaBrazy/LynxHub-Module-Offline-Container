@@ -262,6 +262,7 @@ function startInstall(stepper: InstallationStepper) {
         });
       });
     } else if (targetDirectory) {
+      // First try git validation
       stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {
         if (isValid) {
           stepper.setInstalled(targetDirectory);
@@ -271,11 +272,24 @@ function startInstall(stepper: InstallationStepper) {
             'Pre-installed ComfyUI detected. Installation skipped as your existing setup is ready to use.',
           );
         } else {
-          stepper.showFinalStep(
-            'error',
-            'Unable to locate ComfyUI!',
-            'Please ensure you have selected the correct folder containing the ComfyUI repository.',
-          );
+          // Fallback to file-based detection if git validation fails
+          stepper.utils.verifyFilesExist(targetDirectory, ['comfy', 'main.py']).then(filesExist => {
+            if (filesExist) {
+              stepper.setInstalled(targetDirectory);
+              stepper.showFinalStep(
+                'success',
+                'ComfyUI located successfully!',
+                'Pre-installed ComfyUI detected. Installation skipped as your existing setup is ready to use.' +
+                  ' Note: Git repository not detected - updating may not work as expected.',
+              );
+            } else {
+              stepper.showFinalStep(
+                'error',
+                'Unable to locate ComfyUI!',
+                'Please ensure you have selected the correct folder containing the ComfyUI installation ',
+              );
+            }
+          });
         }
       });
     }

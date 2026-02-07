@@ -39,6 +39,11 @@ const flowiseArguments: ArgumentsData = [
             type: 'Input',
             defaultValue: '50mb',
           },
+          {
+            name: '--NUMBER_OF_PROXIES',
+            description: 'Rate Limit Proxy',
+            type: 'Input',
+          },
         ],
       },
       {
@@ -70,24 +75,7 @@ const flowiseArguments: ArgumentsData = [
           },
         ],
       },
-      {
-        section: 'API Keys',
-        items: [
-          {
-            name: '--APIKEY_STORAGE_TYPE',
-            description: 'To store api keys on a JSON file or database. Default is `json`',
-            type: 'DropDown',
-            values: ['json', 'db'],
-            defaultValue: 'json',
-          },
-          {
-            name: '--APIKEY_PATH',
-            description: 'Location where api keys are saved when `APIKEY_STORAGE_TYPE` is `json`',
-            type: 'Input',
-            defaultValue: 'your-path/Flowise/packages/server',
-          },
-        ],
-      },
+
       {
         section: 'Tool Function Dependencies',
         items: [
@@ -100,6 +88,11 @@ const flowiseArguments: ArgumentsData = [
             name: '--TOOL_FUNCTION_EXTERNAL_DEP',
             description: 'External modules to be used for Tool Function',
             type: 'Input',
+          },
+          {
+            name: '--ALLOW_BUILTIN_DEP',
+            description: 'Allow project dependencies to be used such as cheerio, typeorm',
+            type: 'CheckBox',
           },
         ],
       },
@@ -192,17 +185,61 @@ const flowiseArguments: ArgumentsData = [
     category: 'Encryption',
     sections: [
       {
-        section: 'Encryption Key',
+        section: 'Encryption Key Storage',
         items: [
           {
+            name: '--SECRETKEY_STORAGE_TYPE',
+            description: 'How to store the encryption key',
+            type: 'DropDown',
+            values: ['local', 'aws'],
+            defaultValue: 'local',
+          },
+          {
             name: '--SECRETKEY_PATH',
-            description: 'Location where encryption key (used to encrypt/decrypt credentials) is saved',
+            description: 'Local file path where encryption key is saved',
             type: 'Input',
-            defaultValue: 'your-path/Flowise/packages/server',
+            defaultValue: 'Flowise/packages/server',
           },
           {
             name: '--FLOWISE_SECRETKEY_OVERWRITE',
-            description: 'Encryption key to be used instead of the key stored in SECRETKEY_PATH',
+            description: 'Encryption key to be used instead of the existing key',
+            type: 'Input',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'Encryption',
+    sections: [
+      {
+        section: 'Encryption Key Storage',
+        items: [
+          {
+            name: '--SECRETKEY_STORAGE_TYPE',
+            description: 'How to store the encryption key',
+            type: 'DropDown',
+            values: ['local', 'aws'],
+            defaultValue: 'local',
+          },
+          {
+            name: '--SECRETKEY_AWS_ACCESS_KEY',
+            description: 'AWS Access Key for Secret Manager',
+            type: 'Input',
+          },
+          {
+            name: '--SECRETKEY_AWS_SECRET_KEY',
+            description: 'AWS Secret Key for Secret Manager',
+            type: 'Input',
+          },
+          {
+            name: '--SECRETKEY_AWS_REGION',
+            description: 'AWS Region for Secret Manager',
+            type: 'Input',
+          },
+          {
+            name: '--FLOWISE_SECRETKEY_OVERWRITE',
+            description: 'Encryption key to be used instead of the existing key',
             type: 'Input',
           },
         ],
@@ -345,6 +382,34 @@ const flowiseArguments: ArgumentsData = [
             name: '--DISABLED_NODES',
             description: 'Hide nodes from UI (comma separated list of node names)',
             type: 'Input',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    category: 'Security',
+    sections: [
+      {
+        section: 'Security Configuration',
+        items: [
+          {
+            name: '--HTTP_DENY_LIST',
+            description: 'Blocks HTTP requests to specified URLs or domains in MCP servers (comma-separated)',
+            type: 'Input',
+          },
+          {
+            name: '--CUSTOM_MCP_SECURITY_CHECK',
+            description: 'Enables comprehensive security validation for Custom MCP configurations',
+            type: 'CheckBox',
+            defaultValue: true,
+          },
+          {
+            name: '--CUSTOM_MCP_PROTOCOL',
+            description: 'Sets the default protocol for Custom MCP communications',
+            type: 'DropDown',
+            values: ['stdio', 'sse'],
+            defaultValue: 'stdio',
           },
         ],
       },

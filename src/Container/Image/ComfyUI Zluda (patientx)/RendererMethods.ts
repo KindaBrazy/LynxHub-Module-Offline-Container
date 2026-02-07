@@ -15,29 +15,69 @@ import comfyZludaArguments from './Arguments';
 const URL = 'https://github.com/patientx/ComfyUI-Zluda';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
-  let result: string = '@echo off' + '\n\n';
-  let argResult: string = '';
+  let result = '';
+  let commandLineArgs = '';
+  const envVars: Record<string, string> = {};
 
+  // Separate environment variables from command line arguments
   args.forEach(arg => {
-    if (arg.name === 'PYTHON' || arg.name === 'VENV_DIR' || arg.name === 'ZLUDA_COMGR_LOG_LEVEL') {
-      result += `set ${arg.name}=${arg.value}` + `\n`;
+    if (
+      arg.name === 'PYTHON' ||
+      arg.name === 'GIT' ||
+      arg.name === 'VENV_DIR' ||
+      arg.name === 'MIOPEN_FIND_MODE' ||
+      arg.name === 'MIOPEN_LOG_LEVEL' ||
+      arg.name === 'ZLUDA_COMGR_LOG_LEVEL' ||
+      arg.name === 'TRITON_OVERRIDE_ARCH'
+    ) {
+      envVars[arg.name] = arg.value;
       return;
     }
+
+    // Build command line arguments
     const argType = getArgumentType(arg.name, comfyZludaArguments);
     if (argType === 'CheckBox') {
-      argResult += `${arg.name} `;
+      commandLineArgs += `${arg.name} `;
     } else if (argType === 'File' || argType === 'Directory') {
-      argResult += `${arg.name} "${arg.value}" `;
+      commandLineArgs += `${arg.name} "${arg.value}" `;
     } else {
-      argResult += `${arg.name} ${arg.value} `;
+      commandLineArgs += `${arg.name} ${arg.value} `;
     }
   });
 
-  result += '\n' + '.\\zluda\\zluda.exe -- ';
+  // Add environment variables in proper order
+  if (envVars.MIOPEN_FIND_MODE !== undefined) {
+    result += `set "MIOPEN_FIND_MODE=${envVars.MIOPEN_FIND_MODE}"\n`;
+  }
+  if (envVars.MIOPEN_LOG_LEVEL !== undefined) {
+    result += `set "MIOPEN_LOG_LEVEL=${envVars.MIOPEN_LOG_LEVEL}"\n`;
+  }
+  if (Object.keys(envVars).some(k => k === 'MIOPEN_FIND_MODE' || k === 'MIOPEN_LOG_LEVEL')) {
+    result += '\n';
+  }
 
-  result += isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
+  if (envVars.PYTHON !== undefined) {
+    result += `set "PYTHON=${envVars.PYTHON}"\n`;
+  }
+  if (envVars.GIT !== undefined) {
+    result += `set "GIT=${envVars.GIT}"\n`;
+  }
+  if (envVars.VENV_DIR !== undefined) {
+    result += `set "VENV_DIR=${envVars.VENV_DIR}"\n`;
+  }
+  if (Object.keys(envVars).some(k => k === 'PYTHON' || k === 'GIT' || k === 'VENV_DIR')) {
+    result += '\n';
+  }
 
-  result += '\n\n' + 'pause';
+  result += `set "COMMANDLINE_ARGS=${commandLineArgs.trim()}"\n\n`;
+
+  if (envVars.TRITON_OVERRIDE_ARCH !== undefined) {
+    result += `set "TRITON_OVERRIDE_ARCH=${envVars.TRITON_OVERRIDE_ARCH}"\n\n`;
+  }
+
+  if (envVars.ZLUDA_COMGR_LOG_LEVEL !== undefined) {
+    result += `set "ZLUDA_COMGR_LOG_LEVEL=${envVars.ZLUDA_COMGR_LOG_LEVEL}"\n\n`;
+  }
 
   return result;
 }

@@ -202,7 +202,8 @@ const invokeArguments: ArgumentsData = [
             name: 'max_cache_vram_gb',
             description:
               'The amount of VRAM to use for model caching in GB. If unset, the limit' +
-              ' will be configured based on the available VRAM and device_working_mem_gb. It is recommended to leave this unset.',
+              ' will be configured based on the available VRAM and device_working_mem_gb.' +
+              ' It is recommended to leave this unset.',
             type: 'Input',
           },
           {
@@ -220,6 +221,15 @@ const invokeArguments: ArgumentsData = [
               ' memory snapshots, so it is recommended to only enable this feature if you are actively' +
               " inspecting the model cache's behaviour.",
             type: 'CheckBox',
+          },
+          {
+            name: 'model_cache_keep_alive_min',
+            description:
+              'How long to keep models in cache after last use, in minutes. A value of 0 (the default)' +
+              ' means models are kept in cache indefinitely. If no model generations occur within the timeout' +
+              ' period, the model cache is cleared using the same logic as the "Clear Model Cache" button.',
+            type: 'Input',
+            defaultValue: '0',
           },
           {
             name: 'enable_partial_loading',
@@ -368,7 +378,8 @@ const invokeArguments: ArgumentsData = [
           {
             name: 'scan_models_on_startup',
             description:
-              'Scan models directory on startup to register orphaned models. Typically only used with use_memory_db for testing.',
+              'Scan models directory on startup to register orphaned models. Typically only used with' +
+              ' use_memory_db for testing.',
             type: 'CheckBox',
           },
           {
@@ -376,6 +387,14 @@ const invokeArguments: ArgumentsData = [
             description:
               'UNSAFE. Disable the picklescan security check during model installation.' +
               ' Recommended only for development and testing purposes.',
+            type: 'CheckBox',
+          },
+          {
+            name: 'allow_unknown_models',
+            description:
+              'Allow installation of models that cannot be identified. If enabled, models will be marked as' +
+              ' unknown in the database with no metadata. If disabled, unknown models' +
+              ' will be rejected during installation.',
             type: 'CheckBox',
           },
         ],

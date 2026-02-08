@@ -1,3 +1,5 @@
+import {platform} from 'node:os';
+
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {TG_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
@@ -7,7 +9,9 @@ import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA: string = isWin
   ? '@echo off\n\ncall start_windows.bat'
-  : '#!/bin/bash\n\nbash ./start_linux.sh';
+  : platform() === 'darwin'
+    ? '#!/bin/bash\n\nbash ./start_macos.sh'
+    : '#!/bin/bash\n\nbash ./start_linux.sh';
 
 async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);

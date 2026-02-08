@@ -13,7 +13,11 @@ import {CardInfo, getArgumentType, GitInstaller, isValidArg, replaceAddress} fro
 import oobaboogaArguments from './Arguments';
 import {fetchExtensionList} from './ExtensionsList';
 
-const shellCommand = isWin ? 'call start_windows.bat' : 'bash ./start_linux.sh';
+const shellCommand = isWin
+  ? 'call start_windows.bat'
+  : window.osPlatform === 'darwin'
+    ? 'bash ./start_macos.sh'
+    : 'bash ./start_linux.sh';
 const URL = 'https://github.com/oobabooga/text-generation-webui';
 
 export function parseArgsToString(args: ChosenArgument[]): string {

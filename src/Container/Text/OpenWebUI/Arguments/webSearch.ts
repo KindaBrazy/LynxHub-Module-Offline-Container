@@ -178,6 +178,12 @@ const webSearch: DataItem | DataSection = {
       type: 'Input',
     },
     {
+      name: 'JINA_API_BASE_URL',
+      description: 'Sets the Base URL for Jina Search API. Useful for specifying custom or regional endpoints (e.g., `https://eu-s-beta.jina.ai/`).',
+      type: 'Input',
+      defaultValue: 'https://s.jina.ai/',
+    },
+    {
       name: 'BING_SEARCH_V7_ENDPOINT',
       description: 'Sets the endpoint for Bing Search API.',
       type: 'Input',

@@ -93,8 +93,9 @@ const audio: DataSection = {
         },
         {
           name: 'AUDIO_STT_MISTRAL_API_BASE_URL',
-          description: 'Sets the Mistral API base URL to use for Speech-to-Text.',
+          description: 'Specifies the Mistral API base URL to use for Speech-to-Text.',
           type: 'Input',
+          defaultValue: 'https://api.mistral.ai/v1',
         },
         {
           name: 'AUDIO_STT_MISTRAL_USE_CHAT_COMPLETIONS',
@@ -129,8 +130,9 @@ const audio: DataSection = {
         },
         {
           name: 'AUDIO_STT_AZURE_MAX_SPEAKERS',
-          description: 'Sets the maximum number of speakers for Azure Speech-to-Text speaker diarization.',
+          description: 'Sets the maximum number of speakers for Azure Speech-to-Text diarization.',
           type: 'Input',
+          defaultValue: 3,
         },
         {
           name: 'AUDIO_STT_AZURE_LOCALES',
@@ -195,6 +197,7 @@ const audio: DataSection = {
           name: 'AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT',
           description: 'Sets the output format for Azure Text to Speech.',
           type: 'Input',
+          defaultValue: 'audio-24khz-160kbitrate-mono-mp3',
         },
         {
           name: 'AUDIO_TTS_AZURE_SPEECH_BASE_URL',
@@ -230,8 +233,9 @@ const audio: DataSection = {
       items: [
         {
           name: 'ELEVENLABS_API_BASE_URL',
-          description: 'Sets the base URL for Elevenlabs API. Allows using custom or self-hosted Elevenlabs-compatible endpoints.',
+          description: 'Configures custom ElevenLabs API endpoints, enabling support for EU residency API requirements and other regional deployments.',
           type: 'Input',
+          defaultValue: 'https://api.elevenlabs.io',
         },
       ],
     },

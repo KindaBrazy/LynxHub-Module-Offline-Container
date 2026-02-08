@@ -174,11 +174,13 @@ const imageGeneration: DataSection = {
           name: 'IMAGES_GEMINI_API_BASE_URL',
           description: "Specifies the URL to Gemini's image generation API.",
           type: 'Input',
+          defaultValue: '${GEMINI_API_BASE_URL}',
         },
         {
           name: 'IMAGES_GEMINI_API_KEY',
           description: 'Sets the Gemini API key for image generation.',
           type: 'Input',
+          defaultValue: '${GEMINI_API_KEY}',
         },
         {
           name: 'IMAGES_GEMINI_ENDPOINT_METHOD',
@@ -191,11 +193,13 @@ const imageGeneration: DataSection = {
           name: 'IMAGES_EDIT_GEMINI_API_BASE_URL',
           description: 'Configures the Gemini API base URL for image editing operations with Gemini models.',
           type: 'Input',
+          defaultValue: '${GEMINI_API_BASE_URL}',
         },
         {
           name: 'IMAGES_EDIT_GEMINI_API_KEY',
           description: 'Provides authentication for Gemini image editing API requests.',
           type: 'Input',
+          defaultValue: '${GEMINI_API_KEY}',
         },
       ],
     },
@@ -216,6 +220,7 @@ const imageGeneration: DataSection = {
           name: 'IMAGES_OPENAI_API_BASE_URL',
           description: 'Sets the OpenAI-compatible base URL to use for DALL-E image generation.',
           type: 'Input',
+          defaultValue: '${OPENAI_API_BASE_URL}',
         },
         {
           name: 'IMAGES_OPENAI_API_VERSION',
@@ -227,6 +232,7 @@ const imageGeneration: DataSection = {
           name: 'IMAGES_OPENAI_API_KEY',
           description: 'Sets the API key to use for DALL-E image generation.',
           type: 'Input',
+          defaultValue: '${OPENAI_API_KEY}',
         },
         {
           name: 'IMAGES_OPENAI_API_PARAMS',
@@ -239,6 +245,7 @@ const imageGeneration: DataSection = {
           description:
             'Configures the OpenAI API base URL specifically for image editing operations, allowing separate endpoints from image generation.',
           type: 'Input',
+          defaultValue: '${OPENAI_API_BASE_URL}',
         },
         {
           name: 'IMAGES_EDIT_OPENAI_API_VERSION',
@@ -251,6 +258,7 @@ const imageGeneration: DataSection = {
           description:
             'Provides authentication for OpenAI image editing API requests, with support for separate keys from image generation.',
           type: 'Input',
+          defaultValue: '${OPENAI_API_KEY}',
         },
       ],
     },

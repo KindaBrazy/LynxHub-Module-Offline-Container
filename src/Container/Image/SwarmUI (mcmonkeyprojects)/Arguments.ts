@@ -115,6 +115,20 @@ const mcMonkeyArguments: ArgumentsData = [
         defaultValue: 'none',
       },
       {
+        name: '--require_control_within',
+        description:
+          'If specified, give a number of minutes within which a remote API server must send a ' +
+          '`AdminTakeControl` API request, or presume the launch is bad. This is useful for auto-managed instances.',
+        type: 'Input',
+      },
+      {
+        name: '--no_persist',
+        description:
+          'If enabled, tells most systems in Swarm to avoid saving data (eg session handler will not save session data). ' +
+          'Useful for instances with overlapping data storage especially.',
+        type: 'CheckBox',
+      },
+      {
         name: '--help',
         description: 'Displays an in-CLI shortlist of CLI args and some usage hints.',
         type: 'CheckBox',

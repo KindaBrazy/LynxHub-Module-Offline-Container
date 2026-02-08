@@ -108,19 +108,17 @@ function startInstall(stepper: InstallationStepper) {
         });
       });
     } else {
-      stepper.ipc.invoke('validate_install_dir', targetDirectory).then(isValid => {
-        if (isValid) {
+      stepper.ipc.invoke('validate_install_dir', targetDirectory).then((isValid: boolean | string) => {
+        if (isValid === true) {
           stepper.setInstalled(targetDirectory);
           const currentDate = new Date();
           stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
           stepper.storage.set(INVOKEAI_INSTALL_DIR_KEY, targetDirectory);
           stepper.showFinalStep('success', 'InvokeAI Environment Found.', 'Location validated successfully.');
         } else {
-          stepper.showFinalStep(
-            'error',
-            'Invalid Environment!',
-            'Could not find InvokeAI installation in the selected directory.',
-          );
+          const description: string =
+            typeof isValid === 'string' ? isValid : 'Could not find InvokeAI installation in the selected directory.';
+          stepper.showFinalStep('error', 'Invalid Environment!', description);
         }
       });
     }

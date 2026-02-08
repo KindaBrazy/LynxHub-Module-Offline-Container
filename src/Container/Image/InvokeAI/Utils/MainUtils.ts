@@ -1,5 +1,5 @@
 import {execSync} from 'node:child_process';
-import path from 'node:path';
+import path, {resolve} from 'node:path';
 
 import axios, {AxiosResponse} from 'axios';
 
@@ -31,12 +31,13 @@ export async function invokeGetLatestReleases(owner: string, repo: string): Prom
   }
 }
 
-export function invokeValidateInstallation(dir: string): boolean {
-  const pythonPath = getVenvPythonPath(dir);
+export function invokeValidateInstallation(dir: string): boolean | string {
+  const venvPath = resolve(`${dir}/.venv`);
+  const pythonPath = getVenvPythonPath(venvPath);
 
   if (!pythonPath) {
-    console.error(`Could not find Python executable for directory: ${dir}`);
-    return false;
+    console.error(`Could not find Python executable for directory: ${venvPath}`);
+    return `Could not find Python executable for directory: ${venvPath}`;
   }
 
   try {
@@ -48,7 +49,7 @@ export function invokeValidateInstallation(dir: string): boolean {
     return true;
   } catch (err: any) {
     console.warn(`Validation failed: 'invokeai' package not found or error executing Python at ${pythonPath}.`, err);
-    return false;
+    return err.message;
   }
 }
 

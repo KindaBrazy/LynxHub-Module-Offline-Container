@@ -18,8 +18,13 @@ export function startInstall(stepper: InstallationStepper) {
         stepper.cloneRepository(url).then(dir => {
           stepper.nextStep().then(() => {
             stepper.executeTerminalCommands('git submodule update --init --recursive', dir).then(() => {
-              stepper.executeTerminalCommands('pip install -e .', `${dir}${isWin ? '\\' : '/'}lollms_core`).then(() => {
-                stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+              stepper
+                .executeTerminalCommands([
+                  'pip install -r requirements.txt',
+                  'pip install -e .',
+                  `${dir}${isWin ? '\\' : '/'}lollms_core`,
+                ])
+                .then(() => {
                   stepper.setInstalled(dir);
                   stepper.showFinalStep(
                     'success',
@@ -27,7 +32,6 @@ export function startInstall(stepper: InstallationStepper) {
                     `All installation steps completed successfully. Your ${title} environment is now ready for use.`,
                   );
                 });
-              });
             });
           });
         });

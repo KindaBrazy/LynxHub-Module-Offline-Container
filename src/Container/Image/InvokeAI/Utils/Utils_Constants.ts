@@ -11,8 +11,8 @@ export const Invoke_Command_InstallUV = isWin
   : 'wget -qO- https://astral.sh/uv/install.sh | sh';
 
 export const Invoke_PyPI = {
-  cu126: 'cu126: Windows or Linux with an Nvidia GPU',
-  rocm: 'rocm6.2.4: Linux with an AMD GPU',
+  cu128: 'cu128: Windows or Linux with an Nvidia GPU',
+  rocm: 'rocm6.3: Linux with an AMD GPU',
   cpu: 'cpu: Linux with no GPU',
 };
 export const Invoke_PackageSpec = {
@@ -55,12 +55,12 @@ export const invokeGetInputFields = async (ipc: RendererIpcTypes): Promise<UserI
       isRequired: true,
     },
     {
-      label: 'PyPI',
-      id: 'pypi',
+      label: 'Torch Backend',
+      id: 'torch_backend',
       type: 'select',
-      selectOptions: [Invoke_PyPI.cu126, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
+      selectOptions: [Invoke_PyPI.cu128, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
 
-      defaultValue: Invoke_PyPI.cu126,
+      defaultValue: Invoke_PyPI.cu128,
       isRequired: true,
     },
   ];
@@ -69,7 +69,7 @@ export const invokeGetInputFields = async (ipc: RendererIpcTypes): Promise<UserI
 export const invokeGetInputResults = (items: UserInputResult[]) => {
   let installDirResult: string = '';
   let packageSpecResult: string = '';
-  let pyPIResult: string = '';
+  let torchBackendResult: string = '';
   let version: string = '';
 
   items.forEach(item => {
@@ -86,33 +86,33 @@ export const invokeGetInputResults = (items: UserInputResult[]) => {
         default:
           packageSpecResult = 'invokeai';
       }
-    } else if (item.id === 'pypi') {
+    } else if (item.id === 'torch_backend') {
       switch (item.result) {
         case Invoke_PyPI.rocm:
-          pyPIResult = 'https://download.pytorch.org/whl/rocm6.3';
+          torchBackendResult = 'rocm6.3';
           break;
-        case Invoke_PyPI.cu126:
-          pyPIResult = 'https://download.pytorch.org/whl/cu128';
+        case Invoke_PyPI.cu128:
+          torchBackendResult = 'cu128';
           break;
         case Invoke_PyPI.cpu:
-          pyPIResult = 'https://download.pytorch.org/whl/cpu';
+          torchBackendResult = 'cpu';
           break;
         default:
         case 'others':
-          pyPIResult = '';
+          torchBackendResult = '';
           break;
       }
     }
   });
 
-  return {installDirResult, version, packageSpecResult, pyPIResult};
+  return {installDirResult, version, packageSpecResult, torchBackendResult};
 };
 
 export const invokeGetInstallCommand = (items: UserInputResult[]) => {
-  const {version, pyPIResult, packageSpecResult} = invokeGetInputResults(items);
-  const index = pyPIResult ? ` --index=${pyPIResult}` : '';
+  const {version, torchBackendResult, packageSpecResult} = invokeGetInputResults(items);
+  const torchBackend = torchBackendResult ? ` --torch-backend=${torchBackendResult}` : '';
   return (
     `uv pip install ${packageSpecResult}==${version} --python 3.12 ` +
-    `--python-preference only-managed${index} --force-reinstall`
+    `--python-preference only-managed${torchBackend} --force-reinstall`
   );
 };

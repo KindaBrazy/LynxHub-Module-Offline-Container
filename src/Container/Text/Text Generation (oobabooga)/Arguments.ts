@@ -52,8 +52,8 @@ const oobaboogaArguments: ArgumentsData = [
           {
             name: '--settings',
             description:
-              'Load the default interface settings from this yaml file. See settings-template.yaml' +
-              ' for an example. If you create a file called settings.yaml, this file will be loaded' +
+              'Load the default interface settings from this yaml file. See user_data/settings-template.yaml' +
+              ' for an example. If you create a file called user_data/settings.yaml, this file will be loaded' +
               ' by default without the need to use the --settings flag.',
             type: 'File',
           },
@@ -558,11 +558,6 @@ const oobaboogaArguments: ArgumentsData = [
           {
             name: '--api-disable-ipv4',
             description: 'Disable IPv4 for the API',
-            type: 'CheckBox',
-          },
-          {
-            name: '--nowebui',
-            description: 'Do not launch the Gradio UI. Useful for launching the API in standalone mode.',
             type: 'CheckBox',
           },
         ],

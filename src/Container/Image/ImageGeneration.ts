@@ -1,6 +1,7 @@
 import {PagesData} from '../../../../src/common/types/plugins/modules';
 import {
   A1_ID,
+  AITOOLKIT_ID,
   COMFYUI_ID,
   COMFYUI_ZLUDA_ID,
   INVOKE_ID,
@@ -13,6 +14,8 @@ import {
   SD_UIUX_ID,
   SWARM_ID,
 } from '../../Constants';
+import aiToolkitArguments from './ai-toolkit/Arguments';
+import AITOOLKIT_RM from './ai-toolkit/RendererMethods';
 import comfyArguments from './ComfyUI (comfyanonymous)/Arguments';
 import COMFYUI_RM from './ComfyUI (comfyanonymous)/RendererMethods';
 import comfyZludaArguments from './ComfyUI Zluda (patientx)/Arguments';
@@ -185,6 +188,19 @@ const imagePage: PagesData = {
       extensionsDir: '/extensions',
       arguments: automatic1111Arguments,
       methods: SD_UIUX_RM,
+      installationType: 'git',
+    },
+    {
+      id: AITOOLKIT_ID,
+      title: 'AI Toolkit',
+      description:
+        'AI Toolkit is an all-in-one training suite for diffusion models. Supports training LoRA models for FLUX.1, ' +
+        'Stable Diffusion, and other diffusion models on consumer-grade hardware. Features a web-based UI for easy ' +
+        'configuration and monitoring of training jobs.',
+      repoUrl: 'https://github.com/ostris/ai-toolkit',
+      type: 'image',
+      arguments: aiToolkitArguments,
+      methods: AITOOLKIT_RM,
       installationType: 'git',
     },
   ],

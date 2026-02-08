@@ -2,6 +2,7 @@ import {MainModules, MainModuleUtils} from '../../src/common/types/plugins/modul
 import {
   A1_ID,
   AG_ID,
+  AITOOLKIT_ID,
   ALLTALK_ID,
   APPLIO_ID,
   BOLT_DIY_ID,
@@ -34,6 +35,7 @@ import Rrew123_MM from './Container/Audio/AllTalk TTS (erew123)/MainMethods';
 import Applio_MM from './Container/Audio/Applio/MainMethods';
 import Gitmylo_MM from './Container/Audio/Audio Generation (gitmylo)/MainMethods';
 import Rsx_MM from './Container/Audio/Text to Speech (rsxdalv)/MainMethods';
+import AIToolkit_MM from './Container/Image/ai-toolkit/MainMethods';
 import Comfy_MM from './Container/Image/ComfyUI (comfyanonymous)/MainMethods';
 import ComfyZluda_MM from './Container/Image/ComfyUI Zluda (patientx)/MainMethods';
 import Invoke_MM from './Container/Image/InvokeAI/MainMethods';
@@ -64,6 +66,7 @@ export default async function initialModule(utils: MainModuleUtils): Promise<Mai
     {id: AG_ID, methods: () => Gitmylo_MM(utils)},
     {id: SILLYTAVERN_ID, methods: () => Silly_MM(utils)},
     {id: SD_UIUX_ID, methods: () => A1_MM(utils)},
+    {id: AITOOLKIT_ID, methods: () => AIToolkit_MM(utils)},
     {id: COMFYUI_ZLUDA_ID, methods: () => ComfyZluda_MM(utils)},
     {id: ONETRAINER_ID, methods: () => Nerogar_MM(utils)},
     {id: INVOKE_ID, methods: () => Invoke_MM(utils)},

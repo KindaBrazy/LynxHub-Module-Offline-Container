@@ -12,11 +12,13 @@ const oauth: DataSection = {
           name: 'ENABLE_OAUTH_SIGNUP',
           description: 'Enables account creation when signing up via OAuth. Distinct from `ENABLE_SIGNUP`.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OAUTH_PERSISTENT_CONFIG',
           description: 'Controls whether OAuth-related settings are persisted in the database after the first launch.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'OAUTH_SUB_CLAIM',
@@ -29,23 +31,27 @@ const oauth: DataSection = {
           description:
             'If enabled, merges OAuth accounts with existing accounts using the same email address. This is considered unsafe as not all OAuth providers will verify email addresses and can lead to potential account takeovers.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OAUTH_WITHOUT_EMAIL',
           description:
             'Enables authentication with OpenID Connect (OIDC) providers that do not support or expose an email scope. When enabled, Open WebUI will create and manage user accounts without requiring an email address from the OAuth provider.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'OAUTH_UPDATE_PICTURE_ON_LOGIN',
           description: 'If enabled, updates the local user profile picture with the OAuth-provided picture on login.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OAUTH_ID_TOKEN_COOKIE',
           description:
             'Controls whether the **legacy** `oauth_id_token` cookie (unsafe, not recommended, token can go stale/orphaned) is set in the browser upon a successful OAuth login. This is provided for **backward compatibility** with custom tools or older versions that might rely on scraping this cookie. **The new, recommended approach is to use the server-side session management.**',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'OAUTH_CLIENT_INFO_ENCRYPTION_KEY',
@@ -273,17 +279,20 @@ const oauth: DataSection = {
           name: 'ENABLE_OAUTH_ROLE_MANAGEMENT',
           description: 'Enables role management for OAuth delegation.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OAUTH_GROUP_MANAGEMENT',
           description: 'Enables or disables OAuth group management.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OAUTH_GROUP_CREATION',
           description:
             "When enabled, groups from OAuth claims that don't exist in Open WebUI will be automatically created.",
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'OAUTH_BLOCKED_GROUPS',

@@ -10,17 +10,20 @@ const securityVariables: DataItem = {
       description:
         'Forwards user information (name, ID, email, role and chat-id) as X-headers to OpenAI API and Ollama API.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'ENABLE_WEB_LOADER_SSL_VERIFICATION',
       description: 'Bypass SSL Verification for RAG on Websites.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'ENABLE_PASSWORD_VALIDATION',
       description:
         'Enables password complexity validation for user accounts. When enabled, passwords must meet the complexity requirements defined by `PASSWORD_VALIDATION_REGEX_PATTERN` during signup, password updates, and user creation operations. This helps enforce stronger password policies across the application.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'PASSWORD_VALIDATION_REGEX_PATTERN',
@@ -40,6 +43,7 @@ const securityVariables: DataItem = {
       name: 'WEBUI_SESSION_COOKIE_SECURE',
       description: 'Sets the `Secure` attribute for session cookies if set to `True`.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'WEBUI_AUTH_COOKIE_SAME_SITE',
@@ -52,11 +56,13 @@ const securityVariables: DataItem = {
       name: 'WEBUI_AUTH_COOKIE_SECURE',
       description: 'Sets the `Secure` attribute for auth cookies if set to `True`.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'WEBUI_AUTH',
       description: 'This setting enables or disables authentication.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'WEBUI_SECRET_KEY',
@@ -69,11 +75,13 @@ const securityVariables: DataItem = {
       description:
         'When enabled, the application makes automatic update checks and notifies you about version updates.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'OFFLINE_MODE',
       description: "Disables Open WebUI's network connections for update checks and automatic model downloads.",
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'HF_HUB_OFFLINE',
@@ -86,11 +94,13 @@ const securityVariables: DataItem = {
       name: 'RESET_CONFIG_ON_START',
       description: 'Resets the `config.json` file on startup.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'SAFE_MODE',
       description: 'Enables safe mode, which disables potentially unsafe features, deactivating all functions.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'CORS_ALLOW_ORIGIN',
@@ -108,22 +118,26 @@ const securityVariables: DataItem = {
       name: 'RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE',
       description: 'Determines whether to allow custom models defined on the Hub in their own modeling files.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'RAG_RERANKING_MODEL_TRUST_REMOTE_CODE',
       description:
         'Determines whether to allow custom models defined on the Hub in their own. modeling files for reranking.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'RAG_EMBEDDING_MODEL_AUTO_UPDATE',
       description: 'Toggles automatic update of the Sentence-Transformer model.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'RAG_RERANKING_MODEL_AUTO_UPDATE',
       description: 'Toggles automatic update of the reranking model.',
       type: 'CheckBox',
+      defaultValue: true,
     },
   ],
 };

@@ -22,6 +22,7 @@ const vectorDatabase: DataSection = {
             'qdrant',
             'pinecone',
             's3vector',
+            'weaviate',
             'oracle23ai',
           ],
           defaultValue: 'chroma',
@@ -61,6 +62,7 @@ const vectorDatabase: DataSection = {
           name: 'CHROMA_HTTP_SSL',
           description: 'Controls whether or not SSL is used for ChromaDB Server connections.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'CHROMA_CLIENT_AUTH_PROVIDER',
@@ -191,6 +193,7 @@ const vectorDatabase: DataSection = {
           description:
             'Enables multitenancy pattern for Milvus collections management, which significantly reduces RAM usage and computational overhead by consolidating similar vector data structures. Controls whether Milvus uses multitenancy collection architecture. When enabled, all vector data is consolidated into 5 shared collections (memories, knowledge, files, web_search, hash_based) instead of creating individual collections per resource. Data isolation is achieved via a resource_id field rather than collection-level separation.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'MILVUS_COLLECTION_PREFIX',
@@ -208,6 +211,7 @@ const vectorDatabase: DataSection = {
           name: 'OPENSEARCH_CERT_VERIFY',
           description: 'Enables or disables OpenSearch certificate verification.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'OPENSEARCH_PASSWORD',
@@ -218,6 +222,7 @@ const vectorDatabase: DataSection = {
           name: 'OPENSEARCH_SSL',
           description: 'Enables or disables SSL for OpenSearch.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'OPENSEARCH_URI',
@@ -285,12 +290,14 @@ const vectorDatabase: DataSection = {
           description:
             'Enables the use of `halfvec` data type instead of `vector` for storing embeddings. Required when `PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH` exceeds 2000 dimensions, as the `vector` type has a 2000-dimension limit.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'PGVECTOR_PGCRYPTO',
           description:
             'Enables pgcrypto extension for encrypting sensitive data within PGVector. When enabled, `PGVECTOR_PGCRYPTO_KEY` must be set.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'PGVECTOR_PGCRYPTO_KEY',
@@ -343,11 +350,13 @@ const vectorDatabase: DataSection = {
           name: 'QDRANT_ON_DISK',
           description: 'Enable the usage of memmap(also known as on-disk) storage',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'QDRANT_PREFER_GRPC',
           description: 'Use gPRC interface whenever possible.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'QDRANT_GRPC_PORT',
@@ -374,6 +383,7 @@ const vectorDatabase: DataSection = {
           description:
             'Enables multitenancy pattern for Qdrant collections management, which significantly reduces RAM usage and computational overhead by consolidating similar vector data structures. Recommend turn on',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'QDRANT_COLLECTION_PREFIX',
@@ -460,6 +470,7 @@ const vectorDatabase: DataSection = {
           name: 'ORACLE_DB_USE_WALLET',
           description: 'Determines the connection method to the Oracle Database.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ORACLE_DB_USER',

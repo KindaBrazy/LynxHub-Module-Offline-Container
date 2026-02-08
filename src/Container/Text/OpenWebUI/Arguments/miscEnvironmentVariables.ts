@@ -58,12 +58,14 @@ const miscEnvironmentVariables: DataSection = {
           name: 'S3_USE_ACCELERATE_ENDPOINT',
           description: 'Specifies whether to use the accelerated endpoint for S3 storage.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'S3_ENABLE_TAGGING',
           description:
             'Enables S3 object tagging after uploads for better organization, searching, and integration with file management policies. Always set to `False` when using Cloudflare R2, as R2 does not support object tagging.',
           type: 'CheckBox',
+          defaultValue: false,
         },
       ],
     },
@@ -110,24 +112,28 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Enables or disables OpenTelemetry for observability. When enabled, tracing, metrics, and logging data can be collected and exported to an OTLP endpoint.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OTEL_TRACES',
           description:
             'Enables or disables OpenTelemetry trace collection and export. When enabled, distributed tracing data is sent to the configured OTLP endpoint. This variable works in conjunction with `ENABLE_OTEL`.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OTEL_METRICS',
           description:
             'Enables or disables OpenTelemetry metrics collection and export. This variable works in conjunction with `ENABLE_OTEL`.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_OTEL_LOGS',
           description:
             'Enables or disables OpenTelemetry logging export. When enabled, application logs are sent to the configured OTLP endpoint. This variable works in conjunction with `ENABLE_OTEL`.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'OTEL_EXPORTER_OTLP_ENDPOINT',
@@ -153,18 +159,21 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'If set to `True`, the OTLP exporter will use an insecure connection (e.g., HTTP for gRPC) for traces. For metrics, its behavior is governed by `OTEL_METRICS_EXPORTER_OTLP_INSECURE`, and for logs by `OTEL_LOGS_EXPORTER_OTLP_INSECURE`.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'OTEL_METRICS_EXPORTER_OTLP_INSECURE',
           description:
             'If set to `True`, the OTLP exporter will use an insecure connection for metrics. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'OTEL_LOGS_EXPORTER_OTLP_INSECURE',
           description:
             'If set to `True`, the OTLP exporter will use an insecure connection for logs. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'OTEL_SERVICE_NAME',
@@ -288,6 +297,7 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Enables or disables SQLite WAL (Write-Ahead Logging) mode. When enabled, SQLite transactions can be managed more efficiently, allowing multiple readers and one writer concurrently, which can improve database performance, especially under high concurrency. **This setting only applies to SQLite databases.**',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'DATABASE_DEDUPLICATE_INTERVAL',
@@ -306,6 +316,7 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Enables or disables automatic database migrations on startup. When enabled, the application will automatically apply pending database schema changes. Disable this in production environments where you want to control migrations manually.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'DATABASE_TYPE',
@@ -351,6 +362,7 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Enables or disables session sharing across multiple application instances using the database. When enabled, user sessions are stored in the database rather than in-memory, allowing users to maintain their session across different application instances.',
           type: 'CheckBox',
+          defaultValue: false,
         },
       ],
     },
@@ -379,6 +391,7 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Connect to a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `REDIS_URL` must also be defined.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'REDIS_KEY_PREFIX',
@@ -399,11 +412,13 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Enables or disables Starlette sessions middleware for managing user sessions. When enabled, session data is stored server-side and managed through cookies.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_WEBSOCKET_SUPPORT',
           description: 'Enables websocket support in Open WebUI.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'WEBSOCKET_MANAGER',
@@ -435,6 +450,7 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Specifies that websocket should communicate with a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `WEBSOCKET_REDIS_URL` and/or `REDIS_URL` must also be defined.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'WEBSOCKET_REDIS_OPTIONS',
@@ -447,12 +463,14 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Enables or disables logging for the WebSocket server. When enabled, WebSocket connection events, messages, and errors are logged for debugging and monitoring purposes.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'WEBSOCKET_SERVER_ENGINEIO_LOGGING',
           description:
             'Enables or disables Engine.IO logging for the WebSocket server. Engine.IO is the underlying transport layer for Socket.IO. When enabled, detailed Engine.IO events and operations are logged.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'WEBSOCKET_SERVER_PING_TIMEOUT',
@@ -530,12 +548,14 @@ const miscEnvironmentVariables: DataSection = {
           description:
             'Enables or disables audit logging to standard output (console). When enabled, audit events are printed to stdout for real-time monitoring and debugging.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_AUDIT_LOGS_FILE',
           description:
             'Enables or disables audit logging to a file. When enabled, audit events are written to a log file specified by `AUDIT_LOGS_FILE_PATH` for persistent storage and analysis.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'AUDIT_LOGS_FILE_PATH',

@@ -19,6 +19,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_SIGNUP',
           description: 'Toggles user account creation.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'WEBUI_ADMIN_EMAIL',
@@ -50,6 +51,7 @@ const appBackend: DataSection = {
           description:
             'Toggles email, password, sign-in and "or" (only when ENABLE_OAUTH_SIGNUP is set to True) elements.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'DEFAULT_LOCALE',
@@ -94,12 +96,14 @@ const appBackend: DataSection = {
           name: 'ENABLE_CHANNELS',
           description: 'Enables or disables channel support.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_FOLDERS',
           description:
             'Enables or disables the folders feature, allowing users to organize their chats into folders in the sidebar.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'FOLDER_MAX_FILE_COUNT',
@@ -112,12 +116,14 @@ const appBackend: DataSection = {
           description:
             'Enables or disables the notes feature, allowing users to create and manage personal notes within Open WebUI.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_MEMORIES',
           description:
             'Enables or disables the memory feature, allowing models to store and retrieve long-term information about users.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'WEBHOOK_URL',
@@ -129,12 +135,14 @@ const appBackend: DataSection = {
           description:
             'Controls whether admins can export data, chats and the database in the admin panel. Database exports only work for SQLite databases for now.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_ADMIN_CHAT_ACCESS',
           description:
             "Enables admin users to directly access the chats of other users. When disabled, admins can no longer accesss user's chats in the admin panel. If you disable this, consider disabling `ENABLE_ADMIN_EXPORT` too, if you are using SQLite, as the exports also contain user chats.",
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_PASSWORD_AUTH',
@@ -147,11 +155,13 @@ const appBackend: DataSection = {
           description:
             'When disabled, admin users are treated like regular users for workspace access (models, knowledge, prompts and tools) and only see items they have explicit permission to access through the existing access control system. This also applies to the visibility of models in the model selector - admins will be treated as regular users: base models and custom models they do not have explicit permission to access, will be hidden. If set to `True` (Default), admins have access to all created items in the workspace area and all models in the model selector, regardless of access permissions.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_USER_WEBHOOKS',
           description: 'Enables or disables user webhooks.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'RESPONSE_WATERMARK',
@@ -171,24 +181,28 @@ const appBackend: DataSection = {
           description:
             "Controls whether custom models should fall back to a default model if their assigned base model is missing. When set to `True`, if a custom model's base model is not found, the system will use the first model from the configured `DEFAULT_MODELS` list instead of returning an error.",
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_PUBLIC_ACTIVE_USERS_COUNT',
           description:
             'Controls whether the active user count is visible to all users or restricted to administrators only. When set to `False`, only admin users can see how many users are currently active, reducing backend load and addressing privacy concerns in large deployments.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_USER_STATUS',
           description:
             'Globally enables or disables user status functionality. When disabled, the status UI (including blinking active/away indicators and status messages) is hidden across the application, and user status API endpoints are restricted.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_BASE_MODELS_CACHE',
           description:
             'When enabled, caches the list of base models from connected Ollama and OpenAI-compatible endpoints in memory. This reduces the number of API calls made to external model providers when loading the model selector, improving performance particularly for deployments with many users or slow connections to model endpoints. Can also be configured from Admin Panel > Settings > Connections > "Cache Base Model List".',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'MODELS_CACHE_TTL',
@@ -201,6 +215,7 @@ const appBackend: DataSection = {
           name: 'SHOW_ADMIN_DETAILS',
           description: 'Toggles whether to show admin user details in the interface.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ADMIN_EMAIL',
@@ -218,6 +233,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_PERSISTENT_CONFIG',
           description: 'If set to `False`, all `PersistentConfig` variables are treated as regular variables.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'CUSTOM_NAME',
@@ -241,12 +257,14 @@ const appBackend: DataSection = {
           description:
             "When enabled, the system saves each chunk of streamed chat data to the database in real time to ensure maximum data persistency. This feature provides robust data recovery and allows accurate session tracking. However, the tradeoff is increased latency, as saving to the database introduces a delay. Disabling this feature can improve performance and reduce delays, but it risks potential data loss in the event of a system failure or crash. Use based on your application's requirements and acceptable tradeoffs.",
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_CHAT_RESPONSE_BASE64_IMAGE_URL_CONVERSION',
           description:
             'When set to true, it automatically uploads base64-encoded images exceeding 1KB in markdown and converts them into image file URLs to reduce the size of response text. Some multimodal models directly output images as Base64 strings within the Markdown content. This results in larger response bodies, placing strain on CPU, network, Redis, and database resources.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'CHAT_STREAM_RESPONSE_CHUNK_MAX_BUFFER_SIZE',
@@ -266,6 +284,7 @@ const appBackend: DataSection = {
           description:
             "Bypasses model access control. When set to `true`, all users (and admins alike) will have access to all models, regardless of the model's privacy setting (Private, Public, Shared with certain groups). This is useful for smaller or individual Open WebUI installations where model access restrictions may not be needed.",
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'WEBUI_BUILD_HASH',
@@ -283,6 +302,7 @@ const appBackend: DataSection = {
           description:
             'Builds the Docker image with NVIDIA CUDA support. Enables GPU acceleration for local Whisper and embeddings.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'EXTERNAL_PWA_MANIFEST_URL',
@@ -294,6 +314,13 @@ const appBackend: DataSection = {
           name: 'ENABLE_TITLE_GENERATION',
           description: 'Enables or disables chat title generation.',
           type: 'CheckBox',
+          defaultValue: true,
+        },
+        {
+          name: 'ENABLE_COMPRESSION_MIDDLEWARE',
+          description: 'Enables gzip compression middleware for HTTP responses to reduce bandwidth usage.',
+          type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'LICENSE_KEY',
@@ -340,6 +367,7 @@ const appBackend: DataSection = {
           description:
             'Controls SSL/TLS verification for AIOHTTP client sessions when connecting to external APIs (e.g., Ollama Embeddings).',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'AIOHTTP_CLIENT_TIMEOUT_TOOL_SERVER_DATA',
@@ -351,12 +379,14 @@ const appBackend: DataSection = {
           name: 'AIOHTTP_CLIENT_SESSION_TOOL_SERVER_SSL',
           description: 'Controls SSL/TLS verification specifically for tool server connections via AIOHTTP client.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'REQUESTS_VERIFY',
           description:
             'Controls SSL/TLS verification for synchronous `requests` (e.g., Tika, External Reranker). Set to `False` to bypass certificate verification for self-signed certificates.',
           type: 'CheckBox',
+          defaultValue: true,
         },
       ],
     },
@@ -395,6 +425,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_OLLAMA_API',
           description: 'Enables the use of Ollama APIs.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'OLLAMA_BASE_URL',
@@ -412,12 +443,14 @@ const appBackend: DataSection = {
           name: 'USE_OLLAMA_DOCKER',
           description: 'Builds the Docker image with a bundled Ollama instance.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'K8S_FLAG',
           description:
             'If set, assumes Helm chart deployment and sets OLLAMA_BASE_URL to http://ollama-service.open-webui.svc.cluster.local:11434',
           type: 'CheckBox',
+          defaultValue: false,
         },
       ],
     },
@@ -428,6 +461,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_OPENAI_API',
           description: 'Enables the use of OpenAI APIs.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'OPENAI_API_BASE_URL',
@@ -476,6 +510,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_FOLLOW_UP_GENERATION',
           description: 'Enables or disables follow up generation.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'FOLLOW_UP_GENERATION_PROMPT_TEMPLATE',
@@ -496,6 +531,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_CODE_EXECUTION',
           description: 'Enables or disables code execution.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'CODE_EXECUTION_ENGINE',
@@ -537,6 +573,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_CODE_INTERPRETER',
           description: 'Enables or disables code interpreter.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'CODE_INTERPRETER_ENGINE',
@@ -589,6 +626,12 @@ const appBackend: DataSection = {
           name: 'ENABLE_DIRECT_CONNECTIONS',
           description: 'Enables or disables direct connections.',
           type: 'CheckBox',
+          defaultValue: true,
+        },
+        {
+          name: 'TOOL_SERVER_CONNECTIONS',
+          description: 'Comma-separated list of tool server connection URLs for direct connections to OpenAPI/MCPO tool servers.',
+          type: 'Input',
         },
       ],
     },
@@ -599,6 +642,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_AUTOCOMPLETE_GENERATION',
           description: 'Enables or disables autocomplete generation.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'AUTOCOMPLETE_GENERATION_INPUT_MAX_LENGTH',
@@ -620,16 +664,19 @@ const appBackend: DataSection = {
           name: 'ENABLE_EVALUATION_ARENA_MODELS',
           description: 'Enables or disables evaluation arena models.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_MESSAGE_RATING',
           description: 'Enables message rating feature.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_COMMUNITY_SHARING',
           description: 'Controls whether users are shown the share to community button.',
           type: 'CheckBox',
+          defaultValue: true,
         },
       ],
     },
@@ -640,6 +687,7 @@ const appBackend: DataSection = {
           name: 'ENABLE_TAGS_GENERATION',
           description: 'Enables or disables tag generation.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'TAGS_GENERATION_PROMPT_TEMPLATE',
@@ -656,12 +704,14 @@ const appBackend: DataSection = {
           description:
             'Enables the API key creation feature, allowing users to generate API keys for programmatic access to Open WebUI.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS',
           description:
             'Enables API key endpoint restrictions for added security and configurability, allowing administrators to limit which endpoints can be accessed using API keys.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'API_KEYS_ALLOWED_ENDPOINTS',

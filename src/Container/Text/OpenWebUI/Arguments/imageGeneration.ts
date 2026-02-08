@@ -12,6 +12,7 @@ const imageGeneration: DataSection = {
           name: 'ENABLE_IMAGE_GENERATION',
           description: 'Enables or disables image generation features.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'IMAGE_GENERATION_ENGINE',
@@ -29,6 +30,7 @@ const imageGeneration: DataSection = {
           name: 'ENABLE_IMAGE_PROMPT_GENERATION',
           description: 'Enables or disables automatic enhancement of user prompts for better image generation results.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'IMAGE_PROMPT_GENERATION_PROMPT_TEMPLATE',
@@ -59,6 +61,7 @@ const imageGeneration: DataSection = {
           description:
             'When disabled, Image Editing will not be used and instead, images will be created only using the image generation engine.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'IMAGE_EDIT_ENGINE',
@@ -192,6 +195,16 @@ const imageGeneration: DataSection = {
         {
           name: 'IMAGES_EDIT_GEMINI_API_KEY',
           description: 'Provides authentication for Gemini image editing API requests.',
+          type: 'Input',
+        },
+      ],
+    },
+    {
+      section: 'Jina',
+      items: [
+        {
+          name: 'JINA_API_BASE_URL',
+          description: 'Sets the base URL for Jina API. Allows using custom or self-hosted Jina-compatible endpoints.',
           type: 'Input',
         },
       ],

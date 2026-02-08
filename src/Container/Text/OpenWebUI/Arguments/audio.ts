@@ -25,6 +25,7 @@ const audio: DataSection = {
           name: 'WHISPER_VAD_FILTER',
           description: 'Specifies whether to apply a Voice Activity Detection (VAD) filter to Whisper Speech-to-Text.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'WHISPER_COMPUTE_TYPE',
@@ -36,6 +37,7 @@ const audio: DataSection = {
           name: 'WHISPER_MODEL_AUTO_UPDATE',
           description: 'Toggles automatic update of the Whisper model.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'WHISPER_LANGUAGE',
@@ -48,6 +50,7 @@ const audio: DataSection = {
           description:
             'Toggles whether to use the multilingual Whisper model. When set to `False`, the system will use the English-only model for better performance in English-centric tasks. When `True`, it supports multiple languages.',
           type: 'CheckBox',
+          defaultValue: false,
         },
       ],
     },
@@ -58,7 +61,7 @@ const audio: DataSection = {
           name: 'AUDIO_STT_ENGINE',
           description: 'Specifies the Speech-to-Text engine to use.',
           type: 'DropDown',
-          values: ['', 'openai', 'deepgram', 'azure'],
+          values: ['', 'openai', 'deepgram', 'azure', 'mistral'],
         },
         {
           name: 'AUDIO_STT_MODEL',
@@ -81,6 +84,32 @@ const audio: DataSection = {
       ],
     },
     {
+      section: 'Speech-to-Text (Mistral)',
+      items: [
+        {
+          name: 'AUDIO_STT_MISTRAL_API_KEY',
+          description: 'Sets the Mistral API key to use for Speech-to-Text.',
+          type: 'Input',
+        },
+        {
+          name: 'AUDIO_STT_MISTRAL_API_BASE_URL',
+          description: 'Sets the Mistral API base URL to use for Speech-to-Text.',
+          type: 'Input',
+        },
+        {
+          name: 'AUDIO_STT_MISTRAL_USE_CHAT_COMPLETIONS',
+          description: 'Enables using Mistral chat completions endpoint for Speech-to-Text instead of the dedicated STT endpoint.',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          name: 'AUDIO_STT_SUPPORTED_CONTENT_TYPES',
+          description: 'Comma-separated list of supported audio content types for Speech-to-Text.',
+          type: 'Input',
+        },
+      ],
+    },
+    {
       section: 'Speech-to-Text (Azure)',
       items: [
         {
@@ -91,6 +120,16 @@ const audio: DataSection = {
         {
           name: 'AUDIO_STT_AZURE_REGION',
           description: 'Specifies the Azure region to use for Speech-to-Text.',
+          type: 'Input',
+        },
+        {
+          name: 'AUDIO_STT_AZURE_BASE_URL',
+          description: 'Specifies the Azure base URL to use for Speech-to-Text. Overrides the default Azure endpoint.',
+          type: 'Input',
+        },
+        {
+          name: 'AUDIO_STT_AZURE_MAX_SPEAKERS',
+          description: 'Sets the maximum number of speakers for Azure Speech-to-Text speaker diarization.',
           type: 'Input',
         },
         {
@@ -157,6 +196,11 @@ const audio: DataSection = {
           description: 'Sets the output format for Azure Text to Speech.',
           type: 'Input',
         },
+        {
+          name: 'AUDIO_TTS_AZURE_SPEECH_BASE_URL',
+          description: 'Sets the base URL for Azure Text to Speech. Overrides the default Azure endpoint.',
+          type: 'Input',
+        },
       ],
     },
     {
@@ -173,6 +217,31 @@ const audio: DataSection = {
           description: 'Sets the API key to use for text-to-speech.',
           type: 'Input',
           defaultValue: '${OPENAI_API_KEY}',
+        },
+        {
+          name: 'AUDIO_TTS_OPENAI_PARAMS',
+          description: 'Additional parameters for OpenAI text-to-speech API in JSON format.',
+          type: 'Input',
+        },
+      ],
+    },
+    {
+      section: 'Elevenlabs Text-to-Speech',
+      items: [
+        {
+          name: 'ELEVENLABS_API_BASE_URL',
+          description: 'Sets the base URL for Elevenlabs API. Allows using custom or self-hosted Elevenlabs-compatible endpoints.',
+          type: 'Input',
+        },
+      ],
+    },
+    {
+      section: 'Voice Mode',
+      items: [
+        {
+          name: 'VOICE_MODE_PROMPT_TEMPLATE',
+          description: 'Sets the prompt template for voice mode interactions. This template is used to format voice input before sending to the model.',
+          type: 'Input',
         },
       ],
     },

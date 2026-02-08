@@ -10,6 +10,7 @@ const scim: DataItem = {
       description:
         'Enables or disables SCIM 2.0 (System for Cross-domain Identity Management) support for automated user and group provisioning from identity providers like Okta, Azure AD, and Google Workspace.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'SCIM_TOKEN',

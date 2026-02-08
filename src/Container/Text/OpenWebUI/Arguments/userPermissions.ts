@@ -13,73 +13,86 @@ const userPermissions: DataSection = {
           description:
             'Acts as a master switch to enable or disable the main "Controls" button and panel in the chat interface. **If this is set to False, users will not see the Controls button, and the granular permissions below will have no effect**.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_VALVES',
           description:
             'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Valves" section within the chat controls panel.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_SYSTEM_PROMPT',
           description:
             'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the customizable "System Prompt" section within the chat controls panel, folders and the user settings.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_PARAMS',
           description:
             'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Advanced Parameters" section within the chat controls panel.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_FILE_UPLOAD',
           description: 'Enables or disables user permission to upload files to chats.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_DELETE',
           description: 'Enables or disables user permission to delete chats.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_EDIT',
           description: 'Enables or disables user permission to edit chats.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_DELETE_MESSAGE',
           description:
             'Enables or disables user permission to delete individual messages within chats. This provides granular control over message deletion capabilities separate from full chat deletion.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_CONTINUE_RESPONSE',
           description:
             'Enables or disables user permission to continue AI responses. When disabled, users cannot use the "Continue Response" button, which helps prevent potential system prompt leakage through response continuation manipulation.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_REGENERATE_RESPONSE',
           description:
             'Enables or disables user permission to regenerate AI responses. Controls access to both the standard regenerate button and the guided regeneration menu.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_RATE_RESPONSE',
           description:
             'Enables or disables user permission to rate AI responses using the thumbs up/down feedback system. This controls access to the response rating functionality for evaluation and feedback collection.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_STT',
           description: 'Enables or disables user permission to use Speech-to-Text in chats.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_TTS',
           description: 'Enables or disables user permission to use Text-to-Speech in chats.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_CALL',
@@ -95,6 +108,7 @@ const userPermissions: DataSection = {
           name: 'USER_PERMISSIONS_CHAT_TEMPORARY',
           description: 'Enables or disables user permission to create temporary chats.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_CHAT_TEMPORARY_ENFORCED',
@@ -151,6 +165,7 @@ const userPermissions: DataSection = {
           description:
             'Sets the permission for API key creation feature for users. When enabled, users will have the ability to create and manage API keys for programmatic access.',
           type: 'CheckBox',
+          defaultValue: true,
         },
       ],
     },
@@ -161,21 +176,25 @@ const userPermissions: DataSection = {
           name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ACCESS',
           description: 'Enables or disables user permission to access workspace models.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ACCESS',
           description: 'Enables or disables user permission to access workspace knowledge.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ACCESS',
           description: 'Enables or disables user permission to access workspace prompts.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ACCESS',
           description: 'Enables or disables user permission to access workspace tools.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ALLOW_PUBLIC_SHARING',
@@ -207,6 +226,7 @@ const userPermissions: DataSection = {
           description:
             'Enables or disables user / group permissions for the interface settings section in the Settings Modal.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'USER_PERMISSIONS_NOTES_ALLOW_PUBLIC_SHARING',

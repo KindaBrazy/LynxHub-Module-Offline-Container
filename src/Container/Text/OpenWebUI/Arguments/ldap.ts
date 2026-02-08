@@ -9,6 +9,7 @@ const ldap: DataItem = {
       name: 'ENABLE_LDAP',
       description: 'Enables or disables LDAP authentication.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'LDAP_SERVER_LABEL',
@@ -66,6 +67,7 @@ const ldap: DataItem = {
       name: 'LDAP_USE_TLS',
       description: 'Enables or disables TLS for LDAP connection.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'LDAP_CA_CERT_FILE',
@@ -87,11 +89,13 @@ const ldap: DataItem = {
       name: 'ENABLE_LDAP_GROUP_MANAGEMENT',
       description: 'Enables the group management feature.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'ENABLE_LDAP_GROUP_CREATION',
       description: 'If a group from LDAP does not exist in Open WebUI, it will be created automatically.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'LDAP_ATTRIBUTE_FOR_GROUPS',

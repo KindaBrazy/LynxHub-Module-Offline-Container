@@ -22,12 +22,14 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
       description:
         'Enables the use of ensemble search with `BM25` + `ChromaDB`, with reranking using `sentence_transformers` models.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'ENABLE_RAG_HYBRID_SEARCH_ENRICHED_TEXTS',
       description:
         'Enables enriched text processing for hybrid search. When enabled, additional text preprocessing and enrichment techniques are applied to improve search quality and relevance in hybrid search mode.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'RAG_TOP_K',
@@ -102,11 +104,13 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
       description:
         'Enables markdown header text splitting as a preprocessing step before character or token splitting. When enabled, documents are first split by markdown headers (h1-h6), then the resulting chunks are further processed by the configured text splitter (`RAG_TEXT_SPLITTER`). This helps preserve document structure and context across chunks.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'PDF_EXTRACT_IMAGES',
       description: 'Extracts images from PDFs using OCR when loading documents.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'RAG_FILE_MAX_SIZE',
@@ -133,6 +137,7 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
       description:
         'When enabled (default), applies sigmoid normalization to local CrossEncoder reranking scores to ensure they fall within the 0-1 range. This allows the relevance threshold setting to work correctly with models like MS MARCO that output raw logits.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'RAG_EXTERNAL_RERANKER_TIMEOUT',
@@ -180,6 +185,7 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
       description:
         'Runs embedding tasks asynchronously (parallelized) for maximum performance. Only works for Ollama, OpenAI and Azure OpenAI, does not affect sentence transformer setups.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'RAG_EMBEDDING_CONTENT_PREFIX',
@@ -227,12 +233,14 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
       name: 'ENABLE_RETRIEVAL_QUERY_GENERATION',
       description: 'Enables or disables retrieval query generation.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'ENABLE_QUERIES_CACHE',
       description:
         'Enables request-scoped caching of LLM-generated search queries. When enabled, queries generated for web search are **cached** and automatically **reused** for file/knowledge base retrieval within the same request. This **eliminates duplicate LLM calls** when both web search and RAG are active, **reducing token usage and latency** while maintaining search quality. It is highly recommended to enable this especially in larger setups.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'QUERY_GENERATION_PROMPT_TEMPLATE',
@@ -243,23 +251,27 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
       name: 'BYPASS_EMBEDDING_AND_RETRIEVAL',
       description: 'Bypasses the embedding and retrieval process.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'RAG_FULL_CONTEXT',
       description: 'Specifies whether to use the full context for RAG.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'RAG_SYSTEM_CONTEXT',
       description:
         'When enabled, injects RAG context into the **system message** instead of the user message. This is highly recommended for optimizing performance when using models that support **KV prefix caching** or **Prompt Caching**. This includes local engines (like Ollama, llama.cpp, or vLLM) and cloud providers / Model-as-a-Service providers (like OpenAI and Vertex AI). By placing the context in the system message, it remains at a stable position at the start of the conversation, allowing the cache to persist across multiple turns. When disabled (default), context is injected into the user message, which shifts position each turn and invalidates the cache.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'ENABLE_RAG_LOCAL_WEB_FETCH',
       description:
         'Controls whether RAG web fetch operations can access URLs that resolve to private/local network IP addresses.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'WEB_FETCH_FILTER_LIST',
@@ -292,6 +304,7 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
           description:
             'Enables or disables Google Drive integration. If set to true, and `GOOGLE_DRIVE_CLIENT_ID` & `GOOGLE_DRIVE_API_KEY` are both configured, Google Drive will appear as an upload option in the chat UI.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'GOOGLE_DRIVE_CLIENT_ID',
@@ -313,18 +326,21 @@ const retrievalAugmentedGenerationrag: DataItem | DataSection = {
           name: 'ENABLE_ONEDRIVE_INTEGRATION',
           description: 'Enables or disables the Microsoft OneDrive integration feature globally.',
           type: 'CheckBox',
+          defaultValue: false,
         },
         {
           name: 'ENABLE_ONEDRIVE_PERSONAL',
           description:
             'Controls whether the "Personal OneDrive" option appears in the attachment menu. Requires `ONEDRIVE_PERSONAL_CLIENT_ID` to be configured.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ENABLE_ONEDRIVE_BUSINESS',
           description:
             'Controls whether the "Work/School OneDrive" option appears in the attachment menu. Requires `ONEDRIVE_CLIENT_ID` to be configured.',
           type: 'CheckBox',
+          defaultValue: true,
         },
         {
           name: 'ONEDRIVE_CLIENT_ID',

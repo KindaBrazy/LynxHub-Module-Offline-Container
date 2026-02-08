@@ -9,11 +9,13 @@ const webSearch: DataItem | DataSection = {
       name: 'ENABLE_WEB_SEARCH',
       description: 'Enable web search toggle.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'ENABLE_SEARCH_QUERY_GENERATION',
       description: 'Enables or disables search query generation.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'WEB_SEARCH_DOMAIN_FILTER_LIST',
@@ -32,6 +34,7 @@ const webSearch: DataItem | DataSection = {
       name: 'WEB_SEARCH_TRUST_ENV',
       description: 'Enables proxy set by `http_proxy` and `https_proxy` during web search content fetching.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'WEB_SEARCH_RESULT_COUNT',
@@ -68,6 +71,10 @@ const webSearch: DataItem | DataSection = {
         'bing',
         'exa',
         'perplexity',
+        'perplexity_search',
+        'ollama_cloud',
+        'azure_ai_search',
+        'yacy',
         'sougou',
       ],
     },
@@ -75,12 +82,14 @@ const webSearch: DataItem | DataSection = {
       name: 'BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL',
       description: 'Bypasses the web search embedding and retrieval process.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'BYPASS_WEB_SEARCH_WEB_LOADER',
       description:
         'Bypasses the web loader when performing web search. When enabled, only snippets from the search engine are used, and the full page content is not fetched.',
       type: 'CheckBox',
+      defaultValue: false,
     },
     {
       name: 'SEARXNG_LANGUAGE',
@@ -136,6 +145,7 @@ const webSearch: DataItem | DataSection = {
       description:
         'Configures the use of HTTPS for Serpstack requests. Free tier requests are restricted to HTTP only.',
       type: 'CheckBox',
+      defaultValue: true,
     },
     {
       name: 'SERPER_API_KEY',

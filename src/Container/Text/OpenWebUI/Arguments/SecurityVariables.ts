@@ -30,7 +30,7 @@ const securityVariables: DataItem = {
       description:
         'Regular expression pattern used to validate password complexity when `ENABLE_PASSWORD_VALIDATION` is enabled. The default pattern requires passwords to be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
       type: 'Input',
-      defaultValue: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$',
+      defaultValue: `^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$`,
     },
     {
       name: 'WEBUI_SESSION_COOKIE_SAME_SITE',

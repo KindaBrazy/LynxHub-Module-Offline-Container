@@ -305,6 +305,27 @@ const appBackend: DataSection = {
           defaultValue: false,
         },
         {
+          name: 'DOCKER',
+          description:
+            'Indicates whether Open WebUI is running inside a Docker container. Used internally for environment detection.',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          name: 'USE_CUDA',
+          description:
+            'Controls whether to use CUDA acceleration for local models. When set to `true`, attempts to detect and use available NVIDIA GPUs. The code reads the environment variable `USE_CUDA_DOCKER` to set this internal boolean variable.',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          name: 'DEVICE_TYPE',
+          description:
+            'Specifies the device type for model execution. Automatically set to `cuda` if CUDA is available and enabled, or `mps` for Apple Silicon.',
+          type: 'Input',
+          defaultValue: 'cpu',
+        },
+        {
           name: 'EXTERNAL_PWA_MANIFEST_URL',
           description:
             'When defined as a fully qualified URL (e.g., https://path/to/manifest.webmanifest), requests sent to /manifest.json will use the external manifest file. When not defined, the default manifest.json file will be used.',
@@ -630,7 +651,8 @@ const appBackend: DataSection = {
         },
         {
           name: 'TOOL_SERVER_CONNECTIONS',
-          description: 'Comma-separated list of tool server connection URLs for direct connections to OpenAPI/MCPO tool servers.',
+          description:
+            'Comma-separated list of tool server connection URLs for direct connections to OpenAPI/MCPO tool servers.',
           type: 'Input',
         },
       ],

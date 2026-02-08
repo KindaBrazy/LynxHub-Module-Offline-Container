@@ -79,6 +79,7 @@ const sillyArguments: ArgumentsData = [
             name: 'dataRoot',
             description: 'Root directory for user data storage (standalone mode only)',
             type: 'Directory',
+            defaultValue: './data',
           },
           {
             name: 'skipContentCheck',
@@ -167,10 +168,16 @@ const sillyArguments: ArgumentsData = [
             type: 'File',
             defaultValue: './certs/cert.pem',
           },
+          {
+            name: 'ssl.keyPassphrase',
+            description: 'Passphrase for the SSL private key. Leave empty if not required',
+            type: 'Input',
+            defaultValue: '',
+          },
         ],
       },
       {
-        section: 'Security Configuration',
+        section: 'Security Configuration - IP Whitelisting',
         items: [
           {name: 'whitelistMode', description: 'Enable IP whitelist filtering', type: 'CheckBox', defaultValue: true},
           {
@@ -184,17 +191,44 @@ const sillyArguments: ArgumentsData = [
             description: 'List of allowed IP addresses',
             type: 'Input',
             defaultValue: '["::1", "127.0.0.1"]',
-          }, // Note: Representing an array as a string for now.
+          },
           {
             name: 'whitelistDockerHosts',
             description: 'Automatically whitelist Docker host IPs',
             type: 'CheckBox',
             defaultValue: true,
           },
-          {name: 'enableCorsProxy', description: 'Enable CORS proxy middleware', type: 'CheckBox', defaultValue: false},
+        ],
+      },
+      {
+        section: 'Security Configuration - Host Whitelisting',
+        items: [
+          {
+            name: 'hostWhitelist.enabled',
+            description: 'Enable host whitelisting',
+            type: 'CheckBox',
+            defaultValue: false,
+          },
+          {
+            name: 'hostWhitelist.scan',
+            description: 'Log incoming requests from untrusted hosts',
+            type: 'CheckBox',
+            defaultValue: true,
+          },
+          {
+            name: 'hostWhitelist.hosts',
+            description: 'List of trusted hostnames',
+            type: 'Input',
+            defaultValue: '[]',
+          },
+        ],
+      },
+      {
+        section: 'Security Configuration - Security Overrides',
+        items: [
           {
             name: 'allowKeysExposure',
-            description: 'Allow API keys exposure in the UI',
+            description: 'Allow unmasked API key exposure in the UI',
             type: 'CheckBox',
             defaultValue: false,
           },
@@ -213,6 +247,12 @@ const sillyArguments: ArgumentsData = [
         ],
       },
       {
+        section: 'CORS Proxy Configuration',
+        items: [
+          {name: 'enableCorsProxy', description: 'Enable CORS proxy middleware', type: 'CheckBox', defaultValue: false},
+        ],
+      },
+      {
         section: 'User Authentication',
         items: [
           {name: 'basicAuthMode', description: 'Enable basic authentication', type: 'CheckBox', defaultValue: false},
@@ -227,14 +267,25 @@ const sillyArguments: ArgumentsData = [
           },
           {name: 'sessionTimeout', description: 'User session timeout in seconds', type: 'Input', defaultValue: -1},
           {
-            name: 'autheliaAuth',
-            description: 'Enable Authelia-based auto login',
+            name: 'perUserBasicAuth',
+            description: 'Use account credentials for basic auth',
+            type: 'CheckBox',
+            defaultValue: false,
+          },
+        ],
+      },
+      {
+        section: 'SSO Auto-Login',
+        items: [
+          {
+            name: 'sso.autheliaAuth',
+            description: 'Enable Authelia-based auto-login',
             type: 'CheckBox',
             defaultValue: false,
           },
           {
-            name: 'perUserBasicAuth',
-            description: 'Use account credentials for basic auth',
+            name: 'sso.authentikAuth',
+            description: 'Enable Authentik-based auto-login',
             type: 'CheckBox',
             defaultValue: false,
           },
@@ -261,7 +312,12 @@ const sillyArguments: ArgumentsData = [
             defaultValue: false,
           },
           {name: 'requestProxy.url', description: 'Proxy server URL', type: 'Input'},
-          {name: 'requestProxy.bypass', description: 'Hosts to bypass proxy', type: 'Input'},
+          {
+            name: 'requestProxy.bypass',
+            description: 'Hosts to bypass proxy',
+            type: 'Input',
+            defaultValue: '["localhost", "127.0.0.1"]',
+          },
         ],
       },
       {
@@ -336,6 +392,7 @@ const sillyArguments: ArgumentsData = [
             name: 'cacheBuster.userAgentPattern',
             description: 'Only clear cache for the specified user agent regex pattern.',
             type: 'Input',
+            defaultValue: '',
           },
         ],
       },
@@ -491,7 +548,12 @@ const sillyArguments: ArgumentsData = [
             type: 'CheckBox',
             defaultValue: false,
           },
-          {name: 'openai.captionSystemPrompt', description: 'System message for caption completion', type: 'Input'},
+          {
+            name: 'openai.captionSystemPrompt',
+            description: 'System message for caption completion',
+            type: 'Input',
+            defaultValue: '',
+          },
           {
             name: 'mistral.enablePrefix',
             description: 'Enable reply prefilling. The prefix will be echoed in the response',
@@ -530,10 +592,23 @@ const sillyArguments: ArgumentsData = [
           },
           {
             name: 'gemini.apiVersion',
-            description: 'API endpoint version',
+            description: 'API endpoint version (AI Studio only)',
             type: 'DropDown',
             defaultValue: 'v1beta',
             values: ['v1beta', 'v1alpha'],
+          },
+          {
+            name: 'gemini.enableSystemPromptCache',
+            description: 'Enables caching of the system prompt (OpenRouter only)',
+            type: 'CheckBox',
+            defaultValue: false,
+          },
+          {
+            name: 'gemini.image.personGeneration',
+            description: 'Person generation setting for Imagen',
+            type: 'DropDown',
+            defaultValue: 'allow_adult',
+            values: ['dont_allow', 'allow_adult', 'allow_all'],
           },
           {
             name: 'deepl.formality',

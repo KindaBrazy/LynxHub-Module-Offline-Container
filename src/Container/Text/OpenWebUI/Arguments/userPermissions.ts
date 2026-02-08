@@ -165,7 +165,7 @@ const userPermissions: DataSection = {
           description:
             'Sets the permission for API key creation feature for users. When enabled, users will have the ability to create and manage API keys for programmatic access.',
           type: 'CheckBox',
-          defaultValue: true,
+          defaultValue: false,
         },
       ],
     },
@@ -176,25 +176,25 @@ const userPermissions: DataSection = {
           name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ACCESS',
           description: 'Enables or disables user permission to access workspace models.',
           type: 'CheckBox',
-          defaultValue: true,
+          defaultValue: false,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ACCESS',
           description: 'Enables or disables user permission to access workspace knowledge.',
           type: 'CheckBox',
-          defaultValue: true,
+          defaultValue: false,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ACCESS',
           description: 'Enables or disables user permission to access workspace prompts.',
           type: 'CheckBox',
-          defaultValue: true,
+          defaultValue: false,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ACCESS',
           description: 'Enables or disables user permission to access workspace tools.',
           type: 'CheckBox',
-          defaultValue: true,
+          defaultValue: false,
         },
         {
           name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ALLOW_PUBLIC_SHARING',

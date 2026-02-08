@@ -299,13 +299,6 @@ const miscEnvironmentVariables: DataSection = {
           type: 'CheckBox',
           defaultValue: false,
         },
-        {
-          name: 'DATABASE_DEDUPLICATE_INTERVAL',
-          description:
-            "Sets a time interval in seconds during which certain database write operations (e.g., updating a user's `last_active_at` timestamp) will be deduplicated. If a write operation is attempted within this interval for the same entity, it will be skipped. A value of `0.0` disables deduplication. Enabling this can reduce write conflicts and improve performance, but may result in less real-time accuracy for the affected fields.",
-          type: 'Input',
-          defaultValue: 0.0,
-        },
       ],
     },
     {

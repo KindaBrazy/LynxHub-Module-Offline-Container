@@ -1,5 +1,7 @@
 import {ArgumentsData} from '../../../../../src/common/types/plugins/modules';
 
+/* eslint max-len: 0 */
+
 const oobaboogaArguments: ArgumentsData = [
   {
     category: 'Command Line Arguments',
@@ -84,9 +86,61 @@ const oobaboogaArguments: ArgumentsData = [
             name: '--loader',
             description:
               'Choose the model loader manually, otherwise, it will get autodetected. Valid options:' +
-              ' Transformers, llama.cpp, llamacpp_HF, ExLlamav2_HF, ExLlamav2, AutoGPTQ, AutoAWQ.',
+              ' Transformers, llama.cpp, ExLlamav3_HF, ExLlamav2_HF, ExLlamav2, TensorRT-LLM.',
             type: 'DropDown',
-            values: ['Transformers', 'llama.cpp', 'llamacpp_HF', 'ExLlamav2_HF', 'ExLlamav2', 'AutoGPTQ', 'AutoAWQ'],
+            values: ['Transformers', 'llama.cpp', 'ExLlamav3_HF', 'ExLlamav2_HF', 'ExLlamav2', 'TensorRT-LLM'],
+          },
+        ],
+      },
+      {
+        section: 'Context and cache',
+        items: [
+          {
+            name: '--ctx-size',
+            description: 'Context size in tokens.',
+            type: 'Input',
+            defaultValue: '8192',
+          },
+          {
+            name: '--cache-type',
+            description:
+              'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4;' +
+              ' ExLlamaV3 - fp16, q2 to q8 (can specify k_bits and v_bits separately, e.g. q4_q8).',
+            type: 'Input',
+            defaultValue: 'fp16',
+          },
+        ],
+      },
+      {
+        section: 'Speculative decoding',
+        items: [
+          {
+            name: '--model-draft',
+            description: 'Path to the draft model for speculative decoding.',
+            type: 'File',
+          },
+          {
+            name: '--draft-max',
+            description: 'Number of tokens to draft for speculative decoding.',
+            type: 'Input',
+            defaultValue: '4',
+          },
+          {
+            name: '--gpu-layers-draft',
+            description: 'Number of layers to offload to the GPU for the draft model.',
+            type: 'Input',
+            defaultValue: '256',
+          },
+          {
+            name: '--device-draft',
+            description: 'Comma-separated list of devices to use for offloading the draft model. Example: CUDA0,CUDA1',
+            type: 'Input',
+          },
+          {
+            name: '--ctx-size-draft',
+            description: 'Size of the prompt context for the draft model. If 0, uses the same as the main model.',
+            type: 'Input',
+            defaultValue: '0',
           },
         ],
       },
@@ -99,20 +153,8 @@ const oobaboogaArguments: ArgumentsData = [
             type: 'CheckBox',
           },
           {
-            name: '--auto-devices',
-            description: 'Automatically split the model across the available GPU(s) and CPU.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--gpu-memory',
-            description:
-              'Maximum GPU memory in GiB to be allocated per GPU. Example: --gpu-memory 10 for a' +
-              ' single GPU, --gpu-memory 10 5 for two GPUs. You can also set values in MiB like --gpu-memory 3500MiB.',
-            type: 'Input',
-          },
-          {
             name: '--cpu-memory',
-            description: 'Maximum CPU memory in GiB to allocate for offloaded weights. Same as above.',
+            description: 'Maximum CPU memory in GiB. Use this for CPU offloading.',
             type: 'Input',
           },
           {
@@ -123,9 +165,9 @@ const oobaboogaArguments: ArgumentsData = [
           },
           {
             name: '--disk-cache-dir',
-            description: 'Directory to save the disk cache to. Defaults to "cache".',
+            description: 'Directory to save the disk cache to. Defaults to "user_data/cache".',
             type: 'Directory',
-            defaultValue: 'cache',
+            defaultValue: 'user_data/cache',
           },
           {
             name: '--load-in-8bit',
@@ -159,16 +201,6 @@ const oobaboogaArguments: ArgumentsData = [
             description:
               "Set use_fast=False while loading the tokenizer (it's True by default). Use this if you" +
               ' have any problems related to use_fast.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--use_flash_attention_2',
-            description: 'Set use_flash_attention_2=True while loading the model.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--use_eager_attention',
-            description: 'Set attn_implementation= eager while loading the model.',
             type: 'CheckBox',
           },
           {
@@ -213,22 +245,52 @@ const oobaboogaArguments: ArgumentsData = [
         section: 'llama.cpp',
         items: [
           {
-            name: '--flash-attn',
-            description: 'Use flash-attention.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--tensorcores',
-            description:
-              'NVIDIA only: use llama-cpp-python compiled with tensor cores support.' +
-              ' This may increase performance on newer cards.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--n_ctx',
-            description: 'Size of the prompt context.',
+            name: '--gpu-layers',
+            description: 'Number of layers to offload to the GPU.',
             type: 'Input',
-            defaultValue: '2048',
+            defaultValue: '0',
+          },
+          {
+            name: '--mmproj',
+            description: 'Path to the mmproj file for vision models.',
+            type: 'File',
+          },
+          {
+            name: '--streaming-llm',
+            description:
+              'Activate StreamingLLM to avoid re-evaluating the entire prompt when old messages are removed.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--tensor-split',
+            description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 60,40.',
+            type: 'Input',
+          },
+          {
+            name: '--row-split',
+            description: 'Split the model by rows across GPUs. This may improve multi-gpu performance.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--no-mmap',
+            description: 'Prevent mmap from being used.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--mlock',
+            description: 'Force the system to keep the model in RAM.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--no-kv-offload',
+            description: 'Do not offload the K, Q, V to the GPU. This saves VRAM but reduces the performance.',
+            type: 'CheckBox',
+          },
+          {
+            name: '--batch-size',
+            description: 'Maximum number of prompt tokens to batch together when calling llama_eval.',
+            type: 'Input',
+            defaultValue: '512',
           },
           {
             name: '--threads',
@@ -243,85 +305,31 @@ const oobaboogaArguments: ArgumentsData = [
             defaultValue: '0',
           },
           {
-            name: '--no_mul_mat_q',
-            description: 'Disable the mulmat kernels.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--n_batch',
-            description: 'Maximum number of prompt tokens to batch together when calling llama_eval.',
-            type: 'Input',
-            defaultValue: '512',
-          },
-          {
-            name: '--no-mmap',
-            description: 'Prevent mmap from being used.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--mlock',
-            description: 'Force the system to keep the model in RAM.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--n-gpu-layers',
-            description: 'Number of layers to offload to the GPU.',
-            type: 'Input',
-            defaultValue: '0',
-          },
-          {
-            name: '--tensor_split',
-            description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 60,40.',
-            type: 'Input',
-          },
-          {
             name: '--numa',
             description: 'Activate NUMA task allocation for llama.cpp.',
             type: 'CheckBox',
           },
           {
-            name: '--logits_all',
-            description:
-              'Needs to be set for perplexity evaluation to work. Otherwise, ignore it, as it makes' +
-              ' prompt processing slower.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--no_offload_kqv',
-            description: 'Do not offload the K, Q, V to the GPU. This saves VRAM but reduces the performance.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--cache-capacity',
-            description:
-              'Maximum cache capacity (llama-cpp-python). Examples: 2000MiB, 2GiB. When provided' +
-              ' without units, bytes will be assumed.',
+            name: '--extra-flags',
+            description: 'Extra flags to pass to llama-server. Format: "flag1=value1,flag2,flag3=value3".',
             type: 'Input',
           },
+        ],
+      },
+      {
+        section: 'ExLlamaV3',
+        items: [
           {
-            name: '--row_split',
-            description: 'Split the model by rows across GPUs. This may improve multi-gpu performance.',
+            name: '--enable-tp',
+            description: 'Enable Tensor Parallelism (TP) to split the model across GPUs.',
             type: 'CheckBox',
           },
           {
-            name: '--streaming-llm',
-            description:
-              'Activate StreamingLLM to avoid re-evaluating the entire prompt when old messages are removed.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--attention-sink-size',
-            description:
-              'StreamingLLM: number of sink tokens. Only used if the trimmed prompt does not share' +
-              ' a prefix with the old prompt.',
-            type: 'Input',
-            defaultValue: '5',
-          },
-          {
-            name: '--tokenizer-dir',
-            description:
-              'Load the tokenizer from this folder. Meant to be used with llamacpp_HF through the command-line.',
-            type: 'Directory',
+            name: '--tp-backend',
+            description: 'The backend for tensor parallelism. Valid options: native, nccl. Default: native.',
+            type: 'DropDown',
+            values: ['native', 'nccl'],
+            defaultValue: 'native',
           },
         ],
       },
@@ -339,12 +347,6 @@ const oobaboogaArguments: ArgumentsData = [
             description:
               'Autosplit the model tensors across the available GPUs. This causes --gpu-split to be ignored.',
             type: 'CheckBox',
-          },
-          {
-            name: '--max_seq_len',
-            description: 'Maximum sequence length.',
-            type: 'Input',
-            defaultValue: '2048',
           },
           {
             name: '--cfg-cache',
@@ -374,76 +376,9 @@ const oobaboogaArguments: ArgumentsData = [
             type: 'Input',
             defaultValue: '2',
           },
-          {
-            name: '--enable_tp',
-            description: 'Enable Tensor Parallelism (TP) in ExLlamaV2.',
-            type: 'CheckBox',
-          },
         ],
       },
-      {
-        section: 'AutoGPTQ',
-        items: [
-          {
-            name: '--triton',
-            description: 'Use triton.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--no_inject_fused_mlp',
-            description:
-              'Triton mode only: disable the use of fused MLP, which will use less' +
-              ' VRAM at the cost of slower inference.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--no_use_cuda_fp16',
-            description: 'This can make models faster on some systems.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--desc_act',
-            description:
-              'For models that do not have a quantize_config.json, this parameter is used to define' +
-              ' whether to set desc_act or not in BaseQuantizeConfig.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--disable_exllama',
-            description: 'Disable ExLlama kernel, which can improve inference speed on some systems.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--disable_exllamav2',
-            description: 'Disable ExLlamav2 kernel.',
-            type: 'CheckBox',
-          },
-          {
-            name: '--wbits',
-            description: 'Load a pre-quantized model with specified precision in bits. 2, 3, 4 and 8 are supported.',
-            type: 'Input',
-            defaultValue: '0',
-          },
-          {
-            name: '--groupsize',
-            description: 'Group size.',
-            type: 'Input',
-            defaultValue: '-1',
-          },
-        ],
-      },
-      {
-        section: 'HQQ',
-        items: [
-          {
-            name: '--hqq-backend',
-            description: 'Backend for the HQQ loader. Valid options: PYTORCH, PYTORCH_COMPILE, ATEN.',
-            type: 'DropDown',
-            values: ['PYTORCH', 'PYTORCH_COMPILE', 'ATEN'],
-            defaultValue: 'PYTORCH_COMPILE',
-          },
-        ],
-      },
+
       {
         section: 'TensorRT-LLM',
         items: [
@@ -455,18 +390,7 @@ const oobaboogaArguments: ArgumentsData = [
           },
         ],
       },
-      {
-        section: 'Cache',
-        items: [
-          {
-            name: '--cache_type',
-            description:
-              'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4.',
-            type: 'Input',
-            defaultValue: 'fp16',
-          },
-        ],
-      },
+
       {
         section: 'DeepSpeed',
         items: [
@@ -636,84 +560,10 @@ const oobaboogaArguments: ArgumentsData = [
             description: 'Disable IPv4 for the API',
             type: 'CheckBox',
           },
-        ],
-      },
-      {
-        section: 'Multimodal',
-        items: [
           {
-            name: '--multimodal-pipeline',
-            description: 'The multimodal pipeline to use. Examples: llava-7b, llava-13b.',
-            type: 'Input',
-          },
-        ],
-      },
-      {
-        section: 'Context and cache',
-        items: [
-          {
-            name: '--ctx-size',
-            description: 'Context size in tokens.',
-            type: 'Input',
-            defaultValue: '8192',
-          },
-          {
-            name: '--cache-type',
-            description:
-              'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4;' +
-              ' ExLlamaV3 - fp16, q2 to q8 (can specify k_bits and v_bits separately, e.g. q4_q8).',
-            type: 'Input',
-            defaultValue: 'fp16',
-          },
-        ],
-      },
-      {
-        section: 'Speculative decoding',
-        items: [
-          {
-            name: '--model-draft',
-            description: 'Path to the draft model for speculative decoding.',
-            type: 'File',
-          },
-          {
-            name: '--draft-max',
-            description: 'Number of tokens to draft for speculative decoding.',
-            type: 'Input',
-            defaultValue: '4',
-          },
-          {
-            name: '--gpu-layers-draft',
-            description: 'Number of layers to offload to the GPU for the draft model.',
-            type: 'Input',
-            defaultValue: '256',
-          },
-          {
-            name: '--device-draft',
-            description: 'Comma-separated list of devices to use for offloading the draft model. Example: CUDA0,CUDA1',
-            type: 'Input',
-          },
-          {
-            name: '--ctx-size-draft',
-            description: 'Size of the prompt context for the draft model. If 0, uses the same as the main model.',
-            type: 'Input',
-            defaultValue: '0',
-          },
-        ],
-      },
-      {
-        section: 'ExLlamaV3',
-        items: [
-          {
-            name: '--enable-tp',
-            description: 'Enable Tensor Parallelism (TP) to split the model across GPUs.',
+            name: '--nowebui',
+            description: 'Do not launch the Gradio UI. Useful for launching the API in standalone mode.',
             type: 'CheckBox',
-          },
-          {
-            name: '--tp-backend',
-            description: 'The backend for tensor parallelism. Valid options: native, nccl. Default: native.',
-            type: 'DropDown',
-            values: ['native', 'nccl'],
-            defaultValue: 'native',
           },
         ],
       },

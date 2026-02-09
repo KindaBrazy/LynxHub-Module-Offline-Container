@@ -1,7 +1,7 @@
 import {PagesData} from '../../../../src/common/types/plugins/modules';
 import {SMARTGALLERY_ID} from '../../Constants';
-import smartGalleryArguments from '../Tools/SmartGallery (biagiomaf)/Arguments';
-import SMARTGALLERY_RM from '../Tools/SmartGallery (biagiomaf)/RendererMethods';
+import smartGalleryArguments from './SmartGallery (biagiomaf)/Arguments';
+import SMARTGALLERY_RM from './SmartGallery (biagiomaf)/RendererMethods';
 
 /* eslint max-len: 0 */
 

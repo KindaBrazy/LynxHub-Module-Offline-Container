@@ -46,12 +46,12 @@ import A1_MM from './Container/Image/SD (AUTOMATIC1111)/MainMethods';
 import Ls_MM from './Container/Image/SD AMDGPU (lshqqytiger)/MainMethods';
 import Vlad_MM from './Container/Image/SD Next (vladmandic)/MainMethods';
 import McMonkey_MM from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
+import SmartGallery_MM from './Container/Others/SmartGallery (biagiomaf)/MainMethods';
 import BOLT_DIY_MM from './Container/Text/BoltDiy (StackblitzLabs)/MainMethods';
 import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
-import SmartGallery_MM from './Container/Tools/SmartGallery (biagiomaf)/MainMethods';
 
 export default async function initialModule(utils: MainModuleUtils): Promise<MainModules[]> {
   return [

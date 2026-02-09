@@ -5,8 +5,8 @@ import SMARTGALLERY_RM from './SmartGallery (biagiomaf)/RendererMethods';
 
 /* eslint max-len: 0 */
 
-const toolsPage: PagesData = {
-  routePath: 'tools_page',
+const othersPage: PagesData = {
+  routePath: 'others_page',
   cards: [
     {
       id: SMARTGALLERY_ID,
@@ -24,4 +24,4 @@ const toolsPage: PagesData = {
   ],
 };
 
-export default toolsPage;
+export default othersPage;

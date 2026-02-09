@@ -23,6 +23,7 @@ import {
   SD_NEXT_ID,
   SD_UIUX_ID,
   SILLYTAVERN_ID,
+  SMARTGALLERY_ID,
   SWARM_ID,
   TG_ID,
   TTS_ID,
@@ -50,6 +51,7 @@ import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
+import SmartGallery_MM from './Container/Tools/SmartGallery (biagiomaf)/MainMethods';
 
 export default async function initialModule(utils: MainModuleUtils): Promise<MainModules[]> {
   return [
@@ -67,6 +69,7 @@ export default async function initialModule(utils: MainModuleUtils): Promise<Mai
     {id: SILLYTAVERN_ID, methods: () => Silly_MM(utils)},
     {id: SD_UIUX_ID, methods: () => A1_MM(utils)},
     {id: AITOOLKIT_ID, methods: () => AIToolkit_MM(utils)},
+    {id: SMARTGALLERY_ID, methods: () => SmartGallery_MM(utils)},
     {id: COMFYUI_ZLUDA_ID, methods: () => ComfyZluda_MM(utils)},
     {id: ONETRAINER_ID, methods: () => Nerogar_MM(utils)},
     {id: INVOKE_ID, methods: () => Invoke_MM(utils)},

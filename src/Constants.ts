@@ -13,6 +13,7 @@ export const SD_UIUX_ID = 'Anapnoe_SD';
 export const INVOKE_ID = 'InvokeAI_SD';
 export const ALLTALK_ID = 'Erew123_SD';
 export const AITOOLKIT_ID = 'Ostris_AI_Toolkit';
+export const SMARTGALLERY_ID = 'Biagiomaf_SmartGallery';
 
 // Text Generation
 export const TG_ID = 'Oobabooga_TG';

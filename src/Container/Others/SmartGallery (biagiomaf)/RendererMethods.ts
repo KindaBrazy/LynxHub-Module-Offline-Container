@@ -5,7 +5,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../Utils/CrossUtils';
+import {isMac, isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType} from '../../../Utils/RendererUtils';
 import smartGalleryArguments from './Arguments';
 
@@ -31,7 +31,7 @@ export function parseArgsToString(args: ChosenArgument[]): string {
     result += envVars + '\n';
   }
 
-  const pythonCmd = window.osPlatform === 'darwin' ? 'python3' : 'python';
+  const pythonCmd = isMac ? 'python3' : 'python';
   result += `${pythonCmd} smartgallery.py`;
 
   return result;
@@ -72,7 +72,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  const pipCommand = window.osPlatform === 'darwin' ? 'pip3' : 'pip';
+  const pipCommand = isMac ? 'pip3' : 'pip';
 
   stepper.initialSteps(['SmartGallery', 'Clone', 'Dependencies', 'Finish']);
 

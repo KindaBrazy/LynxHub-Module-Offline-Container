@@ -7,7 +7,8 @@ import SMARTGALLERY_RM from './SmartGallery (biagiomaf)/RendererMethods';
 /* eslint max-len: 0 */
 
 // TODO: make it tools page after v 3.5 release
-const routePath: AvailablePageIDs = window.LynxHub.buildNumber >= 45 ? 'tools_page' : 'others_page';
+const routePath: AvailablePageIDs =
+  typeof window !== 'undefined' && window.LynxHub.buildNumber >= 45 ? 'tools_page' : 'others_page';
 
 const othersPage: PagesData = {
   routePath,

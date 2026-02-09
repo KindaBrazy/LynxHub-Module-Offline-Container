@@ -38,6 +38,8 @@ import SD_UIUX_RM from './SD UI-UX (anapnoe)/RendererMethods';
 import mcMonkeyArguments from './SwarmUI (mcmonkeyprojects)/Arguments';
 import SWARM_RM from './SwarmUI (mcmonkeyprojects)/RendererMethods';
 
+/* eslint max-len: 0 */
+
 const imagePage: PagesData = {
   routePath: 'imageGen_page',
   cards: [

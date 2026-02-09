@@ -81,7 +81,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  const pipCommand = isWin ? 'pip' : 'pip3';
+  const pipCommand = window.osPlatform === 'darwin' ? 'pip3' : 'pip';
 
   const installReqs = (dir: string) => {
     stepper.executeTerminalCommands(`${pipCommand} install -r requirements.txt`, dir).then(() => {

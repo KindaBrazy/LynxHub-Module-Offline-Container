@@ -1,3 +1,4 @@
+import {AvailablePageIDs} from '../../../../src/common/consts';
 import {PagesData} from '../../../../src/common/types/plugins/modules';
 import {SMARTGALLERY_ID} from '../../Constants';
 import smartGalleryArguments from './SmartGallery (biagiomaf)/Arguments';
@@ -5,8 +6,11 @@ import SMARTGALLERY_RM from './SmartGallery (biagiomaf)/RendererMethods';
 
 /* eslint max-len: 0 */
 
+// TODO: make it tools page after v 3.5 release
+const routePath: AvailablePageIDs = window.LynxHub.buildNumber >= 45 ? 'tools_page' : 'others_page';
+
 const othersPage: PagesData = {
-  routePath: 'others_page',
+  routePath,
   cards: [
     {
       id: SMARTGALLERY_ID,

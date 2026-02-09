@@ -1,12 +1,14 @@
 import {AvailablePageIDs} from '../../../../src/common/consts';
 import {PagesData} from '../../../../src/common/types/plugins/modules';
-import {SMARTGALLERY_ID} from '../../Constants';
+import {LORA_MANAGER_ID, SMARTGALLERY_ID} from '../../Constants';
+import loraManagerArguments from './ComfyUI-Lora-Manager (willmiao)/Arguments';
+import LORA_MANAGER_RM from './ComfyUI-Lora-Manager (willmiao)/RendererMethods';
 import smartGalleryArguments from './SmartGallery (biagiomaf)/Arguments';
 import SMARTGALLERY_RM from './SmartGallery (biagiomaf)/RendererMethods';
 
 /* eslint max-len: 0 */
 
-// TODO: make it tools page after v 3.5 release
+// TODO: make it tools page after v3.5 release
 const routePath: AvailablePageIDs =
   typeof window !== 'undefined' && window.LynxHub.buildNumber >= 45 ? 'tools_page' : 'others_page';
 
@@ -24,6 +26,19 @@ const othersPage: PagesData = {
       type: 'image',
       arguments: smartGalleryArguments,
       methods: SMARTGALLERY_RM,
+      installationType: 'git',
+    },
+    {
+      id: LORA_MANAGER_ID,
+      title: 'ComfyUI LoRA Manager',
+      description:
+        'A comprehensive toolset that streamlines organizing, downloading, and applying LoRA models in ComfyUI. ' +
+        'Features recipe management, checkpoint organization, one-click workflow integration, and a browser extension ' +
+        'for Civitai. Access the interface at http://localhost:8188/loras',
+      repoUrl: 'https://github.com/willmiao/ComfyUI-Lora-Manager',
+      type: 'image',
+      arguments: loraManagerArguments,
+      methods: LORA_MANAGER_RM,
       installationType: 'git',
     },
   ],

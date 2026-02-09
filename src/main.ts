@@ -13,6 +13,7 @@ import {
   GeminiCli_ID,
   INVOKE_ID,
   KOHYA_ID,
+  LORA_MANAGER_ID,
   LoLLMS_ID,
   N8N_ID,
   ONETRAINER_ID,
@@ -46,6 +47,7 @@ import A1_MM from './Container/Image/SD (AUTOMATIC1111)/MainMethods';
 import Ls_MM from './Container/Image/SD AMDGPU (lshqqytiger)/MainMethods';
 import Vlad_MM from './Container/Image/SD Next (vladmandic)/MainMethods';
 import McMonkey_MM from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
+import LoraManager_MM from './Container/Others/ComfyUI-Lora-Manager (willmiao)/MainMethods';
 import SmartGallery_MM from './Container/Others/SmartGallery (biagiomaf)/MainMethods';
 import BOLT_DIY_MM from './Container/Text/BoltDiy (StackblitzLabs)/MainMethods';
 import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
@@ -70,6 +72,7 @@ export default async function initialModule(utils: MainModuleUtils): Promise<Mai
     {id: SD_UIUX_ID, methods: () => A1_MM(utils)},
     {id: AITOOLKIT_ID, methods: () => AIToolkit_MM(utils)},
     {id: SMARTGALLERY_ID, methods: () => SmartGallery_MM(utils)},
+    {id: LORA_MANAGER_ID, methods: () => LoraManager_MM(utils)},
     {id: COMFYUI_ZLUDA_ID, methods: () => ComfyZluda_MM(utils)},
     {id: ONETRAINER_ID, methods: () => Nerogar_MM(utils)},
     {id: INVOKE_ID, methods: () => Invoke_MM(utils)},

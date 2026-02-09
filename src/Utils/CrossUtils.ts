@@ -13,7 +13,21 @@ function detectIsWin(): boolean {
   return true;
 }
 
+function detectIsMac(): boolean {
+  // Renderer process - use preload-exposed platform
+  if (typeof window !== 'undefined' && window.osPlatform) {
+    return window.osPlatform === 'darwin';
+  }
+  // Main process - use process.platform directly (synchronous)
+  if (typeof process !== 'undefined' && process.platform) {
+    return process.platform === 'darwin';
+  }
+  // Fallback (shouldn't happen in Electron)
+  return true;
+}
+
 export const isWin: boolean = detectIsWin();
+export const isMac: boolean = detectIsMac();
 
 export function formatSize(size: number | undefined): string {
   if (!size) return '0KB';

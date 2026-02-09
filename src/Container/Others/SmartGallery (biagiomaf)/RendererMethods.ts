@@ -17,7 +17,8 @@ export function parseArgsToString(args: ChosenArgument[]): string {
 
   args.forEach(arg => {
     const argType = getArgumentType(arg.name, smartGalleryArguments);
-    if (argType === 'Input' && arg.value) {
+    // Include Input, Directory, and File types
+    if ((argType === 'Input' || argType === 'Directory' || argType === 'File') && arg.value) {
       // Environment variables
       if (isWin) {
         envVars += `set ${arg.name}=${arg.value}\n`;

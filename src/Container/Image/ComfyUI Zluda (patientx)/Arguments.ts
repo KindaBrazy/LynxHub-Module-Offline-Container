@@ -305,8 +305,9 @@ const comfyuizludaArguments: ArgumentsData = [
           {
             name: '--preview-method',
             description: 'Default preview method for sampler nodes.',
-            type: 'Input',
-            defaultValue: 'LatentPreviewMethod.NoPreviews',
+            type: 'DropDown',
+            values: ['none', 'auto', 'latent2rgb', 'taesd'],
+            defaultValue: 'auto',
           },
           {
             name: '--preview-size',
@@ -387,7 +388,9 @@ const comfyuizludaArguments: ArgumentsData = [
             name: '--fast',
             description:
               'Enable some untested and potentially quality deteriorating optimizations. This is used to test new features so using it might crash your comfyui. --fast with no arguments enables everything. You can pass a list specific optimizations if you only want to enable specific ones. Current valid optimizations: {}',
-            type: 'Input',
+            type: 'DropDown',
+            values: ['', 'fp16_accumulation', 'fp8_matrix_mult', 'cublas_ops', 'autotune', 'dynamic_vram'],
+            defaultValue: '',
           },
         ],
       },

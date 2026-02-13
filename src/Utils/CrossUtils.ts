@@ -29,6 +29,11 @@ function detectIsMac(): boolean {
 export const isWin: boolean = detectIsWin();
 export const isMac: boolean = detectIsMac();
 
+export function getPythonCommandByOs() {
+  if (isMac) return {pip: 'pip3', python: 'python3'};
+  return {pip: 'pip', python: 'python'};
+}
+
 export function formatSize(size: number | undefined): string {
   if (!size) return '0KB';
   if (size < 1024 * 1024) {

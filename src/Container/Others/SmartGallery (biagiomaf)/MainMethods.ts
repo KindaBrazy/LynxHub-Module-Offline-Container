@@ -1,13 +1,11 @@
-import {platform} from 'node:os';
-
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {SMARTGALLERY_ID} from '../../../Constants';
-import {isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const pythonCmd = platform() === 'darwin' ? 'python3' : 'python';
+const pythonCmd = getPythonCommandByOs().python;
 const DEFAULT_BATCH_DATA: string = isWin
   ? `@echo off\n\n${pythonCmd} smartgallery.py`
   : `#!/bin/bash\n\n${pythonCmd} smartgallery.py`;

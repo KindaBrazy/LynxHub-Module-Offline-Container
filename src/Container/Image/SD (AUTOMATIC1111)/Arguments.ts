@@ -1,5 +1,5 @@
 import {ArgumentsData, DataItem, DataSection} from '../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
 
 const automatic1111Arguments: ArgumentsData = [
   {
@@ -890,7 +890,7 @@ const linEV: DataSection = {
           description: 'Install command for torch',
           name: 'TORCH_COMMAND',
           type: 'Input',
-          defaultValue: 'pip install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113',
+          defaultValue: `${getPythonCommandByOs().pip} install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113`,
         },
         {
           description: 'Requirements file to use for stable-diffusion-webui',

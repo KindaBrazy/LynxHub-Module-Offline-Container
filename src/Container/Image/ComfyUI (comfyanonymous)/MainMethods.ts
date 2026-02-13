@@ -4,12 +4,15 @@ import fs from 'graceful-fs';
 
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {COMFYUI_ID} from '../../../Constants';
-import {isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
 import {checkWhich, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\npython main.py' : '#!/bin/bash\n\npython main.py';
+const pythonCommand = getPythonCommandByOs().python;
+const DEFAULT_BATCH_DATA: string = isWin
+  ? `@echo off\n\n${pythonCommand} main.py`
+  : `#!/bin/bash\n\n${pythonCommand} main.py`;
 
 export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);

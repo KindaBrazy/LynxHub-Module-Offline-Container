@@ -1,9 +1,11 @@
 import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {LoLLMS_ID} from '../../../Constants';
+import {getPythonCommandByOs} from '../../../Utils/CrossUtils';
 import {LINE_ENDING} from '../../../Utils/MainUtils';
 
 async function getRunCommands(): Promise<string | string[]> {
-  return `python app.py ${LINE_ENDING}`;
+  const pythonCommand = getPythonCommandByOs().python;
+  return `${pythonCommand} app.py ${LINE_ENDING}`;
 }
 
 async function updateAvailable(utils: MainModuleUtils, dir?: string) {

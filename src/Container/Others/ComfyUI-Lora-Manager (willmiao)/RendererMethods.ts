@@ -8,7 +8,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
 import loraManagerArguments from './Arguments';
 
@@ -42,7 +42,9 @@ export function parseArgsToString(args: ChosenArgument[]): string {
     }
   });
 
-  result += isEmpty(argResult) ? 'python standalone.py' : `python standalone.py ${argResult}`;
+  const pythonCommand = getPythonCommandByOs().python;
+
+  result += isEmpty(argResult) ? `${pythonCommand} standalone.py` : `${pythonCommand} standalone.py ${argResult}`;
 
   return result;
 }
@@ -52,9 +54,10 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   const lines: string[] = args.split('\n');
 
   lines.forEach((line: string): void => {
-    if (!line.startsWith('python standalone.py')) return;
+    const pythonCommand = getPythonCommandByOs().python;
+    if (!line.startsWith(`${pythonCommand} standalone.py`)) return;
 
-    const clArgs: string = line.split('python standalone.py ')[1];
+    const clArgs: string = line.split(`${pythonCommand} standalone.py `)[1];
 
     if (!clArgs) return;
 

@@ -7,7 +7,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isMac, isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isMac, isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType} from '../../../Utils/RendererUtils';
 import aiToolkitArguments from './Arguments';
 
@@ -81,7 +81,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  const pipCommand = isMac ? 'pip3' : 'pip';
+  const pipCommand = getPythonCommandByOs().pip;
 
   const installReqs = (dir: string) => {
     stepper.executeTerminalCommands(`${pipCommand} install -r requirements.txt`, dir).then(() => {

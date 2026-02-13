@@ -1,10 +1,11 @@
 import {RendererIpcTypes, UserInputField, UserInputResult} from '../../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../../Utils/CrossUtils';
 
 export const Invoke_Command_CreateVenv: string =
   'uv venv --relocatable --prompt invoke --python 3.12 --python-preference only-managed .venv';
 export const Invoke_Command_ActivateVenv: string = isWin ? '.venv\\Scripts\\activate' : 'source .venv/bin/activate';
-export const Invoke_Command_InstallPip: string = 'python -m ensurepip --upgrade';
+const pythonCommand = getPythonCommandByOs().python;
+export const Invoke_Command_InstallPip: string = `${pythonCommand} -m ensurepip --upgrade`;
 
 export const Invoke_Command_InstallUV = isWin
   ? 'powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"'

@@ -5,7 +5,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isMac, isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isMac, isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType} from '../../../Utils/RendererUtils';
 import smartGalleryArguments from './Arguments';
 
@@ -32,7 +32,7 @@ export function parseArgsToString(args: ChosenArgument[]): string {
     result += envVars + '\n';
   }
 
-  const pythonCmd = isMac ? 'python3' : 'python';
+  const pythonCmd = getPythonCommandByOs().python;
   result += `${pythonCmd} smartgallery.py`;
 
   return result;
@@ -73,7 +73,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  const pipCommand = isMac ? 'pip3' : 'pip';
+  const pipCommand = getPythonCommandByOs().pip;
 
   stepper.initialSteps(['SmartGallery', 'Clone', 'Dependencies', 'Finish']);
 

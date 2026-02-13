@@ -9,7 +9,7 @@ import {
   ExtensionData,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import comfyArguments from './Arguments';
 
@@ -55,7 +55,8 @@ export function parseArgsToString(args: ChosenArgument[]): string {
   // Add environment variables first, then the command
   result += envVars;
   if (envVars) result += '\n';
-  result += isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
+  const pythonCommand = getPythonCommandByOs().python;
+  result += isEmpty(argResult) ? `${pythonCommand} main.py` : `${pythonCommand} main.py ${argResult}`;
 
   return result;
 }
@@ -76,18 +77,19 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
       let [name, value] = line.replace(prefix, '').split('=');
       name = removeEscapes(name.trim());
       value = removeEscapes(value.trim());
-      
+
       if (isValidArg(name, comfyArguments) && isEnvironmentVariable(name)) {
         argResult.push({name, value});
       }
       return;
     }
 
+    const pythonCommand = getPythonCommandByOs().python;
     // Check for command line arguments
-    if (!line.startsWith('python main.py')) return;
+    if (!line.startsWith(`${pythonCommand} main.py`)) return;
 
     // Extract the command line arguments and clear falsy values
-    const clArgs: string = line.split('python main.py ')[1];
+    const clArgs: string = line.split(`${pythonCommand} main.py `)[1];
 
     if (!clArgs) return;
 

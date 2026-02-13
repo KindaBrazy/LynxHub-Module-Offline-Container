@@ -4,12 +4,15 @@ import fs from 'graceful-fs';
 
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {LORA_MANAGER_ID} from '../../../Constants';
-import {isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
-const DEFAULT_BATCH_DATA: string = isWin ? '@echo off\n\npython standalone.py' : '#!/bin/bash\n\npython standalone.py';
+const pythonCommand = getPythonCommandByOs().python;
+const DEFAULT_BATCH_DATA: string = isWin
+  ? `@echo off\n\n${pythonCommand} standalone.py`
+  : `#!/bin/bash\n\n${pythonCommand} standalone.py`;
 const SETTINGS_FILE = 'settings.json';
 
 const DEFAULT_SETTINGS: {

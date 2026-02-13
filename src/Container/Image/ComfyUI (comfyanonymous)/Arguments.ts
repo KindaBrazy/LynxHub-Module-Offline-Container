@@ -312,32 +312,7 @@ const comfyuiArguments: ArgumentsData = [
           },
         ],
       },
-      {
-        section: 'AMD ROCm Environment Variables',
-        items: [
-          {
-            name: 'HSA_OVERRIDE_GFX_VERSION',
-            description:
-              'Override GFX version for unsupported AMD GPUs. Use "10.3.0" for 6700, 6600 and other RDNA2 or older cards. Use "11.0.0" for 7600 and other RDNA3 cards.',
-            type: 'Input',
-            defaultValue: '11.0.0',
-          },
-          {
-            name: 'TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL',
-            description:
-              'Enable experimental memory efficient attention on AMD GPUs. Should already be enabled by default on RDNA3.',
-            type: 'Input',
-            defaultValue: '1',
-          },
-          {
-            name: 'PYTORCH_TUNABLEOP_ENABLED',
-            description:
-              'Enable PyTorch tunable operations which might speed things up at the cost of a very slow initial run.',
-            type: 'Input',
-            defaultValue: '1',
-          },
-        ],
-      },
+
       {
         section: 'Memory Management',
         items: [
@@ -387,6 +362,32 @@ const comfyuiArguments: ArgumentsData = [
             defaultValue: 'f"sqlite:///{database_default_path}',
           },
         ],
+      },
+    ],
+  },
+  {
+    category: 'Environment Variables',
+    items: [
+      {
+        name: 'HSA_OVERRIDE_GFX_VERSION',
+        description:
+          'Override GFX version for unsupported AMD GPUs. Use "10.3.0" for 6700, 6600 and other RDNA2 or older cards. Use "11.0.0" for 7600 and other RDNA3 cards.',
+        type: 'Input',
+        defaultValue: '11.0.0',
+      },
+      {
+        name: 'TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL',
+        description:
+          'Enable experimental memory efficient attention on AMD GPUs. Should already be enabled by default on RDNA3.',
+        type: 'Input',
+        defaultValue: '1',
+      },
+      {
+        name: 'PYTORCH_TUNABLEOP_ENABLED',
+        description:
+          'Enable PyTorch tunable operations which might speed things up at the cost of a very slow initial run.',
+        type: 'Input',
+        defaultValue: '1',
       },
     ],
   },

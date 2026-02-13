@@ -10,26 +10,51 @@ import {
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
 import {isWin} from '../../../Utils/CrossUtils';
-import {CardInfo, catchAddress, getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
+import {CardInfo, catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import comfyArguments from './Arguments';
 
 const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
 
+function isEnvironmentVariable(name: string): boolean {
+  for (const arg of comfyArguments) {
+    if (arg.category === 'Environment Variables') {
+      if ('items' in arg) {
+        return arg.items.some(item => item.name === name);
+      }
+    }
+  }
+  return false;
+}
+
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
   let argResult: string = '';
+  let envVars: string = '';
 
   args.forEach(arg => {
-    const argType = getArgumentType(arg.name, comfyArguments);
-    if (argType === 'CheckBox') {
-      argResult += `${arg.name} `;
-    } else if (argType === 'File' || argType === 'Directory') {
-      argResult += `${arg.name} "${arg.value}" `;
+    if (isEnvironmentVariable(arg.name)) {
+      // Handle environment variables
+      if (getArgumentType(arg.name, comfyArguments) === 'CheckBox') {
+        envVars += isWin ? `set ${arg.name}=true\n` : `export ${arg.name}="true"\n`;
+      } else {
+        envVars += isWin ? `set ${arg.name}=${arg.value}\n` : `export ${arg.name}="${arg.value}"\n`;
+      }
     } else {
-      argResult += `${arg.name} ${arg.value} `;
+      // Handle command line arguments
+      const argType = getArgumentType(arg.name, comfyArguments);
+      if (argType === 'CheckBox') {
+        argResult += `${arg.name} `;
+      } else if (argType === 'File' || argType === 'Directory') {
+        argResult += `${arg.name} "${arg.value}" `;
+      } else {
+        argResult += `${arg.name} ${arg.value} `;
+      }
     }
   });
 
+  // Add environment variables first, then the command
+  result += envVars;
+  if (envVars) result += '\n';
   result += isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
 
   return result;
@@ -40,6 +65,25 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   const lines: string[] = args.split('\n');
 
   lines.forEach((line: string): void => {
+    // Skip comments
+    if (line.startsWith('#')) {
+      return;
+    }
+
+    // Check for environment variables (export on Linux, set on Windows)
+    if (line.startsWith('export ') || line.startsWith('set ')) {
+      const prefix = line.startsWith('export ') ? 'export ' : 'set ';
+      let [name, value] = line.replace(prefix, '').split('=');
+      name = removeEscapes(name.trim());
+      value = removeEscapes(value.trim());
+      
+      if (isValidArg(name, comfyArguments) && isEnvironmentVariable(name)) {
+        argResult.push({name, value});
+      }
+      return;
+    }
+
+    // Check for command line arguments
     if (!line.startsWith('python main.py')) return;
 
     // Extract the command line arguments and clear falsy values

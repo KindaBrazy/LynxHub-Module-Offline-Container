@@ -1,321 +1,340 @@
 /* eslint max-len: 0 */
 
-import {DataItem, DataSection} from '../../../../../../src/common/types/plugins/modules';
+import {DataSection} from '../../../../../../src/common/types/plugins/modules';
 
-const webSearch: DataItem | DataSection = {
+const webSearch: DataSection = {
   category: 'Web Search',
-  items: [
+  sections: [
     {
-      name: 'ENABLE_WEB_SEARCH',
-      description: 'Enable web search toggle.',
-      type: 'CheckBox',
-      defaultValue: false,
-    },
-    {
-      name: 'ENABLE_SEARCH_QUERY_GENERATION',
-      description: 'Enables or disables search query generation.',
-      type: 'CheckBox',
-      defaultValue: true,
-    },
-    {
-      name: 'WEB_SEARCH_DOMAIN_FILTER_LIST',
-      description:
-        'Comma-separated list of domains to filter web search results. Domains prefixed with `!` are blocked; domains without prefix create an allowlist (only those domains permitted).',
-      type: 'Input',
-    },
-    {
-      name: 'WEB_SEARCH_CONCURRENT_REQUESTS',
-      description:
-        'Limits the number of concurrent search requests to the search engine provider. Set to `0` for unlimited concurrency (default). Set to `1` for sequential execution to prevent rate limiting errors (e.g., Brave Free Tier).',
-      type: 'Input',
-      defaultValue: 0,
-    },
-    {
-      name: 'WEB_SEARCH_TRUST_ENV',
-      description: 'Enables proxy set by `http_proxy` and `https_proxy` during web search content fetching.',
-      type: 'CheckBox',
-      defaultValue: false,
-    },
-    {
-      name: 'WEB_SEARCH_RESULT_COUNT',
-      description: 'Maximum number of search results to crawl.',
-      type: 'Input',
-      defaultValue: 3,
-    },
-    {
-      name: 'WEB_LOADER_CONCURRENT_REQUESTS',
-      description:
-        'Specifies the number of concurrent requests used by the web loader to fetch content from web pages returned by search results. This directly impacts how many pages can be crawled simultaneously.',
-      type: 'Input',
-      defaultValue: 10,
-    },
-    {
-      name: 'WEB_SEARCH_ENGINE',
-      description: 'Specifies the search engine to use.',
-      type: 'DropDown',
-      values: [
-        'searxng',
-        'google_pse',
-        'brave',
-        'kagi',
-        'mojeek',
-        'bocha',
-        'serpstack',
-        'serper',
-        'serply',
-        'searchapi',
-        'serpapi',
-        'duckduckgo',
-        'tavily',
-        'jina',
-        'bing',
-        'exa',
-        'perplexity',
-        'perplexity_search',
-        'ollama_cloud',
-        'azure_ai_search',
-        'yacy',
-        'sougou',
+      section: 'General',
+      items: [
+        {
+          name: 'ENABLE_WEB_SEARCH',
+          description: 'Enable web search toggle.',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          name: 'ENABLE_SEARCH_QUERY_GENERATION',
+          description: 'Enables or disables search query generation.',
+          type: 'CheckBox',
+          defaultValue: true,
+        },
+        {
+          name: 'WEB_SEARCH_DOMAIN_FILTER_LIST',
+          description:
+            'Comma-separated list of domains to filter web search results. Domains prefixed with `!` are blocked; domains without prefix create an allowlist (only those domains permitted).',
+          type: 'Input',
+        },
+        {
+          name: 'WEB_SEARCH_CONCURRENT_REQUESTS',
+          description:
+            'Limits the number of concurrent search requests to the search engine provider. Set to `0` for unlimited concurrency (default). Set to `1` for sequential execution to prevent rate limiting errors (e.g., Brave Free Tier).',
+          type: 'Input',
+          defaultValue: 0,
+        },
+        {
+          name: 'WEB_SEARCH_TRUST_ENV',
+          description: 'Enables proxy set by `http_proxy` and `https_proxy` during web search content fetching.',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          name: 'WEB_SEARCH_RESULT_COUNT',
+          description: 'Maximum number of search results to crawl.',
+          type: 'Input',
+          defaultValue: 3,
+        },
+        {
+          name: 'WEB_LOADER_CONCURRENT_REQUESTS',
+          description:
+            'Specifies the number of concurrent requests used by the web loader to fetch content from web pages returned by search results. This directly impacts how many pages can be crawled simultaneously.',
+          type: 'Input',
+          defaultValue: 10,
+        },
+        {
+          name: 'WEB_SEARCH_ENGINE',
+          description: 'Specifies the search engine to use.',
+          type: 'DropDown',
+          values: [
+            'searxng',
+            'google_pse',
+            'brave',
+            'kagi',
+            'mojeek',
+            'bocha',
+            'serpstack',
+            'serper',
+            'serply',
+            'searchapi',
+            'serpapi',
+            'duckduckgo',
+            'tavily',
+            'jina',
+            'bing',
+            'exa',
+            'perplexity',
+            'perplexity_search',
+            'ollama_cloud',
+            'azure_ai_search',
+            'yacy',
+            'sougou',
+          ],
+        },
+        {
+          name: 'BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL',
+          description: 'Bypasses the web search embedding and retrieval process.',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          name: 'BYPASS_WEB_SEARCH_WEB_LOADER',
+          description:
+            'Bypasses the web loader when performing web search. When enabled, only snippets from the search engine are used, and the full page content is not fetched.',
+          type: 'CheckBox',
+          defaultValue: false,
+        },
+        {
+          name: 'SEARXNG_LANGUAGE',
+          description:
+            'This variable is used in the request to searxng as the "search language" (arguement "language").',
+          type: 'Input',
+          defaultValue: 'all',
+        },
+        {
+          name: 'DDGS_BACKEND',
+          description: 'Specifies the backend to be used by the DDGS engine.',
+          type: 'DropDown',
+          values: [
+            'auto',
+            'bing',
+            'brave',
+            'duckduckgo',
+            'google',
+            'grokipedia',
+            'mojeek',
+            'wikipedia',
+            'yahoo',
+            'yandex',
+          ],
+          defaultValue: 'auto',
+        },
+        {
+          name: 'SEARXNG_QUERY_URL',
+          description:
+            'The [SearXNG search API](https://docs.searxng.org/dev/search_api.html) URL supporting JSON output. `<query>` is replaced with the search query. Example: `http://searxng.local/search?q=<query>`',
+          type: 'Input',
+        },
+        {
+          name: 'GOOGLE_PSE_API_KEY',
+          description: 'Sets the API key for the Google Programmable Search Engine (PSE) service.',
+          type: 'Input',
+        },
+        {
+          name: 'GOOGLE_PSE_ENGINE_ID',
+          description: 'The engine ID for the Google Programmable Search Engine (PSE) service.',
+          type: 'Input',
+        },
+        {
+          name: 'BRAVE_SEARCH_API_KEY',
+          description: 'Sets the API key for the Brave Search API.',
+          type: 'Input',
+        },
+        {
+          name: 'KAGI_SEARCH_API_KEY',
+          description: 'Sets the API key for Kagi Search API.',
+          type: 'Input',
+        },
+        {
+          name: 'MOJEEK_SEARCH_API_KEY',
+          description: 'Sets the API key for Mojeek Search API.',
+          type: 'Input',
+        },
+        {
+          name: 'SERPSTACK_API_KEY',
+          description: 'Sets the API key for Serpstack search API.',
+          type: 'Input',
+        },
+        {
+          name: 'SERPSTACK_HTTPS',
+          description:
+            'Configures the use of HTTPS for Serpstack requests. Free tier requests are restricted to HTTP only.',
+          type: 'CheckBox',
+          defaultValue: true,
+        },
+        {
+          name: 'SERPER_API_KEY',
+          description: 'Sets the API key for Serper search API.',
+          type: 'Input',
+        },
+        {
+          name: 'SERPLY_API_KEY',
+          description: 'Sets the API key for Serply search API.',
+          type: 'Input',
+        },
+        {
+          name: 'SEARCHAPI_API_KEY',
+          description: 'Sets the API key for SearchAPI.',
+          type: 'Input',
+        },
+        {
+          name: 'SEARCHAPI_ENGINE',
+          description: 'Sets the SearchAPI engine.',
+          type: 'Input',
+        },
+        {
+          name: 'TAVILY_API_KEY',
+          description: 'Sets the API key for Tavily search API.',
+          type: 'Input',
+        },
+        {
+          name: 'JINA_API_KEY',
+          description: 'Sets the API key for Jina.',
+          type: 'Input',
+        },
+        {
+          name: 'JINA_API_BASE_URL',
+          description:
+            'Sets the Base URL for Jina Search API. Useful for specifying custom or regional endpoints (e.g., `https://eu-s-beta.jina.ai/`).',
+          type: 'Input',
+          defaultValue: 'https://s.jina.ai/',
+        },
+        {
+          name: 'BING_SEARCH_V7_ENDPOINT',
+          description: 'Sets the endpoint for Bing Search API.',
+          type: 'Input',
+        },
+        {
+          name: 'BING_SEARCH_V7_SUBSCRIPTION_KEY',
+          description: 'Sets the subscription key for Bing Search API.',
+          type: 'Input',
+          defaultValue: 'https://api.bing.microsoft.com/v7.0/search',
+        },
+        {
+          name: 'BOCHA_SEARCH_API_KEY',
+          description: 'Sets the API key for Bocha Search API.',
+          type: 'Input',
+        },
+        {
+          name: 'EXA_API_KEY',
+          description: 'Sets the API key for Exa search API.',
+          type: 'Input',
+        },
+        {
+          name: 'SERPAPI_API_KEY',
+          description: 'Sets the API key for SerpAPI.',
+          type: 'Input',
+        },
+        {
+          name: 'SERPAPI_ENGINE',
+          description: 'Specifies the search engine to use for SerpAPI.',
+          type: 'Input',
+        },
+        {
+          name: 'SOUGOU_API_SID',
+          description: 'Sets the Sogou API SID.',
+          type: 'Input',
+        },
+        {
+          name: 'SOUGOU_API_SK',
+          description: 'Sets the Sogou API SK.',
+          type: 'Input',
+        },
+        {
+          name: 'OLLAMA_CLOUD_WEB_SEARCH_API_KEY',
+          description: 'Sets the Ollama Cloud Web Search API Key.',
+          type: 'Input',
+        },
+        {
+          name: 'AZURE_AI_SEARCH_API_KEY',
+          description:
+            'API key (query key or admin key) for authenticating with Azure AI Search service. Required for using Azure AI Search as a web search provider.',
+          type: 'Input',
+        },
+        {
+          name: 'AZURE_AI_SEARCH_ENDPOINT',
+          description:
+            'Azure Search service endpoint URL. Specifies which Azure Search service instance to connect to.',
+          type: 'Input',
+        },
+        {
+          name: 'AZURE_AI_SEARCH_INDEX_NAME',
+          description:
+            'Name of the search index to query within your Azure Search service. Different indexes can contain different types of searchable content.',
+          type: 'Input',
+        },
+        {
+          name: 'YACY_QUERY_URL',
+          description:
+            "Sets the query URL for YaCy search engine integration. Should point to a YaCy instance's search API endpoint.",
+          type: 'Input',
+        },
+        {
+          name: 'YACY_USERNAME',
+          description: 'Specifies the username for authenticated access to YaCy search engine.',
+          type: 'Input',
+        },
+        {
+          name: 'YACY_PASSWORD',
+          description: 'Specifies the password for authenticated access to YaCy search engine.',
+          type: 'Input',
+        },
+        {
+          name: 'EXTERNAL_WEB_SEARCH_URL',
+          description:
+            'Specifies the URL of an external web search service API endpoint for custom search integrations.',
+          type: 'Input',
+        },
+        {
+          name: 'EXTERNAL_WEB_SEARCH_API_KEY',
+          description: 'Sets the API key for authenticating with the external web search service.',
+          type: 'Input',
+        },
+        {
+          name: 'EXTERNAL_WEB_LOADER_URL',
+          description:
+            'Specifies the URL of an external web content loader service for fetching and processing web pages.',
+          type: 'Input',
+        },
+        {
+          name: 'EXTERNAL_WEB_LOADER_API_KEY',
+          description: 'Sets the API key for authenticating with the external web loader service.',
+          type: 'Input',
+        },
+        {
+          name: 'PERPLEXITY_API_KEY',
+          description: 'Sets the API key for Perplexity API.',
+          type: 'Input',
+        },
+        {
+          name: 'PERPLEXITY_SEARCH_API_URL',
+          description:
+            "Configures the API endpoint for Perplexity Search. Allows using custom or self-hosted Perplexity-compatible API endpoints (such as LiteLLM's `/search` endpoint) instead of the hardcoded default for the official Perplexity API.",
+          type: 'Input',
+          defaultValue: 'https://api.perplexity.ai/search',
+        },
+        {
+          name: 'PERPLEXITY_MODEL',
+          description:
+            'Specifies the Perplexity AI model to use for search queries when using `Perplexity` as the web search engine.',
+          type: 'Input',
+          defaultValue: 'sonar',
+        },
+        {
+          name: 'PERPLEXITY_SEARCH_CONTEXT_USAGE',
+          description:
+            'Controls the amount of search context used by Perplexity AI. Options typically include `low`, `medium`, `high`.',
+          type: 'Input',
+          defaultValue: 'medium',
+        },
+        {
+          name: 'TAVILY_EXTRACT_DEPTH',
+          description: 'Specifies the extract depth for Tavily search results.',
+          type: 'Input',
+          defaultValue: 'basic',
+        },
       ],
     },
-    {
-      name: 'BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL',
-      description: 'Bypasses the web search embedding and retrieval process.',
-      type: 'CheckBox',
-      defaultValue: false,
-    },
-    {
-      name: 'BYPASS_WEB_SEARCH_WEB_LOADER',
-      description:
-        'Bypasses the web loader when performing web search. When enabled, only snippets from the search engine are used, and the full page content is not fetched.',
-      type: 'CheckBox',
-      defaultValue: false,
-    },
-    {
-      name: 'SEARXNG_LANGUAGE',
-      description: 'This variable is used in the request to searxng as the "search language" (arguement "language").',
-      type: 'Input',
-      defaultValue: 'all',
-    },
-    {
-      name: 'DDGS_BACKEND',
-      description: 'Specifies the backend to be used by the DDGS engine.',
-      type: 'DropDown',
-      values: ['auto', 'bing', 'brave', 'duckduckgo', 'google', 'grokipedia', 'mojeek', 'wikipedia', 'yahoo', 'yandex'],
-      defaultValue: 'auto',
-    },
-    {
-      name: 'SEARXNG_QUERY_URL',
-      description:
-        'The [SearXNG search API](https://docs.searxng.org/dev/search_api.html) URL supporting JSON output. `<query>` is replaced with the search query. Example: `http://searxng.local/search?q=<query>`',
-      type: 'Input',
-    },
-    {
-      name: 'GOOGLE_PSE_API_KEY',
-      description: 'Sets the API key for the Google Programmable Search Engine (PSE) service.',
-      type: 'Input',
-    },
-    {
-      name: 'GOOGLE_PSE_ENGINE_ID',
-      description: 'The engine ID for the Google Programmable Search Engine (PSE) service.',
-      type: 'Input',
-    },
-    {
-      name: 'BRAVE_SEARCH_API_KEY',
-      description: 'Sets the API key for the Brave Search API.',
-      type: 'Input',
-    },
-    {
-      name: 'KAGI_SEARCH_API_KEY',
-      description: 'Sets the API key for Kagi Search API.',
-      type: 'Input',
-    },
-    {
-      name: 'MOJEEK_SEARCH_API_KEY',
-      description: 'Sets the API key for Mojeek Search API.',
-      type: 'Input',
-    },
-    {
-      name: 'SERPSTACK_API_KEY',
-      description: 'Sets the API key for Serpstack search API.',
-      type: 'Input',
-    },
-    {
-      name: 'SERPSTACK_HTTPS',
-      description:
-        'Configures the use of HTTPS for Serpstack requests. Free tier requests are restricted to HTTP only.',
-      type: 'CheckBox',
-      defaultValue: true,
-    },
-    {
-      name: 'SERPER_API_KEY',
-      description: 'Sets the API key for Serper search API.',
-      type: 'Input',
-    },
-    {
-      name: 'SERPLY_API_KEY',
-      description: 'Sets the API key for Serply search API.',
-      type: 'Input',
-    },
-    {
-      name: 'SEARCHAPI_API_KEY',
-      description: 'Sets the API key for SearchAPI.',
-      type: 'Input',
-    },
-    {
-      name: 'SEARCHAPI_ENGINE',
-      description: 'Sets the SearchAPI engine.',
-      type: 'Input',
-    },
-    {
-      name: 'TAVILY_API_KEY',
-      description: 'Sets the API key for Tavily search API.',
-      type: 'Input',
-    },
-    {
-      name: 'JINA_API_KEY',
-      description: 'Sets the API key for Jina.',
-      type: 'Input',
-    },
-    {
-      name: 'JINA_API_BASE_URL',
-      description: 'Sets the Base URL for Jina Search API. Useful for specifying custom or regional endpoints (e.g., `https://eu-s-beta.jina.ai/`).',
-      type: 'Input',
-      defaultValue: 'https://s.jina.ai/',
-    },
-    {
-      name: 'BING_SEARCH_V7_ENDPOINT',
-      description: 'Sets the endpoint for Bing Search API.',
-      type: 'Input',
-    },
-    {
-      name: 'BING_SEARCH_V7_SUBSCRIPTION_KEY',
-      description: 'Sets the subscription key for Bing Search API.',
-      type: 'Input',
-      defaultValue: 'https://api.bing.microsoft.com/v7.0/search',
-    },
-    {
-      name: 'BOCHA_SEARCH_API_KEY',
-      description: 'Sets the API key for Bocha Search API.',
-      type: 'Input',
-    },
-    {
-      name: 'EXA_API_KEY',
-      description: 'Sets the API key for Exa search API.',
-      type: 'Input',
-    },
-    {
-      name: 'SERPAPI_API_KEY',
-      description: 'Sets the API key for SerpAPI.',
-      type: 'Input',
-    },
-    {
-      name: 'SERPAPI_ENGINE',
-      description: 'Specifies the search engine to use for SerpAPI.',
-      type: 'Input',
-    },
-    {
-      name: 'SOUGOU_API_SID',
-      description: 'Sets the Sogou API SID.',
-      type: 'Input',
-    },
-    {
-      name: 'SOUGOU_API_SK',
-      description: 'Sets the Sogou API SK.',
-      type: 'Input',
-    },
-    {
-      name: 'OLLAMA_CLOUD_WEB_SEARCH_API_KEY',
-      description: 'Sets the Ollama Cloud Web Search API Key.',
-      type: 'Input',
-    },
-    {
-      name: 'AZURE_AI_SEARCH_API_KEY',
-      description:
-        'API key (query key or admin key) for authenticating with Azure AI Search service. Required for using Azure AI Search as a web search provider.',
-      type: 'Input',
-    },
-    {
-      name: 'AZURE_AI_SEARCH_ENDPOINT',
-      description: 'Azure Search service endpoint URL. Specifies which Azure Search service instance to connect to.',
-      type: 'Input',
-    },
-    {
-      name: 'AZURE_AI_SEARCH_INDEX_NAME',
-      description:
-        'Name of the search index to query within your Azure Search service. Different indexes can contain different types of searchable content.',
-      type: 'Input',
-    },
-    {
-      name: 'YACY_QUERY_URL',
-      description:
-        "Sets the query URL for YaCy search engine integration. Should point to a YaCy instance's search API endpoint.",
-      type: 'Input',
-    },
-    {
-      name: 'YACY_USERNAME',
-      description: 'Specifies the username for authenticated access to YaCy search engine.',
-      type: 'Input',
-    },
-    {
-      name: 'YACY_PASSWORD',
-      description: 'Specifies the password for authenticated access to YaCy search engine.',
-      type: 'Input',
-    },
-    {
-      name: 'EXTERNAL_WEB_SEARCH_URL',
-      description: 'Specifies the URL of an external web search service API endpoint for custom search integrations.',
-      type: 'Input',
-    },
-    {
-      name: 'EXTERNAL_WEB_SEARCH_API_KEY',
-      description: 'Sets the API key for authenticating with the external web search service.',
-      type: 'Input',
-    },
-    {
-      name: 'EXTERNAL_WEB_LOADER_URL',
-      description: 'Specifies the URL of an external web content loader service for fetching and processing web pages.',
-      type: 'Input',
-    },
-    {
-      name: 'EXTERNAL_WEB_LOADER_API_KEY',
-      description: 'Sets the API key for authenticating with the external web loader service.',
-      type: 'Input',
-    },
-    {
-      name: 'PERPLEXITY_API_KEY',
-      description: 'Sets the API key for Perplexity API.',
-      type: 'Input',
-    },
-    {
-      name: 'PERPLEXITY_SEARCH_API_URL',
-      description:
-        "Configures the API endpoint for Perplexity Search. Allows using custom or self-hosted Perplexity-compatible API endpoints (such as LiteLLM's `/search` endpoint) instead of the hardcoded default for the official Perplexity API.",
-      type: 'Input',
-      defaultValue: 'https://api.perplexity.ai/search',
-    },
-    {
-      name: 'PERPLEXITY_MODEL',
-      description:
-        'Specifies the Perplexity AI model to use for search queries when using `Perplexity` as the web search engine.',
-      type: 'Input',
-      defaultValue: 'sonar',
-    },
-    {
-      name: 'PERPLEXITY_SEARCH_CONTEXT_USAGE',
-      description:
-        'Controls the amount of search context used by Perplexity AI. Options typically include `low`, `medium`, `high`.',
-      type: 'Input',
-      defaultValue: 'medium',
-    },
-    {
-      name: 'TAVILY_EXTRACT_DEPTH',
-      description: 'Specifies the extract depth for Tavily search results.',
-      type: 'Input',
-      defaultValue: 'basic',
-    },
-  ],
-  sections: [
     {
       section: 'Web Loader Configuration',
       items: [

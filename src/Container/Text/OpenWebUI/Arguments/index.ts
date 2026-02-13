@@ -1,34 +1,34 @@
 /* eslint max-len: 0 */
 
 import {ArgumentsData} from '../../../../../../src/common/types/plugins/modules';
-import appBackend from './AppBackend';
+import appBackend from './appBackend';
 import audio from './audio';
+import idap from './idap';
 import imageGeneration from './imageGeneration';
-import ldap from './ldap';
-import miscEnvironmentVariables from './miscEnvironmentVariables';
+import miscEnv from './miscEnv';
 import oauth from './oauth';
-import ragContentExtractionEngine from './ragContentExtractionEngine';
-import retrievalAugmentedGenerationrag from './retrievalAugmentedGenerationrag';
+import ragCEE from './ragCEE';
+import retrievalAGR from './retrievalAGR';
 import scim from './scim';
-import securityVariables from './SecurityVariables';
+import securityVariables from './securityVariables';
 import userPermissions from './userPermissions';
-import vectorDatabase from './VectorDatabase';
+import vectorDatabase from './vectorDatabase';
 import webSearch from './webSearch';
 
 const openArguments: ArgumentsData = [
   appBackend,
   securityVariables,
   vectorDatabase,
-  ragContentExtractionEngine,
-  retrievalAugmentedGenerationrag,
+  ragCEE,
+  retrievalAGR,
   webSearch,
   audio,
   imageGeneration,
   oauth,
-  ldap,
+  idap,
   scim,
   userPermissions,
-  miscEnvironmentVariables,
+  miscEnv,
 ];
 
 export default openArguments;

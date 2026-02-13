@@ -2,7 +2,7 @@
 
 import {DataSection} from '../../../../../../src/common/types/plugins/modules';
 
-const retrievalAugmentedGenerationrag: DataSection = {
+const retrievalAGR: DataSection = {
   category: 'Retrieval Augmented Generation (RAG)',
   sections: [
     {
@@ -380,4 +380,4 @@ const retrievalAugmentedGenerationrag: DataSection = {
   ],
 };
 
-export default retrievalAugmentedGenerationrag;
+export default retrievalAGR;

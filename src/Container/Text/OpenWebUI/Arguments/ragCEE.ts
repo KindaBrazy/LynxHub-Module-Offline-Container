@@ -2,7 +2,7 @@
 
 import {DataItem} from '../../../../../../src/common/types/plugins/modules';
 
-const ragContentExtractionEngine: DataItem = {
+const ragCEE: DataItem = {
   category: 'RAG Content Extraction Engine',
   items: [
     {
@@ -67,4 +67,4 @@ const ragContentExtractionEngine: DataItem = {
   ],
 };
 
-export default ragContentExtractionEngine;
+export default ragCEE;

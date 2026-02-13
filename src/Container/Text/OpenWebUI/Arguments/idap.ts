@@ -2,7 +2,7 @@
 
 import {DataItem} from '../../../../../../src/common/types/plugins/modules';
 
-const ldap: DataItem = {
+const idap: DataItem = {
   category: 'LDAP',
   items: [
     {
@@ -107,4 +107,4 @@ const ldap: DataItem = {
   ],
 };
 
-export default ldap;
+export default idap;

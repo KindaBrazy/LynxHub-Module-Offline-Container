@@ -2,7 +2,7 @@
 
 import {DataSection} from '../../../../../../src/common/types/plugins/modules';
 
-const miscEnvironmentVariables: DataSection = {
+const miscEnv: DataSection = {
   category: 'Misc Environment Variables',
   sections: [
     {
@@ -613,4 +613,4 @@ const miscEnvironmentVariables: DataSection = {
   ],
 };
 
-export default miscEnvironmentVariables;
+export default miscEnv;

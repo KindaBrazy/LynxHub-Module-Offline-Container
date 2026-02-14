@@ -35,11 +35,24 @@ function startInstall(stepper: InstallationStepper) {
           stepper.setInstalled(targetDirectory);
           stepper.showFinalStep('success', 'Applio Found!', 'Existing Applio installation located.');
         } else {
-          stepper.showFinalStep(
-            'error',
-            'Invalid Applio Directory',
-            'The selected directory does not appear to contain a valid Applio installation.',
-          );
+          stepper.utils
+            .verifyFilesExist(targetDirectory, [isWin ? 'run-applio.bat' : 'run-applio.sh'])
+            .then(isExist => {
+              if (isExist) {
+                stepper.showFinalStep(
+                  'success',
+                  'Applio located successfully!',
+                  'Detected a manual installation of Applio. Note: Because this is not a Git repository,' +
+                    ' automatic updates and certain version-dependent features may not work as expected.',
+                );
+              } else {
+                stepper.showFinalStep(
+                  'error',
+                  'Invalid Applio Directory',
+                  'The selected directory does not appear to contain a valid Applio installation.',
+                );
+              }
+            });
         }
       });
     }

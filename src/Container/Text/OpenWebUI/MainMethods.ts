@@ -50,7 +50,7 @@ async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
 
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   try {
-    const currentVersion = await getPipPackageVersion('open-webui', utils);
+    const currentVersion = await getPipPackageVersion('open-webui', utils, OPEN_WEBUI_ID);
     const latestVersion = await getLatestPipPackageVersion('open-webui');
     if (currentVersion && latestVersion && compare(currentVersion, latestVersion) === -1) {
       utils.storage.set('update-available-version-openwebui', latestVersion);
@@ -68,7 +68,7 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 
 function mainIpc(utils: MainModuleUtils) {
   utils.ipc.handle('is_openwebui_installed', () => isInstalled(utils));
-  utils.ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', utils));
+  utils.ipc.handle('current_openwebui_version', () => getPipPackageVersion('open-webui', utils, OPEN_WEBUI_ID));
 }
 
 async function uninstall(utils: MainModuleUtils): Promise<void> {

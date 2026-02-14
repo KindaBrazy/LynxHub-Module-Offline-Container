@@ -166,8 +166,8 @@ function startInstall(stepper: InstallationStepper) {
       case 'Mac x86 (Conda)':
         return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
 
-      case 'AMD GPUs (Linux only) ROCm 6.4':
-        return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
+      case 'AMD GPUs (Linux only) ROCm 7.1':
+        return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm7.1';
       case 'AMD GPUs (Linux only) ROCm 7.1 Nightly':
         return (
           'pip install --pre torch torchvision torchaudio --index-url ' +

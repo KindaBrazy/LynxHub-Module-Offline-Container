@@ -7,7 +7,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {getPythonCommandByOs, isMac, isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType} from '../../../Utils/RendererUtils';
 import aiToolkitArguments from './Arguments';
 

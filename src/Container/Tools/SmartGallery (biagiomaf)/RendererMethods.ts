@@ -101,6 +101,12 @@ function startInstall(stepper: InstallationStepper) {
     } else if (targetDirectory) {
       stepper.utils.validateGitRepository(targetDirectory, SMARTGALLERY_URL).then(isValid => {
         if (isValid) {
+          stepper.setInstalled(targetDirectory);
+          stepper.showFinalStep(
+            'success',
+            'ComfyUI LoRA Manager located successfully!',
+            'Pre-installed LoRA Manager detected. Installation skipped as your existing setup is ready to use.',
+          );
         } else {
           // Validate by checking for key files
           stepper.utils.verifyFilesExist(targetDirectory, ['smartgallery.py', 'requirements.txt']).then(filesExist => {

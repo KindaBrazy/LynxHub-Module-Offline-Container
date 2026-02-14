@@ -67,7 +67,7 @@ function startInstall(stepper: InstallationStepper) {
               stepper.showFinalStep(
                 'success',
                 'UV Package Manager Installation Complete.',
-                'Restart your computer and run the installer again to continue installation.',
+                'Restart LynxHub and run the installer again to continue installation.',
               );
             });
           } else {

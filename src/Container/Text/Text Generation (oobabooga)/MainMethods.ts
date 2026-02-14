@@ -3,7 +3,7 @@ import {platform} from 'node:os';
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {TG_ID} from '../../../Constants';
 import {isMac, isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -32,6 +32,10 @@ const Ooba_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
+    isInstalled: () =>
+      isGitTypeInstalled(installDir, 'https://github.com/oobabooga/text-generation-webui', [
+        isWin ? 'start_windows.bat' : isMac ? 'start_macos.sh' : 'start_linux.sh',
+      ]),
   };
 };
 

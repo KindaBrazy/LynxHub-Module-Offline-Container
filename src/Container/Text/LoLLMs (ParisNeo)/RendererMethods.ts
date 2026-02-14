@@ -46,11 +46,23 @@ export function startInstall(stepper: InstallationStepper) {
             `Pre-installed ${title} detected. Installation skipped as your existing setup is ready to use.`,
           );
         } else {
-          stepper.showFinalStep(
-            'error',
-            `Unable to locate ${title}!`,
-            `Please ensure you have selected the correct folder containing the ${title} repository.`,
-          );
+          stepper.utils.verifyFilesExist(targetDirectory, ['app.py']).then(isExist => {
+            if (isExist) {
+              stepper.setInstalled(targetDirectory);
+              stepper.showFinalStep(
+                'success',
+                `${title} located successfully!`,
+                `Detected a manual installation of ${title}. Note: Because this is not a Git repository,` +
+                  ' automatic updates and certain version-dependent features may not work as expected.',
+              );
+            } else {
+              stepper.showFinalStep(
+                'error',
+                `Unable to locate ${title}!`,
+                `Please ensure you have selected the correct folder containing the ${title} repository.`,
+              );
+            }
+          });
         }
       });
     }

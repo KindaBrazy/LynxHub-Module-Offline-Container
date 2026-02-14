@@ -1,6 +1,6 @@
 import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {BOLT_DIY_ID} from '../../../Constants';
-import {checkWhich, LINE_ENDING} from '../../../Utils/MainUtils';
+import {checkWhich, isGitTypeInstalled, LINE_ENDING} from '../../../Utils/MainUtils';
 
 async function getRunCommands(): Promise<string | string[]> {
   return `npm run dev ${LINE_ENDING}`;
@@ -18,7 +18,12 @@ async function updateAvailable(utils: MainModuleUtils, dir?: string) {
 const BOLT_DIY_MM: CardMainMethodsInitial = utils => {
   const installDir = utils.getInstallDir(BOLT_DIY_ID);
 
-  return {getRunCommands, mainIpc: () => mainIpc(utils), updateAvailable: () => updateAvailable(utils, installDir)};
+  return {
+    getRunCommands,
+    mainIpc: () => mainIpc(utils),
+    updateAvailable: () => updateAvailable(utils, installDir),
+    isInstalled: () => isGitTypeInstalled(installDir, 'https://github.com/stackblitz-labs/bolt.diy', ['package.json']),
+  };
 };
 
 export default BOLT_DIY_MM;

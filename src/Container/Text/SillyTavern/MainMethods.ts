@@ -5,7 +5,7 @@ import fs from 'graceful-fs';
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {SILLYTAVERN_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {ensureScriptExecutable, initBatchFile, utilRunCommands} from '../../../Utils/MainUtils';
+import {ensureScriptExecutable, initBatchFile, isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
 import {parseArgsToFiles, parseFilesToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -63,6 +63,8 @@ const Silly_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
+    isInstalled: () =>
+      isGitTypeInstalled(installDir, 'https://github.com/SillyTavern/SillyTavern', [isWin ? 'start.bat' : 'start.sh']),
   };
 };
 

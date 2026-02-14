@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {LoLLMS_ID} from '../../../Constants';
 import {getPythonCommandByOs} from '../../../Utils/CrossUtils';
-import {LINE_ENDING} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, LINE_ENDING} from '../../../Utils/MainUtils';
 
 async function getRunCommands(): Promise<string | string[]> {
   const pythonCommand = getPythonCommandByOs().python;
@@ -17,7 +17,11 @@ async function updateAvailable(utils: MainModuleUtils, dir?: string) {
 const LoLLM_MM: CardMainMethodsInitial = utils => {
   const installDir = utils.getInstallDir(LoLLMS_ID);
 
-  return {getRunCommands, updateAvailable: () => updateAvailable(utils, installDir)};
+  return {
+    getRunCommands,
+    updateAvailable: () => updateAvailable(utils, installDir),
+    isInstalled: () => isGitTypeInstalled(installDir, 'https://github.com/ParisNeo/lollms-webui', ['app.py']),
+  };
 };
 
 export default LoLLM_MM;

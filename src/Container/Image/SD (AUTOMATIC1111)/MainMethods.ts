@@ -1,4 +1,4 @@
-import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
+import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {A1_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
 import {isGitTypeInstalled, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
@@ -20,16 +20,13 @@ export async function readArgs(dir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, dir);
 }
 
-const A1_MM: CardMainMethodsInitial = utils => {
+export default function A1_MM(utils: MainModuleUtils, url: string): ReturnType<CardMainMethodsInitial> {
   const installDir = utils.getInstallDir(A1_ID);
 
   return {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
-    isInstalled: () =>
-      isGitTypeInstalled(installDir, 'https://github.com/AUTOMATIC1111/stable-diffusion-webui', [CONFIG_FILE]),
+    isInstalled: () => isGitTypeInstalled(installDir, url, [CONFIG_FILE]),
   };
-};
-
-export default A1_MM;
+}

@@ -28,7 +28,7 @@ const Ls_MM: CardMainMethodsInitial = utils => {
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
     isInstalled: () =>
-      isGitTypeInstalled(installDir, 'https://github.com/AUTOMATIC1111/stable-diffusion-webui', [CONFIG_FILE]),
+      isGitTypeInstalled(installDir, 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu', [EXEC_FILE]),
   };
 };
 

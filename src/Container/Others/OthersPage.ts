@@ -10,7 +10,7 @@ import SMARTGALLERY_RM from './SmartGallery (biagiomaf)/RendererMethods';
 
 // TODO: make it default tools page after v3.5 release
 const routePath: AvailablePageIDs =
-  typeof window !== 'undefined' && window.LynxHub.buildNumber > 45 ? 'tools_page' : 'others_page';
+  typeof window !== 'undefined' && window.LynxHub.buildNumber > 45 ? 'tools_page' : 'imageGen_page';
 
 const othersPage: PagesData = {
   routePath,

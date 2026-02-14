@@ -1,6 +1,7 @@
 import {CardMainMethodsInitial} from '../../../../../src/common/types/plugins/modules';
+import {ALLTALK_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilRunCommands} from '../../../Utils/MainUtils';
+import {isGitRoot, utilRunCommands} from '../../../Utils/MainUtils';
 
 const BAT_FILE_NAME = isWin ? 'start_alltalk.bat' : 'start_alltalk.sh';
 
@@ -8,9 +9,18 @@ export async function getRunCommands(): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME);
 }
 
-const Rrew123_MM: CardMainMethodsInitial = () => {
+async function isInstalled(dir: string | undefined) {
+  if (!dir) return false;
+
+  return isGitRoot(dir, 'https://github.com/erew123/alltalk_tts');
+}
+
+const Rrew123_MM: CardMainMethodsInitial = utils => {
+  const installDir = utils.getInstallDir(ALLTALK_ID);
+
   return {
     getRunCommands: () => getRunCommands(),
+    isInstalled: () => isInstalled(installDir),
   };
 };
 

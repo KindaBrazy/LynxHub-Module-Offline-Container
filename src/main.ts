@@ -37,7 +37,6 @@ import Rrew123_MM from './Container/Audio/AllTalk TTS (erew123)/MainMethods';
 import Applio_MM from './Container/Audio/Applio/MainMethods';
 import Gitmylo_MM from './Container/Audio/Audio Generation (gitmylo)/MainMethods';
 import Rsx_MM from './Container/Audio/Text to Speech (rsxdalv)/MainMethods';
-import AIToolkit_MM from './Container/Image/ai-toolkit/MainMethods';
 import Comfy_MM from './Container/Image/ComfyUI (comfyanonymous)/MainMethods';
 import ComfyZluda_MM from './Container/Image/ComfyUI Zluda (patientx)/MainMethods';
 import Invoke_MM from './Container/Image/InvokeAI/MainMethods';
@@ -47,13 +46,14 @@ import A1_MM from './Container/Image/SD (AUTOMATIC1111)/MainMethods';
 import Ls_MM from './Container/Image/SD AMDGPU (lshqqytiger)/MainMethods';
 import Vlad_MM from './Container/Image/SD Next (vladmandic)/MainMethods';
 import McMonkey_MM from './Container/Image/SwarmUI (mcmonkeyprojects)/MainMethods';
-import LoraManager_MM from './Container/Others/ComfyUI-Lora-Manager (willmiao)/MainMethods';
-import SmartGallery_MM from './Container/Others/SmartGallery (biagiomaf)/MainMethods';
 import BOLT_DIY_MM from './Container/Text/BoltDiy (StackblitzLabs)/MainMethods';
 import LoLLM_MM from './Container/Text/LoLLMs (ParisNeo)/MainMethods';
 import OpenWebUI_MM from './Container/Text/OpenWebUI/MainMethods';
 import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
+import AIToolkit_MM from './Container/Tools/AI Toolkit (ostris)/MainMethods';
+import LoraManager_MM from './Container/Tools/ComfyUI-Lora-Manager (willmiao)/MainMethods';
+import SmartGallery_MM from './Container/Tools/SmartGallery (biagiomaf)/MainMethods';
 
 export default async function initialModule(utils: MainModuleUtils): Promise<MainModules[]> {
   return [

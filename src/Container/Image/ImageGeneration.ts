@@ -6,16 +6,22 @@ import {
   COMFYUI_ZLUDA_ID,
   INVOKE_ID,
   KOHYA_ID,
+  LORA_MANAGER_ID,
   ONETRAINER_ID,
   SD_AMD_ID,
   SD_FORGE_AMD_ID,
   SD_FORGE_ID,
   SD_NEXT_ID,
   SD_UIUX_ID,
+  SMARTGALLERY_ID,
   SWARM_ID,
 } from '../../Constants';
-import aiToolkitArguments from './ai-toolkit/Arguments';
-import AITOOLKIT_RM from './ai-toolkit/RendererMethods';
+import aiToolkitArguments from '../Tools/AI Toolkit (ostris)/Arguments';
+import AITOOLKIT_RM from '../Tools/AI Toolkit (ostris)/RendererMethods';
+import loraManagerArguments from '../Tools/ComfyUI-Lora-Manager (willmiao)/Arguments';
+import LORA_MANAGER_RM from '../Tools/ComfyUI-Lora-Manager (willmiao)/RendererMethods';
+import smartGalleryArguments from '../Tools/SmartGallery (biagiomaf)/Arguments';
+import SMARTGALLERY_RM from '../Tools/SmartGallery (biagiomaf)/RendererMethods';
 import comfyArguments from './ComfyUI (comfyanonymous)/Arguments';
 import COMFYUI_RM from './ComfyUI (comfyanonymous)/RendererMethods';
 import comfyZludaArguments from './ComfyUI Zluda (patientx)/Arguments';
@@ -39,6 +45,8 @@ import mcMonkeyArguments from './SwarmUI (mcmonkeyprojects)/Arguments';
 import SWARM_RM from './SwarmUI (mcmonkeyprojects)/RendererMethods';
 
 /* eslint max-len: 0 */
+
+const isPagesFixed = typeof window !== 'undefined' && window.LynxHub.buildNumber > 45;
 
 const imagePage: PagesData = {
   routePath: 'imageGen_page',
@@ -192,6 +200,11 @@ const imagePage: PagesData = {
       methods: SD_UIUX_RM,
       installationType: 'git',
     },
+  ],
+};
+
+if (!isPagesFixed) {
+  imagePage.cards.push(
     {
       id: AITOOLKIT_ID,
       title: 'AI Toolkit',
@@ -205,7 +218,33 @@ const imagePage: PagesData = {
       methods: AITOOLKIT_RM,
       installationType: 'git',
     },
-  ],
-};
+    {
+      id: SMARTGALLERY_ID,
+      title: 'SmartGallery',
+      description:
+        'A fast, offline-capable gallery for ComfyUI outputs with workflow extraction. Browse and manage your ' +
+        'generated images and videos with automatic thumbnail generation, workflow metadata extraction, and ' +
+        'advanced filtering. Works independently of ComfyUI.',
+      repoUrl: 'https://github.com/biagiomaf/smart-comfyui-gallery',
+      type: 'image',
+      arguments: smartGalleryArguments,
+      methods: SMARTGALLERY_RM,
+      installationType: 'git',
+    },
+    {
+      id: LORA_MANAGER_ID,
+      title: 'ComfyUI LoRA Manager',
+      description:
+        'A comprehensive toolset that streamlines organizing, downloading, and applying LoRA models in ComfyUI. ' +
+        'Features recipe management, checkpoint organization, one-click workflow integration, and a browser extension ' +
+        'for Civitai. Access the interface at http://localhost:8188/loras',
+      repoUrl: 'https://github.com/willmiao/ComfyUI-Lora-Manager',
+      type: 'image',
+      arguments: loraManagerArguments,
+      methods: LORA_MANAGER_RM,
+      installationType: 'git',
+    },
+  );
+}
 
 export default imagePage;

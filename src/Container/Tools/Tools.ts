@@ -1,6 +1,7 @@
-import {AvailablePageIDs} from '../../../../src/common/consts';
 import {PagesData} from '../../../../src/common/types/plugins/modules';
-import {LORA_MANAGER_ID, SMARTGALLERY_ID} from '../../Constants';
+import {AITOOLKIT_ID, LORA_MANAGER_ID, SMARTGALLERY_ID} from '../../Constants';
+import aiToolkitArguments from './AI Toolkit (ostris)/Arguments';
+import AITOOLKIT_RM from './AI Toolkit (ostris)/RendererMethods';
 import loraManagerArguments from './ComfyUI-Lora-Manager (willmiao)/Arguments';
 import LORA_MANAGER_RM from './ComfyUI-Lora-Manager (willmiao)/RendererMethods';
 import smartGalleryArguments from './SmartGallery (biagiomaf)/Arguments';
@@ -8,13 +9,22 @@ import SMARTGALLERY_RM from './SmartGallery (biagiomaf)/RendererMethods';
 
 /* eslint max-len: 0 */
 
-// TODO: make it default tools page after v3.5 release
-const routePath: AvailablePageIDs =
-  typeof window !== 'undefined' && window.LynxHub.buildNumber > 45 ? 'tools_page' : 'imageGen_page';
-
-const othersPage: PagesData = {
-  routePath,
+const toolsPage: PagesData = {
+  routePath: 'tools_page',
   cards: [
+    {
+      id: AITOOLKIT_ID,
+      title: 'AI Toolkit',
+      description:
+        'AI Toolkit is an all-in-one training suite for diffusion models. Supports training LoRA models for FLUX.1, ' +
+        'Stable Diffusion, and other diffusion models on consumer-grade hardware. Features a web-based UI for easy ' +
+        'configuration and monitoring of training jobs.',
+      repoUrl: 'https://github.com/ostris/ai-toolkit',
+      type: 'image',
+      arguments: aiToolkitArguments,
+      methods: AITOOLKIT_RM,
+      installationType: 'git',
+    },
     {
       id: SMARTGALLERY_ID,
       title: 'SmartGallery',
@@ -44,4 +54,4 @@ const othersPage: PagesData = {
   ],
 };
 
-export default othersPage;
+export default toolsPage;

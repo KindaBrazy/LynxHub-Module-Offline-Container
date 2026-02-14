@@ -39,6 +39,7 @@ function startInstall(stepper: InstallationStepper) {
             .verifyFilesExist(targetDirectory, [isWin ? 'run-applio.bat' : 'run-applio.sh'])
             .then(isExist => {
               if (isExist) {
+                stepper.setInstalled(targetDirectory);
                 stepper.showFinalStep(
                   'success',
                   'Applio located successfully!',

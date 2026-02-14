@@ -42,6 +42,7 @@ export function startInstall(stepper: InstallationStepper) {
             .verifyFilesExist(targetDirectory, [isWin ? 'start_alltalk.bat' : 'start_alltalk.sh'])
             .then(isExist => {
               if (isExist) {
+                stepper.setInstalled(targetDirectory);
                 stepper.showFinalStep(
                   'success',
                   'AllTalk TTS located successfully!',

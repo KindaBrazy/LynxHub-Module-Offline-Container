@@ -96,6 +96,7 @@ export function GitInstaller(title: string, url: string, stepper: InstallationSt
           if (locateExisting) {
             stepper.utils.verifyFilesExist(targetDirectory, locateExisting).then(isExist => {
               if (isExist) {
+                stepper.setInstalled(targetDirectory);
                 stepper.showFinalStep(
                   'success',
                   `${title} located successfully!`,

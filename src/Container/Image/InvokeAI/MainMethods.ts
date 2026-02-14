@@ -48,10 +48,9 @@ async function mainIpc(utils: MainModuleUtils) {
     const venvDir = path.join(dir, '.venv');
 
     const isVenvDir = isVenvDirectory(venvDir);
+    if (!isVenvDir) return false;
 
-    if (isVenvDir) return invokeValidateInstallation(dir);
-
-    return false;
+    return invokeValidateInstallation(dir);
   });
 }
 
@@ -71,6 +70,18 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   return false;
 }
 
+async function isInstalled(dir: string | undefined) {
+  if (!dir) return false;
+
+  const venvDir = path.join(dir, '.venv');
+
+  const isVenvDir = isVenvDirectory(venvDir);
+
+  if (!isVenvDir) return false;
+
+  return invokeValidateInstallation(dir) === true;
+}
+
 const Invoke_MM: CardMainMethodsInitial = utils => {
   const installDir = utils.getInstallDir(INVOKE_ID);
 
@@ -80,6 +91,7 @@ const Invoke_MM: CardMainMethodsInitial = utils => {
     saveArgs: args => saveArgs(args, installDir),
     updateAvailable: () => updateAvailable(utils),
     mainIpc: () => mainIpc(utils),
+    isInstalled: () => isInstalled(installDir),
   };
 };
 

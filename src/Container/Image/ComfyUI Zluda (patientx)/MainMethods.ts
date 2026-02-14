@@ -1,10 +1,10 @@
-import path from 'node:path';
+import {join} from 'node:path';
 
-import fs from 'graceful-fs';
+import {promises} from 'graceful-fs';
 
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {COMFYUI_ZLUDA_ID} from '../../../Constants';
-import {initBatchFile, utilRunCommands} from '../../../Utils/MainUtils';
+import {initBatchFile, isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
 import {getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
 import comfyZludaArguments from './Arguments';
 
@@ -30,37 +30,13 @@ export async function getRunCommands(dir?: string): Promise<string | string[]> {
   return await utilRunCommands(BAT_FILE_NAME, dir, DEFAULT_BATCH_DATA);
 }
 
-export async function isInstalled(dir?: string): Promise<boolean> {
-  if (!dir) return false;
-
-  try {
-    // Check if the required batch files exist
-    const comfyuiNBat = path.join(dir, 'comfyui-n.bat');
-    const comfyuiUserBat = path.join(dir, BAT_FILE_NAME);
-
-    const nBatExists = await fs.promises
-      .access(comfyuiNBat)
-      .then(() => true)
-      .catch(() => false);
-    const userBatExists = await fs.promises
-      .access(comfyuiUserBat)
-      .then(() => true)
-      .catch(() => false);
-
-    return nBatExists && userBatExists;
-  } catch (error) {
-    console.error('Error checking ComfyUI Zluda installation:', error);
-    return false;
-  }
-}
-
 async function saveArgs(args: ChosenArgument[], dir?: string) {
   if (!dir) return;
 
-  const filePath = path.join(dir, BAT_FILE_NAME);
+  const filePath = join(dir, BAT_FILE_NAME);
   await initBatchFile(filePath, DEFAULT_BATCH_DATA);
 
-  const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+  const fileContent = await promises.readFile(filePath, 'utf-8');
   const lines = fileContent.split('\n');
 
   // Build command line arguments string
@@ -95,17 +71,17 @@ async function saveArgs(args: ChosenArgument[], dir?: string) {
   });
 
   // Read the original comfyui-n.bat to get default values
-  const originalFilePath = path.join(dir, 'comfyui-n.bat');
+  const originalFilePath = join(dir, 'comfyui-n.bat');
   const originalDefaults: Record<string, string> = {};
 
   try {
     if (
-      await fs.promises
+      await promises
         .access(originalFilePath)
         .then(() => true)
         .catch(() => false)
     ) {
-      const originalContent = await fs.promises.readFile(originalFilePath, 'utf-8');
+      const originalContent = await promises.readFile(originalFilePath, 'utf-8');
       const originalLines = originalContent.split('\n');
 
       originalLines.forEach(line => {
@@ -238,16 +214,16 @@ async function saveArgs(args: ChosenArgument[], dir?: string) {
     cleanedLines.splice(insertionIndex, 0, ...linesToInsert);
   }
 
-  await fs.promises.writeFile(filePath, cleanedLines.join('\n'), 'utf-8');
+  await promises.writeFile(filePath, cleanedLines.join('\n'), 'utf-8');
 }
 
 export async function readArgs(dir?: string) {
   if (!dir) return [];
 
-  const filePath = path.join(dir, BAT_FILE_NAME);
+  const filePath = join(dir, BAT_FILE_NAME);
   await initBatchFile(filePath, DEFAULT_BATCH_DATA);
 
-  const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+  const fileContent = await promises.readFile(filePath, 'utf-8');
   const lines = fileContent.split('\n');
 
   const argResult: ChosenArgument[] = [];
@@ -310,7 +286,8 @@ const ComfyZluda_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
-    isInstalled: onInstalledDirExist => isInstalled(installDir),
+    isInstalled: () =>
+      isGitTypeInstalled(installDir, 'https://github.com/patientx/ComfyUI-Zluda', [BAT_FILE_NAME, 'comfyui-n.bat']),
   };
 };
 

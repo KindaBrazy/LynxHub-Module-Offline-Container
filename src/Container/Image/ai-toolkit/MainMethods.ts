@@ -1,7 +1,14 @@
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {AITOOLKIT_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {checkFilesExist, checkWhich, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {
+  checkFilesExist,
+  checkWhich,
+  isGitTypeInstalled,
+  utilReadArgs,
+  utilRunCommands,
+  utilSaveArgs,
+} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -38,7 +45,8 @@ const AIToolkit_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
-    isInstalled: () => isInstalled(installDir),
+    isInstalled: () =>
+      isGitTypeInstalled(installDir, 'https://github.com/ostris/ai-toolkit', ['run.py', 'package.json']),
     mainIpc: () => mainIpc(utils),
   };
 };

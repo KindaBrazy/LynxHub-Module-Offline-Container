@@ -12,6 +12,9 @@ const ONETRAINER_ID = 'Nerogar_SD';
 const SD_UIUX_ID = 'Anapnoe_SD';
 const INVOKE_ID = 'InvokeAI_SD';
 const ALLTALK_ID = 'Erew123_SD';
+const AITOOLKIT_ID = 'Ostris_AI_Toolkit';
+const SMARTGALLERY_ID = 'Biagiomaf_SmartGallery';
+const LORA_MANAGER_ID = 'Willmiao_LoraManager';
 // Text Generation
 const TG_ID = 'Oobabooga_TG';
 const SILLYTAVERN_ID = 'SillyTavern_TG';
@@ -45,7 +48,25 @@ function detectIsWin() {
     // Fallback (shouldn't happen in Electron)
     return true;
 }
+function detectIsMac() {
+    // Renderer process - use preload-exposed platform
+    if (typeof window !== 'undefined' && window.osPlatform) {
+        return window.osPlatform === 'darwin';
+    }
+    // Main process - use process.platform directly (synchronous)
+    if (typeof process !== 'undefined' && process.platform) {
+        return process.platform === 'darwin';
+    }
+    // Fallback (shouldn't happen in Electron)
+    return true;
+}
 const isWin = detectIsWin();
+const isMac = detectIsMac();
+function getPythonCommandByOs() {
+    if (isMac)
+        return { pip: 'pip3', python: 'python3' };
+    return { pip: 'pip', python: 'python' };
+}
 function formatSize(size) {
     if (!size)
         return '0KB';
@@ -125,7 +146,7 @@ function requireLodash () {
 		  var undefined$1;
 
 		  /** Used as the semantic version number. */
-		  var VERSION = '4.17.21';
+		  var VERSION = '4.17.23';
 
 		  /** Used as the size to enable large array optimizations. */
 		  var LARGE_ARRAY_SIZE = 200;
@@ -3879,7 +3900,7 @@ function requireLodash () {
 		          if (isArray(iteratee)) {
 		            return function(value) {
 		              return baseGet(value, iteratee.length === 1 ? iteratee[0] : iteratee);
-		            }
+		            };
 		          }
 		          return iteratee;
 		        });
@@ -4483,8 +4504,47 @@ function requireLodash () {
 		     */
 		    function baseUnset(object, path) {
 		      path = castPath(path, object);
-		      object = parent(object, path);
-		      return object == null || delete object[toKey(last(path))];
+
+		      // Prevent prototype pollution, see: https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg
+		      var index = -1,
+		          length = path.length;
+
+		      if (!length) {
+		        return true;
+		      }
+
+		      var isRootPrimitive = object == null || (typeof object !== 'object' && typeof object !== 'function');
+
+		      while (++index < length) {
+		        var key = path[index];
+
+		        // skip non-string keys (e.g., Symbols, numbers)
+		        if (typeof key !== 'string') {
+		          continue;
+		        }
+
+		        // Always block "__proto__" anywhere in the path if it's not expected
+		        if (key === '__proto__' && !hasOwnProperty.call(object, '__proto__')) {
+		          return false;
+		        }
+
+		        // Block "constructor.prototype" chains
+		        if (key === 'constructor' &&
+		            (index + 1) < length &&
+		            typeof path[index + 1] === 'string' &&
+		            path[index + 1] === 'prototype') {
+
+		          // Allow ONLY when the path starts at a primitive root, e.g., _.unset(0, 'constructor.prototype.a')
+		          if (isRootPrimitive && index === 0) {
+		            continue;
+		          }
+
+		          return false;
+		        }
+		      }
+
+		      var obj = parent(object, path);
+		      return obj == null || delete obj[toKey(last(path))];
 		    }
 
 		    /**
@@ -17374,7 +17434,7 @@ function catchAddress$3(input) {
 function removeEscapes(str) {
     return str.replace(/\\(.)/gm, '$1');
 }
-function GitInstaller(title, url, stepper) {
+function GitInstaller(title, url, stepper, locateExisting) {
     stepper.initialSteps([title, 'Clone', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -17392,7 +17452,21 @@ function GitInstaller(title, url, stepper) {
                     stepper.showFinalStep('success', `${title} located successfully!`, `Pre-installed ${title} detected. Installation skipped as your existing setup is ready to use.`);
                 }
                 else {
-                    stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                    if (locateExisting) {
+                        stepper.utils.verifyFilesExist(targetDirectory, locateExisting).then(isExist => {
+                            if (isExist) {
+                                stepper.setInstalled(targetDirectory);
+                                stepper.showFinalStep('success', `${title} located successfully!`, `Detected a manual installation of ${title}. Note: Because this is not a Git repository,` +
+                                    ' automatic updates and certain version-dependent features may not work as expected.');
+                            }
+                            else {
+                                stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                            }
+                        });
+                    }
+                    else {
+                        stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                    }
                 }
             });
         }
@@ -17449,6 +17523,7 @@ async function CardInfo(url, extensionFolder, api, callback) {
         descManager.updateItem(1, 0, formatSize(result));
     });
 }
+const isPagesFixed = typeof window !== 'undefined' && window.LynxHub && window.LynxHub.buildNumber > 45;
 
 /* eslint max-len: 0 */
 const claudeCodeArguments = [
@@ -17951,7 +18026,7 @@ function parseArgsToFiles$2(args) {
     }
     return { scriptData: scriptString, settingsData: settingsString };
 }
-function parseArgsToString$f(args) {
+function parseArgsToString$h(args) {
     const { settingsData, scriptData } = parseArgsToFiles$2(args);
     let scriptPreview = `-------------Script File Preview (${isWin ? '.bat' : '.sh'})-------------\n`;
     if (!lodashExports.isEmpty(scriptData)) {
@@ -17970,7 +18045,7 @@ function parseArgsToString$f(args) {
     return `${scriptPreview}${settingsPreview}`;
 }
 function parseFilesToArgs$2(scriptContent, settingsContent) {
-    const scriptArgs = parseStringToArgs$f(scriptContent);
+    const scriptArgs = parseStringToArgs$h(scriptContent);
     const settingsArgs = [];
     if (settingsContent) {
         try {
@@ -18007,7 +18082,7 @@ function parseFilesToArgs$2(scriptContent, settingsContent) {
     settingsArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
     return Array.from(combinedArgs, ([name, value]) => ({ name, value }));
 }
-function parseStringToArgs$f(data) {
+function parseStringToArgs$h(data) {
     const argResult = [];
     const lines = data.split('\n');
     lines.forEach((line) => {
@@ -18054,7 +18129,7 @@ function parseStringToArgs$f(data) {
     });
     return argResult;
 }
-function startInstall$e(stepper) {
+function startInstall$g(stepper) {
     stepper.initialSteps(['Getting Started', 'Detect Existing', 'Claude Code', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -18095,7 +18170,7 @@ function startUpdate$5(stepper) {
         stepper.showFinalStep('success', 'Claude Code Updated Successfully!', 'Claude Code has been updated to the latest available version.');
     });
 }
-async function cardInfo$e(api, callback) {
+async function cardInfo$g(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -18118,10 +18193,10 @@ async function cardInfo$e(api, callback) {
     });
 }
 const ClaudeCode_RM = {
-    cardInfo: cardInfo$e,
-    parseStringToArgs: parseStringToArgs$f,
-    parseArgsToString: parseArgsToString$f,
-    manager: { startInstall: startInstall$e, updater: { updateType: 'stepper', startUpdate: startUpdate$5 } },
+    cardInfo: cardInfo$g,
+    parseStringToArgs: parseStringToArgs$h,
+    parseArgsToString: parseArgsToString$h,
+    manager: { startInstall: startInstall$g, updater: { updateType: 'stepper', startUpdate: startUpdate$5 } },
 };
 
 const flowiseArguments = [
@@ -18163,6 +18238,11 @@ const flowiseArguments = [
                         type: 'Input',
                         defaultValue: '50mb',
                     },
+                    {
+                        name: '--NUMBER_OF_PROXIES',
+                        description: 'Rate Limit Proxy',
+                        type: 'Input',
+                    },
                 ],
             },
             {
@@ -18195,24 +18275,6 @@ const flowiseArguments = [
                 ],
             },
             {
-                section: 'API Keys',
-                items: [
-                    {
-                        name: '--APIKEY_STORAGE_TYPE',
-                        description: 'To store api keys on a JSON file or database. Default is `json`',
-                        type: 'DropDown',
-                        values: ['json', 'db'],
-                        defaultValue: 'json',
-                    },
-                    {
-                        name: '--APIKEY_PATH',
-                        description: 'Location where api keys are saved when `APIKEY_STORAGE_TYPE` is `json`',
-                        type: 'Input',
-                        defaultValue: 'your-path/Flowise/packages/server',
-                    },
-                ],
-            },
-            {
                 section: 'Tool Function Dependencies',
                 items: [
                     {
@@ -18224,6 +18286,11 @@ const flowiseArguments = [
                         name: '--TOOL_FUNCTION_EXTERNAL_DEP',
                         description: 'External modules to be used for Tool Function',
                         type: 'Input',
+                    },
+                    {
+                        name: '--ALLOW_BUILTIN_DEP',
+                        description: 'Allow project dependencies to be used such as cheerio, typeorm',
+                        type: 'CheckBox',
                     },
                 ],
             },
@@ -18315,17 +18382,61 @@ const flowiseArguments = [
         category: 'Encryption',
         sections: [
             {
-                section: 'Encryption Key',
+                section: 'Encryption Key Storage',
                 items: [
                     {
+                        name: '--SECRETKEY_STORAGE_TYPE',
+                        description: 'How to store the encryption key',
+                        type: 'DropDown',
+                        values: ['local', 'aws'],
+                        defaultValue: 'local',
+                    },
+                    {
                         name: '--SECRETKEY_PATH',
-                        description: 'Location where encryption key (used to encrypt/decrypt credentials) is saved',
+                        description: 'Local file path where encryption key is saved',
                         type: 'Input',
-                        defaultValue: 'your-path/Flowise/packages/server',
+                        defaultValue: 'Flowise/packages/server',
                     },
                     {
                         name: '--FLOWISE_SECRETKEY_OVERWRITE',
-                        description: 'Encryption key to be used instead of the key stored in SECRETKEY_PATH',
+                        description: 'Encryption key to be used instead of the existing key',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Encryption',
+        sections: [
+            {
+                section: 'Encryption Key Storage',
+                items: [
+                    {
+                        name: '--SECRETKEY_STORAGE_TYPE',
+                        description: 'How to store the encryption key',
+                        type: 'DropDown',
+                        values: ['local', 'aws'],
+                        defaultValue: 'local',
+                    },
+                    {
+                        name: '--SECRETKEY_AWS_ACCESS_KEY',
+                        description: 'AWS Access Key for Secret Manager',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--SECRETKEY_AWS_SECRET_KEY',
+                        description: 'AWS Secret Key for Secret Manager',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--SECRETKEY_AWS_REGION',
+                        description: 'AWS Region for Secret Manager',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--FLOWISE_SECRETKEY_OVERWRITE',
+                        description: 'Encryption key to be used instead of the existing key',
                         type: 'Input',
                     },
                 ],
@@ -18472,13 +18583,41 @@ const flowiseArguments = [
             },
         ],
     },
+    {
+        category: 'Security',
+        sections: [
+            {
+                section: 'Security Configuration',
+                items: [
+                    {
+                        name: '--HTTP_DENY_LIST',
+                        description: 'Blocks HTTP requests to specified URLs or domains in MCP servers (comma-separated)',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--CUSTOM_MCP_SECURITY_CHECK',
+                        description: 'Enables comprehensive security validation for Custom MCP configurations',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: '--CUSTOM_MCP_PROTOCOL',
+                        description: 'Sets the default protocol for Custom MCP communications',
+                        type: 'DropDown',
+                        values: ['stdio', 'sse'],
+                        defaultValue: 'stdio',
+                    },
+                ],
+            },
+        ],
+    },
 ];
 
 const INSTALL_TIME_KEY$3 = 'install-time-flowise';
 const UPDATE_TIME_KEY$3 = 'update-time-flowise';
 const UPDATE_AVAILABLE_KEY$3 = 'update-available-version-flowise';
 const shellCommand$6 = 'npx flowise start';
-function parseArgsToString$e(args) {
+function parseArgsToString$g(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -18496,7 +18635,7 @@ function parseArgsToString$e(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$6 : `${shellCommand$6} ${argResult}`;
     return result;
 }
-function parseStringToArgs$e(args) {
+function parseStringToArgs$g(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -18526,7 +18665,7 @@ function parseStringToArgs$e(args) {
     });
     return argResult;
 }
-function startInstall$d(stepper) {
+function startInstall$f(stepper) {
     stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install Flowise', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -18571,7 +18710,7 @@ function startUpdate$4(stepper) {
         stepper.showFinalStep('success', 'Flowise Updated Successfully!', `Flowise has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$d(api, callback) {
+async function cardInfo$f(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -18612,2768 +18751,3910 @@ function catchAddress$2(input) {
 }
 const Flow_RM = {
     catchAddress: catchAddress$2,
-    parseArgsToString: parseArgsToString$e,
-    parseStringToArgs: parseStringToArgs$e,
-    cardInfo: cardInfo$d,
-    manager: { startInstall: startInstall$d, updater: { updateType: 'stepper', startUpdate: startUpdate$4 } },
+    parseArgsToString: parseArgsToString$g,
+    parseStringToArgs: parseStringToArgs$g,
+    cardInfo: cardInfo$f,
+    manager: { startInstall: startInstall$f, updater: { updateType: 'stepper', startUpdate: startUpdate$4 } },
 };
 
-// noinspection SpellCheckingInspection
+/* eslint max-len: 0 */
+const appBackend = {
+    category: 'App/Backend',
+    sections: [
+        {
+            section: 'General',
+            items: [
+                {
+                    name: 'WEBUI_URL',
+                    description: 'Specifies the URL where your Open WebUI installation is reachable. Needed for search engine support and OAuth/SSO.',
+                    type: 'Input',
+                    defaultValue: 'http://localhost:3000',
+                },
+                {
+                    name: 'ENABLE_SIGNUP',
+                    description: 'Toggles user account creation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'WEBUI_ADMIN_EMAIL',
+                    description: 'Specifies the email address for an admin account to be created automatically on first startup when no users exist. This enables headless/automated deployments without manual account creation. When combined with `WEBUI_ADMIN_PASSWORD`, the admin account is created during application startup, and `ENABLE_SIGNUP` is automatically disabled to prevent unauthorized account creation.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBUI_ADMIN_PASSWORD',
+                    description: 'Specifies the password for the admin account to be created automatically on first startup when no users exist. Must be used in conjunction with `WEBUI_ADMIN_EMAIL`. The password is securely hashed before storage using the same mechanism as manual account creation.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBUI_ADMIN_NAME',
+                    description: 'Specifies the display name for the automatically created admin account. This is used when `WEBUI_ADMIN_EMAIL` and `WEBUI_ADMIN_PASSWORD` are configured for headless admin creation.',
+                    type: 'Input',
+                    defaultValue: 'Admin',
+                },
+                {
+                    name: 'ENABLE_SIGNUP_PASSWORD_CONFIRMATION',
+                    description: 'If set to True, a "Confirm Password" field is added to the sign-up page to help users avoid typos when creating their password.',
+                    type: 'CheckBox',
+                },
+                {
+                    name: 'ENABLE_LOGIN_FORM',
+                    description: 'Toggles email, password, sign-in and "or" (only when ENABLE_OAUTH_SIGNUP is set to True) elements.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'DEFAULT_LOCALE',
+                    description: 'Sets the default locale for the application.',
+                    type: 'Input',
+                    defaultValue: 'en',
+                },
+                {
+                    name: 'DEFAULT_MODELS',
+                    description: 'Sets a default Language Model.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DEFAULT_PINNED_MODELS',
+                    description: "Comma-separated list of model IDs to pin by default for new users who haven't customized their pinned models. This provides a pre-selected set of frequently used models in the model selector for new accounts.",
+                    type: 'Input',
+                },
+                {
+                    name: 'DEFAULT_GROUP_ID',
+                    description: 'Sets the default group ID to assign to new users upon registration.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DEFAULT_USER_ROLE',
+                    description: 'Sets the default role assigned to new users.',
+                    type: 'DropDown',
+                    values: ['pending', 'user', 'admin'],
+                    defaultValue: 'pending',
+                },
+                {
+                    name: 'PENDING_USER_OVERLAY_TITLE',
+                    description: 'Sets a custom title for the pending user overlay.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PENDING_USER_OVERLAY_CONTENT',
+                    description: 'Sets a custom text content for the pending user overlay.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENABLE_CHANNELS',
+                    description: 'Enables or disables channel support.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_FOLDERS',
+                    description: 'Enables or disables the folders feature, allowing users to organize their chats into folders in the sidebar.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'FOLDER_MAX_FILE_COUNT',
+                    description: 'Sets the maximum number of files processing allowed per folder. Default is none (empty string) which is unlimited.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENABLE_NOTES',
+                    description: 'Enables or disables the notes feature, allowing users to create and manage personal notes within Open WebUI.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_MEMORIES',
+                    description: 'Enables or disables the memory feature, allowing models to store and retrieve long-term information about users.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'WEBHOOK_URL',
+                    description: 'Sets a webhook for integration with Discord/Slack/Microsoft Teams.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENABLE_ADMIN_EXPORT',
+                    description: 'Controls whether admins can export data, chats and the database in the admin panel. Database exports only work for SQLite databases for now.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_ADMIN_CHAT_ACCESS',
+                    description: "Enables admin users to directly access the chats of other users. When disabled, admins can no longer accesss user's chats in the admin panel. If you disable this, consider disabling `ENABLE_ADMIN_EXPORT` too, if you are using SQLite, as the exports also contain user chats.",
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_PASSWORD_AUTH',
+                    description: 'Allows both password and SSO authentication methods to coexist when set to True. When set to False, it disables all password-based login attempts on the /signin and /ldap endpoints, enforcing strict SSO-only authentication. Disable this setting in production environments with fully configured SSO to prevent credential-based account takeover attacks; keep it enabled if you require password authentication as a backup or have not yet completed SSO configuration. Should never be disabled if OAUTH/SSO is not being used.',
+                    type: 'CheckBox',
+                },
+                {
+                    name: 'BYPASS_ADMIN_ACCESS_CONTROL',
+                    description: 'When disabled, admin users are treated like regular users for workspace access (models, knowledge, prompts and tools) and only see items they have explicit permission to access through the existing access control system. This also applies to the visibility of models in the model selector - admins will be treated as regular users: base models and custom models they do not have explicit permission to access, will be hidden. If set to `True` (Default), admins have access to all created items in the workspace area and all models in the model selector, regardless of access permissions.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_USER_WEBHOOKS',
+                    description: 'Enables or disables user webhooks.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'RESPONSE_WATERMARK',
+                    description: 'Sets a custom text that will be included when you copy a message in the chat. E.g. `"This text is AI generated"` -> will add "This text is AI generated" to every message, when copied.',
+                    type: 'Input',
+                },
+                {
+                    name: 'THREAD_POOL_SIZE',
+                    description: 'Sets the thread pool size for FastAPI/AnyIO blocking calls. By default (when set to `0`) FastAPI/AnyIO use `40` threads. In case of large instances and many concurrent users, it may be needed to increase `THREAD_POOL_SIZE` to prevent blocking.',
+                    type: 'Input',
+                    defaultValue: 0,
+                },
+                {
+                    name: 'ENABLE_CUSTOM_MODEL_FALLBACK',
+                    description: "Controls whether custom models should fall back to a default model if their assigned base model is missing. When set to `True`, if a custom model's base model is not found, the system will use the first model from the configured `DEFAULT_MODELS` list instead of returning an error.",
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_PUBLIC_ACTIVE_USERS_COUNT',
+                    description: 'Controls whether the active user count is visible to all users or restricted to administrators only. When set to `False`, only admin users can see how many users are currently active, reducing backend load and addressing privacy concerns in large deployments.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_USER_STATUS',
+                    description: 'Globally enables or disables user status functionality. When disabled, the status UI (including blinking active/away indicators and status messages) is hidden across the application, and user status API endpoints are restricted.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_BASE_MODELS_CACHE',
+                    description: 'When enabled, caches the list of base models from connected Ollama and OpenAI-compatible endpoints in memory. This reduces the number of API calls made to external model providers when loading the model selector, improving performance particularly for deployments with many users or slow connections to model endpoints. Can also be configured from Admin Panel > Settings > Connections > "Cache Base Model List".',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'MODELS_CACHE_TTL',
+                    description: 'Sets the cache time-to-live in seconds for model list responses from OpenAI and Ollama endpoints. This reduces API calls by caching the available models list for the specified duration. Set to empty string to disable caching entirely.',
+                    type: 'Input',
+                    defaultValue: 1,
+                },
+                {
+                    name: 'SHOW_ADMIN_DETAILS',
+                    description: 'Toggles whether to show admin user details in the interface.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ADMIN_EMAIL',
+                    description: 'Sets the admin email shown by `SHOW_ADMIN_DETAILS`',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENV',
+                    description: 'Environment setting.',
+                    type: 'DropDown',
+                    values: ['dev', 'prod'],
+                    defaultValue: 'dev',
+                },
+                {
+                    name: 'ENABLE_PERSISTENT_CONFIG',
+                    description: 'If set to `False`, all `PersistentConfig` variables are treated as regular variables.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'CUSTOM_NAME',
+                    description: 'Sets `WEBUI_NAME` but polls **api.openwebui.com** for metadata.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBUI_NAME',
+                    description: 'Sets the main WebUI name. Appends `(Open WebUI)` if overridden.',
+                    type: 'Input',
+                    defaultValue: 'Open WebUI',
+                },
+                {
+                    name: 'PORT',
+                    description: 'Sets the port to run Open WebUI from.',
+                    type: 'Input',
+                    defaultValue: 8080,
+                },
+                {
+                    name: 'ENABLE_REALTIME_CHAT_SAVE',
+                    description: "When enabled, the system saves each chunk of streamed chat data to the database in real time to ensure maximum data persistency. This feature provides robust data recovery and allows accurate session tracking. However, the tradeoff is increased latency, as saving to the database introduces a delay. Disabling this feature can improve performance and reduce delays, but it risks potential data loss in the event of a system failure or crash. Use based on your application's requirements and acceptable tradeoffs.",
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_CHAT_RESPONSE_BASE64_IMAGE_URL_CONVERSION',
+                    description: 'When set to true, it automatically uploads base64-encoded images exceeding 1KB in markdown and converts them into image file URLs to reduce the size of response text. Some multimodal models directly output images as Base64 strings within the Markdown content. This results in larger response bodies, placing strain on CPU, network, Redis, and database resources.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'CHAT_STREAM_RESPONSE_CHUNK_MAX_BUFFER_SIZE',
+                    description: 'Sets the maximum buffer size in bytes for handling stream response chunks. When a single chunk exceeds this limit, the system returns an empty JSON object and skips subsequent oversized data until encountering normally-sized chunks. This prevents memory issues when dealing with extremely large responses from certain providers (e.g., models like gemini-2.5-flash-image or services returning extensive web search data exceeding). Set to an empty string or a negative value to disable chunk size limitations entirely. Recommended values are 16-20 MB (`16777216`) or larger depending on the image size of the image generation model (4K images may need even more).',
+                    type: 'Input',
+                },
+                {
+                    name: 'CHAT_RESPONSE_STREAM_DELTA_CHUNK_SIZE',
+                    description: "Sets a system-wide minimum value for the number of tokens to batch together before sending them to the client during a streaming response. This allows an administrator to enforce a baseline level of performance and stability across the entire system by preventing excessively small chunk sizes that can cause high CPU load. The final chunk size used for a response will be the highest value set among this global variable, the model's advanced parameters, or the per-chat settings. The default is 1, which applies no minimum batching at the global level.",
+                    type: 'Input',
+                    defaultValue: 1,
+                },
+                {
+                    name: 'BYPASS_MODEL_ACCESS_CONTROL',
+                    description: "Bypasses model access control. When set to `true`, all users (and admins alike) will have access to all models, regardless of the model's privacy setting (Private, Public, Shared with certain groups). This is useful for smaller or individual Open WebUI installations where model access restrictions may not be needed.",
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WEBUI_BUILD_HASH',
+                    description: 'Used for identifying the Git SHA of the build for releases.',
+                    type: 'Input',
+                    defaultValue: 'dev-build',
+                },
+                {
+                    name: 'WEBUI_BANNERS',
+                    description: 'List of banners to show to users.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USE_CUDA_DOCKER',
+                    description: 'Builds the Docker image with NVIDIA CUDA support. Enables GPU acceleration for local Whisper and embeddings.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'DOCKER',
+                    description: 'Indicates whether Open WebUI is running inside a Docker container. Used internally for environment detection.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'USE_CUDA',
+                    description: 'Controls whether to use CUDA acceleration for local models. When set to `true`, attempts to detect and use available NVIDIA GPUs. The code reads the environment variable `USE_CUDA_DOCKER` to set this internal boolean variable.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'DEVICE_TYPE',
+                    description: 'Specifies the device type for model execution. Automatically set to `cuda` if CUDA is available and enabled, or `mps` for Apple Silicon.',
+                    type: 'Input',
+                    defaultValue: 'cpu',
+                },
+                {
+                    name: 'EXTERNAL_PWA_MANIFEST_URL',
+                    description: 'When defined as a fully qualified URL (e.g., https://path/to/manifest.webmanifest), requests sent to /manifest.json will use the external manifest file. When not defined, the default manifest.json file will be used.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENABLE_TITLE_GENERATION',
+                    description: 'Enables or disables chat title generation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_COMPRESSION_MIDDLEWARE',
+                    description: 'Enables gzip compression middleware for HTTP responses to reduce bandwidth usage.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'LICENSE_KEY',
+                    description: 'Specifies the license key to use (for Enterprise users only).',
+                    type: 'Input',
+                },
+                {
+                    name: 'SSL_ASSERT_FINGERPRINT',
+                    description: 'Specifies the SSL assert fingerprint to use.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DEFAULT_PROMPT_SUGGESTIONS',
+                    description: 'List of prompt suggestions.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'AIOHTTP Client',
+            items: [
+                {
+                    name: 'AIOHTTP_CLIENT_TIMEOUT',
+                    description: 'Specifies the timeout duration in seconds for the AIOHTTP client. This impacts things such as connections to Ollama and OpenAI endpoints.',
+                    type: 'Input',
+                    defaultValue: 300,
+                },
+                {
+                    name: 'AIOHTTP_CLIENT_TIMEOUT_MODEL_LIST',
+                    description: 'Sets the timeout in seconds for fetching the model list. This can be useful in cases where network latency requires a longer timeout duration to successfully retrieve the model list.',
+                    type: 'Input',
+                    defaultValue: 10,
+                },
+                {
+                    name: 'AIOHTTP_CLIENT_TIMEOUT_OPENAI_MODEL_LIST',
+                    description: 'Sets the timeout in seconds for fetching the model list. This can be useful in cases where network latency requires a longer timeout duration to successfully retrieve the model list.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AIOHTTP_CLIENT_SESSION_SSL',
+                    description: 'Controls SSL/TLS verification for AIOHTTP client sessions when connecting to external APIs (e.g., Ollama Embeddings).',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'AIOHTTP_CLIENT_TIMEOUT_TOOL_SERVER_DATA',
+                    description: 'Sets the timeout in seconds for retrieving data from tool servers via AIOHTTP client.',
+                    type: 'Input',
+                    defaultValue: 10,
+                },
+                {
+                    name: 'AIOHTTP_CLIENT_SESSION_TOOL_SERVER_SSL',
+                    description: 'Controls SSL/TLS verification specifically for tool server connections via AIOHTTP client.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'REQUESTS_VERIFY',
+                    description: 'Controls SSL/TLS verification for synchronous `requests` (e.g., Tika, External Reranker). Set to `False` to bypass certificate verification for self-signed certificates.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+            ],
+        },
+        {
+            section: 'Directories',
+            items: [
+                {
+                    name: 'DATA_DIR',
+                    description: 'Specifies the base directory for data storage, including uploads, cache, vector database, etc.',
+                    type: 'Input',
+                    defaultValue: './data',
+                },
+                {
+                    name: 'FONTS_DIR',
+                    description: 'Specifies the directory for fonts.',
+                    type: 'Input',
+                },
+                {
+                    name: 'FRONTEND_BUILD_DIR',
+                    description: 'Specifies the location of the built frontend files.',
+                    type: 'Input',
+                    defaultValue: '../build',
+                },
+                {
+                    name: 'STATIC_DIR',
+                    description: 'Specifies the directory for static files, such as the favicon.',
+                    type: 'Input',
+                    defaultValue: './static',
+                },
+            ],
+        },
+        {
+            section: 'Ollama',
+            items: [
+                {
+                    name: 'ENABLE_OLLAMA_API',
+                    description: 'Enables the use of Ollama APIs.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'OLLAMA_BASE_URL',
+                    description: 'Configures the Ollama backend URL.',
+                    type: 'Input',
+                    defaultValue: 'http://localhost:11434',
+                },
+                {
+                    name: 'OLLAMA_BASE_URLS',
+                    description: 'Configures load-balanced Ollama backend hosts, separated by ;. Takes precedence over OLLAMA_BASE_URL.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USE_OLLAMA_DOCKER',
+                    description: 'Builds the Docker image with a bundled Ollama instance.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'K8S_FLAG',
+                    description: 'If set, assumes Helm chart deployment and sets OLLAMA_BASE_URL to http://ollama-service.open-webui.svc.cluster.local:11434',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+        {
+            section: 'OpenAI',
+            items: [
+                {
+                    name: 'ENABLE_OPENAI_API',
+                    description: 'Enables the use of OpenAI APIs.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'OPENAI_API_BASE_URL',
+                    description: 'Configures the OpenAI base API URL.',
+                    type: 'Input',
+                    defaultValue: 'https://api.openai.com/v1',
+                },
+                {
+                    name: 'OPENAI_API_BASE_URLS',
+                    description: 'Supports balanced OpenAI base API URLs, semicolon-separated.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OPENAI_API_KEY',
+                    description: 'Sets the OpenAI API key.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OPENAI_API_KEYS',
+                    description: 'Supports multiple OpenAI API keys, semicolon-separated.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Tasks',
+            items: [
+                {
+                    name: 'TASK_MODEL',
+                    description: 'The default model to use for tasks such as title and web search query generation when using Ollama models.',
+                    type: 'Input',
+                },
+                {
+                    name: 'TASK_MODEL_EXTERNAL',
+                    description: 'The default model to use for tasks such as title and web search query generation when using OpenAI-compatible endpoints.',
+                    type: 'Input',
+                },
+                {
+                    name: 'TITLE_GENERATION_PROMPT_TEMPLATE',
+                    description: 'Prompt to use when generating chat titles.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENABLE_FOLLOW_UP_GENERATION',
+                    description: 'Enables or disables follow up generation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'FOLLOW_UP_GENERATION_PROMPT_TEMPLATE',
+                    description: 'Prompt to use for generating several relevant follow-up questions.',
+                    type: 'Input',
+                },
+                {
+                    name: 'TOOLS_FUNCTION_CALLING_PROMPT_TEMPLATE',
+                    description: 'Prompt to use when calling tools.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Code Execution',
+            items: [
+                {
+                    name: 'ENABLE_CODE_EXECUTION',
+                    description: 'Enables or disables code execution.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'CODE_EXECUTION_ENGINE',
+                    description: 'Specifies the code execution engine to use.',
+                    type: 'Input',
+                    defaultValue: 'pyodide',
+                },
+                {
+                    name: 'CODE_EXECUTION_JUPYTER_URL',
+                    description: 'Specifies the Jupyter URL to use for code execution.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_EXECUTION_JUPYTER_AUTH',
+                    description: 'Specifies the Jupyter authentication method to use for code execution.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_EXECUTION_JUPYTER_AUTH_TOKEN',
+                    description: 'Specifies the Jupyter authentication token to use for code execution.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_EXECUTION_JUPYTER_AUTH_PASSWORD',
+                    description: 'Specifies the Jupyter authentication password to use for code execution.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_EXECUTION_JUPYTER_TIMEOUT',
+                    description: 'Specifies the timeout for Jupyter code execution.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Code Interpreter',
+            items: [
+                {
+                    name: 'ENABLE_CODE_INTERPRETER',
+                    description: 'Enables or disables code interpreter.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'CODE_INTERPRETER_ENGINE',
+                    description: 'Specifies the code interpreter engine to use.',
+                    type: 'Input',
+                    defaultValue: 'pyodide',
+                },
+                {
+                    name: 'CODE_INTERPRETER_BLACKLISTED_MODULES',
+                    description: 'Specifies a comma-separated list of Python modules that are blacklisted and cannot be imported or used within the code interpreter. This enhances security by preventing access to potentially sensitive or system-level functionalities.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_INTERPRETER_PROMPT_TEMPLATE',
+                    description: 'Specifies the prompt template to use for code interpreter.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_INTERPRETER_JUPYTER_URL',
+                    description: 'Specifies the Jupyter URL to use for code interpreter.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_INTERPRETER_JUPYTER_AUTH',
+                    description: 'Specifies the Jupyter authentication method to use for code interpreter.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_INTERPRETER_JUPYTER_AUTH_TOKEN',
+                    description: 'Specifies the Jupyter authentication token to use for code interpreter.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_INTERPRETER_JUPYTER_AUTH_PASSWORD',
+                    description: 'Specifies the Jupyter authentication password to use for code interpreter.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CODE_INTERPRETER_JUPYTER_TIMEOUT',
+                    description: 'Specifies the timeout for the Jupyter code interpreter.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Direct Connections (OpenAPI/MCPO Tool Servers)',
+            items: [
+                {
+                    name: 'ENABLE_DIRECT_CONNECTIONS',
+                    description: 'Enables or disables direct connections.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'TOOL_SERVER_CONNECTIONS',
+                    description: 'Comma-separated list of tool server connection URLs for direct connections to OpenAPI/MCPO tool servers.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Autocomplete',
+            items: [
+                {
+                    name: 'ENABLE_AUTOCOMPLETE_GENERATION',
+                    description: 'Enables or disables autocomplete generation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'AUTOCOMPLETE_GENERATION_INPUT_MAX_LENGTH',
+                    description: 'Sets the maximum input length for autocomplete generation.',
+                    type: 'Input',
+                    defaultValue: -1,
+                },
+                {
+                    name: 'AUTOCOMPLETE_GENERATION_PROMPT_TEMPLATE',
+                    description: 'Sets the prompt template for autocomplete generation.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Evaluation Arena Model',
+            items: [
+                {
+                    name: 'ENABLE_EVALUATION_ARENA_MODELS',
+                    description: 'Enables or disables evaluation arena models.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_MESSAGE_RATING',
+                    description: 'Enables message rating feature.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_COMMUNITY_SHARING',
+                    description: 'Controls whether users are shown the share to community button.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+            ],
+        },
+        {
+            section: 'Tags Generation',
+            items: [
+                {
+                    name: 'ENABLE_TAGS_GENERATION',
+                    description: 'Enables or disables tag generation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'TAGS_GENERATION_PROMPT_TEMPLATE',
+                    description: 'Sets the prompt template for tag generation.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'API Key Endpoint Restrictions',
+            items: [
+                {
+                    name: 'ENABLE_API_KEYS',
+                    description: 'Enables the API key creation feature, allowing users to generate API keys for programmatic access to Open WebUI.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS',
+                    description: 'Enables API key endpoint restrictions for added security and configurability, allowing administrators to limit which endpoints can be accessed using API keys.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'API_KEYS_ALLOWED_ENDPOINTS',
+                    description: 'Specifies a comma-separated list of allowed API endpoints when API key endpoint restrictions are enabled.',
+                    type: 'Input',
+                },
+                {
+                    name: 'JWT_EXPIRES_IN',
+                    description: 'Sets the JWT expiration time in seconds. Valid time units: `s`, `m`, `h`, `d`, `w` or `-1` for no expiration.',
+                    type: 'Input',
+                    defaultValue: '4w',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const audio = {
+    category: 'Audio',
+    sections: [
+        {
+            section: 'Whisper Speech-to-Text (Local)',
+            items: [
+                {
+                    name: 'WHISPER_MODEL',
+                    description: 'Sets the Whisper model to use for Speech-to-Text. The backend used is faster_whisper with quantization to `int8`.',
+                    type: 'Input',
+                    defaultValue: 'base',
+                },
+                {
+                    name: 'WHISPER_MODEL_DIR',
+                    description: 'Specifies the directory to store Whisper model files.',
+                    type: 'Input',
+                    defaultValue: '${DATA_DIR}/cache/whisper/models',
+                },
+                {
+                    name: 'WHISPER_VAD_FILTER',
+                    description: 'Specifies whether to apply a Voice Activity Detection (VAD) filter to Whisper Speech-to-Text.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WHISPER_COMPUTE_TYPE',
+                    description: 'Sets the compute type for Whisper model inference. Defaults to `int8` for CPU and `float16` for CUDA (with fallback to `int8/int8_float16`).',
+                    type: 'Input',
+                },
+                {
+                    name: 'WHISPER_MODEL_AUTO_UPDATE',
+                    description: 'Toggles automatic update of the Whisper model.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WHISPER_LANGUAGE',
+                    description: 'Specifies the ISO 639-1 language Whisper uses for STT (ISO 639-2 for Hawaiian and Cantonese). Whisper predicts the language by default.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WHISPER_MULTILINGUAL',
+                    description: 'Toggles whether to use the multilingual Whisper model. When set to `False`, the system will use the English-only model for better performance in English-centric tasks. When `True`, it supports multiple languages.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+        {
+            section: 'Speech-to-Text (OpenAI)',
+            items: [
+                {
+                    name: 'AUDIO_STT_ENGINE',
+                    description: 'Specifies the Speech-to-Text engine to use.',
+                    type: 'DropDown',
+                    values: ['', 'openai', 'deepgram', 'azure', 'mistral'],
+                },
+                {
+                    name: 'AUDIO_STT_MODEL',
+                    description: 'Specifies the Speech-to-Text model to use for OpenAI-compatible endpoints.',
+                    type: 'Input',
+                    defaultValue: 'whisper-1',
+                },
+                {
+                    name: 'AUDIO_STT_OPENAI_API_BASE_URL',
+                    description: 'Sets the OpenAI-compatible base URL to use for Speech-to-Text.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_BASE_URL}',
+                },
+                {
+                    name: 'AUDIO_STT_OPENAI_API_KEY',
+                    description: 'Sets the OpenAI API key to use for Speech-to-Text.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_KEY}',
+                },
+            ],
+        },
+        {
+            section: 'Speech-to-Text (Mistral)',
+            items: [
+                {
+                    name: 'AUDIO_STT_MISTRAL_API_KEY',
+                    description: 'Sets the Mistral API key to use for Speech-to-Text.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUDIO_STT_MISTRAL_API_BASE_URL',
+                    description: 'Specifies the Mistral API base URL to use for Speech-to-Text.',
+                    type: 'Input',
+                    defaultValue: 'https://api.mistral.ai/v1',
+                },
+                {
+                    name: 'AUDIO_STT_MISTRAL_USE_CHAT_COMPLETIONS',
+                    description: 'Enables using Mistral chat completions endpoint for Speech-to-Text instead of the dedicated STT endpoint.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'AUDIO_STT_SUPPORTED_CONTENT_TYPES',
+                    description: 'Comma-separated list of supported audio content types for Speech-to-Text.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Speech-to-Text (Azure)',
+            items: [
+                {
+                    name: 'AUDIO_STT_AZURE_API_KEY',
+                    description: 'Specifies the Azure API key to use for Speech-to-Text.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUDIO_STT_AZURE_REGION',
+                    description: 'Specifies the Azure region to use for Speech-to-Text.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUDIO_STT_AZURE_BASE_URL',
+                    description: 'Specifies the Azure base URL to use for Speech-to-Text. Overrides the default Azure endpoint.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUDIO_STT_AZURE_MAX_SPEAKERS',
+                    description: 'Sets the maximum number of speakers for Azure Speech-to-Text diarization.',
+                    type: 'Input',
+                    defaultValue: 3,
+                },
+                {
+                    name: 'AUDIO_STT_AZURE_LOCALES',
+                    description: 'Specifies the locales to use for Azure Speech-to-Text.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Speech-to-Text (Deepgram)',
+            items: [
+                {
+                    name: 'DEEPGRAM_API_KEY',
+                    description: 'Specifies the Deepgram API key to use for Speech-to-Text.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Text-to-Speech',
+            items: [
+                {
+                    name: 'AUDIO_TTS_API_KEY',
+                    description: 'Sets the API key for Text-to-Speech.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUDIO_TTS_ENGINE',
+                    description: 'Specifies the Text-to-Speech engine to use.',
+                    type: 'DropDown',
+                    values: ['', 'azure', 'elevenlabs', 'openai', 'transformers'],
+                },
+                {
+                    name: 'AUDIO_TTS_MODEL',
+                    description: 'Specifies the OpenAI text-to-speech model to use.',
+                    type: 'Input',
+                    defaultValue: 'tts-1',
+                },
+                {
+                    name: 'AUDIO_TTS_VOICE',
+                    description: 'Sets the OpenAI text-to-speech voice to use.',
+                    type: 'Input',
+                    defaultValue: 'alloy',
+                },
+                {
+                    name: 'AUDIO_TTS_SPLIT_ON',
+                    description: 'Sets the OpenAI text-to-speech split on to use.',
+                    type: 'Input',
+                    defaultValue: 'punctuation',
+                },
+            ],
+        },
+        {
+            section: 'Azure Text-to-Speech',
+            items: [
+                {
+                    name: 'AUDIO_TTS_AZURE_SPEECH_REGION',
+                    description: 'Sets the region for Azure Text to Speech.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT',
+                    description: 'Sets the output format for Azure Text to Speech.',
+                    type: 'Input',
+                    defaultValue: 'audio-24khz-160kbitrate-mono-mp3',
+                },
+                {
+                    name: 'AUDIO_TTS_AZURE_SPEECH_BASE_URL',
+                    description: 'Sets the base URL for Azure Text to Speech. Overrides the default Azure endpoint.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'OpenAI Text-to-Speech',
+            items: [
+                {
+                    name: 'AUDIO_TTS_OPENAI_API_BASE_URL',
+                    description: 'Sets the OpenAI-compatible base URL to use for text-to-speech.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_BASE_URL}',
+                },
+                {
+                    name: 'AUDIO_TTS_OPENAI_API_KEY',
+                    description: 'Sets the API key to use for text-to-speech.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_KEY}',
+                },
+                {
+                    name: 'AUDIO_TTS_OPENAI_PARAMS',
+                    description: 'Additional parameters for OpenAI text-to-speech API in JSON format.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Elevenlabs Text-to-Speech',
+            items: [
+                {
+                    name: 'ELEVENLABS_API_BASE_URL',
+                    description: 'Configures custom ElevenLabs API endpoints, enabling support for EU residency API requirements and other regional deployments.',
+                    type: 'Input',
+                    defaultValue: 'https://api.elevenlabs.io',
+                },
+            ],
+        },
+        {
+            section: 'Voice Mode',
+            items: [
+                {
+                    name: 'VOICE_MODE_PROMPT_TEMPLATE',
+                    description: 'Sets the prompt template for voice mode interactions. This template is used to format voice input before sending to the model.',
+                    type: 'Input',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const idap = {
+    category: 'LDAP',
+    items: [
+        {
+            name: 'ENABLE_LDAP',
+            description: 'Enables or disables LDAP authentication.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'LDAP_SERVER_LABEL',
+            description: 'Sets the label of the LDAP server.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_SERVER_HOST',
+            description: 'Sets the hostname of the LDAP server.',
+            type: 'Input',
+            defaultValue: 'localhost',
+        },
+        {
+            name: 'LDAP_SERVER_PORT',
+            description: 'Sets the port number of the LDAP server.',
+            type: 'Input',
+            defaultValue: 389,
+        },
+        {
+            name: 'LDAP_ATTRIBUTE_FOR_MAIL',
+            description: 'Sets the attribute to use as mail for LDAP authentication.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_ATTRIBUTE_FOR_USERNAME',
+            description: 'Sets the attribute to use as a username for LDAP authentication.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_APP_DN',
+            description: 'Sets the distinguished name for the LDAP application.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_APP_PASSWORD',
+            description: 'Sets the password for the LDAP application.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_SEARCH_BASE',
+            description: 'Sets the base to search for LDAP authentication.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_SEARCH_FILTER',
+            description: 'Sets a single filter to use for LDAP search. Alternative to `LDAP_SEARCH_FILTERS`.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_SEARCH_FILTERS',
+            description: 'Sets the filter to use for LDAP search.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_USE_TLS',
+            description: 'Enables or disables TLS for LDAP connection.',
+            type: 'CheckBox',
+            defaultValue: true,
+        },
+        {
+            name: 'LDAP_CA_CERT_FILE',
+            description: 'Sets the path to the LDAP CA certificate file.',
+            type: 'Input',
+        },
+        {
+            name: 'LDAP_VALIDATE_CERT',
+            description: 'Sets whether to validate the LDAP CA certificate.',
+            type: 'CheckBox',
+        },
+        {
+            name: 'LDAP_CIPHERS',
+            description: 'Sets the ciphers to use for LDAP connection.',
+            type: 'Input',
+            defaultValue: 'ALL',
+        },
+        {
+            name: 'ENABLE_LDAP_GROUP_MANAGEMENT',
+            description: 'Enables the group management feature.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'ENABLE_LDAP_GROUP_CREATION',
+            description: 'If a group from LDAP does not exist in Open WebUI, it will be created automatically.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'LDAP_ATTRIBUTE_FOR_GROUPS',
+            description: "Specifies the LDAP attribute that contains the user's group memberships. `memberOf` is a standard attribute for this purpose in Active Directory environments.",
+            type: 'Input',
+            defaultValue: 'memberOf',
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const imageGeneration = {
+    category: 'Image Generation',
+    sections: [
+        {
+            section: 'General',
+            items: [
+                {
+                    name: 'ENABLE_IMAGE_GENERATION',
+                    description: 'Enables or disables image generation features.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'IMAGE_GENERATION_ENGINE',
+                    description: 'Specifies the engine to use for image generation.',
+                    type: 'DropDown',
+                    values: ['openai', 'comfyui', 'automatic1111', 'gemini'],
+                    defaultValue: 'openai',
+                },
+                {
+                    name: 'IMAGE_GENERATION_MODEL',
+                    description: 'Default model to use for image generation (e.g., `dall-e-3`, `gemini-2.0-flash-exp`).',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENABLE_IMAGE_PROMPT_GENERATION',
+                    description: 'Enables or disables automatic enhancement of user prompts for better image generation results.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'IMAGE_PROMPT_GENERATION_PROMPT_TEMPLATE',
+                    description: 'Specifies the template to use for generating image prompts.',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGE_SIZE',
+                    description: 'Sets the default output dimensions for generated images in WIDTHxHEIGHT format (e.g., `1024x1024`).',
+                    type: 'Input',
+                    defaultValue: '512x512',
+                },
+                {
+                    name: 'IMAGE_STEPS',
+                    description: 'Sets the default iteration steps for image generation. Used for ComfyUI and AUTOMATIC1111 engines.',
+                    type: 'Input',
+                    defaultValue: 50,
+                },
+            ],
+        },
+        {
+            section: 'Image Editing',
+            items: [
+                {
+                    name: 'ENABLE_IMAGE_EDIT',
+                    description: 'When disabled, Image Editing will not be used and instead, images will be created only using the image generation engine.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'IMAGE_EDIT_ENGINE',
+                    description: 'Configures the engine used for image editing operations, enabling modification of existing images using text prompts.',
+                    type: 'DropDown',
+                    values: ['openai', 'gemini', 'comfyui'],
+                    defaultValue: 'openai',
+                },
+                {
+                    name: 'IMAGE_EDIT_MODEL',
+                    description: 'Specifies the model to use for image editing operations within the selected engine (e.g., `dall-e-2`, `gemini-2.5-flash`).',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGE_EDIT_SIZE',
+                    description: 'Defines the output dimensions for edited images in WIDTHxHEIGHT format (e.g., `1024x1024`). Leave empty to preserve original dimensions.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'AUTOMATIC1111',
+            items: [
+                {
+                    name: 'AUTOMATIC1111_BASE_URL',
+                    description: "Specifies the URL to AUTOMATIC1111's Stable Diffusion API (e.g., `http://127.0.0.1:7860`).",
+                    type: 'Input',
+                },
+                {
+                    name: 'AUTOMATIC1111_API_AUTH',
+                    description: 'Sets the AUTOMATIC1111 API authentication credentials if required.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUTOMATIC1111_PARAMS',
+                    description: 'Additional parameters in JSON format to pass to AUTOMATIC1111 API requests (e.g., `{"cfg_scale": 7, "sampler_name": "Euler a", "scheduler": "normal"}`).',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'ComfyUI',
+            items: [
+                {
+                    name: 'COMFYUI_BASE_URL',
+                    description: 'Specifies the URL to the ComfyUI image generation API (e.g., `http://127.0.0.1:8188`).',
+                    type: 'Input',
+                },
+                {
+                    name: 'COMFYUI_API_KEY',
+                    description: 'Sets the API key for ComfyUI authentication.',
+                    type: 'Input',
+                },
+                {
+                    name: 'COMFYUI_WORKFLOW',
+                    description: 'Defines the ComfyUI workflow configuration in JSON format. Export from ComfyUI using "Save (API Format)" to ensure compatibility.',
+                    type: 'Input',
+                },
+                {
+                    name: 'COMFYUI_WORKFLOW_NODES',
+                    description: 'Specifies the ComfyUI workflow node mappings for image generation, defining which nodes handle prompt, model, dimensions, and other parameters. Configured automatically via the admin UI.',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_EDIT_COMFYUI_BASE_URL',
+                    description: 'Configures the ComfyUI base URL for image editing operations, enabling self-hosted ComfyUI workflows for image manipulation.',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_EDIT_COMFYUI_API_KEY',
+                    description: 'Provides authentication for ComfyUI image editing API requests when the ComfyUI instance requires API key authentication.',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_EDIT_COMFYUI_WORKFLOW',
+                    description: 'Defines the ComfyUI workflow configuration in JSON format for image editing operations. Must include nodes for image input, prompt, and output. Export from ComfyUI using "Save (API Format)".',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_EDIT_COMFYUI_WORKFLOW_NODES',
+                    description: 'Specifies the ComfyUI workflow node mappings for image editing, defining which nodes handle image input, prompt, model, dimensions, and other parameters. Configured automatically via the admin UI.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Gemini',
+            items: [
+                {
+                    name: 'GEMINI_API_BASE_URL',
+                    description: "Specifies the URL to Gemini's API.",
+                    type: 'Input',
+                },
+                {
+                    name: 'GEMINI_API_KEY',
+                    description: 'Sets the Gemini API key.',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_GEMINI_API_BASE_URL',
+                    description: "Specifies the URL to Gemini's image generation API.",
+                    type: 'Input',
+                    defaultValue: '${GEMINI_API_BASE_URL}',
+                },
+                {
+                    name: 'IMAGES_GEMINI_API_KEY',
+                    description: 'Sets the Gemini API key for image generation.',
+                    type: 'Input',
+                    defaultValue: '${GEMINI_API_KEY}',
+                },
+                {
+                    name: 'IMAGES_GEMINI_ENDPOINT_METHOD',
+                    description: 'Specifies the Gemini API endpoint method for image generation, supporting both legacy Imagen models and newer Gemini models with image generation capabilities.',
+                    type: 'DropDown',
+                    values: ['predict', 'generateContent'],
+                },
+                {
+                    name: 'IMAGES_EDIT_GEMINI_API_BASE_URL',
+                    description: 'Configures the Gemini API base URL for image editing operations with Gemini models.',
+                    type: 'Input',
+                    defaultValue: '${GEMINI_API_BASE_URL}',
+                },
+                {
+                    name: 'IMAGES_EDIT_GEMINI_API_KEY',
+                    description: 'Provides authentication for Gemini image editing API requests.',
+                    type: 'Input',
+                    defaultValue: '${GEMINI_API_KEY}',
+                },
+            ],
+        },
+        {
+            section: 'Jina',
+            items: [
+                {
+                    name: 'JINA_API_BASE_URL',
+                    description: 'Sets the base URL for Jina API. Allows using custom or self-hosted Jina-compatible endpoints.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'OpenAI DALL-E',
+            items: [
+                {
+                    name: 'IMAGES_OPENAI_API_BASE_URL',
+                    description: 'Sets the OpenAI-compatible base URL to use for DALL-E image generation.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_BASE_URL}',
+                },
+                {
+                    name: 'IMAGES_OPENAI_API_VERSION',
+                    description: 'Optional setting. If provided it sets the `api-version` query parameter when calling the image generation endpoint. Required for Azure OpenAI deployments.',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_OPENAI_API_KEY',
+                    description: 'Sets the API key to use for DALL-E image generation.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_KEY}',
+                },
+                {
+                    name: 'IMAGES_OPENAI_API_PARAMS',
+                    description: 'Additional parameters for OpenAI image generation API in JSON format. Allows customization of API-specific settings such as quality parameters for DALL-E models (e.g., `{"quality": "hd"}` for dall-e-3).',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_EDIT_OPENAI_API_BASE_URL',
+                    description: 'Configures the OpenAI API base URL specifically for image editing operations, allowing separate endpoints from image generation.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_BASE_URL}',
+                },
+                {
+                    name: 'IMAGES_EDIT_OPENAI_API_VERSION',
+                    description: 'Specifies the OpenAI API version for image editing, enabling support for Azure OpenAI deployments with versioned endpoints.',
+                    type: 'Input',
+                },
+                {
+                    name: 'IMAGES_EDIT_OPENAI_API_KEY',
+                    description: 'Provides authentication for OpenAI image editing API requests, with support for separate keys from image generation.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_KEY}',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const miscEnv = {
+    category: 'Misc Environment Variables',
+    sections: [
+        {
+            section: 'Cloud Storage',
+            items: [
+                {
+                    name: 'STORAGE_PROVIDER',
+                    description: 'Sets the storage provider.',
+                    type: 'DropDown',
+                    values: ['s3', 'gcs', 'azure'],
+                },
+            ],
+        },
+        {
+            section: 'Amazon S3 Storage',
+            items: [
+                {
+                    name: 'S3_ACCESS_KEY_ID',
+                    description: 'Sets the access key ID for S3 storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_ADDRESSING_STYLE',
+                    description: "Specifies the addressing style to use for S3 storage (e.g., 'path', 'virtual').",
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_BUCKET_NAME',
+                    description: 'Sets the bucket name for S3 storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_ENDPOINT_URL',
+                    description: 'Sets the endpoint URL for S3 storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_KEY_PREFIX',
+                    description: 'Sets the key prefix for a S3 object.',
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_REGION_NAME',
+                    description: 'Sets the region name for S3 storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_SECRET_ACCESS_KEY',
+                    description: 'Sets the secret access key for S3 storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_USE_ACCELERATE_ENDPOINT',
+                    description: 'Specifies whether to use the accelerated endpoint for S3 storage.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'S3_ENABLE_TAGGING',
+                    description: 'Enables S3 object tagging after uploads for better organization, searching, and integration with file management policies. Always set to `False` when using Cloudflare R2, as R2 does not support object tagging.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+        {
+            section: 'Google Cloud Storage',
+            items: [
+                {
+                    name: 'GOOGLE_APPLICATION_CREDENTIALS_JSON',
+                    description: 'Contents of Google Application Credentials JSON file.',
+                    type: 'Input',
+                },
+                {
+                    name: 'GCS_BUCKET_NAME',
+                    description: 'Sets the bucket name for Google Cloud Storage. Bucket must already exist.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Microsoft Azure Storage',
+            items: [
+                {
+                    name: 'AZURE_STORAGE_ENDPOINT',
+                    description: 'Sets the endpoint URL for Azure Storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AZURE_STORAGE_CONTAINER_NAME',
+                    description: 'Sets the container name for Azure Storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AZURE_STORAGE_KEY',
+                    description: 'Set the access key for Azure Storage.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'OpenTelemetry Configuration',
+            items: [
+                {
+                    name: 'ENABLE_OTEL',
+                    description: 'Enables or disables OpenTelemetry for observability. When enabled, tracing, metrics, and logging data can be collected and exported to an OTLP endpoint.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OTEL_TRACES',
+                    description: 'Enables or disables OpenTelemetry trace collection and export. When enabled, distributed tracing data is sent to the configured OTLP endpoint. This variable works in conjunction with `ENABLE_OTEL`.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OTEL_METRICS',
+                    description: 'Enables or disables OpenTelemetry metrics collection and export. This variable works in conjunction with `ENABLE_OTEL`.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OTEL_LOGS',
+                    description: 'Enables or disables OpenTelemetry logging export. When enabled, application logs are sent to the configured OTLP endpoint. This variable works in conjunction with `ENABLE_OTEL`.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'OTEL_EXPORTER_OTLP_ENDPOINT',
+                    description: 'Specifies the default OTLP (OpenTelemetry Protocol) endpoint for exporting traces, metrics, and logs. This can be overridden for metrics if `OTEL_METRICS_EXPORTER_OTLP_ENDPOINT` is set, and for logs if `OTEL_LOGS_EXPORTER_OTLP_ENDPOINT` is set.',
+                    type: 'Input',
+                    defaultValue: 'http://localhost:4317',
+                },
+                {
+                    name: 'OTEL_METRICS_EXPORTER_OTLP_ENDPOINT',
+                    description: 'Specifies the dedicated OTLP endpoint for exporting OpenTelemetry metrics. If not set, it defaults to the value of `OTEL_EXPORTER_OTLP_ENDPOINT`. This is useful when separate endpoints for traces and metrics are used.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_LOGS_EXPORTER_OTLP_ENDPOINT',
+                    description: 'Specifies the dedicated OTLP endpoint for exporting OpenTelemetry logs. If not set, it defaults to the value of `OTEL_EXPORTER_OTLP_ENDPOINT`. This is useful when separate endpoints for logs, traces, and metrics are used.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_EXPORTER_OTLP_INSECURE',
+                    description: 'If set to `True`, the OTLP exporter will use an insecure connection (e.g., HTTP for gRPC) for traces. For metrics, its behavior is governed by `OTEL_METRICS_EXPORTER_OTLP_INSECURE`, and for logs by `OTEL_LOGS_EXPORTER_OTLP_INSECURE`.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'OTEL_METRICS_EXPORTER_OTLP_INSECURE',
+                    description: 'If set to `True`, the OTLP exporter will use an insecure connection for metrics. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'OTEL_LOGS_EXPORTER_OTLP_INSECURE',
+                    description: 'If set to `True`, the OTLP exporter will use an insecure connection for logs. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'OTEL_SERVICE_NAME',
+                    description: 'Sets the service name that will be reported to your OpenTelemetry collector or observability platform. This helps identify your Open WebUI instance.',
+                    type: 'Input',
+                    defaultValue: 'open-webui',
+                },
+                {
+                    name: 'OTEL_RESOURCE_ATTRIBUTES',
+                    description: 'Allows you to define additional resource attributes to be attached to all telemetry data, in a comma-separated `key1=val1,key2=val2` format.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_TRACES_SAMPLER',
+                    description: 'Configures the sampling strategy for OpenTelemetry traces. This determines which traces are collected and exported to reduce data volume.',
+                    type: 'Input',
+                    defaultValue: 'parentbased_always_on',
+                },
+                {
+                    name: 'OTEL_BASIC_AUTH_USERNAME',
+                    description: 'Sets the username for basic authentication with the default OTLP endpoint. This applies to traces, and by default, to metrics and logs unless overridden by their specific authentication variables.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_BASIC_AUTH_PASSWORD',
+                    description: 'Sets the password for basic authentication with the default OTLP endpoint. This applies to traces, and by default, to metrics and logs unless overridden by their specific authentication variables.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_METRICS_BASIC_AUTH_USERNAME',
+                    description: 'Sets the username for basic authentication specifically for the OTLP metrics endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_USERNAME`.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_METRICS_BASIC_AUTH_PASSWORD',
+                    description: 'Sets the password for basic authentication specifically for the OTLP metrics endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_PASSWORD`.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_LOGS_BASIC_AUTH_USERNAME',
+                    description: 'Sets the username for basic authentication specifically for the OTLP logs endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_USERNAME`.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_LOGS_BASIC_AUTH_PASSWORD',
+                    description: 'Sets the password for basic authentication specifically for the OTLP logs endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_PASSWORD`.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OTEL_OTLP_SPAN_EXPORTER',
+                    description: 'Specifies the default protocol for exporting OpenTelemetry traces (gRPC or HTTP). This can be overridden for metrics if `OTEL_METRICS_OTLP_SPAN_EXPORTER` is set, and for logs if `OTEL_LOGS_OTLP_SPAN_EXPORTER` is set.',
+                    type: 'DropDown',
+                    values: ['grpc', 'http'],
+                    defaultValue: 'grpc',
+                },
+                {
+                    name: 'OTEL_METRICS_OTLP_SPAN_EXPORTER',
+                    description: 'Specifies the protocol for exporting OpenTelemetry metrics (gRPC or HTTP). If not specified, it uses the value of `OTEL_OTLP_SPAN_EXPORTER`.',
+                    type: 'DropDown',
+                    values: ['grpc', 'http'],
+                },
+                {
+                    name: 'OTEL_LOGS_OTLP_SPAN_EXPORTER',
+                    description: 'Specifies the protocol for exporting OpenTelemetry logs (gRPC or HTTP). If not specified, it uses the value of `OTEL_OTLP_SPAN_EXPORTER`.',
+                    type: 'DropDown',
+                    values: ['grpc', 'http'],
+                },
+            ],
+        },
+        {
+            section: 'Database Pool',
+            items: [
+                {
+                    name: 'DATABASE_URL',
+                    description: 'Specifies the database URL to connect to.',
+                    type: 'Input',
+                    defaultValue: 'sqlite:///${DATA_DIR}/webui.db',
+                },
+                {
+                    name: 'DATABASE_SCHEMA',
+                    description: 'Specifies the database schema to connect to.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_POOL_SIZE',
+                    description: 'Specifies the pooling strategy and size of the database pool.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_POOL_MAX_OVERFLOW',
+                    description: 'Specifies the database pool max overflow.',
+                    type: 'Input',
+                    defaultValue: 0,
+                },
+                {
+                    name: 'DATABASE_POOL_TIMEOUT',
+                    description: 'Specifies the database pool timeout in seconds to get a connection.',
+                    type: 'Input',
+                    defaultValue: 30,
+                },
+                {
+                    name: 'DATABASE_POOL_RECYCLE',
+                    description: 'Specifies the database pool recycle time in seconds.',
+                    type: 'Input',
+                    defaultValue: 3600,
+                },
+                {
+                    name: 'DATABASE_ENABLE_SQLITE_WAL',
+                    description: 'Enables or disables SQLite WAL (Write-Ahead Logging) mode. When enabled, SQLite transactions can be managed more efficiently, allowing multiple readers and one writer concurrently, which can improve database performance, especially under high concurrency. **This setting only applies to SQLite databases.**',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+        {
+            section: 'Database Configuration',
+            items: [
+                {
+                    name: 'ENABLE_DB_MIGRATIONS',
+                    description: 'Enables or disables automatic database migrations on startup. When enabled, the application will automatically apply pending database schema changes. Disable this in production environments where you want to control migrations manually.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'DATABASE_TYPE',
+                    description: 'Specifies the type of database to use. Supported values include `sqlite`, `postgresql`, `mysql`, etc. This determines which database driver and connection logic will be used.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_USER',
+                    description: 'Specifies the username for database authentication when using external databases like PostgreSQL or MySQL.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_PASSWORD',
+                    description: 'Specifies the password for database authentication when using external databases like PostgreSQL or MySQL.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_HOST',
+                    description: 'Specifies the hostname or IP address of the database server.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_PORT',
+                    description: 'Specifies the port number on which the database server is listening.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_NAME',
+                    description: 'Specifies the name of the database to connect to.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_USER_ACTIVE_STATUS_UPDATE_INTERVAL',
+                    description: 'Sets the interval in seconds for updating user active status in the database. This controls how frequently user activity timestamps are written to the database. Higher values reduce database writes but may result in less accurate activity tracking.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DATABASE_ENABLE_SESSION_SHARING',
+                    description: 'Enables or disables session sharing across multiple application instances using the database. When enabled, user sessions are stored in the database rather than in-memory, allowing users to maintain their session across different application instances.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+        {
+            section: 'Redis',
+            items: [
+                {
+                    name: 'REDIS_URL',
+                    description: 'Specifies the URL of the Redis instance or cluster host for storing application state.',
+                    type: 'Input',
+                },
+                {
+                    name: 'REDIS_SENTINEL_HOSTS',
+                    description: 'Comma-separated list of Redis Sentinels for app state. If specified, the "hostname" in `REDIS_URL` will be interpreted as the Sentinel service name.',
+                    type: 'Input',
+                },
+                {
+                    name: 'REDIS_SENTINEL_PORT',
+                    description: 'Sentinel port for app state Redis.',
+                    type: 'Input',
+                    defaultValue: 26379,
+                },
+                {
+                    name: 'REDIS_CLUSTER',
+                    description: 'Connect to a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `REDIS_URL` must also be defined.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'REDIS_KEY_PREFIX',
+                    description: 'Customizes the Redis key prefix used for storing configuration values. This allows multiple Open WebUI instances to share the same Redis instance without key conflicts. When operating in Redis cluster mode, the prefix is formatted as `{prefix}:` (e.g., `{open-webui}:config:*`) to enable multi-key operations on configuration keys within the same hash slot.',
+                    type: 'Input',
+                    defaultValue: 'open-webui',
+                },
+                {
+                    name: 'REDIS_SOCKET_CONNECT_TIMEOUT',
+                    description: 'Sets the timeout in seconds for establishing a connection to Redis. If the connection cannot be established within this time, the operation will fail.',
+                    type: 'Input',
+                    defaultValue: 5,
+                },
+                {
+                    name: 'ENABLE_STAR_SESSIONS_MIDDLEWARE',
+                    description: 'Enables or disables Starlette sessions middleware for managing user sessions. When enabled, session data is stored server-side and managed through cookies.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_WEBSOCKET_SUPPORT',
+                    description: 'Enables websocket support in Open WebUI.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'WEBSOCKET_MANAGER',
+                    description: 'Specifies the websocket manager to use (in this case, Redis).',
+                    type: 'Input',
+                    defaultValue: 'redis',
+                },
+                {
+                    name: 'WEBSOCKET_REDIS_URL',
+                    description: 'Specifies the URL of the Redis instance or cluster host for websocket communication. It is distinct from `REDIS_URL` and in practice, it is recommended to set both.',
+                    type: 'Input',
+                    defaultValue: '${REDIS_URL}',
+                },
+                {
+                    name: 'WEBSOCKET_SENTINEL_HOSTS',
+                    description: 'Comma-separated list of Redis Sentinels for websocket. If specified, the "hostname" in `WEBSOCKET_REDIS_URL` will be interpreted as the Sentinel service name.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBSOCKET_SENTINEL_PORT',
+                    description: 'Sentinel port for websocket Redis.',
+                    type: 'Input',
+                    defaultValue: 26379,
+                },
+                {
+                    name: 'WEBSOCKET_REDIS_CLUSTER',
+                    description: 'Specifies that websocket should communicate with a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `WEBSOCKET_REDIS_URL` and/or `REDIS_URL` must also be defined.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WEBSOCKET_REDIS_OPTIONS',
+                    description: 'Specifies additional Redis connection options for websocket communication in JSON format. This can include parameters like connection pool settings, retry logic, or other Redis client configuration options.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBSOCKET_SERVER_LOGGING',
+                    description: 'Enables or disables logging for the WebSocket server. When enabled, WebSocket connection events, messages, and errors are logged for debugging and monitoring purposes.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WEBSOCKET_SERVER_ENGINEIO_LOGGING',
+                    description: 'Enables or disables Engine.IO logging for the WebSocket server. Engine.IO is the underlying transport layer for Socket.IO. When enabled, detailed Engine.IO events and operations are logged.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WEBSOCKET_SERVER_PING_TIMEOUT',
+                    description: 'Sets the timeout in seconds for WebSocket ping operations. If a client does not respond to a ping within this time, the connection is considered dead and will be closed.',
+                    type: 'Input',
+                    defaultValue: 60,
+                },
+                {
+                    name: 'WEBSOCKET_SERVER_PING_INTERVAL',
+                    description: 'Sets the interval in seconds between WebSocket ping messages sent to clients. This helps detect disconnected clients and maintain connection health.',
+                    type: 'Input',
+                    defaultValue: 25,
+                },
+            ],
+        },
+        {
+            section: 'Uvicorn Settings',
+            items: [
+                {
+                    name: 'UVICORN_WORKERS',
+                    description: 'Controls the number of worker processes that Uvicorn spawns to handle requests. Each worker runs its own instance of the application in a separate process.',
+                    type: 'Input',
+                    defaultValue: 1,
+                },
+            ],
+        },
+        {
+            section: 'Cache Settings',
+            items: [
+                {
+                    name: 'CACHE_CONTROL',
+                    description: 'Sets the Cache-Control header for all HTTP responses. Supports standard directives like `public`, `private`, `no-cache`, `no-store`, `must-revalidate`, `max-age=seconds`, etc. If an invalid value is provided, defaults to `"no-store, max-age=0"` (no caching).',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Proxy Settings',
+            items: [
+                {
+                    name: 'http_proxy',
+                    description: 'Sets the URL for the HTTP proxy.',
+                    type: 'Input',
+                },
+                {
+                    name: 'https_proxy',
+                    description: 'Sets the URL for the HTTPS proxy.',
+                    type: 'Input',
+                },
+                {
+                    name: 'no_proxy',
+                    description: 'Lists domain extensions (or IP addresses) for which the proxy should not be used, separated by commas.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Logging',
+            items: [
+                {
+                    name: 'GLOBAL_LOG_LEVEL',
+                    description: 'Sets the global logging level for the application. Controls the verbosity of logs across all components. Valid values: DEBUG, INFO, WARNING, ERROR, CRITICAL.',
+                    type: 'DropDown',
+                    values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                    defaultValue: 'INFO',
+                },
+                {
+                    name: 'ENABLE_AUDIT_STDOUT',
+                    description: 'Enables or disables audit logging to standard output (console). When enabled, audit events are printed to stdout for real-time monitoring and debugging.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_AUDIT_LOGS_FILE',
+                    description: 'Enables or disables audit logging to a file. When enabled, audit events are written to a log file specified by `AUDIT_LOGS_FILE_PATH` for persistent storage and analysis.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'AUDIT_LOGS_FILE_PATH',
+                    description: 'Specifies the file path where audit logs will be written when `ENABLE_AUDIT_LOGS_FILE` is enabled. The path can be absolute or relative to the application directory.',
+                    type: 'Input',
+                    defaultValue: './audit.log',
+                },
+                {
+                    name: 'AUDIT_LOG_FILE_ROTATION_SIZE',
+                    description: 'Sets the maximum size in bytes for audit log files before rotation occurs. When the log file reaches this size, it will be rotated (renamed with a timestamp) and a new log file will be created. Set to 0 to disable rotation.',
+                    type: 'Input',
+                    defaultValue: 10485760,
+                },
+                {
+                    name: 'AUDIT_UVICORN_LOGGER_NAMES',
+                    description: 'Comma-separated list of Uvicorn logger names to include in audit logs. This allows fine-grained control over which Uvicorn components generate audit logs.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AUDIT_LOG_LEVEL',
+                    description: 'Sets the logging level specifically for audit logs. This can be different from `GLOBAL_LOG_LEVEL` to control audit log verbosity independently. Valid values: DEBUG, INFO, WARNING, ERROR, CRITICAL.',
+                    type: 'DropDown',
+                    values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                    defaultValue: 'INFO',
+                },
+                {
+                    name: 'MAX_BODY_LOG_SIZE',
+                    description: 'Sets the maximum size in bytes for request/response bodies to include in logs. Bodies larger than this size will be truncated in log entries to prevent excessive log file growth. Set to 0 to disable body logging.',
+                    type: 'Input',
+                    defaultValue: 1024,
+                },
+                {
+                    name: 'AUDIT_EXCLUDED_PATHS',
+                    description: 'Comma-separated list of URL paths to exclude from audit logging. Useful for excluding health check endpoints or other high-frequency, low-value endpoints from audit logs to reduce noise.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Install Required Python Packages',
+            items: [
+                {
+                    name: 'PIP_OPTIONS',
+                    description: 'Specifies additional command-line options that pip should use when installing packages. For example, you can include flags such as `--upgrade`, `--user`, or `--no-cache-dir` to control the installation process.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PIP_PACKAGE_INDEX_OPTIONS',
+                    description: 'Defines custom package index behavior for pip. This can include specifying additional or alternate index URLs (e.g., `--extra-index-url`), authentication credentials, or other parameters to manage how packages are retrieved from different locations.',
+                    type: 'Input',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const oauth = {
+    category: 'OAuth',
+    sections: [
+        {
+            section: 'General',
+            items: [
+                {
+                    name: 'ENABLE_OAUTH_SIGNUP',
+                    description: 'Enables account creation when signing up via OAuth. Distinct from `ENABLE_SIGNUP`.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OAUTH_PERSISTENT_CONFIG',
+                    description: 'Controls whether OAuth-related settings are persisted in the database after the first launch.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'OAUTH_SUB_CLAIM',
+                    description: "Overrides the default claim used to identify a user's unique ID (`sub`) from the OAuth/OIDC provider's user info response. By default, Open WebUI attempts to infer this from the provider's configuration. This variable allows you to explicitly specify which claim to use. For example, if your identity provider uses 'employee_id' as the unique identifier, you would set this variable to 'employee_id'.",
+                    type: 'Input',
+                },
+                {
+                    name: 'OAUTH_MERGE_ACCOUNTS_BY_EMAIL',
+                    description: 'If enabled, merges OAuth accounts with existing accounts using the same email address. This is considered unsafe as not all OAuth providers will verify email addresses and can lead to potential account takeovers.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OAUTH_WITHOUT_EMAIL',
+                    description: 'Enables authentication with OpenID Connect (OIDC) providers that do not support or expose an email scope. When enabled, Open WebUI will create and manage user accounts without requiring an email address from the OAuth provider.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'OAUTH_UPDATE_PICTURE_ON_LOGIN',
+                    description: 'If enabled, updates the local user profile picture with the OAuth-provided picture on login.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OAUTH_ID_TOKEN_COOKIE',
+                    description: 'Controls whether the **legacy** `oauth_id_token` cookie (unsafe, not recommended, token can go stale/orphaned) is set in the browser upon a successful OAuth login. This is provided for **backward compatibility** with custom tools or older versions that might rely on scraping this cookie. **The new, recommended approach is to use the server-side session management.**',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'OAUTH_CLIENT_INFO_ENCRYPTION_KEY',
+                    description: 'Specifies the secret key used to encrypt and decrypt OAuth client tokens stored server-side in the database. This is a critical security component for OAuth client tokens. If not set, it defaults to using the main `WEBUI_SECRET_KEY`, but it is highly recommended to set it to a unique, securely generated value for production environments. `OAUTH_CLIENT_INFO_ENCRYPTION_KEY` is used in conjunction with OAuth 2.1 MCP server authentication.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OAUTH_SESSION_TOKEN_ENCRYPTION_KEY',
+                    description: 'Specifies the secret key used to encrypt and decrypt OAuth tokens stored server-side in the database. This is a critical security component for protecting user credentials at rest. If not set, it defaults to using the main `WEBUI_SECRET_KEY`, but it is highly recommended to set it to a unique, securely generated value for production environments.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBUI_AUTH_TRUSTED_EMAIL_HEADER',
+                    description: 'Defines the trusted request header for authentication. See [SSO docs](/features/sso).',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBUI_AUTH_TRUSTED_NAME_HEADER',
+                    description: 'Defines the trusted request header for the username of anyone registering with the `WEBUI_AUTH_TRUSTED_EMAIL_HEADER` header. See [SSO docs](/features/sso).',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEBUI_AUTH_TRUSTED_GROUPS_HEADER',
+                    description: 'Defines the trusted request header containing a comma-separated list of group memberships for the user when using trusted header authentication. See [SSO docs](/features/sso).',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Google',
+            items: [
+                {
+                    name: 'GOOGLE_CLIENT_ID',
+                    description: 'Sets the client ID for Google OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'GOOGLE_CLIENT_SECRET',
+                    description: 'Sets the client secret for Google OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'GOOGLE_OAUTH_SCOPE',
+                    description: 'Sets the scope for Google OAuth authentication.',
+                    type: 'Input',
+                    defaultValue: 'openid email profile',
+                },
+                {
+                    name: 'GOOGLE_REDIRECT_URI',
+                    description: 'Sets the redirect URI for Google OAuth.',
+                    type: 'Input',
+                    defaultValue: '<backend>/oauth/google/callback',
+                },
+            ],
+        },
+        {
+            section: 'Microsoft',
+            items: [
+                {
+                    name: 'MICROSOFT_CLIENT_ID',
+                    description: 'Sets the client ID for Microsoft OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'MICROSOFT_CLIENT_SECRET',
+                    description: 'Sets the client secret for Microsoft OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'MICROSOFT_CLIENT_TENANT_ID',
+                    description: 'Sets the tenant ID for Microsoft OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'MICROSOFT_OAUTH_SCOPE',
+                    description: 'Sets the scope for Microsoft OAuth authentication.',
+                    type: 'Input',
+                    defaultValue: 'openid email profile',
+                },
+                {
+                    name: 'MICROSOFT_REDIRECT_URI',
+                    description: 'Sets the redirect URI for Microsoft OAuth.',
+                    type: 'Input',
+                    defaultValue: '<backend>/oauth/microsoft/callback',
+                },
+                {
+                    name: 'MICROSOFT_CLIENT_LOGIN_BASE_URL',
+                    description: 'Sets the base login URL for Microsoft OAuth authentication. Allows configuration of alternative login endpoints for government clouds or custom deployments.',
+                    type: 'Input',
+                    defaultValue: 'https://login.microsoftonline.com',
+                },
+                {
+                    name: 'MICROSOFT_CLIENT_PICTURE_URL',
+                    description: 'Specifies the Microsoft Graph API endpoint for retrieving user profile pictures during OAuth authentication.',
+                    type: 'Input',
+                    defaultValue: 'https://graph.microsoft.com/v1.0/me/photo/$value',
+                },
+            ],
+        },
+        {
+            section: 'Feishu',
+            items: [
+                {
+                    name: 'FEISHU_CLIENT_ID',
+                    description: 'Sets the client ID for Feishu OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'FEISHU_CLIENT_SECRET',
+                    description: 'Sets the client secret for Feishu OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'FEISHU_CLIENT_SCOPE',
+                    description: 'Specifies the scope for Feishu OAuth authentication.',
+                    type: 'Input',
+                    defaultValue: 'contact:user.base:readonly',
+                },
+                {
+                    name: 'FEISHU_CLIENT_REDIRECT_URI',
+                    description: 'Sets the redirect URI for Feishu OAuth.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'GitHub',
+            items: [
+                {
+                    name: 'GITHUB_CLIENT_ID',
+                    description: 'Sets the client ID for GitHub OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'GITHUB_CLIENT_SECRET',
+                    description: 'Sets the client secret for GitHub OAuth.',
+                    type: 'Input',
+                },
+                {
+                    name: 'GITHUB_CLIENT_SCOPE',
+                    description: 'Specifies the scope for GitHub OAuth authentication.',
+                    type: 'Input',
+                    defaultValue: 'user:email',
+                },
+                {
+                    name: 'GITHUB_CLIENT_REDIRECT_URI',
+                    description: 'Sets the redirect URI for GitHub OAuth.',
+                    type: 'Input',
+                    defaultValue: '<backend>/oauth/github/callback',
+                },
+            ],
+        },
+        {
+            section: 'OpenID (OIDC)',
+            items: [
+                {
+                    name: 'OAUTH_CLIENT_ID',
+                    description: 'Sets the client ID for OIDC.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OAUTH_CLIENT_SECRET',
+                    description: 'Sets the client secret for OIDC.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OPENID_PROVIDER_URL',
+                    description: 'Path to the `.well-known/openid-configuration` endpoint',
+                    type: 'Input',
+                },
+                {
+                    name: 'OPENID_REDIRECT_URI',
+                    description: 'Sets the redirect URI for OIDC',
+                    type: 'Input',
+                    defaultValue: '<backend>/oauth/oidc/callback',
+                },
+                {
+                    name: 'OAUTH_SCOPES',
+                    description: 'Sets the scope for OIDC authentication. `openid` and `email` are required.',
+                    type: 'Input',
+                    defaultValue: 'openid email profile',
+                },
+                {
+                    name: 'OAUTH_CODE_CHALLENGE_METHOD',
+                    description: 'Specifies the code challenge method for OAuth authentication.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OAUTH_PROVIDER_NAME',
+                    description: 'Sets the name for the OIDC provider.',
+                    type: 'Input',
+                    defaultValue: 'SSO',
+                },
+                {
+                    name: 'OAUTH_USERNAME_CLAIM',
+                    description: 'Set username claim for OpenID.',
+                    type: 'Input',
+                    defaultValue: 'name',
+                },
+                {
+                    name: 'OAUTH_EMAIL_CLAIM',
+                    description: 'Set email claim for OpenID.',
+                    type: 'Input',
+                    defaultValue: 'email',
+                },
+                {
+                    name: 'OAUTH_PICTURE_CLAIM',
+                    description: 'Set picture (avatar) claim for OpenID.',
+                    type: 'Input',
+                    defaultValue: 'picture',
+                },
+                {
+                    name: 'OAUTH_GROUP_CLAIM',
+                    description: 'Specifies the group claim for OAuth authentication.',
+                    type: 'Input',
+                    defaultValue: 'groups',
+                },
+                {
+                    name: 'ENABLE_OAUTH_ROLE_MANAGEMENT',
+                    description: 'Enables role management for OAuth delegation.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OAUTH_GROUP_MANAGEMENT',
+                    description: 'Enables or disables OAuth group management.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_OAUTH_GROUP_CREATION',
+                    description: "When enabled, groups from OAuth claims that don't exist in Open WebUI will be automatically created.",
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'OAUTH_BLOCKED_GROUPS',
+                    description: 'JSON array of group names that are blocked from accessing the application. Users belonging to these groups will be denied access even if they have valid OAuth credentials.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OAUTH_ROLES_CLAIM',
+                    description: 'Sets the roles claim to look for in the OIDC token.',
+                    type: 'Input',
+                    defaultValue: 'roles',
+                },
+                {
+                    name: 'OAUTH_ALLOWED_ROLES',
+                    description: 'Sets the roles that are allowed access to the platform.',
+                    type: 'Input',
+                    defaultValue: 'user,admin',
+                },
+                {
+                    name: 'OAUTH_ADMIN_ROLES',
+                    description: 'Sets the roles that are considered administrators.',
+                    type: 'Input',
+                    defaultValue: 'admin',
+                },
+                {
+                    name: 'OAUTH_ROLES_SEPARATOR',
+                    description: 'Allows custom role separators for for splitting the `OAUTH_*_ROLES` variables. Meant for OAuth roles that contain commas; useful for roles specified in LDAP syntax or other systems where commas are part of role names. If the claim is a string and contains the separator, it will be also split by that separator.',
+                    type: 'Input',
+                    defaultValue: ',',
+                },
+                {
+                    name: 'OAUTH_GROUPS_SEPARATOR',
+                    description: 'Specifies the delimiter used to parse multiple group names from the OAuth group claim. This separator is used when the identity provider returns group memberships as a delimited string rather than an array. Useful when integrating with systems that use non-standard separators or when group names themselves contain commas.',
+                    type: 'Input',
+                    defaultValue: ';',
+                },
+                {
+                    name: 'OAUTH_ALLOWED_DOMAINS',
+                    description: 'Specifies the allowed domains for OAuth authentication. (e.g. "example1.com,example2.com").',
+                    type: 'Input',
+                    defaultValue: '*',
+                },
+                {
+                    name: 'OAUTH_AUDIENCE',
+                    description: "Specifies an audience parameter passed to the OAuth provider's authorization endpoint during login. Some providers (such as Auth0 and Ory) use this value to determine the type of access token returned—without it, providers typically return an opaque token, while with it, they return a JWT that can be decoded and validated. This parameter is not part of the official OAuth/OIDC spec for authorization endpoints but is widely supported by some providers.",
+                    type: 'Input',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const ragCEE = {
+    category: 'RAG Content Extraction Engine',
+    items: [
+        {
+            name: 'CONTENT_EXTRACTION_ENGINE',
+            description: 'Sets the content extraction engine to use for document ingestion.',
+            type: 'DropDown',
+            values: ['', 'external', 'tika', 'docling', 'document_intelligence', 'mistral_ocr', 'mineru'],
+        },
+        {
+            name: 'MISTRAL_OCR_API_KEY',
+            description: 'Specifies the Mistral OCR API key to use.',
+            type: 'Input',
+        },
+        {
+            name: 'MISTRAL_OCR_API_BASE_URL',
+            description: 'Configures custom Mistral OCR API endpoints for flexible deployment options, allowing users to point to self-hosted or alternative Mistral OCR instances.',
+            type: 'Input',
+            defaultValue: 'https://api.mistral.ai/v1',
+        },
+        {
+            name: 'EXTERNAL_DOCUMENT_LOADER_URL',
+            description: 'Sets the URL for the external document loader service.',
+            type: 'Input',
+        },
+        {
+            name: 'EXTERNAL_DOCUMENT_LOADER_API_KEY',
+            description: 'Sets the API key for authenticating with the external document loader service.',
+            type: 'Input',
+        },
+        {
+            name: 'TIKA_SERVER_URL',
+            description: 'Sets the URL for the Apache Tika server.',
+            type: 'Input',
+            defaultValue: 'http://localhost:9998',
+        },
+        {
+            name: 'DOCLING_SERVER_URL',
+            description: 'Specifies the URL for the Docling server. Requires Docling version 2.0.0 or later for full compatibility with the new parameter-based configuration system.',
+            type: 'Input',
+            defaultValue: 'http://docling:5001',
+        },
+        {
+            name: 'DOCLING_API_KEY',
+            description: 'Sets the API key for authenticating with the Docling server. Required when the Docling server has authentication enabled.',
+            type: 'Input',
+        },
+        {
+            name: 'DOCLING_PARAMS',
+            description: 'Specifies all Docling processing parameters in JSON format. This is the primary configuration method for Docling processing options. All previously individual Docling settings are now configured through this single JSON object.',
+            type: 'Input',
+        },
+        {
+            name: 'MINERU_API_TIMEOUT',
+            description: 'Sets the timeout in seconds for MinerU API requests during document processing.',
+            type: 'Input',
+            defaultValue: 300,
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const retrievalAGR = {
+    category: 'Retrieval Augmented Generation (RAG)',
+    sections: [
+        {
+            section: 'General',
+            items: [
+                {
+                    name: 'RAG_EMBEDDING_ENGINE',
+                    description: 'Selects an embedding engine to use for RAG.',
+                    type: 'DropDown',
+                    values: ['', 'ollama', 'openai', 'azure_openai'],
+                },
+                {
+                    name: 'RAG_EMBEDDING_MODEL',
+                    description: 'Sets a model for embeddings. Locally, a Sentence-Transformer model is used.',
+                    type: 'Input',
+                    defaultValue: 'sentence-transformers/all-MiniLM-L6-v2',
+                },
+                {
+                    name: 'ENABLE_RAG_HYBRID_SEARCH',
+                    description: 'Enables the use of ensemble search with `BM25` + `ChromaDB`, with reranking using `sentence_transformers` models.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_RAG_HYBRID_SEARCH_ENRICHED_TEXTS',
+                    description: 'Enables enriched text processing for hybrid search. When enabled, additional text preprocessing and enrichment techniques are applied to improve search quality and relevance in hybrid search mode.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'RAG_TOP_K',
+                    description: 'Sets the default number of results to consider for the embedding when using RAG.',
+                    type: 'Input',
+                    defaultValue: 3,
+                },
+                {
+                    name: 'RAG_TOP_K_RERANKER',
+                    description: 'Sets the default number of results to consider for the reranker when using RAG.',
+                    type: 'Input',
+                    defaultValue: 3,
+                },
+                {
+                    name: 'RAG_RELEVANCE_THRESHOLD',
+                    description: 'Sets the relevance threshold to consider for documents when used with reranking.',
+                    type: 'Input',
+                    defaultValue: 0.0,
+                },
+                {
+                    name: 'RAG_HYBRID_BM25_WEIGHT',
+                    description: 'Sets the weight given to the keyword search (BM25) during hybrid search. 1 means only keyword serach, 0 means only vector search.',
+                    type: 'Input',
+                    defaultValue: 0.5,
+                },
+                {
+                    name: 'RAG_TEMPLATE',
+                    description: 'Template to use when injecting RAG documents into chat completion',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_TEXT_SPLITTER',
+                    description: 'Sets the text splitter for RAG models.',
+                    type: 'DropDown',
+                    values: ['character', 'token'],
+                    defaultValue: 'character',
+                },
+                {
+                    name: 'TIKTOKEN_CACHE_DIR',
+                    description: 'Sets the directory for TikToken cache.',
+                    type: 'Input',
+                    defaultValue: '{CACHE_DIR}/tiktoken',
+                },
+                {
+                    name: 'TIKTOKEN_ENCODING_NAME',
+                    description: 'Sets the encoding name for TikToken.',
+                    type: 'Input',
+                    defaultValue: 'cl100k_base',
+                },
+                {
+                    name: 'CHUNK_SIZE',
+                    description: 'Sets the document chunk size for embeddings.',
+                    type: 'Input',
+                    defaultValue: 1000,
+                },
+                {
+                    name: 'CHUNK_OVERLAP',
+                    description: 'Specifies how much overlap there should be between chunks.',
+                    type: 'Input',
+                    defaultValue: 100,
+                },
+                {
+                    name: 'CHUNK_MIN_SIZE_TARGET',
+                    description: 'Chunks smaller than this threshold will be intelligently merged with neighboring chunks when possible. This helps prevent tiny, low-quality fragments that can hurt retrieval performance and waste embedding resources. This feature only works when `ENABLE_MARKDOWN_HEADER_TEXT_SPLITTER` is enabled. Set to `0` to disable merging.',
+                    type: 'Input',
+                    defaultValue: 0,
+                },
+                {
+                    name: 'ENABLE_MARKDOWN_HEADER_TEXT_SPLITTER',
+                    description: 'Enables markdown header text splitting as a preprocessing step before character or token splitting. When enabled, documents are first split by markdown headers (h1-h6), then the resulting chunks are further processed by the configured text splitter (`RAG_TEXT_SPLITTER`). This helps preserve document structure and context across chunks.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'PDF_EXTRACT_IMAGES',
+                    description: 'Extracts images from PDFs using OCR when loading documents.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'RAG_FILE_MAX_SIZE',
+                    description: 'Sets the maximum size of a file in megabytes that can be uploaded for document ingestion.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_FILE_MAX_COUNT',
+                    description: 'Sets the maximum number of files that can be uploaded at once for document ingestion.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_ALLOWED_FILE_EXTENSIONS',
+                    description: 'Specifies which file extensions are permitted for upload.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_RERANKING_MODEL',
+                    description: 'Sets a model for reranking results. Locally, a Sentence-Transformer model is used.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SENTENCE_TRANSFORMERS_CROSS_ENCODER_SIGMOID_ACTIVATION_FUNCTION',
+                    description: 'When enabled (default), applies sigmoid normalization to local CrossEncoder reranking scores to ensure they fall within the 0-1 range. This allows the relevance threshold setting to work correctly with models like MS MARCO that output raw logits.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'RAG_EXTERNAL_RERANKER_TIMEOUT',
+                    description: 'Sets the timeout in seconds for external reranker API requests during RAG document retrieval. Leave empty to use default timeout behavior.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_EXTERNAL_RERANKER_URL',
+                    description: 'Sets the **full URL** for the external reranking API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_EXTERNAL_RERANKER_API_KEY',
+                    description: 'Sets the API key for the external reranking API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_OPENAI_API_BASE_URL',
+                    description: 'Sets the OpenAI base API URL to use for RAG embeddings.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_BASE_URL}',
+                },
+                {
+                    name: 'RAG_OPENAI_API_KEY',
+                    description: 'Sets the OpenAI API key to use for RAG embeddings.',
+                    type: 'Input',
+                    defaultValue: '${OPENAI_API_KEY}',
+                },
+                {
+                    name: 'RAG_EMBEDDING_OPENAI_BATCH_SIZE',
+                    description: 'Sets the batch size for OpenAI embeddings.',
+                    type: 'Input',
+                    defaultValue: 1,
+                },
+                {
+                    name: 'RAG_EMBEDDING_BATCH_SIZE',
+                    description: 'Controls how many text chunks are embedded in a single API request when using external embedding providers (Ollama, OpenAI, or Azure OpenAI). Higher values (20-100+; max 16000 (not recommended)) may process documents faster by sending less, but larger API requests. Some external APIs do not support batching or sending more than 1 chunk per request. In such case you must leave this at `1`. Default is 1 (safest option if the API does not support batching / more than 1 chunk per request). This setting only applies to external embedding engines, not the default SentenceTransformers engine.',
+                    type: 'Input',
+                    defaultValue: 1,
+                },
+                {
+                    name: 'ENABLE_ASYNC_EMBEDDING',
+                    description: 'Runs embedding tasks asynchronously (parallelized) for maximum performance. Only works for Ollama, OpenAI and Azure OpenAI, does not affect sentence transformer setups.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'RAG_EMBEDDING_CONTENT_PREFIX',
+                    description: 'Specifies the prefix for the RAG embedding content.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_EMBEDDING_PREFIX_FIELD_NAME',
+                    description: 'Specifies the field name for the RAG embedding prefix.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_EMBEDDING_QUERY_PREFIX',
+                    description: 'Specifies the prefix for the RAG embedding query.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_OLLAMA_API_KEY',
+                    description: 'Sets the API key for Ollama API used in RAG models.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_AZURE_OPENAI_BASE_URL',
+                    description: 'Sets the base URL for Azure OpenAI Services when using Azure OpenAI for RAG embeddings. Should be in the format `https://{your-resource-name}.openai.azure.com`.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_AZURE_OPENAI_API_KEY',
+                    description: 'Sets the API key for Azure OpenAI Services when using Azure OpenAI for RAG embeddings.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_AZURE_OPENAI_API_VERSION',
+                    description: 'Sets the API version for Azure OpenAI Services when using Azure OpenAI for RAG embeddings. Common values include `2023-05-15`, `2023-12-01-preview`, or `2024-02-01`.',
+                    type: 'Input',
+                },
+                {
+                    name: 'RAG_OLLAMA_BASE_URL',
+                    description: 'Sets the base URL for Ollama API used in RAG models.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ENABLE_RETRIEVAL_QUERY_GENERATION',
+                    description: 'Enables or disables retrieval query generation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_QUERIES_CACHE',
+                    description: 'Enables request-scoped caching of LLM-generated search queries. When enabled, queries generated for web search are **cached** and automatically **reused** for file/knowledge base retrieval within the same request. This **eliminates duplicate LLM calls** when both web search and RAG are active, **reducing token usage and latency** while maintaining search quality. It is highly recommended to enable this especially in larger setups.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'QUERY_GENERATION_PROMPT_TEMPLATE',
+                    description: 'Sets the prompt template for query generation.',
+                    type: 'Input',
+                },
+                {
+                    name: 'BYPASS_EMBEDDING_AND_RETRIEVAL',
+                    description: 'Bypasses the embedding and retrieval process.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'RAG_FULL_CONTEXT',
+                    description: 'Specifies whether to use the full context for RAG.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'RAG_SYSTEM_CONTEXT',
+                    description: 'When enabled, injects RAG context into the **system message** instead of the user message. This is highly recommended for optimizing performance when using models that support **KV prefix caching** or **Prompt Caching**. This includes local engines (like Ollama, llama.cpp, or vLLM) and cloud providers / Model-as-a-Service providers (like OpenAI and Vertex AI). By placing the context in the system message, it remains at a stable position at the start of the conversation, allowing the cache to persist across multiple turns. When disabled (default), context is injected into the user message, which shifts position each turn and invalidates the cache.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_RAG_LOCAL_WEB_FETCH',
+                    description: 'Controls whether RAG web fetch operations can access URLs that resolve to private/local network IP addresses.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WEB_FETCH_FILTER_LIST',
+                    description: 'Configures additional URL filtering rules for web fetch operations to prevent Server-Side Request Forgery (SSRF) attacks. The system includes a default blocklist that protects against access to cloud metadata endpoints (AWS, Google Cloud, Azure, Alibaba Cloud). Entries without a ! prefix are treated as an allow list (only these domains are permitted), while entries with a ! prefix are added to the block list (these domains are always denied). The default blocklist includes !169.254.169.254, !fd00:ec2::254, !metadata.google.internal, !metadata.azure.com, and !100.100.100.200. Custom entries are merged with the default blocklist.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DOCUMENT_INTELLIGENCE_ENDPOINT',
+                    description: 'Specifies the endpoint for document intelligence.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DOCUMENT_INTELLIGENCE_KEY',
+                    description: 'Specifies the key for document intelligence.',
+                    type: 'Input',
+                },
+                {
+                    name: 'DOCUMENT_INTELLIGENCE_MODEL',
+                    description: 'Specifies the model for document intelligence.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Google Drive',
+            items: [
+                {
+                    name: 'ENABLE_GOOGLE_DRIVE_INTEGRATION',
+                    description: 'Enables or disables Google Drive integration. If set to true, and `GOOGLE_DRIVE_CLIENT_ID` & `GOOGLE_DRIVE_API_KEY` are both configured, Google Drive will appear as an upload option in the chat UI.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'GOOGLE_DRIVE_CLIENT_ID',
+                    description: 'Sets the client ID for Google Drive (client must be configured with Drive API and Picker API enabled).',
+                    type: 'Input',
+                },
+                {
+                    name: 'GOOGLE_DRIVE_API_KEY',
+                    description: 'Sets the API key for Google Drive integration.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'OneDrive',
+            items: [
+                {
+                    name: 'ENABLE_ONEDRIVE_INTEGRATION',
+                    description: 'Enables or disables the Microsoft OneDrive integration feature globally.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_ONEDRIVE_PERSONAL',
+                    description: 'Controls whether the "Personal OneDrive" option appears in the attachment menu. Requires `ONEDRIVE_PERSONAL_CLIENT_ID` to be configured.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ENABLE_ONEDRIVE_BUSINESS',
+                    description: 'Controls whether the "Work/School OneDrive" option appears in the attachment menu. Requires `ONEDRIVE_CLIENT_ID` to be configured.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'ONEDRIVE_CLIENT_ID',
+                    description: 'Generic environment variable for the OneDrive Client ID. You should rather use the specific `ONEDRIVE_CLIENT_ID_PERSONAL` or `ONEDRIVE_CLIENT_ID_BUSINESS` variables. This exists as a legacy option for backwards compatibility.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ONEDRIVE_CLIENT_ID_PERSONAL',
+                    description: 'Specifies the Application (client) ID for the **Personal OneDrive** integration. This requires a separate Azure App Registration configured to support personal Microsoft accounts. **Do not put the business OneDrive client ID here!**',
+                    type: 'Input',
+                },
+                {
+                    name: 'ONEDRIVE_CLIENT_ID_BUSINESS',
+                    description: 'Specifies the Application (client) ID for the **Work/School (Business) OneDrive** integration. This requires a separate Azure App Registration configured to support personal Microsoft accounts. **Do not put the personal OneDrive client ID here!**',
+                    type: 'Input',
+                },
+                {
+                    name: 'ONEDRIVE_SHAREPOINT_URL',
+                    description: 'Specifies the root SharePoint site URL for the work/school integration, e.g., `https://companyname.sharepoint.com`.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ONEDRIVE_SHAREPOINT_TENANT_ID',
+                    description: 'Specifies the Directory (tenant) ID for the work/school integration. This is obtained from your business-focused Azure App Registration.',
+                    type: 'Input',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const scim = {
+    category: 'SCIM',
+    items: [
+        {
+            name: 'SCIM_ENABLED',
+            description: 'Enables or disables SCIM 2.0 (System for Cross-domain Identity Management) support for automated user and group provisioning from identity providers like Okta, Azure AD, and Google Workspace.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'SCIM_TOKEN',
+            description: 'Sets the bearer token for SCIM authentication. This token must be provided by identity providers when making SCIM API requests. Generate a secure random token (e.g., using `openssl rand -base64 32`) and configure it in both Open WebUI and your identity provider.',
+            type: 'Input',
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const securityVariables = {
+    category: 'Security Variables',
+    items: [
+        {
+            name: 'ENABLE_FORWARD_USER_INFO_HEADERS',
+            description: 'Forwards user information (name, ID, email, role and chat-id) as X-headers to OpenAI API and Ollama API.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'ENABLE_WEB_LOADER_SSL_VERIFICATION',
+            description: 'Bypass SSL Verification for RAG on Websites.',
+            type: 'CheckBox',
+            defaultValue: true,
+        },
+        {
+            name: 'ENABLE_PASSWORD_VALIDATION',
+            description: 'Enables password complexity validation for user accounts. When enabled, passwords must meet the complexity requirements defined by `PASSWORD_VALIDATION_REGEX_PATTERN` during signup, password updates, and user creation operations. This helps enforce stronger password policies across the application.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'PASSWORD_VALIDATION_REGEX_PATTERN',
+            description: 'Regular expression pattern used to validate password complexity when `ENABLE_PASSWORD_VALIDATION` is enabled. The default pattern requires passwords to be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.',
+            type: 'Input',
+            defaultValue: `^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$`,
+        },
+        {
+            name: 'WEBUI_SESSION_COOKIE_SAME_SITE',
+            description: 'Sets the `SameSite` attribute for session cookies.',
+            type: 'DropDown',
+            values: ['lax', 'strict', 'none'],
+            defaultValue: 'lax',
+        },
+        {
+            name: 'WEBUI_SESSION_COOKIE_SECURE',
+            description: 'Sets the `Secure` attribute for session cookies if set to `True`.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'WEBUI_AUTH_COOKIE_SAME_SITE',
+            description: 'Sets the `SameSite` attribute for auth cookies.',
+            type: 'DropDown',
+            values: ['lax', 'strict', 'none'],
+            defaultValue: 'lax',
+        },
+        {
+            name: 'WEBUI_AUTH_COOKIE_SECURE',
+            description: 'Sets the `Secure` attribute for auth cookies if set to `True`.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'WEBUI_AUTH',
+            description: 'This setting enables or disables authentication.',
+            type: 'CheckBox',
+            defaultValue: true,
+        },
+        {
+            name: 'WEBUI_SECRET_KEY',
+            description: 'Overrides the randomly generated string used for JSON Web Token.',
+            type: 'Input',
+            defaultValue: 't0p-s3cr3t',
+        },
+        {
+            name: 'ENABLE_VERSION_UPDATE_CHECK',
+            description: 'When enabled, the application makes automatic update checks and notifies you about version updates.',
+            type: 'CheckBox',
+            defaultValue: true,
+        },
+        {
+            name: 'OFFLINE_MODE',
+            description: "Disables Open WebUI's network connections for update checks and automatic model downloads.",
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'HF_HUB_OFFLINE',
+            description: 'Tells Hugging Face whether we want to launch in offline mode, so to not connect to hugging face and prevent all automatic model downloads',
+            type: 'Input',
+            defaultValue: 0,
+        },
+        {
+            name: 'RESET_CONFIG_ON_START',
+            description: 'Resets the `config.json` file on startup.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'SAFE_MODE',
+            description: 'Enables safe mode, which disables potentially unsafe features, deactivating all functions.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'CORS_ALLOW_ORIGIN',
+            description: 'Sets the allowed origins for Cross-Origin Resource Sharing (CORS).',
+            type: 'Input',
+            defaultValue: '*',
+        },
+        {
+            name: 'CORS_ALLOW_CUSTOM_SCHEME',
+            description: 'Sets a list of further allowed schemes for Cross-Origin Resource Sharing (CORS). Allows you to specify additional custom URL schemes, beyond the standard `http` and `https`, that are permitted as valid origins for Cross-Origin Resource Sharing (CORS).',
+            type: 'Input',
+        },
+        {
+            name: 'RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE',
+            description: 'Determines whether to allow custom models defined on the Hub in their own modeling files.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'RAG_RERANKING_MODEL_TRUST_REMOTE_CODE',
+            description: 'Determines whether to allow custom models defined on the Hub in their own. modeling files for reranking.',
+            type: 'CheckBox',
+            defaultValue: false,
+        },
+        {
+            name: 'RAG_EMBEDDING_MODEL_AUTO_UPDATE',
+            description: 'Toggles automatic update of the Sentence-Transformer model.',
+            type: 'CheckBox',
+            defaultValue: true,
+        },
+        {
+            name: 'RAG_RERANKING_MODEL_AUTO_UPDATE',
+            description: 'Toggles automatic update of the reranking model.',
+            type: 'CheckBox',
+            defaultValue: true,
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const userPermissions = {
+    category: 'User Permissions',
+    sections: [
+        {
+            section: 'Chat Permissions',
+            items: [
+                {
+                    name: 'USER_PERMISSIONS_CHAT_CONTROLS',
+                    description: 'Acts as a master switch to enable or disable the main "Controls" button and panel in the chat interface. **If this is set to False, users will not see the Controls button, and the granular permissions below will have no effect**.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_VALVES',
+                    description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Valves" section within the chat controls panel.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_SYSTEM_PROMPT',
+                    description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the customizable "System Prompt" section within the chat controls panel, folders and the user settings.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_PARAMS',
+                    description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Advanced Parameters" section within the chat controls panel.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_FILE_UPLOAD',
+                    description: 'Enables or disables user permission to upload files to chats.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_DELETE',
+                    description: 'Enables or disables user permission to delete chats.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_EDIT',
+                    description: 'Enables or disables user permission to edit chats.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_DELETE_MESSAGE',
+                    description: 'Enables or disables user permission to delete individual messages within chats. This provides granular control over message deletion capabilities separate from full chat deletion.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_CONTINUE_RESPONSE',
+                    description: 'Enables or disables user permission to continue AI responses. When disabled, users cannot use the "Continue Response" button, which helps prevent potential system prompt leakage through response continuation manipulation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_REGENERATE_RESPONSE',
+                    description: 'Enables or disables user permission to regenerate AI responses. Controls access to both the standard regenerate button and the guided regeneration menu.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_RATE_RESPONSE',
+                    description: 'Enables or disables user permission to rate AI responses using the thumbs up/down feedback system. This controls access to the response rating functionality for evaluation and feedback collection.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_STT',
+                    description: 'Enables or disables user permission to use Speech-to-Text in chats.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_TTS',
+                    description: 'Enables or disables user permission to use Text-to-Speech in chats.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_CALL',
+                    description: 'Enables or disables user permission to make calls in chats.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_MULTIPLE_MODELS',
+                    description: 'Enables or disables user permission to use multiple models in chats.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_TEMPORARY',
+                    description: 'Enables or disables user permission to create temporary chats.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_CHAT_TEMPORARY_ENFORCED',
+                    description: 'Enables or disables enforced temporary chats for users.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Feature Permissions',
+            items: [
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS',
+                    description: 'Enables or disables user permission to access direct tool servers.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_WEB_SEARCH',
+                    description: 'Enables or disables user permission to use the web search feature.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_IMAGE_GENERATION',
+                    description: 'Enables or disables user permission to use the image generation feature.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_CODE_INTERPRETER',
+                    description: 'Enables or disables user permission to use code interpreter feature.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_MEMORIES',
+                    description: 'Enables or disables user permission to use the memory feature.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_FOLDERS',
+                    description: 'Enables or disables the visibility of the Folders feature (chat sidebar) to users.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_NOTES',
+                    description: 'Enables or disables the visibility of the Notes feature to users.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_CHANNELS',
+                    description: 'Enables or disables the ability for users to create their own group channels.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_FEATURES_API_KEYS',
+                    description: 'Sets the permission for API key creation feature for users. When enabled, users will have the ability to create and manage API keys for programmatic access.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+            ],
+        },
+        {
+            section: 'Workspace Permissions',
+            items: [
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ACCESS',
+                    description: 'Enables or disables user permission to access workspace models.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ACCESS',
+                    description: 'Enables or disables user permission to access workspace knowledge.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ACCESS',
+                    description: 'Enables or disables user permission to access workspace prompts.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ACCESS',
+                    description: 'Enables or disables user permission to access workspace tools.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ALLOW_PUBLIC_SHARING',
+                    description: 'Enables or disables public sharing of workspace models.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ALLOW_PUBLIC_SHARING',
+                    description: 'Enables or disables public sharing of workspace knowledge.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ALLOW_PUBLIC_SHARING',
+                    description: 'Enables or disables public sharing of workspace prompts.',
+                    type: 'Input',
+                },
+                {
+                    name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ALLOW_PUBLIC_SHARING',
+                    description: 'Enables or disables public sharing of workspace tools.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Settings Permissions',
+            items: [
+                {
+                    name: 'USER_PERMISSIONS_SETTINGS_INTERFACE',
+                    description: 'Enables or disables user / group permissions for the interface settings section in the Settings Modal.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'USER_PERMISSIONS_NOTES_ALLOW_PUBLIC_SHARING',
+                    description: 'Enables or disables public sharing of notes.',
+                    type: 'Input',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const vectorDatabase = {
+    category: 'Vector Database',
+    sections: [
+        {
+            section: 'General',
+            items: [
+                {
+                    name: 'VECTOR_DB',
+                    description: 'Specifies which vector database system to use. This setting determines which vector storage system will be used for managing embeddings.',
+                    type: 'DropDown',
+                    values: [
+                        'chroma',
+                        'elasticsearch',
+                        'milvus',
+                        'opensearch',
+                        'pgvector',
+                        'qdrant',
+                        'pinecone',
+                        's3vector',
+                        'weaviate',
+                        'oracle23ai',
+                    ],
+                    defaultValue: 'chroma',
+                },
+            ],
+        },
+        {
+            section: 'ChromaDB',
+            items: [
+                {
+                    name: 'CHROMA_TENANT',
+                    description: 'Sets the tenant for ChromaDB to use for RAG embeddings.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CHROMA_DATABASE',
+                    description: 'Sets the database in the ChromaDB tenant to use for RAG embeddings.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CHROMA_HTTP_HOST',
+                    description: 'Specifies the hostname of a remote ChromaDB Server. Uses a local ChromaDB instance if not set.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CHROMA_HTTP_PORT',
+                    description: 'Specifies the port of a remote ChromaDB Server.',
+                    type: 'Input',
+                    defaultValue: 8000,
+                },
+                {
+                    name: 'CHROMA_HTTP_HEADERS',
+                    description: 'A comma-separated list of HTTP headers to include with every ChromaDB request.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CHROMA_HTTP_SSL',
+                    description: 'Controls whether or not SSL is used for ChromaDB Server connections.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'CHROMA_CLIENT_AUTH_PROVIDER',
+                    description: 'Specifies an authentication provider for remote ChromaDB Server.',
+                    type: 'Input',
+                },
+                {
+                    name: 'CHROMA_CLIENT_AUTH_CREDENTIALS',
+                    description: 'Specifies auth credentials for remote ChromaDB Server.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Elasticsearch',
+            items: [
+                {
+                    name: 'ELASTICSEARCH_API_KEY',
+                    description: 'Specifies the Elasticsearch API key.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ELASTICSEARCH_CA_CERTS',
+                    description: 'Specifies the path to the CA certificates for Elasticsearch.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ELASTICSEARCH_CLOUD_ID',
+                    description: 'Specifies the Elasticsearch cloud ID.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ELASTICSEARCH_INDEX_PREFIX',
+                    description: 'Specifies the prefix for the Elasticsearch index.',
+                    type: 'Input',
+                    defaultValue: 'open_webui_collections',
+                },
+                {
+                    name: 'ELASTICSEARCH_PASSWORD',
+                    description: 'Specifies the password for Elasticsearch.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ELASTICSEARCH_URL',
+                    description: 'Specifies the URL for the Elasticsearch instance.',
+                    type: 'Input',
+                    defaultValue: 'https://localhost:9200',
+                },
+                {
+                    name: 'ELASTICSEARCH_USERNAME',
+                    description: 'Specifies the username for Elasticsearch.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Milvus',
+            items: [
+                {
+                    name: 'MILVUS_URI',
+                    description: 'Specifies the URI for connecting to the Milvus vector database. This can point to a local or remote Milvus server based on the deployment configuration.',
+                    type: 'Input',
+                    defaultValue: '${DATA_DIR}/vector_db/milvus.db',
+                },
+                {
+                    name: 'MILVUS_DB',
+                    description: 'Specifies the database to connect to within a Milvus instance.',
+                    type: 'Input',
+                    defaultValue: 'default',
+                },
+                {
+                    name: 'MILVUS_TOKEN',
+                    description: 'Specifies an optional connection token for Milvus.',
+                    type: 'Input',
+                },
+                {
+                    name: 'MILVUS_INDEX_TYPE',
+                    description: 'Specifies the index type to use when creating a new collection in Milvus. `AUTOINDEX` is generally recommended for Milvus standalone. `HNSW` may offer better performance but typically requires a clustered Milvus setup.',
+                    type: 'DropDown',
+                    values: ['AUTOINDEX', 'FLAT', 'IVF_FLAT', 'HNSW'],
+                    defaultValue: 'HNSW',
+                },
+                {
+                    name: 'MILVUS_METRIC_TYPE',
+                    description: 'Specifies the metric type for vector similarity search in Milvus.',
+                    type: 'DropDown',
+                    values: ['COSINE', 'IP', 'L2'],
+                    defaultValue: 'COSINE',
+                },
+                {
+                    name: 'MILVUS_HNSW_M',
+                    description: 'Specifies the `M` parameter for the HNSW index type in Milvus. This influences the number of bi-directional links created for each new element during construction. Only applicable if `MILVUS_INDEX_TYPE` is `HNSW`.',
+                    type: 'Input',
+                    defaultValue: 16,
+                },
+                {
+                    name: 'MILVUS_HNSW_EFCONSTRUCTION',
+                    description: 'Specifies the `efConstruction` parameter for the HNSW index type in Milvus. This influences the size of the dynamic list for the nearest neighbors during index construction. Only applicable if `MILVUS_INDEX_TYPE` is `HNSW`.',
+                    type: 'Input',
+                    defaultValue: 100,
+                },
+                {
+                    name: 'MILVUS_IVF_FLAT_NLIST',
+                    description: 'Specifies the `nlist` parameter for the IVF_FLAT index type in Milvus. This is the number of cluster units. Only applicable if `MILVUS_INDEX_TYPE` is `IVF_FLAT`.',
+                    type: 'Input',
+                    defaultValue: 128,
+                },
+                {
+                    name: 'MILVUS_DISKANN_MAX_DEGREE',
+                    description: 'Sets the max degree for Milvus if Milvus is in DISKANN indexing mode. Generally recommended to leave as is.',
+                    type: 'Input',
+                    defaultValue: 56,
+                },
+                {
+                    name: 'MILVUS_DISKANN_SEARCH_LIST_SIZE',
+                    description: 'Sets the Milvus DISKANN search list size. Generally recommended to leave as is.',
+                    type: 'Input',
+                    defaultValue: 100,
+                },
+                {
+                    name: 'ENABLE_MILVUS_MULTITENANCY_MODE',
+                    description: 'Enables multitenancy pattern for Milvus collections management, which significantly reduces RAM usage and computational overhead by consolidating similar vector data structures. Controls whether Milvus uses multitenancy collection architecture. When enabled, all vector data is consolidated into 5 shared collections (memories, knowledge, files, web_search, hash_based) instead of creating individual collections per resource. Data isolation is achieved via a resource_id field rather than collection-level separation.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'MILVUS_COLLECTION_PREFIX',
+                    description: 'Sets the prefix for Milvus collection names. In multitenancy mode, collections become `{prefix}_memories`, `{prefix}_knowledge`, etc. In legacy mode, collections are `{prefix}_{collection_name}`. Changing this value creates an entirely separate namespace—existing collections with the old prefix become invisible to Open WebUI but remain in Milvus consuming resources. Use this for true multi-instance isolation on a shared Milvus server, not for migration between modes. Milvus only accepts underscores, hyphens/dashes are not possible and will cause errors.',
+                    type: 'Input',
+                    defaultValue: 'open_webui',
+                },
+            ],
+        },
+        {
+            section: 'OpenSearch',
+            items: [
+                {
+                    name: 'OPENSEARCH_CERT_VERIFY',
+                    description: 'Enables or disables OpenSearch certificate verification.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'OPENSEARCH_PASSWORD',
+                    description: 'Sets the password for OpenSearch.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OPENSEARCH_SSL',
+                    description: 'Enables or disables SSL for OpenSearch.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'OPENSEARCH_URI',
+                    description: 'Sets the URI for OpenSearch.',
+                    type: 'Input',
+                    defaultValue: 'https://localhost:9200',
+                },
+                {
+                    name: 'OPENSEARCH_USERNAME',
+                    description: 'Sets the username for OpenSearch.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'PGVector',
+            items: [
+                {
+                    name: 'PGVECTOR_DB_URL',
+                    description: 'Sets the database URL for model storage.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH',
+                    description: 'Specifies the maximum vector length for PGVector initialization.',
+                    type: 'Input',
+                    defaultValue: '1536',
+                },
+                {
+                    name: 'PGVECTOR_CREATE_EXTENSION',
+                    description: 'Creates the vector extension in the database',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'PGVECTOR_INDEX_METHOD',
+                    description: 'Specifies the index method for pgvector. The choice affects query performance and index build time.',
+                    type: 'DropDown',
+                    values: ['ivfflat', 'hnsw'],
+                },
+                {
+                    name: 'PGVECTOR_HNSW_M',
+                    description: 'HNSW index parameter that controls the maximum number of bi-directional connections per layer during index construction. Higher values improve recall but increase index size and build time. Only applicable when `PGVECTOR_INDEX_METHOD` is set to `hnsw`.',
+                    type: 'Input',
+                    defaultValue: 16,
+                },
+                {
+                    name: 'PGVECTOR_HNSW_EF_CONSTRUCTION',
+                    description: 'HNSW index parameter that controls the size of the dynamic candidate list during index construction. Higher values improve index quality but increase build time. Only applicable when `PGVECTOR_INDEX_METHOD` is set to `hnsw`.',
+                    type: 'Input',
+                    defaultValue: 64,
+                },
+                {
+                    name: 'PGVECTOR_IVFFLAT_LISTS',
+                    description: 'IVFFlat index parameter that specifies the number of inverted lists (clusters) to create. A good starting point is `rows / 1000` for up to 1M rows and `sqrt(rows)` for over 1M rows. Only applicable when `PGVECTOR_INDEX_METHOD` is set to `ivfflat`.',
+                    type: 'Input',
+                    defaultValue: 100,
+                },
+                {
+                    name: 'PGVECTOR_USE_HALFVEC',
+                    description: 'Enables the use of `halfvec` data type instead of `vector` for storing embeddings. Required when `PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH` exceeds 2000 dimensions, as the `vector` type has a 2000-dimension limit.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'PGVECTOR_PGCRYPTO',
+                    description: 'Enables pgcrypto extension for encrypting sensitive data within PGVector. When enabled, `PGVECTOR_PGCRYPTO_KEY` must be set.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'PGVECTOR_PGCRYPTO_KEY',
+                    description: 'Specifies the encryption key for pgcrypto when `PGVECTOR_PGCRYPTO` is enabled. Must be a secure, randomly generated key.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PGVECTOR_POOL_SIZE',
+                    description: 'Sets the number of connections to maintain in the PGVector database connection pool. If not set, uses SQLAlchemy defaults.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PGVECTOR_POOL_MAX_OVERFLOW',
+                    description: 'Specifies the maximum number of connections that can be created beyond `PGVECTOR_POOL_SIZE` when the pool is exhausted.',
+                    type: 'Input',
+                    defaultValue: 0,
+                },
+                {
+                    name: 'PGVECTOR_POOL_TIMEOUT',
+                    description: 'Sets the timeout in seconds for acquiring a connection from the PGVector pool.',
+                    type: 'Input',
+                    defaultValue: 30,
+                },
+                {
+                    name: 'PGVECTOR_POOL_RECYCLE',
+                    description: 'Specifies the time in seconds after which connections are recycled in the PGVector pool to prevent stale connections.',
+                    type: 'Input',
+                    defaultValue: 3600,
+                },
+            ],
+        },
+        {
+            section: 'Qdrant',
+            items: [
+                {
+                    name: 'QDRANT_API_KEY',
+                    description: 'Sets the API key for Qdrant.',
+                    type: 'Input',
+                },
+                {
+                    name: 'QDRANT_URI',
+                    description: 'Sets the URI for Qdrant.',
+                    type: 'Input',
+                },
+                {
+                    name: 'QDRANT_ON_DISK',
+                    description: 'Enable the usage of memmap(also known as on-disk) storage',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'QDRANT_PREFER_GRPC',
+                    description: 'Use gPRC interface whenever possible.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'QDRANT_GRPC_PORT',
+                    description: 'Sets the gRPC port number for Qdrant.',
+                    type: 'Input',
+                    defaultValue: 6334,
+                },
+                {
+                    name: 'QDRANT_TIMEOUT',
+                    description: 'Sets the timeout in seconds for all requests made to the Qdrant server, helping to prevent long-running queries from stalling the application.',
+                    type: 'Input',
+                    defaultValue: 5,
+                },
+                {
+                    name: 'QDRANT_HNSW_M',
+                    description: 'Controls the HNSW (Hierarchical Navigable Small World) index construction. In standard mode, this sets the `m` parameter. In multi-tenancy mode, this value is used for the `payload_m` parameter to build indexes on the payload, as the global `m` is disabled for performance, following Qdrant best practices.',
+                    type: 'Input',
+                    defaultValue: 16,
+                },
+                {
+                    name: 'ENABLE_QDRANT_MULTITENANCY_MODE',
+                    description: 'Enables multitenancy pattern for Qdrant collections management, which significantly reduces RAM usage and computational overhead by consolidating similar vector data structures. Recommend turn on',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'QDRANT_COLLECTION_PREFIX',
+                    description: 'Sets the prefix for Qdrant collection names. Useful for namespacing or isolating collections, especially in multitenancy mode. Changing this value will cause the application to use a different set of collections in Qdrant. Existing collections with a different prefix will not be affected.',
+                    type: 'Input',
+                    defaultValue: 'open-webui',
+                },
+            ],
+        },
+        {
+            section: 'Pinecone',
+            items: [
+                {
+                    name: 'PINECONE_API_KEY',
+                    description: 'Sets the API key used to authenticate with the Pinecone service.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PINECONE_ENVIRONMENT',
+                    description: 'Specifies the Pinecone environment to connect to (e.g., `us-west1-gcp`, `gcp-starter`, etc.).',
+                    type: 'Input',
+                },
+                {
+                    name: 'PINECONE_INDEX_NAME',
+                    description: 'Defines the name of the Pinecone index that will be used to store and query vector embeddings.',
+                    type: 'Input',
+                    defaultValue: 'open-webui-index',
+                },
+                {
+                    name: 'PINECONE_DIMENSION',
+                    description: 'The dimensionality of the vector embeddings. Must match the dimension expected by the index (commonly 768, 1024, 1536, or 3072 based on model used).',
+                    type: 'Input',
+                    defaultValue: 1536,
+                },
+                {
+                    name: 'PINECONE_METRIC',
+                    description: 'Specifies the similarity metric to use for vector comparisons within the Pinecone index.',
+                    type: 'DropDown',
+                    values: ['cosine', 'dotproduct', 'euclidean'],
+                    defaultValue: 'cosine',
+                },
+                {
+                    name: 'PINECONE_CLOUD',
+                    description: 'Specifies the cloud provider where the Pinecone index is hosted.',
+                    type: 'DropDown',
+                    values: ['aws', 'gcp', 'azure'],
+                    defaultValue: 'aws',
+                },
+            ],
+        },
+        {
+            section: 'Weaviate',
+            items: [
+                {
+                    name: 'WEAVIATE_HTTP_HOST',
+                    description: 'Specifies the hostname of the Weaviate server for HTTP connections.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEAVIATE_HTTP_PORT',
+                    description: 'Specifies the HTTP port for connecting to the Weaviate server.',
+                    type: 'Input',
+                    defaultValue: 8080,
+                },
+                {
+                    name: 'WEAVIATE_GRPC_PORT',
+                    description: 'Specifies the gRPC port for connecting to the Weaviate server.',
+                    type: 'Input',
+                    defaultValue: 50051,
+                },
+                {
+                    name: 'WEAVIATE_API_KEY',
+                    description: 'Sets the API key for authenticating with Weaviate server.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'Oracle 23ai Vector Search (oracle23ai)',
+            items: [
+                {
+                    name: 'ORACLE_DB_USE_WALLET',
+                    description: 'Determines the connection method to the Oracle Database.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ORACLE_DB_USER',
+                    description: 'Specifies the username used to connect to the Oracle Database.',
+                    type: 'Input',
+                    defaultValue: 'DEMOUSER',
+                },
+                {
+                    name: 'ORACLE_DB_PASSWORD',
+                    description: 'Specifies the password for the `ORACLE_DB_USER`.',
+                    type: 'Input',
+                    defaultValue: 'Welcome123456',
+                },
+                {
+                    name: 'ORACLE_DB_DSN',
+                    description: 'Defines the Data Source Name for the Oracle Database connection.',
+                    type: 'Input',
+                    defaultValue: 'localhost:1521/FREEPDB1',
+                },
+                {
+                    name: 'ORACLE_WALLET_DIR',
+                    description: 'Required when `ORACLE_DB_USE_WALLET` is `true`. Specifies the absolute path to the directory containing the Oracle Cloud Wallet files.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ORACLE_WALLET_PASSWORD',
+                    description: 'Required when `ORACLE_DB_USE_WALLET` is `true`. Specifies the password for the Oracle Cloud Wallet.',
+                    type: 'Input',
+                },
+                {
+                    name: 'ORACLE_VECTOR_LENGTH',
+                    description: 'Sets the expected dimension or length of the vector embeddings stored in the Oracle Database. This must match the embedding model used.',
+                    type: 'Input',
+                    defaultValue: 768,
+                },
+                {
+                    name: 'ORACLE_DB_POOL_MIN',
+                    description: 'The minimum number of connections to maintain in the Oracle Database connection pool.',
+                    type: 'Input',
+                    defaultValue: 2,
+                },
+                {
+                    name: 'ORACLE_DB_POOL_MAX',
+                    description: 'The maximum number of connections allowed in the Oracle Database connection pool.',
+                    type: 'Input',
+                    defaultValue: 10,
+                },
+                {
+                    name: 'ORACLE_DB_POOL_INCREMENT',
+                    description: 'The number of connections to create when the pool needs to grow.',
+                    type: 'Input',
+                    defaultValue: 1,
+                },
+            ],
+        },
+        {
+            section: 'S3 Vector Bucket',
+            items: [
+                {
+                    name: 'S3_VECTOR_BUCKET_NAME',
+                    description: 'Specifies the name of the S3 Vector Bucket to store vectors in.',
+                    type: 'Input',
+                },
+                {
+                    name: 'S3_VECTOR_REGION',
+                    description: 'Specifies the AWS region where the S3 Vector Bucket is hosted.',
+                    type: 'Input',
+                },
+            ],
+        },
+    ],
+};
+
+/* eslint max-len: 0 */
+const webSearch = {
+    category: 'Web Search',
+    sections: [
+        {
+            section: 'General',
+            items: [
+                {
+                    name: 'ENABLE_WEB_SEARCH',
+                    description: 'Enable web search toggle.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'ENABLE_SEARCH_QUERY_GENERATION',
+                    description: 'Enables or disables search query generation.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'WEB_SEARCH_DOMAIN_FILTER_LIST',
+                    description: 'Comma-separated list of domains to filter web search results. Domains prefixed with `!` are blocked; domains without prefix create an allowlist (only those domains permitted).',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEB_SEARCH_CONCURRENT_REQUESTS',
+                    description: 'Limits the number of concurrent search requests to the search engine provider. Set to `0` for unlimited concurrency (default). Set to `1` for sequential execution to prevent rate limiting errors (e.g., Brave Free Tier).',
+                    type: 'Input',
+                    defaultValue: 0,
+                },
+                {
+                    name: 'WEB_SEARCH_TRUST_ENV',
+                    description: 'Enables proxy set by `http_proxy` and `https_proxy` during web search content fetching.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'WEB_SEARCH_RESULT_COUNT',
+                    description: 'Maximum number of search results to crawl.',
+                    type: 'Input',
+                    defaultValue: 3,
+                },
+                {
+                    name: 'WEB_LOADER_CONCURRENT_REQUESTS',
+                    description: 'Specifies the number of concurrent requests used by the web loader to fetch content from web pages returned by search results. This directly impacts how many pages can be crawled simultaneously.',
+                    type: 'Input',
+                    defaultValue: 10,
+                },
+                {
+                    name: 'WEB_SEARCH_ENGINE',
+                    description: 'Specifies the search engine to use.',
+                    type: 'DropDown',
+                    values: [
+                        'searxng',
+                        'google_pse',
+                        'brave',
+                        'kagi',
+                        'mojeek',
+                        'bocha',
+                        'serpstack',
+                        'serper',
+                        'serply',
+                        'searchapi',
+                        'serpapi',
+                        'duckduckgo',
+                        'tavily',
+                        'jina',
+                        'bing',
+                        'exa',
+                        'perplexity',
+                        'perplexity_search',
+                        'ollama_cloud',
+                        'azure_ai_search',
+                        'yacy',
+                        'sougou',
+                    ],
+                },
+                {
+                    name: 'BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL',
+                    description: 'Bypasses the web search embedding and retrieval process.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'BYPASS_WEB_SEARCH_WEB_LOADER',
+                    description: 'Bypasses the web loader when performing web search. When enabled, only snippets from the search engine are used, and the full page content is not fetched.',
+                    type: 'CheckBox',
+                    defaultValue: false,
+                },
+                {
+                    name: 'SEARXNG_LANGUAGE',
+                    description: 'This variable is used in the request to searxng as the "search language" (arguement "language").',
+                    type: 'Input',
+                    defaultValue: 'all',
+                },
+                {
+                    name: 'DDGS_BACKEND',
+                    description: 'Specifies the backend to be used by the DDGS engine.',
+                    type: 'DropDown',
+                    values: [
+                        'auto',
+                        'bing',
+                        'brave',
+                        'duckduckgo',
+                        'google',
+                        'grokipedia',
+                        'mojeek',
+                        'wikipedia',
+                        'yahoo',
+                        'yandex',
+                    ],
+                    defaultValue: 'auto',
+                },
+                {
+                    name: 'SEARXNG_QUERY_URL',
+                    description: 'The [SearXNG search API](https://docs.searxng.org/dev/search_api.html) URL supporting JSON output. `<query>` is replaced with the search query. Example: `http://searxng.local/search?q=<query>`',
+                    type: 'Input',
+                },
+                {
+                    name: 'GOOGLE_PSE_API_KEY',
+                    description: 'Sets the API key for the Google Programmable Search Engine (PSE) service.',
+                    type: 'Input',
+                },
+                {
+                    name: 'GOOGLE_PSE_ENGINE_ID',
+                    description: 'The engine ID for the Google Programmable Search Engine (PSE) service.',
+                    type: 'Input',
+                },
+                {
+                    name: 'BRAVE_SEARCH_API_KEY',
+                    description: 'Sets the API key for the Brave Search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'KAGI_SEARCH_API_KEY',
+                    description: 'Sets the API key for Kagi Search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'MOJEEK_SEARCH_API_KEY',
+                    description: 'Sets the API key for Mojeek Search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SERPSTACK_API_KEY',
+                    description: 'Sets the API key for Serpstack search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SERPSTACK_HTTPS',
+                    description: 'Configures the use of HTTPS for Serpstack requests. Free tier requests are restricted to HTTP only.',
+                    type: 'CheckBox',
+                    defaultValue: true,
+                },
+                {
+                    name: 'SERPER_API_KEY',
+                    description: 'Sets the API key for Serper search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SERPLY_API_KEY',
+                    description: 'Sets the API key for Serply search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SEARCHAPI_API_KEY',
+                    description: 'Sets the API key for SearchAPI.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SEARCHAPI_ENGINE',
+                    description: 'Sets the SearchAPI engine.',
+                    type: 'Input',
+                },
+                {
+                    name: 'TAVILY_API_KEY',
+                    description: 'Sets the API key for Tavily search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'JINA_API_KEY',
+                    description: 'Sets the API key for Jina.',
+                    type: 'Input',
+                },
+                {
+                    name: 'JINA_API_BASE_URL',
+                    description: 'Sets the Base URL for Jina Search API. Useful for specifying custom or regional endpoints (e.g., `https://eu-s-beta.jina.ai/`).',
+                    type: 'Input',
+                    defaultValue: 'https://s.jina.ai/',
+                },
+                {
+                    name: 'BING_SEARCH_V7_ENDPOINT',
+                    description: 'Sets the endpoint for Bing Search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'BING_SEARCH_V7_SUBSCRIPTION_KEY',
+                    description: 'Sets the subscription key for Bing Search API.',
+                    type: 'Input',
+                    defaultValue: 'https://api.bing.microsoft.com/v7.0/search',
+                },
+                {
+                    name: 'BOCHA_SEARCH_API_KEY',
+                    description: 'Sets the API key for Bocha Search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'EXA_API_KEY',
+                    description: 'Sets the API key for Exa search API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SERPAPI_API_KEY',
+                    description: 'Sets the API key for SerpAPI.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SERPAPI_ENGINE',
+                    description: 'Specifies the search engine to use for SerpAPI.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SOUGOU_API_SID',
+                    description: 'Sets the Sogou API SID.',
+                    type: 'Input',
+                },
+                {
+                    name: 'SOUGOU_API_SK',
+                    description: 'Sets the Sogou API SK.',
+                    type: 'Input',
+                },
+                {
+                    name: 'OLLAMA_CLOUD_WEB_SEARCH_API_KEY',
+                    description: 'Sets the Ollama Cloud Web Search API Key.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AZURE_AI_SEARCH_API_KEY',
+                    description: 'API key (query key or admin key) for authenticating with Azure AI Search service. Required for using Azure AI Search as a web search provider.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AZURE_AI_SEARCH_ENDPOINT',
+                    description: 'Azure Search service endpoint URL. Specifies which Azure Search service instance to connect to.',
+                    type: 'Input',
+                },
+                {
+                    name: 'AZURE_AI_SEARCH_INDEX_NAME',
+                    description: 'Name of the search index to query within your Azure Search service. Different indexes can contain different types of searchable content.',
+                    type: 'Input',
+                },
+                {
+                    name: 'YACY_QUERY_URL',
+                    description: "Sets the query URL for YaCy search engine integration. Should point to a YaCy instance's search API endpoint.",
+                    type: 'Input',
+                },
+                {
+                    name: 'YACY_USERNAME',
+                    description: 'Specifies the username for authenticated access to YaCy search engine.',
+                    type: 'Input',
+                },
+                {
+                    name: 'YACY_PASSWORD',
+                    description: 'Specifies the password for authenticated access to YaCy search engine.',
+                    type: 'Input',
+                },
+                {
+                    name: 'EXTERNAL_WEB_SEARCH_URL',
+                    description: 'Specifies the URL of an external web search service API endpoint for custom search integrations.',
+                    type: 'Input',
+                },
+                {
+                    name: 'EXTERNAL_WEB_SEARCH_API_KEY',
+                    description: 'Sets the API key for authenticating with the external web search service.',
+                    type: 'Input',
+                },
+                {
+                    name: 'EXTERNAL_WEB_LOADER_URL',
+                    description: 'Specifies the URL of an external web content loader service for fetching and processing web pages.',
+                    type: 'Input',
+                },
+                {
+                    name: 'EXTERNAL_WEB_LOADER_API_KEY',
+                    description: 'Sets the API key for authenticating with the external web loader service.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PERPLEXITY_API_KEY',
+                    description: 'Sets the API key for Perplexity API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PERPLEXITY_SEARCH_API_URL',
+                    description: "Configures the API endpoint for Perplexity Search. Allows using custom or self-hosted Perplexity-compatible API endpoints (such as LiteLLM's `/search` endpoint) instead of the hardcoded default for the official Perplexity API.",
+                    type: 'Input',
+                    defaultValue: 'https://api.perplexity.ai/search',
+                },
+                {
+                    name: 'PERPLEXITY_MODEL',
+                    description: 'Specifies the Perplexity AI model to use for search queries when using `Perplexity` as the web search engine.',
+                    type: 'Input',
+                    defaultValue: 'sonar',
+                },
+                {
+                    name: 'PERPLEXITY_SEARCH_CONTEXT_USAGE',
+                    description: 'Controls the amount of search context used by Perplexity AI. Options typically include `low`, `medium`, `high`.',
+                    type: 'Input',
+                    defaultValue: 'medium',
+                },
+                {
+                    name: 'TAVILY_EXTRACT_DEPTH',
+                    description: 'Specifies the extract depth for Tavily search results.',
+                    type: 'Input',
+                    defaultValue: 'basic',
+                },
+            ],
+        },
+        {
+            section: 'Web Loader Configuration',
+            items: [
+                {
+                    name: 'WEB_LOADER_ENGINE',
+                    description: 'Specifies the loader to use for retrieving and processing web content.',
+                    type: 'DropDown',
+                    values: ['safe_web', 'playwright', 'firecrawl', 'tavily', 'external'],
+                },
+                {
+                    name: 'PLAYWRIGHT_WS_URL',
+                    description: 'Specifies the WebSocket URI of a remote Playwright browser instance. When set, Open WebUI will use this remote browser instead of installing browser dependencies locally. This is particularly useful in containerized environments where you want to keep the Open WebUI container lightweight and separate browser concerns. Example: `ws://playwright:3000`',
+                    type: 'Input',
+                },
+                {
+                    name: 'FIRECRAWL_API_BASE_URL',
+                    description: 'Sets the base URL for Firecrawl API.',
+                    type: 'Input',
+                    defaultValue: 'https://api.firecrawl.dev',
+                },
+                {
+                    name: 'FIRECRAWL_API_KEY',
+                    description: 'Sets the API key for Firecrawl API.',
+                    type: 'Input',
+                },
+                {
+                    name: 'FIRECRAWL_TIMEOUT',
+                    description: 'Specifies the timeout in milliseconds for Firecrawl requests. If not set, the default Firecrawl timeout is used.',
+                    type: 'Input',
+                },
+                {
+                    name: 'PLAYWRIGHT_TIMEOUT',
+                    description: 'Specifies the timeout for Playwright requests.',
+                    type: 'Input',
+                },
+                {
+                    name: 'WEB_LOADER_TIMEOUT',
+                    description: 'Specifies the request timeout in seconds for the SafeWebBaseLoader when scraping web pages. Without this setting, web scraping operations can hang indefinitely on slow or unresponsive pages. Recommended values are 10–30 seconds depending on your network conditions.',
+                    type: 'Input',
+                },
+            ],
+        },
+        {
+            section: 'YouTube Loader',
+            items: [
+                {
+                    name: 'YOUTUBE_LOADER_PROXY_URL',
+                    description: 'Sets the proxy URL for YouTube loader.',
+                    type: 'Input',
+                },
+                {
+                    name: 'YOUTUBE_LOADER_LANGUAGE',
+                    description: 'Comma-separated list of language codes to try when fetching YouTube video transcriptions, in priority order.',
+                    type: 'Input',
+                    defaultValue: 'en',
+                },
+            ],
+        },
+    ],
+};
+
 /* eslint max-len: 0 */
 const openArguments = [
-    {
-        category: 'App/Backend',
-        sections: [
-            {
-                section: 'General',
-                items: [
-                    {
-                        name: 'WEBUI_URL',
-                        description: 'Specifies the URL where your Open WebUI installation is reachable. Needed for search engine support and OAuth/SSO.',
-                        type: 'Input',
-                        defaultValue: 'http://localhost:3000',
-                    },
-                    {
-                        name: 'ENABLE_SIGNUP',
-                        description: 'Toggles user account creation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_SIGNUP_PASSWORD_CONFIRMATION',
-                        description: 'If set to True, a "Confirm Password" field is added to the sign-up page to help users avoid typos when creating their password.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_LOGIN_FORM',
-                        description: 'Toggles email, password, sign-in and "or" (only when ENABLE_OAUTH_SIGNUP is set to True) elements.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'DEFAULT_LOCALE',
-                        description: 'Sets the default locale for the application.',
-                        type: 'Input',
-                        defaultValue: 'en',
-                    },
-                    {
-                        name: 'DEFAULT_MODELS',
-                        description: 'Sets a default Language Model.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'DEFAULT_USER_ROLE',
-                        description: 'Sets the default role assigned to new users.',
-                        type: 'DropDown',
-                        values: ['pending', 'user', 'admin'],
-                        defaultValue: 'pending',
-                    },
-                    {
-                        name: 'PENDING_USER_OVERLAY_TITLE',
-                        description: 'Sets a custom title for the pending user overlay.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'PENDING_USER_OVERLAY_CONTENT',
-                        description: 'Sets a custom text content for the pending user overlay.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ENABLE_CHANNELS',
-                        description: 'Enables or disables channel support.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'WEBHOOK_URL',
-                        description: 'Sets a webhook for integration with Discord/Slack/Microsoft Teams.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ENABLE_ADMIN_EXPORT',
-                        description: 'Controls whether admins can export data, chats and the database in the admin panel. Database exports only work for SQLite databases for now.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_ADMIN_CHAT_ACCESS',
-                        description: "Enables admin users to directly access the chats of other users. When disabled, admins can no longer accesss user's chats in the admin panel. If you disable this, consider disabling `ENABLE_ADMIN_EXPORT` too, if you are using SQLite, as the exports also contain user chats.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'BYPASS_ADMIN_ACCESS_CONTROL',
-                        description: 'When disabled, admin users are treated like regular users for workspace access (models, knowledge, prompts and tools) and only see items they have explicit permission to access through the existing access control system. This also applies to the visibility of models in the model selector - admins will be treated as regular users: base models and custom models they do not have explicit permission to access, will be hidden. If set to `True` (Default), admins have access to all created items in the workspace area and all models in the model selector, regardless of access permissions.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_USER_WEBHOOKS',
-                        description: 'Enables or disables user webhooks.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'RESPONSE_WATERMARK',
-                        description: 'Sets a custom text that will be included when you copy a message in the chat. E.g. `"This text is AI generated"` -> will add "This text is AI generated" to every message, when copied.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'THREAD_POOL_SIZE',
-                        description: 'Sets the thread pool size for FastAPI/AnyIO blocking calls. By default (when set to `0`) FastAPI/AnyIO use `40` threads. In case of large instances and many concurrent users, it may be needed to increase `THREAD_POOL_SIZE` to prevent blocking.',
-                        type: 'Input',
-                        defaultValue: 0,
-                    },
-                    {
-                        name: 'MODELS_CACHE_TTL',
-                        description: 'Sets the cache time-to-live in seconds for model list responses from OpenAI and Ollama endpoints. This reduces API calls by caching the available models list for the specified duration. Set to empty string to disable caching entirely.',
-                        type: 'Input',
-                        defaultValue: 1,
-                    },
-                    {
-                        name: 'SHOW_ADMIN_DETAILS',
-                        description: 'Toggles whether to show admin user details in the interface.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ADMIN_EMAIL',
-                        description: 'Sets the admin email shown by `SHOW_ADMIN_DETAILS`',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ENV',
-                        description: 'Environment setting.',
-                        type: 'DropDown',
-                        values: ['dev', 'prod'],
-                        defaultValue: 'dev',
-                    },
-                    {
-                        name: 'ENABLE_PERSISTENT_CONFIG',
-                        description: 'If set to `False`, all `PersistentConfig` variables are treated as regular variables.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'CUSTOM_NAME',
-                        description: 'Sets `WEBUI_NAME` but polls **api.openwebui.com** for metadata.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'WEBUI_NAME',
-                        description: 'Sets the main WebUI name. Appends `(Open WebUI)` if overridden.',
-                        type: 'Input',
-                        defaultValue: 'Open WebUI',
-                    },
-                    {
-                        name: 'PORT',
-                        description: 'Sets the port to run Open WebUI from.',
-                        type: 'Input',
-                        defaultValue: 8080,
-                    },
-                    {
-                        name: 'ENABLE_REALTIME_CHAT_SAVE',
-                        description: "When enabled, the system saves each chunk of streamed chat data to the database in real time to ensure maximum data persistency. This feature provides robust data recovery and allows accurate session tracking. However, the tradeoff is increased latency, as saving to the database introduces a delay. Disabling this feature can improve performance and reduce delays, but it risks potential data loss in the event of a system failure or crash. Use based on your application's requirements and acceptable tradeoffs.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'CHAT_RESPONSE_STREAM_DELTA_CHUNK_SIZE',
-                        description: "Sets a system-wide minimum value for the number of tokens to batch together before sending them to the client during a streaming response. This allows an administrator to enforce a baseline level of performance and stability across the entire system by preventing excessively small chunk sizes that can cause high CPU load. The final chunk size used for a response will be the highest value set among this global variable, the model's advanced parameters, or the per-chat settings. The default is 1, which applies no minimum batching at the global level.",
-                        type: 'Input',
-                        defaultValue: 1,
-                    },
-                    {
-                        name: 'BYPASS_MODEL_ACCESS_CONTROL',
-                        description: "Bypasses model access control. When set to `true`, all users (and admins alike) will have access to all models, regardless of the model's privacy setting (Private, Public, Shared with certain groups). This is useful for smaller or individual Open WebUI installations where model access restrictions may not be needed.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'WEBUI_BUILD_HASH',
-                        description: 'Used for identifying the Git SHA of the build for releases.',
-                        type: 'Input',
-                        defaultValue: 'dev-build',
-                    },
-                    {
-                        name: 'WEBUI_BANNERS',
-                        description: 'List of banners to show to users.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USE_CUDA_DOCKER',
-                        description: 'Builds the Docker image with NVIDIA CUDA support. Enables GPU acceleration for local Whisper and embeddings.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'EXTERNAL_PWA_MANIFEST_URL',
-                        description: 'When defined as a fully qualified URL (e.g., https://path/to/manifest.webmanifest), requests sent to /manifest.json will use the external manifest file. When not defined, the default manifest.json file will be used.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ENABLE_TITLE_GENERATION',
-                        description: 'Enables or disables chat title generation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'LICENSE_KEY',
-                        description: 'Specifies the license key to use (for Enterprise users only).',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'SSL_ASSERT_FINGERPRINT',
-                        description: 'Specifies the SSL assert fingerprint to use.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'DEFAULT_PROMPT_SUGGESTIONS',
-                        description: 'List of prompt suggestions.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'AIOHTTP Client',
-                items: [
-                    {
-                        name: 'AIOHTTP_CLIENT_TIMEOUT',
-                        description: 'Specifies the timeout duration in seconds for the AIOHTTP client. This impacts things such as connections to Ollama and OpenAI endpoints.',
-                        type: 'Input',
-                        defaultValue: 300,
-                    },
-                    {
-                        name: 'AIOHTTP_CLIENT_TIMEOUT_MODEL_LIST',
-                        description: 'Sets the timeout in seconds for fetching the model list. This can be useful in cases where network latency requires a longer timeout duration to successfully retrieve the model list.',
-                        type: 'Input',
-                        defaultValue: 10,
-                    },
-                    {
-                        name: 'AIOHTTP_CLIENT_TIMEOUT_OPENAI_MODEL_LIST',
-                        description: 'Sets the timeout in seconds for fetching the model list. This can be useful in cases where network latency requires a longer timeout duration to successfully retrieve the model list.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Directories',
-                items: [
-                    {
-                        name: 'DATA_DIR',
-                        description: 'Specifies the base directory for data storage, including uploads, cache, vector database, etc.',
-                        type: 'Input',
-                        defaultValue: './data',
-                    },
-                    {
-                        name: 'FONTS_DIR',
-                        description: 'Specifies the directory for fonts.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'FRONTEND_BUILD_DIR',
-                        description: 'Specifies the location of the built frontend files.',
-                        type: 'Input',
-                        defaultValue: '../build',
-                    },
-                    {
-                        name: 'STATIC_DIR',
-                        description: 'Specifies the directory for static files, such as the favicon.',
-                        type: 'Input',
-                        defaultValue: './static',
-                    },
-                ],
-            },
-            {
-                section: 'Ollama',
-                items: [
-                    {
-                        name: 'ENABLE_OLLAMA_API',
-                        description: 'Enables the use of Ollama APIs.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OLLAMA_BASE_URL',
-                        description: 'Configures the Ollama backend URL.',
-                        type: 'Input',
-                        defaultValue: 'http://localhost:11434',
-                    },
-                    {
-                        name: 'OLLAMA_BASE_URLS',
-                        description: 'Configures load-balanced Ollama backend hosts, separated by ;. Takes precedence over OLLAMA_BASE_URL.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USE_OLLAMA_DOCKER',
-                        description: 'Builds the Docker image with a bundled Ollama instance.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'K8S_FLAG',
-                        description: 'If set, assumes Helm chart deployment and sets OLLAMA_BASE_URL to http://ollama-service.open-webui.svc.cluster.local:11434',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'OpenAI',
-                items: [
-                    {
-                        name: 'ENABLE_OPENAI_API',
-                        description: 'Enables the use of OpenAI APIs.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OPENAI_API_BASE_URL',
-                        description: 'Configures the OpenAI base API URL.',
-                        type: 'Input',
-                        defaultValue: 'https://api.openai.com/v1',
-                    },
-                    {
-                        name: 'OPENAI_API_BASE_URLS',
-                        description: 'Supports balanced OpenAI base API URLs, semicolon-separated.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OPENAI_API_KEY',
-                        description: 'Sets the OpenAI API key.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OPENAI_API_KEYS',
-                        description: 'Supports multiple OpenAI API keys, semicolon-separated.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Tasks',
-                items: [
-                    {
-                        name: 'TASK_MODEL',
-                        description: 'The default model to use for tasks such as title and web search query generation when using Ollama models.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'TASK_MODEL_EXTERNAL',
-                        description: 'The default model to use for tasks such as title and web search query generation when using OpenAI-compatible endpoints.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'TITLE_GENERATION_PROMPT_TEMPLATE',
-                        description: 'Prompt to use when generating chat titles.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ENABLE_FOLLOW_UP_GENERATION',
-                        description: 'Enables or disables follow up generation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'FOLLOW_UP_GENERATION_PROMPT_TEMPLATE',
-                        description: 'Prompt to use for generating several relevant follow-up questions.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'TOOLS_FUNCTION_CALLING_PROMPT_TEMPLATE',
-                        description: 'Prompt to use when calling tools.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Code Execution',
-                items: [
-                    {
-                        name: 'ENABLE_CODE_EXECUTION',
-                        description: 'Enables or disables code execution.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'CODE_EXECUTION_ENGINE',
-                        description: 'Specifies the code execution engine to use.',
-                        type: 'Input',
-                        defaultValue: 'pyodide',
-                    },
-                    {
-                        name: 'CODE_EXECUTION_JUPYTER_URL',
-                        description: 'Specifies the Jupyter URL to use for code execution.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_EXECUTION_JUPYTER_AUTH',
-                        description: 'Specifies the Jupyter authentication method to use for code execution.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_EXECUTION_JUPYTER_AUTH_TOKEN',
-                        description: 'Specifies the Jupyter authentication token to use for code execution.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_EXECUTION_JUPYTER_AUTH_PASSWORD',
-                        description: 'Specifies the Jupyter authentication password to use for code execution.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_EXECUTION_JUPYTER_TIMEOUT',
-                        description: 'Specifies the timeout for Jupyter code execution.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Code Interpreter',
-                items: [
-                    {
-                        name: 'ENABLE_CODE_INTERPRETER',
-                        description: 'Enables or disables code interpreter.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_ENGINE',
-                        description: 'Specifies the code interpreter engine to use.',
-                        type: 'Input',
-                        defaultValue: 'pyodide',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_BLACKLISTED_MODULES',
-                        description: 'Specifies a comma-separated list of Python modules that are blacklisted and cannot be imported or used within the code interpreter. This enhances security by preventing access to potentially sensitive or system-level functionalities.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_PROMPT_TEMPLATE',
-                        description: 'Specifies the prompt template to use for code interpreter.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_JUPYTER_URL',
-                        description: 'Specifies the Jupyter URL to use for code interpreter.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_JUPYTER_AUTH',
-                        description: 'Specifies the Jupyter authentication method to use for code interpreter.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_JUPYTER_AUTH_TOKEN',
-                        description: 'Specifies the Jupyter authentication token to use for code interpreter.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_JUPYTER_AUTH_PASSWORD',
-                        description: 'Specifies the Jupyter authentication password to use for code interpreter.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CODE_INTERPRETER_JUPYTER_TIMEOUT',
-                        description: 'Specifies the timeout for the Jupyter code interpreter.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Direct Connections (OpenAPI/MCPO Tool Servers)',
-                items: [
-                    {
-                        name: 'ENABLE_DIRECT_CONNECTIONS',
-                        description: 'Enables or disables direct connections.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Autocomplete',
-                items: [
-                    {
-                        name: 'ENABLE_AUTOCOMPLETE_GENERATION',
-                        description: 'Enables or disables autocomplete generation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'AUTOCOMPLETE_GENERATION_INPUT_MAX_LENGTH',
-                        description: 'Sets the maximum input length for autocomplete generation.',
-                        type: 'Input',
-                        defaultValue: -1,
-                    },
-                    {
-                        name: 'AUTOCOMPLETE_GENERATION_PROMPT_TEMPLATE',
-                        description: 'Sets the prompt template for autocomplete generation.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Evaluation Arena Model',
-                items: [
-                    {
-                        name: 'ENABLE_EVALUATION_ARENA_MODELS',
-                        description: 'Enables or disables evaluation arena models.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_MESSAGE_RATING',
-                        description: 'Enables message rating feature.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_COMMUNITY_SHARING',
-                        description: 'Controls whether users are shown the share to community button.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Tags Generation',
-                items: [
-                    {
-                        name: 'ENABLE_TAGS_GENERATION',
-                        description: 'Enables or disables tag generation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'TAGS_GENERATION_PROMPT_TEMPLATE',
-                        description: 'Sets the prompt template for tag generation.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'API Key Endpoint Restrictions',
-                items: [
-                    {
-                        name: 'ENABLE_API_KEY',
-                        description: 'Enables API key authentication.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_API_KEY_ENDPOINT_RESTRICTIONS',
-                        description: 'Enables API key endpoint restrictions for added security and configurability.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'API_KEY_ALLOWED_ENDPOINTS',
-                        description: 'Specifies a comma-separated list of allowed API endpoints when API key endpoint restrictions are enabled.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'JWT_EXPIRES_IN',
-                        description: 'Sets the JWT expiration time in seconds. Valid time units: `s`, `m`, `h`, `d`, `w` or `-1` for no expiration.',
-                        type: 'Input',
-                        defaultValue: '-1',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'Security Variables',
-        items: [
-            {
-                name: 'ENABLE_FORWARD_USER_INFO_HEADERS',
-                description: 'Forwards user information (name, ID, email, role and chat-id) as X-headers to OpenAI API and Ollama API.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'ENABLE_WEB_LOADER_SSL_VERIFICATION',
-                description: 'Bypass SSL Verification for RAG on Websites.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'WEBUI_SESSION_COOKIE_SAME_SITE',
-                description: 'Sets the `SameSite` attribute for session cookies.',
-                type: 'DropDown',
-                values: ['lax', 'strict', 'none'],
-                defaultValue: 'lax',
-            },
-            {
-                name: 'WEBUI_SESSION_COOKIE_SECURE',
-                description: 'Sets the `Secure` attribute for session cookies if set to `True`.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'WEBUI_AUTH_COOKIE_SAME_SITE',
-                description: 'Sets the `SameSite` attribute for auth cookies.',
-                type: 'DropDown',
-                values: ['lax', 'strict', 'none'],
-                defaultValue: 'lax',
-            },
-            {
-                name: 'WEBUI_AUTH_COOKIE_SECURE',
-                description: 'Sets the `Secure` attribute for auth cookies if set to `True`.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'WEBUI_AUTH',
-                description: 'This setting enables or disables authentication.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'WEBUI_SECRET_KEY',
-                description: 'Overrides the randomly generated string used for JSON Web Token.',
-                type: 'Input',
-                defaultValue: 't0p-s3cr3t',
-            },
-            {
-                name: 'ENABLE_VERSION_UPDATE_CHECK',
-                description: 'When enabled, the application makes automatic update checks and notifies you about version updates.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'OFFLINE_MODE',
-                description: "Disables Open WebUI's network connections for update checks and automatic model downloads.",
-                type: 'CheckBox',
-            },
-            {
-                name: 'RESET_CONFIG_ON_START',
-                description: 'Resets the `config.json` file on startup.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'SAFE_MODE',
-                description: 'Enables safe mode, which disables potentially unsafe features, deactivating all functions.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'CORS_ALLOW_ORIGIN',
-                description: 'Sets the allowed origins for Cross-Origin Resource Sharing (CORS).',
-                type: 'Input',
-                defaultValue: '*',
-            },
-            {
-                name: 'CORS_ALLOW_CUSTOM_SCHEME',
-                description: 'Sets a list of further allowed schemes for Cross-Origin Resource Sharing (CORS). Allows you to specify additional custom URL schemes, beyond the standard `http` and `https`, that are permitted as valid origins for Cross-Origin Resource Sharing (CORS).',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE',
-                description: 'Determines whether to allow custom models defined on the Hub in their own modeling files.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'RAG_RERANKING_MODEL_TRUST_REMOTE_CODE',
-                description: 'Determines whether to allow custom models defined on the Hub in their own. modeling files for reranking.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'RAG_EMBEDDING_MODEL_AUTO_UPDATE',
-                description: 'Toggles automatic update of the Sentence-Transformer model.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'RAG_RERANKING_MODEL_AUTO_UPDATE',
-                description: 'Toggles automatic update of the reranking model.',
-                type: 'CheckBox',
-            },
-        ],
-    },
-    {
-        category: 'Vector Database',
-        sections: [
-            {
-                section: 'General',
-                items: [
-                    {
-                        name: 'VECTOR_DB',
-                        description: 'Specifies which vector database system to use. This setting determines which vector storage system will be used for managing embeddings.',
-                        type: 'DropDown',
-                        values: [
-                            'chroma',
-                            'elasticsearch',
-                            'milvus',
-                            'opensearch',
-                            'pgvector',
-                            'qdrant',
-                            'pinecone',
-                            's3vector',
-                            'oracle23ai',
-                        ],
-                        defaultValue: 'chroma',
-                    },
-                ],
-            },
-            {
-                section: 'ChromaDB',
-                items: [
-                    {
-                        name: 'CHROMA_TENANT',
-                        description: 'Sets the tenant for ChromaDB to use for RAG embeddings.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CHROMA_DATABASE',
-                        description: 'Sets the database in the ChromaDB tenant to use for RAG embeddings.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CHROMA_HTTP_HOST',
-                        description: 'Specifies the hostname of a remote ChromaDB Server. Uses a local ChromaDB instance if not set.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CHROMA_HTTP_PORT',
-                        description: 'Specifies the port of a remote ChromaDB Server.',
-                        type: 'Input',
-                        defaultValue: 8000,
-                    },
-                    {
-                        name: 'CHROMA_HTTP_HEADERS',
-                        description: 'A comma-separated list of HTTP headers to include with every ChromaDB request.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CHROMA_HTTP_SSL',
-                        description: 'Controls whether or not SSL is used for ChromaDB Server connections.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'CHROMA_CLIENT_AUTH_PROVIDER',
-                        description: 'Specifies an authentication provider for remote ChromaDB Server.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'CHROMA_CLIENT_AUTH_CREDENTIALS',
-                        description: 'Specifies auth credentials for remote ChromaDB Server.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Elasticsearch',
-                items: [
-                    {
-                        name: 'ELASTICSEARCH_API_KEY',
-                        description: 'Specifies the Elasticsearch API key.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ELASTICSEARCH_CA_CERTS',
-                        description: 'Specifies the path to the CA certificates for Elasticsearch.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ELASTICSEARCH_CLOUD_ID',
-                        description: 'Specifies the Elasticsearch cloud ID.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ELASTICSEARCH_INDEX_PREFIX',
-                        description: 'Specifies the prefix for the Elasticsearch index.',
-                        type: 'Input',
-                        defaultValue: 'open_webui_collections',
-                    },
-                    {
-                        name: 'ELASTICSEARCH_PASSWORD',
-                        description: 'Specifies the password for Elasticsearch.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ELASTICSEARCH_URL',
-                        description: 'Specifies the URL for the Elasticsearch instance.',
-                        type: 'Input',
-                        defaultValue: 'https://localhost:9200',
-                    },
-                    {
-                        name: 'ELASTICSEARCH_USERNAME',
-                        description: 'Specifies the username for Elasticsearch.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Milvus',
-                items: [
-                    {
-                        name: 'MILVUS_URI',
-                        description: 'Specifies the URI for connecting to the Milvus vector database. This can point to a local or remote Milvus server based on the deployment configuration.',
-                        type: 'Input',
-                        defaultValue: '${DATA_DIR}/vector_db/milvus.db',
-                    },
-                    {
-                        name: 'MILVUS_DB',
-                        description: 'Specifies the database to connect to within a Milvus instance.',
-                        type: 'Input',
-                        defaultValue: 'default',
-                    },
-                    {
-                        name: 'MILVUS_TOKEN',
-                        description: 'Specifies an optional connection token for Milvus.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MILVUS_INDEX_TYPE',
-                        description: 'Specifies the index type to use when creating a new collection in Milvus. `AUTOINDEX` is generally recommended for Milvus standalone. `HNSW` may offer better performance but typically requires a clustered Milvus setup.',
-                        type: 'DropDown',
-                        values: ['AUTOINDEX', 'FLAT', 'IVF_FLAT', 'HNSW'],
-                        defaultValue: 'HNSW',
-                    },
-                    {
-                        name: 'MILVUS_METRIC_TYPE',
-                        description: 'Specifies the metric type for vector similarity search in Milvus.',
-                        type: 'DropDown',
-                        values: ['COSINE', 'IP', 'L2'],
-                        defaultValue: 'COSINE',
-                    },
-                    {
-                        name: 'MILVUS_HNSW_M',
-                        description: 'Specifies the `M` parameter for the HNSW index type in Milvus. This influences the number of bi-directional links created for each new element during construction. Only applicable if `MILVUS_INDEX_TYPE` is `HNSW`.',
-                        type: 'Input',
-                        defaultValue: 16,
-                    },
-                    {
-                        name: 'MILVUS_HNSW_EFCONSTRUCTION',
-                        description: 'Specifies the `efConstruction` parameter for the HNSW index type in Milvus. This influences the size of the dynamic list for the nearest neighbors during index construction. Only applicable if `MILVUS_INDEX_TYPE` is `HNSW`.',
-                        type: 'Input',
-                        defaultValue: 100,
-                    },
-                    {
-                        name: 'MILVUS_IVF_FLAT_NLIST',
-                        description: 'Specifies the `nlist` parameter for the IVF_FLAT index type in Milvus. This is the number of cluster units. Only applicable if `MILVUS_INDEX_TYPE` is `IVF_FLAT`.',
-                        type: 'Input',
-                        defaultValue: 128,
-                    },
-                ],
-            },
-            {
-                section: 'OpenSearch',
-                items: [
-                    {
-                        name: 'OPENSEARCH_CERT_VERIFY',
-                        description: 'Enables or disables OpenSearch certificate verification.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OPENSEARCH_PASSWORD',
-                        description: 'Sets the password for OpenSearch.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OPENSEARCH_SSL',
-                        description: 'Enables or disables SSL for OpenSearch.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OPENSEARCH_URI',
-                        description: 'Sets the URI for OpenSearch.',
-                        type: 'Input',
-                        defaultValue: 'https://localhost:9200',
-                    },
-                    {
-                        name: 'OPENSEARCH_USERNAME',
-                        description: 'Sets the username for OpenSearch.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'PGVector',
-                items: [
-                    {
-                        name: 'PGVECTOR_DB_URL',
-                        description: 'Sets the database URL for model storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH',
-                        description: 'Specifies the maximum vector length for PGVector initialization.',
-                        type: 'Input',
-                        defaultValue: '1536',
-                    },
-                ],
-            },
-            {
-                section: 'Qdrant',
-                items: [
-                    {
-                        name: 'QDRANT_API_KEY',
-                        description: 'Sets the API key for Qdrant.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'QDRANT_URI',
-                        description: 'Sets the URI for Qdrant.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'QDRANT_ON_DISK',
-                        description: 'Enable the usage of memmap(also known as on-disk) storage',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'QDRANT_PREFER_GRPC',
-                        description: 'Use gPRC interface whenever possible.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'QDRANT_GRPC_PORT',
-                        description: 'Sets the gRPC port number for Qdrant.',
-                        type: 'Input',
-                        defaultValue: 6334,
-                    },
-                    {
-                        name: 'QDRANT_TIMEOUT',
-                        description: 'Sets the timeout in seconds for all requests made to the Qdrant server, helping to prevent long-running queries from stalling the application.',
-                        type: 'Input',
-                        defaultValue: 5,
-                    },
-                    {
-                        name: 'QDRANT_HNSW_M',
-                        description: 'Controls the HNSW (Hierarchical Navigable Small World) index construction. In standard mode, this sets the `m` parameter. In multi-tenancy mode, this value is used for the `payload_m` parameter to build indexes on the payload, as the global `m` is disabled for performance, following Qdrant best practices.',
-                        type: 'Input',
-                        defaultValue: 16,
-                    },
-                    {
-                        name: 'ENABLE_QDRANT_MULTITENANCY_MODE',
-                        description: 'Enables multitenancy pattern for Qdrant collections management, which significantly reduces RAM usage and computational overhead by consolidating similar vector data structures. Recommend turn on',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'QDRANT_COLLECTION_PREFIX',
-                        description: 'Sets the prefix for Qdrant collection names. Useful for namespacing or isolating collections, especially in multitenancy mode. Changing this value will cause the application to use a different set of collections in Qdrant. Existing collections with a different prefix will not be affected.',
-                        type: 'Input',
-                        defaultValue: 'open-webui',
-                    },
-                ],
-            },
-            {
-                section: 'Pinecone',
-                items: [
-                    {
-                        name: 'PINECONE_API_KEY',
-                        description: 'Sets the API key used to authenticate with the Pinecone service.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'PINECONE_ENVIRONMENT',
-                        description: 'Specifies the Pinecone environment to connect to (e.g., `us-west1-gcp`, `gcp-starter`, etc.).',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'PINECONE_INDEX_NAME',
-                        description: 'Defines the name of the Pinecone index that will be used to store and query vector embeddings.',
-                        type: 'Input',
-                        defaultValue: 'open-webui-index',
-                    },
-                    {
-                        name: 'PINECONE_DIMENSION',
-                        description: 'The dimensionality of the vector embeddings. Must match the dimension expected by the index (commonly 768, 1024, 1536, or 3072 based on model used).',
-                        type: 'Input',
-                        defaultValue: 1536,
-                    },
-                    {
-                        name: 'PINECONE_METRIC',
-                        description: 'Specifies the similarity metric to use for vector comparisons within the Pinecone index.',
-                        type: 'DropDown',
-                        values: ['cosine', 'dotproduct', 'euclidean'],
-                        defaultValue: 'cosine',
-                    },
-                    {
-                        name: 'PINECONE_CLOUD',
-                        description: 'Specifies the cloud provider where the Pinecone index is hosted.',
-                        type: 'DropDown',
-                        values: ['aws', 'gcp', 'azure'],
-                        defaultValue: 'aws',
-                    },
-                ],
-            },
-            {
-                section: 'Oracle 23ai Vector Search (oracle23ai)',
-                items: [
-                    {
-                        name: 'ORACLE_DB_USE_WALLET',
-                        description: 'Determines the connection method to the Oracle Database.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ORACLE_DB_USER',
-                        description: 'Specifies the username used to connect to the Oracle Database.',
-                        type: 'Input',
-                        defaultValue: 'DEMOUSER',
-                    },
-                    {
-                        name: 'ORACLE_DB_PASSWORD',
-                        description: 'Specifies the password for the `ORACLE_DB_USER`.',
-                        type: 'Input',
-                        defaultValue: 'Welcome123456',
-                    },
-                    {
-                        name: 'ORACLE_DB_DSN',
-                        description: 'Defines the Data Source Name for the Oracle Database connection.',
-                        type: 'Input',
-                        defaultValue: 'localhost:1521/FREEPDB1',
-                    },
-                    {
-                        name: 'ORACLE_WALLET_DIR',
-                        description: 'Required when `ORACLE_DB_USE_WALLET` is `true`. Specifies the absolute path to the directory containing the Oracle Cloud Wallet files.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ORACLE_WALLET_PASSWORD',
-                        description: 'Required when `ORACLE_DB_USE_WALLET` is `true`. Specifies the password for the Oracle Cloud Wallet.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ORACLE_VECTOR_LENGTH',
-                        description: 'Sets the expected dimension or length of the vector embeddings stored in the Oracle Database. This must match the embedding model used.',
-                        type: 'Input',
-                        defaultValue: 768,
-                    },
-                    {
-                        name: 'ORACLE_DB_POOL_MIN',
-                        description: 'The minimum number of connections to maintain in the Oracle Database connection pool.',
-                        type: 'Input',
-                        defaultValue: 2,
-                    },
-                    {
-                        name: 'ORACLE_DB_POOL_MAX',
-                        description: 'The maximum number of connections allowed in the Oracle Database connection pool.',
-                        type: 'Input',
-                        defaultValue: 10,
-                    },
-                    {
-                        name: 'ORACLE_DB_POOL_INCREMENT',
-                        description: 'The number of connections to create when the pool needs to grow.',
-                        type: 'Input',
-                        defaultValue: 1,
-                    },
-                ],
-            },
-            {
-                section: 'S3 Vector Bucket',
-                items: [
-                    {
-                        name: 'S3_VECTOR_BUCKET_NAME',
-                        description: 'Specifies the name of the S3 Vector Bucket to store vectors in.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_VECTOR_REGION',
-                        description: 'Specifies the AWS region where the S3 Vector Bucket is hosted.',
-                        type: 'Input',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'RAG Content Extraction Engine',
-        items: [
-            {
-                name: 'CONTENT_EXTRACTION_ENGINE',
-                description: 'Sets the content extraction engine to use for document ingestion.',
-                type: 'DropDown',
-                values: ['', 'external', 'tika', 'docling', 'document_intelligence', 'mistral_ocr'],
-            },
-            {
-                name: 'MISTRAL_OCR_API_KEY',
-                description: 'Specifies the Mistral OCR API key to use.',
-                type: 'Input',
-            },
-            {
-                name: 'EXTERNAL_DOCUMENT_LOADER_URL',
-                description: 'Sets the URL for the external document loader service.',
-                type: 'Input',
-            },
-            {
-                name: 'EXTERNAL_DOCUMENT_LOADER_API_KEY',
-                description: 'Sets the API key for authenticating with the external document loader service.',
-                type: 'Input',
-            },
-            {
-                name: 'TIKA_SERVER_URL',
-                description: 'Sets the URL for the Apache Tika server.',
-                type: 'Input',
-                defaultValue: 'http://localhost:9998',
-            },
-            {
-                name: 'DOCLING_SERVER_URL',
-                description: 'Specifies the URL for the Docling server. Requires Docling version 1.0.0 or later.',
-                type: 'Input',
-                defaultValue: 'http://docling:5001',
-            },
-            {
-                name: 'DOCLING_OCR_ENGINE',
-                description: 'Specifies the OCR engine used by Docling.',
-                type: 'Input',
-                defaultValue: 'tesseract',
-            },
-            {
-                name: 'DOCLING_OCR_LANG',
-                description: 'Specifies the OCR language(s) to be used with the configured `DOCLING_OCR_ENGINE`.',
-                type: 'Input',
-                defaultValue: 'eng,fra,deu,spa',
-            },
-        ],
-    },
-    {
-        category: 'Retrieval Augmented Generation (RAG)',
-        items: [
-            {
-                name: 'RAG_EMBEDDING_ENGINE',
-                description: 'Selects an embedding engine to use for RAG.',
-                type: 'DropDown',
-                values: ['', 'ollama', 'openai'],
-            },
-            {
-                name: 'RAG_EMBEDDING_MODEL',
-                description: 'Sets a model for embeddings. Locally, a Sentence-Transformer model is used.',
-                type: 'Input',
-                defaultValue: 'sentence-transformers/all-MiniLM-L6-v2',
-            },
-            {
-                name: 'ENABLE_RAG_HYBRID_SEARCH',
-                description: 'Enables the use of ensemble search with `BM25` + `ChromaDB`, with reranking using `sentence_transformers` models.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'RAG_TOP_K',
-                description: 'Sets the default number of results to consider for the embedding when using RAG.',
-                type: 'Input',
-                defaultValue: 3,
-            },
-            {
-                name: 'RAG_TOP_K_RERANKER',
-                description: 'Sets the default number of results to consider for the reranker when using RAG.',
-                type: 'Input',
-                defaultValue: 3,
-            },
-            {
-                name: 'RAG_RELEVANCE_THRESHOLD',
-                description: 'Sets the relevance threshold to consider for documents when used with reranking.',
-                type: 'Input',
-                defaultValue: 0.0,
-            },
-            {
-                name: 'RAG_HYBRID_BM25_WEIGHT',
-                description: 'Sets the weight given to the keyword search (BM25) during hybrid search. 1 means only keyword serach, 0 means only vector search.',
-                type: 'Input',
-                defaultValue: 0.5,
-            },
-            {
-                name: 'RAG_TEMPLATE',
-                description: 'Template to use when injecting RAG documents into chat completion',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_TEXT_SPLITTER',
-                description: 'Sets the text splitter for RAG models.',
-                type: 'DropDown',
-                values: ['character', 'token'],
-                defaultValue: 'character',
-            },
-            {
-                name: 'TIKTOKEN_CACHE_DIR',
-                description: 'Sets the directory for TikToken cache.',
-                type: 'Input',
-                defaultValue: '{CACHE_DIR}/tiktoken',
-            },
-            {
-                name: 'TIKTOKEN_ENCODING_NAME',
-                description: 'Sets the encoding name for TikToken.',
-                type: 'Input',
-                defaultValue: 'cl100k_base',
-            },
-            {
-                name: 'CHUNK_SIZE',
-                description: 'Sets the document chunk size for embeddings.',
-                type: 'Input',
-                defaultValue: 1000,
-            },
-            {
-                name: 'CHUNK_OVERLAP',
-                description: 'Specifies how much overlap there should be between chunks.',
-                type: 'Input',
-                defaultValue: 100,
-            },
-            {
-                name: 'PDF_EXTRACT_IMAGES',
-                description: 'Extracts images from PDFs using OCR when loading documents.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'RAG_FILE_MAX_SIZE',
-                description: 'Sets the maximum size of a file in megabytes that can be uploaded for document ingestion.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_FILE_MAX_COUNT',
-                description: 'Sets the maximum number of files that can be uploaded at once for document ingestion.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_ALLOWED_FILE_EXTENSIONS',
-                description: 'Specifies which file extensions are permitted for upload.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_RERANKING_MODEL',
-                description: 'Sets a model for reranking results. Locally, a Sentence-Transformer model is used.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_OPENAI_API_BASE_URL',
-                description: 'Sets the OpenAI base API URL to use for RAG embeddings.',
-                type: 'Input',
-                defaultValue: '${OPENAI_API_BASE_URL}',
-            },
-            {
-                name: 'RAG_OPENAI_API_KEY',
-                description: 'Sets the OpenAI API key to use for RAG embeddings.',
-                type: 'Input',
-                defaultValue: '${OPENAI_API_KEY}',
-            },
-            {
-                name: 'RAG_EMBEDDING_OPENAI_BATCH_SIZE',
-                description: 'Sets the batch size for OpenAI embeddings.',
-                type: 'Input',
-                defaultValue: 1,
-            },
-            {
-                name: 'RAG_EMBEDDING_BATCH_SIZE',
-                description: 'Sets the batch size for embedding in RAG (Retrieval-Augmented Generator) models.',
-                type: 'Input',
-                defaultValue: 1,
-            },
-            {
-                name: 'RAG_OLLAMA_API_KEY',
-                description: 'Sets the API key for Ollama API used in RAG models.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_OLLAMA_BASE_URL',
-                description: 'Sets the base URL for Ollama API used in RAG models.',
-                type: 'Input',
-            },
-            {
-                name: 'ENABLE_RETRIEVAL_QUERY_GENERATION',
-                description: 'Enables or disables retrieval query generation.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'QUERY_GENERATION_PROMPT_TEMPLATE',
-                description: 'Sets the prompt template for query generation.',
-                type: 'Input',
-            },
-            {
-                name: 'BYPASS_EMBEDDING_AND_RETRIEVAL',
-                description: 'Bypasses the embedding and retrieval process.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'DOCUMENT_INTELLIGENCE_ENDPOINT',
-                description: 'Specifies the endpoint for document intelligence.',
-                type: 'Input',
-            },
-            {
-                name: 'DOCUMENT_INTELLIGENCE_KEY',
-                description: 'Specifies the key for document intelligence.',
-                type: 'Input',
-            },
-            {
-                name: 'ENABLE_RAG_LOCAL_WEB_FETCH',
-                description: 'Enables or disables local web fetch for RAG.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'RAG_EMBEDDING_CONTENT_PREFIX',
-                description: 'Specifies the prefix for the RAG embedding content.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_EMBEDDING_PREFIX_FIELD_NAME',
-                description: 'Specifies the field name for the RAG embedding prefix.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_EMBEDDING_QUERY_PREFIX',
-                description: 'Specifies the prefix for the RAG embedding query.',
-                type: 'Input',
-            },
-            {
-                name: 'RAG_FULL_CONTEXT',
-                description: 'Specifies whether to use the full context for RAG.',
-                type: 'CheckBox',
-            },
-        ],
-        sections: [
-            {
-                section: 'Google Drive',
-                items: [
-                    {
-                        name: 'ENABLE_GOOGLE_DRIVE_INTEGRATION',
-                        description: 'Enables or disables Google Drive integration. If set to true, and `GOOGLE_DRIVE_CLIENT_ID` & `GOOGLE_DRIVE_API_KEY` are both configured, Google Drive will appear as an upload option in the chat UI.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'GOOGLE_DRIVE_CLIENT_ID',
-                        description: 'Sets the client ID for Google Drive (client must be configured with Drive API and Picker API enabled).',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GOOGLE_DRIVE_API_KEY',
-                        description: 'Sets the API key for Google Drive integration.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'OneDrive',
-                items: [
-                    {
-                        name: 'ENABLE_ONEDRIVE_INTEGRATION',
-                        description: 'Enables or disables OneDrive integration.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ONEDRIVE_CLIENT_ID',
-                        description: 'Specifies the client ID for OneDrive integration.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ONEDRIVE_SHAREPOINT_URL',
-                        description: 'Specifies the SharePoint site URL for OneDrive integration e.g. https://companyname.sharepoint.com.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'ONEDRIVE_SHAREPOINT_TENANT_ID',
-                        description: 'Specifies the SharePoint tenant ID for OneDrive integration.',
-                        type: 'Input',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'Web Search',
-        items: [
-            {
-                name: 'ENABLE_WEB_SEARCH',
-                description: 'Enable web search toggle.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'ENABLE_SEARCH_QUERY_GENERATION',
-                description: 'Enables or disables search query generation.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'WEB_SEARCH_TRUST_ENV',
-                description: 'Enables proxy set by `http_proxy` and `https_proxy` during web search content fetching.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'WEB_SEARCH_RESULT_COUNT',
-                description: 'Maximum number of search results to crawl.',
-                type: 'Input',
-                defaultValue: 3,
-            },
-            {
-                name: 'WEB_LOADER_CONCURRENT_REQUESTS',
-                description: 'Specifies the number of concurrent requests used by the web loader to fetch content from web pages returned by search results. This directly impacts how many pages can be crawled simultaneously.',
-                type: 'Input',
-                defaultValue: 10,
-            },
-            {
-                name: 'WEB_SEARCH_ENGINE',
-                description: 'Specifies the search engine to use.',
-                type: 'DropDown',
-                values: [
-                    'searxng',
-                    'google_pse',
-                    'brave',
-                    'kagi',
-                    'mojeek',
-                    'bocha',
-                    'serpstack',
-                    'serper',
-                    'serply',
-                    'searchapi',
-                    'serpapi',
-                    'duckduckgo',
-                    'tavily',
-                    'jina',
-                    'bing',
-                    'exa',
-                    'perplexity',
-                    'sougou',
-                ],
-            },
-            {
-                name: 'BYPASS_WEB_SEARCH_EMBEDDING_AND_RETRIEVAL',
-                description: 'Bypasses the web search embedding and retrieval process.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'SEARXNG_QUERY_URL',
-                description: 'The [SearXNG search API](https://docs.searxng.org/dev/search_api.html) URL supporting JSON output. `<query>` is replaced with the search query. Example: `http://searxng.local/search?q=<query>`',
-                type: 'Input',
-            },
-            {
-                name: 'GOOGLE_PSE_API_KEY',
-                description: 'Sets the API key for the Google Programmable Search Engine (PSE) service.',
-                type: 'Input',
-            },
-            {
-                name: 'GOOGLE_PSE_ENGINE_ID',
-                description: 'The engine ID for the Google Programmable Search Engine (PSE) service.',
-                type: 'Input',
-            },
-            {
-                name: 'BRAVE_SEARCH_API_KEY',
-                description: 'Sets the API key for the Brave Search API.',
-                type: 'Input',
-            },
-            {
-                name: 'KAGI_SEARCH_API_KEY',
-                description: 'Sets the API key for Kagi Search API.',
-                type: 'Input',
-            },
-            {
-                name: 'MOJEEK_SEARCH_API_KEY',
-                description: 'Sets the API key for Mojeek Search API.',
-                type: 'Input',
-            },
-            {
-                name: 'SERPSTACK_API_KEY',
-                description: 'Sets the API key for Serpstack search API.',
-                type: 'Input',
-            },
-            {
-                name: 'SERPSTACK_HTTPS',
-                description: 'Configures the use of HTTPS for Serpstack requests. Free tier requests are restricted to HTTP only.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'SERPER_API_KEY',
-                description: 'Sets the API key for Serper search API.',
-                type: 'Input',
-            },
-            {
-                name: 'SERPLY_API_KEY',
-                description: 'Sets the API key for Serply search API.',
-                type: 'Input',
-            },
-            {
-                name: 'SEARCHAPI_API_KEY',
-                description: 'Sets the API key for SearchAPI.',
-                type: 'Input',
-            },
-            {
-                name: 'SEARCHAPI_ENGINE',
-                description: 'Sets the SearchAPI engine.',
-                type: 'Input',
-            },
-            {
-                name: 'TAVILY_API_KEY',
-                description: 'Sets the API key for Tavily search API.',
-                type: 'Input',
-            },
-            {
-                name: 'JINA_API_KEY',
-                description: 'Sets the API key for Jina.',
-                type: 'Input',
-            },
-            {
-                name: 'BING_SEARCH_V7_ENDPOINT',
-                description: 'Sets the endpoint for Bing Search API.',
-                type: 'Input',
-            },
-            {
-                name: 'BING_SEARCH_V7_SUBSCRIPTION_KEY',
-                description: 'Sets the subscription key for Bing Search API.',
-                type: 'Input',
-                defaultValue: 'https://api.bing.microsoft.com/v7.0/search',
-            },
-            {
-                name: 'BOCHA_SEARCH_API_KEY',
-                description: 'Sets the API key for Bocha Search API.',
-                type: 'Input',
-            },
-            {
-                name: 'EXA_API_KEY',
-                description: 'Sets the API key for Exa search API.',
-                type: 'Input',
-            },
-            {
-                name: 'SERPAPI_API_KEY',
-                description: 'Sets the API key for SerpAPI.',
-                type: 'Input',
-            },
-            {
-                name: 'SERPAPI_ENGINE',
-                description: 'Specifies the search engine to use for SerpAPI.',
-                type: 'Input',
-            },
-            {
-                name: 'SOUGOU_API_SID',
-                description: 'Sets the Sogou API SID.',
-                type: 'Input',
-            },
-            {
-                name: 'SOUGOU_API_SK',
-                description: 'Sets the Sogou API SK.',
-                type: 'Input',
-            },
-            {
-                name: 'TAVILY_EXTRACT_DEPTH',
-                description: 'Specifies the extract depth for Tavily search results.',
-                type: 'Input',
-                defaultValue: 'basic',
-            },
-        ],
-        sections: [
-            {
-                section: 'Web Loader Configuration',
-                items: [
-                    {
-                        name: 'WEB_LOADER_ENGINE',
-                        description: 'Specifies the loader to use for retrieving and processing web content.',
-                        type: 'DropDown',
-                        values: ['requests', 'playwright'],
-                        defaultValue: 'safe_web',
-                    },
-                    {
-                        name: 'PLAYWRIGHT_WS_URL',
-                        description: 'Specifies the WebSocket URI of a remote Playwright browser instance. When set, Open WebUI will use this remote browser instead of installing browser dependencies locally. This is particularly useful in containerized environments where you want to keep the Open WebUI container lightweight and separate browser concerns. Example: `ws://playwright:3000`',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'FIRECRAWL_API_BASE_URL',
-                        description: 'Sets the base URL for Firecrawl API.',
-                        type: 'Input',
-                        defaultValue: 'https://api.firecrawl.dev',
-                    },
-                    {
-                        name: 'FIRECRAWL_API_KEY',
-                        description: 'Sets the API key for Firecrawl API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'PERPLEXITY_API_KEY',
-                        description: 'Sets the API key for Perplexity API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'PLAYWRIGHT_TIMEOUT',
-                        description: 'Specifies the timeout for Playwright requests.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'YouTube Loader',
-                items: [
-                    {
-                        name: 'YOUTUBE_LOADER_PROXY_URL',
-                        description: 'Sets the proxy URL for YouTube loader.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'YOUTUBE_LOADER_LANGUAGE',
-                        description: 'Comma-separated list of language codes to try when fetching YouTube video transcriptions, in priority order.',
-                        type: 'Input',
-                        defaultValue: 'en',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'Audio',
-        sections: [
-            {
-                section: 'Whisper Speech-to-Text (Local)',
-                items: [
-                    {
-                        name: 'WHISPER_MODEL',
-                        description: 'Sets the Whisper model to use for Speech-to-Text. The backend used is faster_whisper with quantization to `int8`.',
-                        type: 'Input',
-                        defaultValue: 'base',
-                    },
-                    {
-                        name: 'WHISPER_MODEL_DIR',
-                        description: 'Specifies the directory to store Whisper model files.',
-                        type: 'Input',
-                        defaultValue: '${DATA_DIR}/cache/whisper/models',
-                    },
-                    {
-                        name: 'WHISPER_VAD_FILTER',
-                        description: 'Specifies whether to apply a Voice Activity Detection (VAD) filter to Whisper Speech-to-Text.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'WHISPER_MODEL_AUTO_UPDATE',
-                        description: 'Toggles automatic update of the Whisper model.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'WHISPER_LANGUAGE',
-                        description: 'Specifies the ISO 639-1 language Whisper uses for STT (ISO 639-2 for Hawaiian and Cantonese). Whisper predicts the language by default.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Speech-to-Text (OpenAI)',
-                items: [
-                    {
-                        name: 'AUDIO_STT_ENGINE',
-                        description: 'Specifies the Speech-to-Text engine to use.',
-                        type: 'DropDown',
-                        values: ['', 'openai', 'deepgram', 'azure'],
-                    },
-                    {
-                        name: 'AUDIO_STT_MODEL',
-                        description: 'Specifies the Speech-to-Text model to use for OpenAI-compatible endpoints.',
-                        type: 'Input',
-                        defaultValue: 'whisper-1',
-                    },
-                    {
-                        name: 'AUDIO_STT_OPENAI_API_BASE_URL',
-                        description: 'Sets the OpenAI-compatible base URL to use for Speech-to-Text.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_BASE_URL}',
-                    },
-                    {
-                        name: 'AUDIO_STT_OPENAI_API_KEY',
-                        description: 'Sets the OpenAI API key to use for Speech-to-Text.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_KEY}',
-                    },
-                ],
-            },
-            {
-                section: 'Speech-to-Text (Azure)',
-                items: [
-                    {
-                        name: 'AUDIO_STT_AZURE_API_KEY',
-                        description: 'Specifies the Azure API key to use for Speech-to-Text.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUDIO_STT_AZURE_REGION',
-                        description: 'Specifies the Azure region to use for Speech-to-Text.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUDIO_STT_AZURE_LOCALES',
-                        description: 'Specifies the locales to use for Azure Speech-to-Text.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Speech-to-Text (Deepgram)',
-                items: [
-                    {
-                        name: 'DEEPGRAM_API_KEY',
-                        description: 'Specifies the Deepgram API key to use for Speech-to-Text.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Text-to-Speech',
-                items: [
-                    {
-                        name: 'AUDIO_TTS_API_KEY',
-                        description: 'Sets the API key for Text-to-Speech.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUDIO_TTS_ENGINE',
-                        description: 'Specifies the Text-to-Speech engine to use.',
-                        type: 'DropDown',
-                        values: ['', 'azure', 'elevenlabs', 'openai', 'transformers'],
-                    },
-                    {
-                        name: 'AUDIO_TTS_MODEL',
-                        description: 'Specifies the OpenAI text-to-speech model to use.',
-                        type: 'Input',
-                        defaultValue: 'tts-1',
-                    },
-                    {
-                        name: 'AUDIO_TTS_VOICE',
-                        description: 'Sets the OpenAI text-to-speech voice to use.',
-                        type: 'Input',
-                        defaultValue: 'alloy',
-                    },
-                    {
-                        name: 'AUDIO_TTS_SPLIT_ON',
-                        description: 'Sets the OpenAI text-to-speech split on to use.',
-                        type: 'Input',
-                        defaultValue: 'punctuation',
-                    },
-                ],
-            },
-            {
-                section: 'Azure Text-to-Speech',
-                items: [
-                    {
-                        name: 'AUDIO_TTS_AZURE_SPEECH_REGION',
-                        description: 'Sets the region for Azure Text to Speech.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT',
-                        description: 'Sets the output format for Azure Text to Speech.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'OpenAI Text-to-Speech',
-                items: [
-                    {
-                        name: 'AUDIO_TTS_OPENAI_API_BASE_URL',
-                        description: 'Sets the OpenAI-compatible base URL to use for text-to-speech.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_BASE_URL}',
-                    },
-                    {
-                        name: 'AUDIO_TTS_OPENAI_API_KEY',
-                        description: 'Sets the API key to use for text-to-speech.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_KEY}',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'Image Generation',
-        sections: [
-            {
-                section: 'General',
-                items: [
-                    {
-                        name: 'ENABLE_IMAGE_GENERATION',
-                        description: 'Enables or disables image generation features.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'IMAGE_GENERATION_ENGINE',
-                        description: 'Specifies the engine to use for image generation.',
-                        type: 'DropDown',
-                        values: ['openai', 'comfyui', 'automatic1111', 'gemini'],
-                        defaultValue: 'openai',
-                    },
-                    {
-                        name: 'ENABLE_IMAGE_PROMPT_GENERATION',
-                        description: 'Enables or disables image prompt generation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'IMAGE_PROMPT_GENERATION_PROMPT_TEMPLATE',
-                        description: 'Specifies the template to use for generating image prompts.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'IMAGE_SIZE',
-                        description: 'Sets the default image size to generate.',
-                        type: 'Input',
-                        defaultValue: '512x512',
-                    },
-                    {
-                        name: 'IMAGE_STEPS',
-                        description: 'Sets the default iteration steps for image generation. Used for ComfyUI and AUTOMATIC1111.',
-                        type: 'Input',
-                        defaultValue: 50,
-                    },
-                    {
-                        name: 'IMAGE_GENERATION_MODEL',
-                        description: 'Default model to use for image generation',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'AUTOMATIC1111',
-                items: [
-                    {
-                        name: 'AUTOMATIC1111_BASE_URL',
-                        description: "Specifies the URL to AUTOMATIC1111's Stable Diffusion API.",
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUTOMATIC1111_API_AUTH',
-                        description: 'Sets the AUTOMATIC1111 API authentication.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUTOMATIC1111_CFG_SCALE',
-                        description: 'Sets the scale for AUTOMATIC1111 inference.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUTOMATIC1111_SAMPLER',
-                        description: 'Sets the sampler for AUTOMATIC1111 inference.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AUTOMATIC1111_SCHEDULER',
-                        description: 'Sets the scheduler for AUTOMATIC1111 inference.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'ComfyUI',
-                items: [
-                    {
-                        name: 'COMFYUI_BASE_URL',
-                        description: 'Specifies the URL to the ComfyUI image generation API.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'COMFYUI_API_KEY',
-                        description: 'Sets the API key for ComfyUI.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'COMFYUI_WORKFLOW',
-                        description: 'Sets the ComfyUI workflow.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Gemini',
-                items: [
-                    {
-                        name: 'GEMINI_API_BASE_URL',
-                        description: "Specifies the URL to Gemini's API.",
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GEMINI_API_KEY',
-                        description: 'Sets the Gemini API key.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'IMAGES_GEMINI_API_BASE_URL',
-                        description: "Specifies the URL to Gemini's image generation API.",
-                        type: 'Input',
-                    },
-                    {
-                        name: 'IMAGES_GEMINI_API_KEY',
-                        description: 'Sets the Gemini API key for image generation.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'OpenAI DALL-E',
-                items: [
-                    {
-                        name: 'IMAGES_OPENAI_API_BASE_URL',
-                        description: 'Sets the OpenAI-compatible base URL to use for DALL-E image generation.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_BASE_URL}',
-                    },
-                    {
-                        name: 'IMAGES_OPENAI_API_KEY',
-                        description: 'Sets the API key to use for DALL-E image generation.',
-                        type: 'Input',
-                        defaultValue: '${OPENAI_API_KEY}',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'OAuth',
-        sections: [
-            {
-                section: 'General',
-                items: [
-                    {
-                        name: 'ENABLE_OAUTH_SIGNUP',
-                        description: 'Enables account creation when signing up via OAuth. Distinct from `ENABLE_SIGNUP`.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_OAUTH_PERSISTENT_CONFIG',
-                        description: 'Controls whether OAuth-related settings are persisted in the database after the first launch.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OAUTH_SUB_CLAIM',
-                        description: "Overrides the default claim used to identify a user's unique ID (`sub`) from the OAuth/OIDC provider's user info response. By default, Open WebUI attempts to infer this from the provider's configuration. This variable allows you to explicitly specify which claim to use. For example, if your identity provider uses 'employee_id' as the unique identifier, you would set this variable to 'employee_id'.",
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OAUTH_MERGE_ACCOUNTS_BY_EMAIL',
-                        description: 'If enabled, merges OAuth accounts with existing accounts using the same email address. This is considered unsafe as not all OAuth providers will verify email addresses and can lead to potential account takeovers.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OAUTH_UPDATE_PICTURE_ON_LOGIN',
-                        description: 'If enabled, updates the local user profile picture with the OAuth-provided picture on login.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'WEBUI_AUTH_TRUSTED_EMAIL_HEADER',
-                        description: 'Defines the trusted request header for authentication. See [SSO docs](/features/sso).',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'WEBUI_AUTH_TRUSTED_NAME_HEADER',
-                        description: 'Defines the trusted request header for the username of anyone registering with the `WEBUI_AUTH_TRUSTED_EMAIL_HEADER` header. See [SSO docs](/features/sso).',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'WEBUI_AUTH_TRUSTED_GROUPS_HEADER',
-                        description: 'Defines the trusted request header containing a comma-separated list of group memberships for the user when using trusted header authentication. See [SSO docs](/features/sso).',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Google',
-                items: [
-                    {
-                        name: 'GOOGLE_CLIENT_ID',
-                        description: 'Sets the client ID for Google OAuth.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GOOGLE_CLIENT_SECRET',
-                        description: 'Sets the client secret for Google OAuth.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GOOGLE_OAUTH_SCOPE',
-                        description: 'Sets the scope for Google OAuth authentication.',
-                        type: 'Input',
-                        defaultValue: 'openid email profile',
-                    },
-                    {
-                        name: 'GOOGLE_REDIRECT_URI',
-                        description: 'Sets the redirect URI for Google OAuth.',
-                        type: 'Input',
-                        defaultValue: '<backend>/oauth/google/callback',
-                    },
-                ],
-            },
-            {
-                section: 'Microsoft',
-                items: [
-                    {
-                        name: 'MICROSOFT_CLIENT_ID',
-                        description: 'Sets the client ID for Microsoft OAuth.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MICROSOFT_CLIENT_SECRET',
-                        description: 'Sets the client secret for Microsoft OAuth.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MICROSOFT_CLIENT_TENANT_ID',
-                        description: 'Sets the tenant ID for Microsoft OAuth.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'MICROSOFT_OAUTH_SCOPE',
-                        description: 'Sets the scope for Microsoft OAuth authentication.',
-                        type: 'Input',
-                        defaultValue: 'openid email profile',
-                    },
-                    {
-                        name: 'MICROSOFT_REDIRECT_URI',
-                        description: 'Sets the redirect URI for Microsoft OAuth.',
-                        type: 'Input',
-                        defaultValue: '<backend>/oauth/microsoft/callback',
-                    },
-                ],
-            },
-            {
-                section: 'GitHub',
-                items: [
-                    {
-                        name: 'GITHUB_CLIENT_ID',
-                        description: 'Sets the client ID for GitHub OAuth.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GITHUB_CLIENT_SECRET',
-                        description: 'Sets the client secret for GitHub OAuth.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GITHUB_CLIENT_SCOPE',
-                        description: 'Specifies the scope for GitHub OAuth authentication.',
-                        type: 'Input',
-                        defaultValue: 'user:email',
-                    },
-                    {
-                        name: 'GITHUB_CLIENT_REDIRECT_URI',
-                        description: 'Sets the redirect URI for GitHub OAuth.',
-                        type: 'Input',
-                        defaultValue: '<backend>/oauth/github/callback',
-                    },
-                ],
-            },
-            {
-                section: 'OpenID (OIDC)',
-                items: [
-                    {
-                        name: 'OAUTH_CLIENT_ID',
-                        description: 'Sets the client ID for OIDC.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OAUTH_CLIENT_SECRET',
-                        description: 'Sets the client secret for OIDC.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OPENID_PROVIDER_URL',
-                        description: 'Path to the `.well-known/openid-configuration` endpoint',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OPENID_REDIRECT_URI',
-                        description: 'Sets the redirect URI for OIDC',
-                        type: 'Input',
-                        defaultValue: '<backend>/oauth/oidc/callback',
-                    },
-                    {
-                        name: 'OAUTH_SCOPES',
-                        description: 'Sets the scope for OIDC authentication. `openid` and `email` are required.',
-                        type: 'Input',
-                        defaultValue: 'openid email profile',
-                    },
-                    {
-                        name: 'OAUTH_CODE_CHALLENGE_METHOD',
-                        description: 'Specifies the code challenge method for OAuth authentication.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OAUTH_PROVIDER_NAME',
-                        description: 'Sets the name for the OIDC provider.',
-                        type: 'Input',
-                        defaultValue: 'SSO',
-                    },
-                    {
-                        name: 'OAUTH_USERNAME_CLAIM',
-                        description: 'Set username claim for OpenID.',
-                        type: 'Input',
-                        defaultValue: 'name',
-                    },
-                    {
-                        name: 'OAUTH_EMAIL_CLAIM',
-                        description: 'Set email claim for OpenID.',
-                        type: 'Input',
-                        defaultValue: 'email',
-                    },
-                    {
-                        name: 'OAUTH_PICTURE_CLAIM',
-                        description: 'Set picture (avatar) claim for OpenID.',
-                        type: 'Input',
-                        defaultValue: 'picture',
-                    },
-                    {
-                        name: 'OAUTH_GROUP_CLAIM',
-                        description: 'Specifies the group claim for OAuth authentication.',
-                        type: 'Input',
-                        defaultValue: 'groups',
-                    },
-                    {
-                        name: 'ENABLE_OAUTH_ROLE_MANAGEMENT',
-                        description: 'Enables role management for OAuth delegation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_OAUTH_GROUP_MANAGEMENT',
-                        description: 'Enables or disables OAuth group management.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OAUTH_ROLES_CLAIM',
-                        description: 'Sets the roles claim to look for in the OIDC token.',
-                        type: 'Input',
-                        defaultValue: 'roles',
-                    },
-                    {
-                        name: 'OAUTH_ALLOWED_ROLES',
-                        description: 'Sets the roles that are allowed access to the platform.',
-                        type: 'Input',
-                        defaultValue: 'user,admin',
-                    },
-                    {
-                        name: 'OAUTH_ADMIN_ROLES',
-                        description: 'Sets the roles that are considered administrators.',
-                        type: 'Input',
-                        defaultValue: 'admin',
-                    },
-                    {
-                        name: 'OAUTH_ALLOWED_DOMAINS',
-                        description: 'Specifies the allowed domains for OAuth authentication. (e.g. "example1.com,example2.com").',
-                        type: 'Input',
-                        defaultValue: '*',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'LDAP',
-        items: [
-            {
-                name: 'ENABLE_LDAP',
-                description: 'Enables or disables LDAP authentication.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'LDAP_SERVER_LABEL',
-                description: 'Sets the label of the LDAP server.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_SERVER_HOST',
-                description: 'Sets the hostname of the LDAP server.',
-                type: 'Input',
-                defaultValue: 'localhost',
-            },
-            {
-                name: 'LDAP_SERVER_PORT',
-                description: 'Sets the port number of the LDAP server.',
-                type: 'Input',
-                defaultValue: 389,
-            },
-            {
-                name: 'LDAP_ATTRIBUTE_FOR_MAIL',
-                description: 'Sets the attribute to use as mail for LDAP authentication.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_ATTRIBUTE_FOR_USERNAME',
-                description: 'Sets the attribute to use as a username for LDAP authentication.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_APP_DN',
-                description: 'Sets the distinguished name for the LDAP application.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_APP_PASSWORD',
-                description: 'Sets the password for the LDAP application.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_SEARCH_BASE',
-                description: 'Sets the base to search for LDAP authentication.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_SEARCH_FILTER',
-                description: 'Sets a single filter to use for LDAP search. Alternative to `LDAP_SEARCH_FILTERS`.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_SEARCH_FILTERS',
-                description: 'Sets the filter to use for LDAP search.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_USE_TLS',
-                description: 'Enables or disables TLS for LDAP connection.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'LDAP_CA_CERT_FILE',
-                description: 'Sets the path to the LDAP CA certificate file.',
-                type: 'Input',
-            },
-            {
-                name: 'LDAP_VALIDATE_CERT',
-                description: 'Sets whether to validate the LDAP CA certificate.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'LDAP_CIPHERS',
-                description: 'Sets the ciphers to use for LDAP connection.',
-                type: 'Input',
-                defaultValue: 'ALL',
-            },
-            {
-                name: 'ENABLE_LDAP_GROUP_MANAGEMENT',
-                description: 'Enables the group management feature.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'ENABLE_LDAP_GROUP_CREATION',
-                description: 'If a group from LDAP does not exist in Open WebUI, it will be created automatically.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'LDAP_ATTRIBUTE_FOR_GROUPS',
-                description: "Specifies the LDAP attribute that contains the user's group memberships. `memberOf` is a standard attribute for this purpose in Active Directory environments.",
-                type: 'Input',
-                defaultValue: 'memberOf',
-            },
-        ],
-    },
-    {
-        category: 'SCIM',
-        items: [
-            {
-                name: 'SCIM_ENABLED',
-                description: 'Enables or disables SCIM 2.0 (System for Cross-domain Identity Management) support for automated user and group provisioning from identity providers like Okta, Azure AD, and Google Workspace.',
-                type: 'CheckBox',
-            },
-            {
-                name: 'SCIM_TOKEN',
-                description: 'Sets the bearer token for SCIM authentication. This token must be provided by identity providers when making SCIM API requests. Generate a secure random token (e.g., using `openssl rand -base64 32`) and configure it in both Open WebUI and your identity provider.',
-                type: 'Input',
-            },
-        ],
-    },
-    {
-        category: 'User Permissions',
-        sections: [
-            {
-                section: 'Chat Permissions',
-                items: [
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_CONTROLS',
-                        description: 'Acts as a master switch to enable or disable the main "Controls" button and panel in the chat interface. **If this is set to False, users will not see the Controls button, and the granular permissions below will have no effect**.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_VALVES',
-                        description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Valves" section within the chat controls panel.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_SYSTEM_PROMPT',
-                        description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the customizable "System Prompt" section within the chat controls panel, folders and the user settings.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_PARAMS',
-                        description: 'When `USER_PERMISSIONS_CHAT_CONTROLS` is enabled, this setting specifically controls the visibility of the "Advanced Parameters" section within the chat controls panel.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_FILE_UPLOAD',
-                        description: 'Enables or disables user permission to upload files to chats.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_DELETE',
-                        description: 'Enables or disables user permission to delete chats.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_EDIT',
-                        description: 'Enables or disables user permission to edit chats.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_DELETE_MESSAGE',
-                        description: 'Enables or disables user permission to delete individual messages within chats. This provides granular control over message deletion capabilities separate from full chat deletion.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_CONTINUE_RESPONSE',
-                        description: 'Enables or disables user permission to continue AI responses. When disabled, users cannot use the "Continue Response" button, which helps prevent potential system prompt leakage through response continuation manipulation.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_REGENERATE_RESPONSE',
-                        description: 'Enables or disables user permission to regenerate AI responses. Controls access to both the standard regenerate button and the guided regeneration menu.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_RATE_RESPONSE',
-                        description: 'Enables or disables user permission to rate AI responses using the thumbs up/down feedback system. This controls access to the response rating functionality for evaluation and feedback collection.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_STT',
-                        description: 'Enables or disables user permission to use Speech-to-Text in chats.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_TTS',
-                        description: 'Enables or disables user permission to use Text-to-Speech in chats.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_CALL',
-                        description: 'Enables or disables user permission to make calls in chats.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_MULTIPLE_MODELS',
-                        description: 'Enables or disables user permission to use multiple models in chats.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_TEMPORARY',
-                        description: 'Enables or disables user permission to create temporary chats.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_CHAT_TEMPORARY_ENFORCED',
-                        description: 'Enables or disables enforced temporary chats for users.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Feature Permissions',
-                items: [
-                    {
-                        name: 'USER_PERMISSIONS_FEATURES_DIRECT_TOOL_SERVERS',
-                        description: 'Enables or disables user permission to access direct tool servers.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_FEATURES_WEB_SEARCH',
-                        description: 'Enables or disables user permission to use the web search feature.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_FEATURES_IMAGE_GENERATION',
-                        description: 'Enables or disables user permission to use the image generation feature.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_FEATURES_CODE_INTERPRETER',
-                        description: 'Enables or disables user permission to use code interpreter feature.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Workspace Permissions',
-                items: [
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ACCESS',
-                        description: 'Enables or disables user permission to access workspace models.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ACCESS',
-                        description: 'Enables or disables user permission to access workspace knowledge.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ACCESS',
-                        description: 'Enables or disables user permission to access workspace prompts.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ACCESS',
-                        description: 'Enables or disables user permission to access workspace tools.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_MODELS_ALLOW_PUBLIC_SHARING',
-                        description: 'Enables or disables public sharing of workspace models.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_KNOWLEDGE_ALLOW_PUBLIC_SHARING',
-                        description: 'Enables or disables public sharing of workspace knowledge.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_PROMPTS_ALLOW_PUBLIC_SHARING',
-                        description: 'Enables or disables public sharing of workspace prompts.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'USER_PERMISSIONS_WORKSPACE_TOOLS_ALLOW_PUBLIC_SHARING',
-                        description: 'Enables or disables public sharing of workspace tools.',
-                        type: 'Input',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        category: 'Misc Environment Variables',
-        sections: [
-            {
-                section: 'Cloud Storage',
-                items: [
-                    {
-                        name: 'STORAGE_PROVIDER',
-                        description: 'Sets the storage provider.',
-                        type: 'DropDown',
-                        values: ['s3', 'gcs', 'azure'],
-                    },
-                ],
-            },
-            {
-                section: 'Amazon S3 Storage',
-                items: [
-                    {
-                        name: 'S3_ACCESS_KEY_ID',
-                        description: 'Sets the access key ID for S3 storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_ADDRESSING_STYLE',
-                        description: "Specifies the addressing style to use for S3 storage (e.g., 'path', 'virtual').",
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_BUCKET_NAME',
-                        description: 'Sets the bucket name for S3 storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_ENDPOINT_URL',
-                        description: 'Sets the endpoint URL for S3 storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_KEY_PREFIX',
-                        description: 'Sets the key prefix for a S3 object.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_REGION_NAME',
-                        description: 'Sets the region name for S3 storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_SECRET_ACCESS_KEY',
-                        description: 'Sets the secret access key for S3 storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'S3_USE_ACCELERATE_ENDPOINT',
-                        description: 'Specifies whether to use the accelerated endpoint for S3 storage.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'S3_ENABLE_TAGGING',
-                        description: 'Enables S3 object tagging after uploads for better organization, searching, and integration with file management policies. Always set to `False` when using Cloudflare R2, as R2 does not support object tagging.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Google Cloud Storage',
-                items: [
-                    {
-                        name: 'GOOGLE_APPLICATION_CREDENTIALS_JSON',
-                        description: 'Contents of Google Application Credentials JSON file.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'GCS_BUCKET_NAME',
-                        description: 'Sets the bucket name for Google Cloud Storage. Bucket must already exist.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Microsoft Azure Storage',
-                items: [
-                    {
-                        name: 'AZURE_STORAGE_ENDPOINT',
-                        description: 'Sets the endpoint URL for Azure Storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AZURE_STORAGE_CONTAINER_NAME',
-                        description: 'Sets the container name for Azure Storage.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'AZURE_STORAGE_KEY',
-                        description: 'Set the access key for Azure Storage.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'OpenTelemetry Configuration',
-                items: [
-                    {
-                        name: 'ENABLE_OTEL',
-                        description: 'Enables or disables OpenTelemetry for observability. When enabled, tracing, metrics, and logging data can be collected and exported to an OTLP endpoint.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_OTEL_METRICS',
-                        description: 'Enables or disables OpenTelemetry metrics collection and export. This variable works in conjunction with `ENABLE_OTEL`.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'ENABLE_OTEL_LOGS',
-                        description: 'Enables or disables OpenTelemetry logging export. When enabled, application logs are sent to the configured OTLP endpoint. This variable works in conjunction with `ENABLE_OTEL`.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OTEL_EXPORTER_OTLP_ENDPOINT',
-                        description: 'Specifies the default OTLP (OpenTelemetry Protocol) endpoint for exporting traces, metrics, and logs. This can be overridden for metrics if `OTEL_METRICS_EXPORTER_OTLP_ENDPOINT` is set, and for logs if `OTEL_LOGS_EXPORTER_OTLP_ENDPOINT` is set.',
-                        type: 'Input',
-                        defaultValue: 'http://localhost:4317',
-                    },
-                    {
-                        name: 'OTEL_METRICS_EXPORTER_OTLP_ENDPOINT',
-                        description: 'Specifies the dedicated OTLP endpoint for exporting OpenTelemetry metrics. If not set, it defaults to the value of `OTEL_EXPORTER_OTLP_ENDPOINT`. This is useful when separate endpoints for traces and metrics are used.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_LOGS_EXPORTER_OTLP_ENDPOINT',
-                        description: 'Specifies the dedicated OTLP endpoint for exporting OpenTelemetry logs. If not set, it defaults to the value of `OTEL_EXPORTER_OTLP_ENDPOINT`. This is useful when separate endpoints for logs, traces, and metrics are used.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_EXPORTER_OTLP_INSECURE',
-                        description: 'If set to `True`, the OTLP exporter will use an insecure connection (e.g., HTTP for gRPC) for traces. For metrics, its behavior is governed by `OTEL_METRICS_EXPORTER_OTLP_INSECURE`, and for logs by `OTEL_LOGS_EXPORTER_OTLP_INSECURE`.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OTEL_METRICS_EXPORTER_OTLP_INSECURE',
-                        description: 'If set to `True`, the OTLP exporter will use an insecure connection for metrics. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OTEL_LOGS_EXPORTER_OTLP_INSECURE',
-                        description: 'If set to `True`, the OTLP exporter will use an insecure connection for logs. If not specified, it uses the value of `OTEL_EXPORTER_OTLP_INSECURE`.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'OTEL_SERVICE_NAME',
-                        description: 'Sets the service name that will be reported to your OpenTelemetry collector or observability platform. This helps identify your Open WebUI instance.',
-                        type: 'Input',
-                        defaultValue: 'open-webui',
-                    },
-                    {
-                        name: 'OTEL_RESOURCE_ATTRIBUTES',
-                        description: 'Allows you to define additional resource attributes to be attached to all telemetry data, in a comma-separated `key1=val1,key2=val2` format.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_TRACES_SAMPLER',
-                        description: 'Configures the sampling strategy for OpenTelemetry traces. This determines which traces are collected and exported to reduce data volume.',
-                        type: 'Input',
-                        defaultValue: 'parentbased_always_on',
-                    },
-                    {
-                        name: 'OTEL_BASIC_AUTH_USERNAME',
-                        description: 'Sets the username for basic authentication with the default OTLP endpoint. This applies to traces, and by default, to metrics and logs unless overridden by their specific authentication variables.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_BASIC_AUTH_PASSWORD',
-                        description: 'Sets the password for basic authentication with the default OTLP endpoint. This applies to traces, and by default, to metrics and logs unless overridden by their specific authentication variables.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_METRICS_BASIC_AUTH_USERNAME',
-                        description: 'Sets the username for basic authentication specifically for the OTLP metrics endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_USERNAME`.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_METRICS_BASIC_AUTH_PASSWORD',
-                        description: 'Sets the password for basic authentication specifically for the OTLP metrics endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_PASSWORD`.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_LOGS_BASIC_AUTH_USERNAME',
-                        description: 'Sets the username for basic authentication specifically for the OTLP logs endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_USERNAME`.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_LOGS_BASIC_AUTH_PASSWORD',
-                        description: 'Sets the password for basic authentication specifically for the OTLP logs endpoint. If not specified, it uses the value of `OTEL_BASIC_AUTH_PASSWORD`.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'OTEL_OTLP_SPAN_EXPORTER',
-                        description: 'Specifies the default protocol for exporting OpenTelemetry traces (gRPC or HTTP). This can be overridden for metrics if `OTEL_METRICS_OTLP_SPAN_EXPORTER` is set, and for logs if `OTEL_LOGS_OTLP_SPAN_EXPORTER` is set.',
-                        type: 'DropDown',
-                        values: ['grpc', 'http'],
-                        defaultValue: 'grpc',
-                    },
-                    {
-                        name: 'OTEL_METRICS_OTLP_SPAN_EXPORTER',
-                        description: 'Specifies the protocol for exporting OpenTelemetry metrics (gRPC or HTTP). If not specified, it uses the value of `OTEL_OTLP_SPAN_EXPORTER`.',
-                        type: 'DropDown',
-                        values: ['grpc', 'http'],
-                    },
-                    {
-                        name: 'OTEL_LOGS_OTLP_SPAN_EXPORTER',
-                        description: 'Specifies the protocol for exporting OpenTelemetry logs (gRPC or HTTP). If not specified, it uses the value of `OTEL_OTLP_SPAN_EXPORTER`.',
-                        type: 'DropDown',
-                        values: ['grpc', 'http'],
-                    },
-                ],
-            },
-            {
-                section: 'Database Pool',
-                items: [
-                    {
-                        name: 'DATABASE_URL',
-                        description: 'Specifies the database URL to connect to.',
-                        type: 'Input',
-                        defaultValue: 'sqlite:///${DATA_DIR}/webui.db',
-                    },
-                    {
-                        name: 'DATABASE_SCHEMA',
-                        description: 'Specifies the database schema to connect to.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'DATABASE_POOL_SIZE',
-                        description: 'Specifies the pooling strategy and size of the database pool.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'DATABASE_POOL_MAX_OVERFLOW',
-                        description: 'Specifies the database pool max overflow.',
-                        type: 'Input',
-                        defaultValue: 0,
-                    },
-                    {
-                        name: 'DATABASE_POOL_TIMEOUT',
-                        description: 'Specifies the database pool timeout in seconds to get a connection.',
-                        type: 'Input',
-                        defaultValue: 30,
-                    },
-                    {
-                        name: 'DATABASE_POOL_RECYCLE',
-                        description: 'Specifies the database pool recycle time in seconds.',
-                        type: 'Input',
-                        defaultValue: 3600,
-                    },
-                    {
-                        name: 'DATABASE_ENABLE_SQLITE_WAL',
-                        description: 'Enables or disables SQLite WAL (Write-Ahead Logging) mode. When enabled, SQLite transactions can be managed more efficiently, allowing multiple readers and one writer concurrently, which can improve database performance, especially under high concurrency. **This setting only applies to SQLite databases.**',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'DATABASE_DEDUPLICATE_INTERVAL',
-                        description: "Sets a time interval in seconds during which certain database write operations (e.g., updating a user's `last_active_at` timestamp) will be deduplicated. If a write operation is attempted within this interval for the same entity, it will be skipped. A value of `0.0` disables deduplication. Enabling this can reduce write conflicts and improve performance, but may result in less real-time accuracy for the affected fields.",
-                        type: 'Input',
-                        defaultValue: 0.0,
-                    },
-                ],
-            },
-            {
-                section: 'Redis',
-                items: [
-                    {
-                        name: 'REDIS_URL',
-                        description: 'Specifies the URL of the Redis instance or cluster host for storing application state.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'REDIS_SENTINEL_HOSTS',
-                        description: 'Comma-separated list of Redis Sentinels for app state. If specified, the "hostname" in `REDIS_URL` will be interpreted as the Sentinel service name.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'REDIS_SENTINEL_PORT',
-                        description: 'Sentinel port for app state Redis.',
-                        type: 'Input',
-                        defaultValue: 26379,
-                    },
-                    {
-                        name: 'REDIS_CLUSTER',
-                        description: 'Connect to a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `REDIS_URL` must also be defined.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'REDIS_KEY_PREFIX',
-                        description: 'Customizes the Redis key prefix used for storing configuration values. This allows multiple Open WebUI instances to share the same Redis instance without key conflicts. When operating in Redis cluster mode, the prefix is formatted as `{prefix}:` (e.g., `{open-webui}:config:*`) to enable multi-key operations on configuration keys within the same hash slot.',
-                        type: 'Input',
-                        defaultValue: 'open-webui',
-                    },
-                    {
-                        name: 'ENABLE_WEBSOCKET_SUPPORT',
-                        description: 'Enables websocket support in Open WebUI.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: 'WEBSOCKET_MANAGER',
-                        description: 'Specifies the websocket manager to use (in this case, Redis).',
-                        type: 'Input',
-                        defaultValue: 'redis',
-                    },
-                    {
-                        name: 'WEBSOCKET_REDIS_URL',
-                        description: 'Specifies the URL of the Redis instance or cluster host for websocket communication. It is distinct from `REDIS_URL` and in practice, it is recommended to set both.',
-                        type: 'Input',
-                        defaultValue: '${REDIS_URL}',
-                    },
-                    {
-                        name: 'WEBSOCKET_SENTINEL_HOSTS',
-                        description: 'Comma-separated list of Redis Sentinels for websocket. If specified, the "hostname" in `WEBSOCKET_REDIS_URL` will be interpreted as the Sentinel service name.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'WEBSOCKET_SENTINEL_PORT',
-                        description: 'Sentinel port for websocket Redis.',
-                        type: 'Input',
-                        defaultValue: 26379,
-                    },
-                    {
-                        name: 'WEBSOCKET_REDIS_CLUSTER',
-                        description: 'Specifies that websocket should communicate with a Redis Cluster instead of a single instance or using Redis Sentinels. If `True`, `WEBSOCKET_REDIS_URL` and/or `REDIS_URL` must also be defined.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Uvicorn Settings',
-                items: [
-                    {
-                        name: 'UVICORN_WORKERS',
-                        description: 'Controls the number of worker processes that Uvicorn spawns to handle requests. Each worker runs its own instance of the application in a separate process.',
-                        type: 'Input',
-                        defaultValue: 1,
-                    },
-                ],
-            },
-            {
-                section: 'Cache Settings',
-                items: [
-                    {
-                        name: 'CACHE_CONTROL',
-                        description: 'Sets the Cache-Control header for all HTTP responses. Supports standard directives like `public`, `private`, `no-cache`, `no-store`, `must-revalidate`, `max-age=seconds`, etc. If an invalid value is provided, defaults to `"no-store, max-age=0"` (no caching).',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Proxy Settings',
-                items: [
-                    {
-                        name: 'http_proxy',
-                        description: 'Sets the URL for the HTTP proxy.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'https_proxy',
-                        description: 'Sets the URL for the HTTPS proxy.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'no_proxy',
-                        description: 'Lists domain extensions (or IP addresses) for which the proxy should not be used, separated by commas.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Install Required Python Packages',
-                items: [
-                    {
-                        name: 'PIP_OPTIONS',
-                        description: 'Specifies additional command-line options that pip should use when installing packages. For example, you can include flags such as `--upgrade`, `--user`, or `--no-cache-dir` to control the installation process.',
-                        type: 'Input',
-                    },
-                    {
-                        name: 'PIP_PACKAGE_INDEX_OPTIONS',
-                        description: 'Defines custom package index behavior for pip. This can include specifying additional or alternate index URLs (e.g., `--extra-index-url`), authentication credentials, or other parameters to manage how packages are retrieved from different locations.',
-                        type: 'Input',
-                    },
-                ],
-            },
-        ],
-    },
+    appBackend,
+    securityVariables,
+    vectorDatabase,
+    ragCEE,
+    retrievalAGR,
+    webSearch,
+    audio,
+    imageGeneration,
+    oauth,
+    idap,
+    scim,
+    userPermissions,
+    miscEnv,
 ];
 
 /* eslint max-len: 0 */
@@ -22111,7 +23392,7 @@ function parseArgsToFiles$1(args) {
     }
     return { scriptData: scriptString, settingsData: settingsString };
 }
-function parseArgsToString$d(args) {
+function parseArgsToString$f(args) {
     const { settingsData, scriptData } = parseArgsToFiles$1(args);
     let envString = `-------------Script File Preview (${isWin ? '.bat' : '.sh'})-------------\n`;
     if (!lodashExports.isEmpty(scriptData)) {
@@ -22131,7 +23412,7 @@ function parseArgsToString$d(args) {
 }
 function parseFilesToArgs$1(scriptContent, settingsContent) {
     // 1. Parse the script content by reusing the existing function
-    const scriptArgs = parseStringToArgs$d(scriptContent);
+    const scriptArgs = parseStringToArgs$f(scriptContent);
     // 2. Parse the settings content (json)
     const settingsArgs = [];
     // 3. Combine args, with settings overriding script args for any duplicates
@@ -22140,7 +23421,7 @@ function parseFilesToArgs$1(scriptContent, settingsContent) {
     settingsArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
     return Array.from(combinedArgs, ([name, value]) => ({ name, value }));
 }
-function parseStringToArgs$d(args) {
+function parseStringToArgs$f(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -22190,7 +23471,7 @@ function parseStringToArgs$d(args) {
     });
     return argResult;
 }
-function startInstall$c(stepper) {
+function startInstall$e(stepper) {
     stepper.initialSteps(['Getting Started', 'NodeJS', 'Detect Existing', 'Gemini Cli', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -22235,7 +23516,7 @@ function startUpdate$3(stepper) {
         stepper.showFinalStep('success', 'Gemini Cli Updated Successfully!', `Gemini Cli has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$c(api, callback) {
+async function cardInfo$e(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -22262,10 +23543,10 @@ async function cardInfo$c(api, callback) {
     });
 }
 const GeminiCli_RM = {
-    cardInfo: cardInfo$c,
-    parseStringToArgs: parseStringToArgs$d,
-    parseArgsToString: parseArgsToString$d,
-    manager: { startInstall: startInstall$c, updater: { updateType: 'stepper', startUpdate: startUpdate$3 } },
+    cardInfo: cardInfo$e,
+    parseStringToArgs: parseStringToArgs$f,
+    parseArgsToString: parseArgsToString$f,
+    manager: { startInstall: startInstall$e, updater: { updateType: 'stepper', startUpdate: startUpdate$3 } },
 };
 
 /* eslint max-len: 0 */
@@ -22274,6 +23555,16 @@ const n8nArguments = [
     {
         category: 'Environment Variables',
         sections: [
+            {
+                section: 'AI Assistant',
+                items: [
+                    {
+                        name: 'N8N_AI_ASSISTANT_BASE_URL',
+                        type: 'Input',
+                        description: 'Base URL of the AI assistant service, specified as `https://ai-assistant.n8n.io`. Required if you self-host n8n and want to enable the AI Assistant.',
+                    },
+                ],
+            },
             {
                 section: 'Nodes',
                 items: [
@@ -22332,7 +23623,8 @@ const n8nArguments = [
                     {
                         name: 'NODES_EXCLUDE',
                         type: 'Input',
-                        description: 'Specify which nodes not to load. For example, to block nodes that can be a security risk if users aren\'t trustworthy: NODES_EXCLUDE: "["n8n-nodes-base.executeCommand", "@n8n/n8n-nodes-langchain.lmChatDeepSeek"]"',
+                        defaultValue: '["n8n-nodes-base.executeCommand", "n8n-nodes-base.localFileTrigger"]',
+                        description: 'Specify which nodes not to load. For example, to block nodes that can be a security risk if users aren\'t trustworthy: NODES_EXCLUDE: "["n8n-nodes-base.executeCommand", "@n8n/n8n-nodes-langchain.lmChatDeepSeek"]". To enable all nodes, specify NODES_EXCLUDE: "[]".',
                     },
                     { name: 'NODES_INCLUDE', type: 'Input', description: 'Specify which nodes to load.' },
                 ],
@@ -22360,10 +23652,16 @@ const n8nArguments = [
                         type: 'Input',
                         description: 'Sender email address. You can optionally include the sender name. Example with name: N8N <contact@n8n.com>',
                     },
-                    { name: 'N8N_SMTP_SSL', type: 'CheckBox', description: 'Whether to use SSL for SMTP (true) or not (false).' },
+                    {
+                        name: 'N8N_SMTP_SSL',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                        description: 'Whether to use SSL for SMTP (true) or not (false).',
+                    },
                     {
                         name: 'N8N_SMTP_STARTTLS',
                         type: 'CheckBox',
+                        defaultValue: true,
                         description: 'Whether to use STARTTLS for SMTP (true) or not (false).',
                     },
                     {
@@ -22411,7 +23709,13 @@ const n8nArguments = [
                     {
                         name: 'N8N_MFA_ENABLED',
                         type: 'CheckBox',
+                        defaultValue: true,
                         description: 'Whether to enable two-factor authentication (true) or disable (false). n8n ignores this if existing users have 2FA enabled.',
+                    },
+                    {
+                        name: 'N8N_INVITE_LINKS_EMAIL_ONLY',
+                        type: 'CheckBox',
+                        description: 'When set to true, n8n will only deliver invite links via email and will not expose them through the API. This option enhances security by preventing invite URLs from being accessible programmatically, or to high privileged users.',
                     },
                 ],
             },
@@ -22427,7 +23731,7 @@ const n8nArguments = [
                         name: 'N8N_WORKFLOW_ACTIVATION_BATCH_SIZE',
                         type: 'Input',
                         defaultValue: 1,
-                        description: 'How many workflows to activate simultaneously during startup.',
+                        description: 'How many workflows to publish simultaneously during startup.',
                     },
                     {
                         name: 'N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION',
@@ -22445,6 +23749,17 @@ const n8nArguments = [
                         type: 'Input',
                         defaultValue: 'My workflow',
                         description: 'The default name used for new workflows.',
+                    },
+                ],
+            },
+            {
+                section: 'Workflow History',
+                items: [
+                    {
+                        name: 'N8N_WORKFLOW_HISTORY_PRUNE_TIME',
+                        type: 'Input',
+                        defaultValue: -1,
+                        description: 'How long to keep workflow history versions before automatically deleting them (in hours). Set to `-1` to keep all versions indefinitely.',
                     },
                 ],
             },
@@ -22497,19 +23812,25 @@ const n8nArguments = [
                     {
                         name: 'N8N_RUNNERS_TASK_TIMEOUT',
                         type: 'Input',
-                        defaultValue: 60,
-                        description: 'How long (in seconds) a task can take to complete before the task aborts and the runner restarts. Must be greater than 0.',
+                        defaultValue: 300,
+                        description: 'The maximum time, in seconds, a task can run before the runner stops it and restarts. This value must be greater than 0.',
                     },
                     {
                         name: 'N8N_RUNNERS_HEARTBEAT_INTERVAL',
                         type: 'Input',
                         defaultValue: 30,
-                        description: 'How often (in seconds) the runner must send a heartbeat to the broker, else the task aborts and the runner restarts. Must be greater than 0.',
+                        description: "The interval, in seconds, at which the runner must send a heartbeat to the broker. If the runner doesn't send a heartbeat in time, the task stops and the runner restarts. This value must be greater than 0.",
                     },
                     {
                         name: 'N8N_RUNNERS_INSECURE_MODE',
                         type: 'CheckBox',
                         description: 'Whether to disable all security measures in the task runner, for compatibility with modules that rely on insecure JS features. **Discouraged for production use.**',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_TASK_REQUEST_TIMEOUT',
+                        type: 'Input',
+                        defaultValue: 20,
+                        description: 'How long (in seconds) a task request can wait for a runner to become available before timing out. This prevents workflows from hanging indefinitely when no runners are available. Must be greater than 0.',
                     },
                     {
                         name: 'N8N_RUNNERS_LAUNCHER_LOG_LEVEL',
@@ -22547,6 +23868,28 @@ const n8nArguments = [
                         name: 'N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION',
                         type: 'CheckBox',
                         description: 'Whether to allow prototype mutation for external libraries. Set to `true` to allow modules that rely on runtime prototype mutation (for example, `puppeteer`) at the cost of relaxing security.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_STDLIB_ALLOW',
+                        type: 'Input',
+                        description: 'Python standard library modules that you can use in the Code node, including their submodules. Use `*` to allow all stdlib modules. n8n disables all Python standard library imports by default.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_EXTERNAL_ALLOW',
+                        type: 'Input',
+                        description: 'Third-party Python modules that are allowed to be used in the Code node, including their submodules. Use `*` to allow all external modules. n8n disables all third-party Python modules by default. Third-party Python modules must be included in the `n8nio/runners` image.',
+                    },
+                    {
+                        name: 'N8N_RUNNERS_BUILTINS_DENY',
+                        type: 'Input',
+                        defaultValue: 'eval,exec,compile,open,input,breakpoint,getattr,object,type,vars,setattr,delattr,hasattr,dir,memoryview,__build_class__,globals,locals',
+                        description: "Python built-ins that you can't use in the Code node. Set to an empty string to allow all built-ins.",
+                    },
+                    {
+                        name: 'N8N_BLOCK_RUNNER_ENV_ACCESS',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                        description: "Whether to block access to the runner's environment from within Python code tasks. Set to `false` to enable all Python code node users access to the runner's environment via `os.environ`. For security reasons, environment variable access is blocked by default.",
                     },
                     {
                         name: 'GENERIC_TIMEZONE',
@@ -22621,7 +23964,7 @@ const n8nArguments = [
                     {
                         name: 'CODE_ENABLE_STDOUT',
                         type: 'CheckBox',
-                        description: "Set to `true` to send Code node logs to process's stdout for debugging, monitoring, or logging purposes.",
+                        description: "Set to `true` to send Code node logs from `console.log` or `print` to the process's stdout, only for production executions.",
                     },
                     {
                         name: 'NO_COLOR',
@@ -22844,7 +24187,22 @@ const n8nArguments = [
                     {
                         name: 'N8N_RESTRICT_FILE_ACCESS_TO',
                         type: 'Input',
-                        description: 'Limits access to files in these directories. Provide multiple files as a colon-separated list (":").',
+                        description: 'Limits access to files in these directories. Provide multiple files as a semicolon-separated list (";").',
+                    },
+                    {
+                        name: 'N8N_CONTENT_SECURITY_POLICY',
+                        type: 'Input',
+                        description: 'Set Content-Security-Policy headers as helmet.js nested directives object. For example, `{ "frame-ancestors": ["http://localhost:3000"] }`',
+                    },
+                    {
+                        name: 'N8N_GIT_NODE_DISABLE_BARE_REPOS',
+                        type: 'CheckBox',
+                        description: 'Set to `true` to prevent the Git node from working with bare repositories, enhancing security.',
+                    },
+                    {
+                        name: 'N8N_GIT_NODE_ENABLE_HOOKS',
+                        type: 'CheckBox',
+                        description: 'Set to `true` to allow the Git node to execute Git hooks.',
                     },
                     {
                         name: 'N8N_SECURITY_AUDIT_DAYS_ABANDONED_WORKFLOW',
@@ -22930,6 +24288,7 @@ const n8nArguments = [
                     {
                         name: 'N8N_TEMPLATES_ENABLED',
                         type: 'CheckBox',
+                        defaultValue: false,
                         description: 'Enables workflow templates (true) or disable (false).',
                     },
                     {
@@ -23164,6 +24523,12 @@ const n8nArguments = [
                         description: 'The maximum execution time (in seconds) that users can set for an individual workflow.',
                     },
                     {
+                        name: 'N8N_AI_TIMEOUT_MAX',
+                        type: 'Input',
+                        defaultValue: 3600000,
+                        description: 'Sets the HTTP request timeout in milliseconds for AI and LLM nodes (such as OpenAI, Anthropic, Mistral, and Ollama). This controls how long n8n waits for responses from AI services before timing out. Useful for slower local AI services or complex prompts that require longer processing time.',
+                    },
+                    {
                         name: 'EXECUTIONS_DATA_SAVE_ON_ERROR',
                         type: 'DropDown',
                         defaultValue: 'all',
@@ -23228,6 +24593,17 @@ const n8nArguments = [
                         defaultValue: -1,
                         description: 'Max production executions allowed to run concurrently, in both regular and scaling modes. -1 to disable in regular mode.',
                     },
+                    {
+                        name: 'N8N_WORKFLOW_AUTODEACTIVATION_ENABLED',
+                        type: 'CheckBox',
+                        description: 'Whether workflows are automatically unpublished after repeated crashed executions.',
+                    },
+                    {
+                        name: 'N8N_WORKFLOW_AUTODEACTIVATION_MAX_LAST_EXECUTIONS',
+                        type: 'Input',
+                        defaultValue: 3,
+                        description: 'Number of crashed executions before unpublishing a workflow.',
+                    },
                 ],
             },
             {
@@ -23238,6 +24614,11 @@ const n8nArguments = [
                         name: 'CREDENTIALS_OVERWRITE_ENDPOINT',
                         type: 'Input',
                         description: 'The API endpoint to fetch credentials.',
+                    },
+                    {
+                        name: 'CREDENTIALS_OVERWRITE_PERSISTENCE',
+                        type: 'CheckBox',
+                        description: 'Enable database persistence for credential overwrites. Required for multiinstance or queue mode to propagate overwrites to workers through a publish/subscribe approach.',
                     },
                     {
                         name: 'CREDENTIALS_DEFAULT_NAME',
@@ -23312,7 +24693,7 @@ const n8nArguments = [
                         name: 'N8N_DEFAULT_BINARY_DATA_MODE',
                         type: 'Input',
                         defaultValue: 'default',
-                        description: 'The default binary data mode. `default` keeps binary data in memory. Set to `filesystem` to use the filesystem, or `s3` to AWS S3. Note that binary data pruning operates on the active binary data mode. For example, if your instance stored data in S3, and you later switched to filesystem mode, n8n only prunes binary data in the filesystem. This may change in future.',
+                        description: 'The default binary data mode. `default` keeps binary data in memory. Set to `filesystem` to use the filesystem, or `s3` to AWS S3, or `database` to use the DB. Note that binary data pruning operates on the active binary data mode. For example, if your instance stored data in S3, and you later switched to filesystem mode, n8n only prunes binary data in the filesystem. This may change in future.',
                     },
                 ],
             },
@@ -23426,7 +24807,7 @@ const n8nArguments = [
                     {
                         name: 'N8N_METRICS_INCLUDE_QUEUE_METRICS',
                         type: 'CheckBox',
-                        description: 'Whether to include metrics for jobs in scaling mode. Not supported in multi-main setup.',
+                        description: 'Whether to include metrics for jobs in scaling mode.',
                     },
                     {
                         name: 'N8N_METRICS_QUEUE_METRICS_INTERVAL',
@@ -23494,7 +24875,7 @@ function checkLinuxArgLine$3(line) {
     }
     return undefined;
 }
-function parseArgsToString$c(args) {
+function parseArgsToString$e(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     args.forEach(arg => {
         if (getArgumentType(arg.name, n8nArguments) === 'CheckBox') {
@@ -23511,7 +24892,7 @@ function parseArgsToString$c(args) {
     result += isWin ? `\nn8n start` : `n8n start`;
     return result;
 }
-function parseStringToArgs$c(args) {
+function parseStringToArgs$e(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -23539,7 +24920,7 @@ function parseStringToArgs$c(args) {
     return argResult;
 }
 // TODO: support selecting available versions or @next
-function startInstall$b(stepper) {
+function startInstall$d(stepper) {
     stepper.initialSteps(['Getting Started', 'Checking NodeJS', 'Detect Existing', 'Install N8N', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -23584,7 +24965,7 @@ function startUpdate$2(stepper) {
         stepper.showFinalStep('success', 'N8N Updated Successfully!', `N8N has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$b(api, callback) {
+async function cardInfo$d(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -23612,10 +24993,10 @@ async function cardInfo$b(api, callback) {
 }
 const N8N_RM = {
     catchAddress: catchAddress$3,
-    cardInfo: cardInfo$b,
-    parseStringToArgs: parseStringToArgs$c,
-    parseArgsToString: parseArgsToString$c,
-    manager: { startInstall: startInstall$b, updater: { updateType: 'stepper', startUpdate: startUpdate$2 } },
+    cardInfo: cardInfo$d,
+    parseStringToArgs: parseStringToArgs$e,
+    parseArgsToString: parseArgsToString$e,
+    manager: { startInstall: startInstall$d, updater: { updateType: 'stepper', startUpdate: startUpdate$2 } },
 };
 
 const gitmyloArguments = [
@@ -23694,8 +25075,8 @@ const gitmyloArguments = [
 ];
 
 const shellCommand$5 = isWin ? 'call run.bat' : 'bash ./run.sh';
-const URL$6 = 'https://github.com/gitmylo/audio-webui';
-function parseArgsToString$b(args) {
+const URL$5 = 'https://github.com/gitmylo/audio-webui';
+function parseArgsToString$d(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -23713,7 +25094,7 @@ function parseArgsToString$b(args) {
     result += lodashExports.isEmpty(argResult) ? shellCommand$5 : `${shellCommand$5} ${argResult}`;
     return result;
 }
-function parseStringToArgs$b(args) {
+function parseStringToArgs$d(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -23747,21 +25128,22 @@ function parseStringToArgs$b(args) {
     });
     return argResult;
 }
-function startInstall$a(stepper) {
-    GitInstaller('Audio Generation', URL$6, stepper);
+function startInstall$c(stepper) {
+    GitInstaller('Audio Generation', URL$5, stepper, [isWin ? 'run.bat' : 'run.sh']);
 }
-async function cardInfo$a(api, callback) {
-    return CardInfo(URL$6, '/extensions', api, callback);
+async function cardInfo$c(api, callback) {
+    return CardInfo(URL$5, '/extensions', api, callback);
 }
 const AG_RM = {
     catchAddress: catchAddress$3,
-    parseArgsToString: parseArgsToString$b,
-    parseStringToArgs: parseStringToArgs$b,
-    cardInfo: cardInfo$a,
-    manager: { startInstall: startInstall$a, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$d,
+    parseStringToArgs: parseStringToArgs$d,
+    cardInfo: cardInfo$c,
+    manager: { startInstall: startInstall$c, updater: { updateType: 'git' } },
 };
 
-const comfyArguments = [
+/* eslint max-len: 0 */
+const comfyuiArguments = [
     {
         category: 'Command Line Arguments',
         sections: [
@@ -23770,33 +25152,24 @@ const comfyArguments = [
                 items: [
                     {
                         name: '--listen',
-                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
-                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
-                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
                         type: 'Input',
                         defaultValue: '127.0.0.1',
                     },
-                    {
-                        name: '--port',
-                        description: 'Set the listen port.',
-                        type: 'Input',
-                        defaultValue: 8188,
-                    },
+                    { name: '--port', description: 'Set the listen port.', type: 'Input', defaultValue: 8188 },
                     {
                         name: '--tls-keyfile',
-                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-certfile to function',
+                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://... requires --tls-certfile to function',
                         type: 'File',
                     },
                     {
                         name: '--tls-certfile',
-                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-keyfile to function',
+                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://... requires --tls-keyfile to function',
                         type: 'File',
                     },
                     {
                         name: '--enable-cors-header',
-                        description: "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
+                        description: 'Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default',
                         type: 'Input',
                     },
                     {
@@ -23806,16 +25179,21 @@ const comfyArguments = [
                         defaultValue: 100,
                     },
                     {
-                        name: '--enable-compress-response-body',
-                        description: 'Enable compressing response body.',
+                        name: '--oneapi-device-selector',
+                        description: 'Sets the oneAPI device(s) this instance will use.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--supports-fp8-compute',
+                        description: 'ComfyUI will act like if the device supports fp8 compute.',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--comfy-api-base',
-                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
-                        type: 'Input',
-                        defaultValue: 'https://api.comfy.org',
+                        name: '--disable-api-nodes',
+                        description: 'Disable loading all api nodes. Also prevents the frontend from communicating with the internet.',
+                        type: 'CheckBox',
                     },
+                    { name: '--enable-compress-response-body', description: 'Enable compressing response body.', type: 'CheckBox' },
                 ],
             },
             {
@@ -23861,11 +25239,7 @@ const comfyArguments = [
                         description: 'Automatically launch ComfyUI in the default browser.',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--disable-auto-launch',
-                        description: 'Disable auto launching the browser.',
-                        type: 'CheckBox',
-                    },
+                    { name: '--disable-auto-launch', description: 'Disable auto launching the browser.', type: 'CheckBox' },
                     {
                         name: '--cuda-device',
                         description: 'Set the id of the cuda device this instance will use. All other devices will not be visible.',
@@ -23881,11 +25255,7 @@ const comfyArguments = [
                         description: 'Enable cudaMallocAsync (enabled by default for torch 2.0 and up).',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--disable-cuda-malloc',
-                        description: 'Disable cudaMallocAsync.',
-                        type: 'CheckBox',
-                    },
+                    { name: '--disable-cuda-malloc', description: 'Disable cudaMallocAsync.', type: 'CheckBox' },
                 ],
             },
             {
@@ -23896,66 +25266,18 @@ const comfyArguments = [
                         description: 'Force fp32 (If this makes your GPU work better please report it).',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--force-fp16',
-                        description: 'Force fp16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-unet',
-                        description: 'Run the diffusion model in bf16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-unet',
-                        description: 'Run the diffusion model in fp16',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-unet',
-                        description: 'Run the diffusion model in fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp64-unet',
-                        description: 'Run the diffusion model in fp64.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e4m3fn-unet',
-                        description: 'Store unet weights in fp8_e4m3fn.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e5m2-unet',
-                        description: 'Store unet weights in fp8_e5m2.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp8_e8m0fnu-unet',
-                        description: 'Store unet weights in fp8_e8m0fnu.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-vae',
-                        description: 'Run the VAE in fp16, might cause black images.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-vae',
-                        description: 'Run the VAE in full precision fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-vae',
-                        description: 'Run the VAE in bf16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cpu-vae',
-                        description: 'Run the VAE on the CPU.',
-                        type: 'CheckBox',
-                    },
+                    { name: '--force-fp16', description: 'Force fp16.', type: 'CheckBox' },
+                    { name: '--fp32-unet', description: 'Run the diffusion model in fp32.', type: 'CheckBox' },
+                    { name: '--fp64-unet', description: 'Run the diffusion model in fp64.', type: 'CheckBox' },
+                    { name: '--bf16-unet', description: 'Run the diffusion model in bf16.', type: 'CheckBox' },
+                    { name: '--fp16-unet', description: 'Run the diffusion model in fp16', type: 'CheckBox' },
+                    { name: '--fp8_e4m3fn-unet', description: 'Store unet weights in fp8_e4m3fn.', type: 'CheckBox' },
+                    { name: '--fp8_e5m2-unet', description: 'Store unet weights in fp8_e5m2.', type: 'CheckBox' },
+                    { name: '--fp8_e8m0fnu-unet', description: 'Store unet weights in fp8_e8m0fnu.', type: 'CheckBox' },
+                    { name: '--fp16-vae', description: 'Run the VAE in fp16, might cause black images.', type: 'CheckBox' },
+                    { name: '--fp32-vae', description: 'Run the VAE in full precision fp32.', type: 'CheckBox' },
+                    { name: '--bf16-vae', description: 'Run the VAE in bf16.', type: 'CheckBox' },
+                    { name: '--cpu-vae', description: 'Run the VAE on the CPU.', type: 'CheckBox' },
                     {
                         name: '--fp8_e4m3fn-text-enc',
                         description: 'Store text encoder weights in fp8 (e4m3fn variant).',
@@ -23966,21 +25288,9 @@ const comfyArguments = [
                         description: 'Store text encoder weights in fp8 (e5m2 variant).',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--fp16-text-enc',
-                        description: 'Store text encoder weights in fp16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp32-text-enc',
-                        description: 'Store text encoder weights in fp32.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--bf16-text-enc',
-                        description: 'Store text encoder weights in bf16.',
-                        type: 'CheckBox',
-                    },
+                    { name: '--fp16-text-enc', description: 'Store text encoder weights in fp16.', type: 'CheckBox' },
+                    { name: '--fp32-text-enc', description: 'Store text encoder weights in fp32.', type: 'CheckBox' },
+                    { name: '--bf16-text-enc', description: 'Store text encoder weights in bf16.', type: 'CheckBox' },
                 ],
             },
             {
@@ -23991,24 +25301,10 @@ const comfyArguments = [
                         description: 'Force channels last format when inferencing the models.',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--directml',
-                        description: 'Use torch-directml.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--oneapi-device-selector',
-                        description: 'Sets the oneAPI device(s) this instance will use.',
-                        type: 'Input',
-                    },
+                    { name: '--directml', description: 'Use torch-directml.', type: 'Input' },
                     {
                         name: '--disable-ipex-optimize',
-                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--supports-fp8-compute',
-                        description: 'ComfyUI will act like if the device supports fp8 compute.',
+                        description: 'Disables ipex.optimize default when loading models with Intel',
                         type: 'CheckBox',
                     },
                     {
@@ -24016,7 +25312,7 @@ const comfyArguments = [
                         description: 'Default preview method for sampler nodes.',
                         type: 'DropDown',
                         values: ['none', 'auto', 'latent2rgb', 'taesd'],
-                        defaultValue: 'none',
+                        defaultValue: 'auto',
                     },
                     {
                         name: '--preview-size',
@@ -24024,11 +25320,7 @@ const comfyArguments = [
                         type: 'Input',
                         defaultValue: 512,
                     },
-                    {
-                        name: '--cache-classic',
-                        description: 'Use the old style (aggressive) caching.',
-                        type: 'CheckBox',
-                    },
+                    { name: '--cache-classic', description: 'Use the old style (aggressive) caching.', type: 'CheckBox' },
                     {
                         name: '--cache-lru',
                         description: 'Use LRU caching with a maximum of N node results cached. May use more RAM/VRAM.',
@@ -24039,6 +25331,12 @@ const comfyArguments = [
                         name: '--cache-none',
                         description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: '--cache-ram',
+                        description: 'Use RAM pressure caching with the specified headroom threshold. If available RAM drops below the threhold the cache remove large items to free RAM. Default 4GB',
+                        type: 'Input',
+                        defaultValue: 0,
                     },
                     {
                         name: '--use-split-cross-attention',
@@ -24055,21 +25353,9 @@ const comfyArguments = [
                         description: 'Use the new pytorch 2.0 cross attention function.',
                         type: 'CheckBox',
                     },
-                    {
-                        name: '--use-sage-attention',
-                        description: 'Use sage attention.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-flash-attention',
-                        description: 'Use FlashAttention.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-xformers',
-                        description: 'Disable xformers.',
-                        type: 'CheckBox',
-                    },
+                    { name: '--use-sage-attention', description: 'Use sage attention.', type: 'CheckBox' },
+                    { name: '--use-flash-attention', description: 'Use FlashAttention.', type: 'CheckBox' },
+                    { name: '--disable-xformers', description: 'Disable xformers.', type: 'CheckBox' },
                     {
                         name: '--force-upcast-attention',
                         description: 'Force enable attention upcasting, please report if it fixes black images.',
@@ -24082,8 +25368,77 @@ const comfyArguments = [
                     },
                     {
                         name: '--force-non-blocking',
-                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors.' +
-                            ' This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
+                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fast',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations. This is used to test new features so using it might crash your comfyui. --fast with no arguments enables everything. You can pass a list specific optimizations if you only want to enable specific ones. Current valid optimizations: {}',
+                        type: 'DropDown',
+                        values: ['', 'fp16_accumulation', 'fp8_matrix_mult', 'cublas_ops', 'autotune', 'dynamic_vram'],
+                        defaultValue: '',
+                    },
+                ],
+            },
+            {
+                section: 'Miscellaneous',
+                items: [
+                    { name: '--enable-manager', description: 'Enable the ComfyUI-Manager feature.', type: 'CheckBox' },
+                    {
+                        name: '--disable-manager-ui',
+                        description: 'Disables only the ComfyUI-Manager UI and endpoints. Scheduled installations and similar background tasks will still operate.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--enable-manager-legacy-ui',
+                        description: 'Enables the legacy UI of ComfyUI-Manager',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--default-hashing-function',
+                        description: 'Allows you to choose the hash function to use for duplicate filename / contents comparison. Default is sha256.',
+                        type: 'DropDown',
+                        defaultValue: 'sha256',
+                        values: ['md5', 'sha1', 'sha256', 'sha512'],
+                    },
+                    {
+                        name: '--deterministic',
+                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this might not make images deterministic in all cases.',
+                        type: 'CheckBox',
+                    },
+                    { name: '--mmap-torch-files', description: 'Use mmap when loading ckpt/pt files.', type: 'CheckBox' },
+                    { name: '--disable-mmap', description: 'Don', type: 'CheckBox' },
+                    { name: '--dont-print-server', description: 'Don', type: 'CheckBox' },
+                    { name: '--quick-test-for-ci', description: 'Quick test for CI.', type: 'CheckBox' },
+                    {
+                        name: '--windows-standalone-build',
+                        description: 'Windows standalone build: Enable convenient things that most people using the standalone windows build will probably enjoy (like auto opening the page on startup).',
+                        type: 'CheckBox',
+                    },
+                    { name: '--disable-metadata', description: 'Disable saving prompt metadata in files.', type: 'CheckBox' },
+                    { name: '--disable-all-custom-nodes', description: 'Disable loading all custom nodes.', type: 'CheckBox' },
+                    {
+                        name: '--whitelist-custom-nodes',
+                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
+                        type: 'Input',
+                        defaultValue: '[]',
+                    },
+                    { name: '--multi-user', description: 'Enables per-user storage.', type: 'CheckBox' },
+                    {
+                        name: '--verbose',
+                        description: 'Set the logging level',
+                        type: 'DropDown',
+                        defaultValue: 'INFO',
+                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                    },
+                    {
+                        name: '--log-stdout',
+                        description: 'Send normal process output to stdout instead of stderr (default).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-assets-autoscan',
+                        description: 'Disable asset scanning on startup for database synchronization.',
                         type: 'CheckBox',
                     },
                 ],
@@ -24098,8 +25453,7 @@ const comfyArguments = [
                     },
                     {
                         name: '--highvram',
-                        description: 'By default models will be unloaded to CPU memory after being used.' +
-                            ' This option keeps them in GPU memory.',
+                        description: 'By default models will be unloaded to CPU memory after being used. This option keeps them in GPU memory.',
                         type: 'CheckBox',
                     },
                     {
@@ -24107,177 +25461,133 @@ const comfyArguments = [
                         description: 'Used to force normal vram use if lowvram gets automatically enabled.',
                         type: 'CheckBox',
                     },
+                    { name: '--lowvram', description: 'Split the unet in parts to use less vram.', type: 'CheckBox' },
+                    { name: '--novram', description: 'When lowvram isn', type: 'CheckBox' },
+                    { name: '--cpu', description: 'To use the CPU for everything (slow).', type: 'CheckBox' },
                     {
-                        name: '--lowvram',
-                        description: 'Split the unet in parts to use less vram.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--novram',
-                        description: "When lowvram isn't enough.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cpu',
-                        description: 'To use the CPU for everything (slow).',
-                        type: 'CheckBox',
+                        name: '--reserve-vram',
+                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some amount is reserved depending on your OS.',
+                        type: 'Input',
                     },
                     {
                         name: '--async-offload',
-                        description: 'Use async weight offloading.',
-                        type: 'CheckBox',
+                        description: 'Use async weight offloading. An optional argument controls the amount of offload streams. Default is 2. Enabled by default on Nvidia.',
+                        type: 'Input',
                     },
+                    { name: '--disable-async-offload', description: 'Disable async weight offloading.', type: 'CheckBox' },
                     {
                         name: '--disable-smart-memory',
                         description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
                         type: 'CheckBox',
                     },
+                    { name: '--disable-pinned-memory', description: 'Disable pinned memory use.', type: 'CheckBox' },
                     {
-                        name: '--reserve-vram',
-                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
-                            ' amount is reserved depending on your OS.',
+                        name: '--database-url',
+                        description: 'Specify the database URL, e.g. for an in-memory database you can use',
                         type: 'Input',
+                        defaultValue: 'f"sqlite:///{database_default_path}',
                     },
                 ],
             },
+        ],
+    },
+    {
+        category: 'Environment Variables',
+        items: [
             {
-                section: 'Miscellaneous',
-                items: [
-                    {
-                        name: '--default-hashing-function',
-                        description: 'Allows you to choose the hash function to use for duplicate filename /' +
-                            ' contents comparison. Default is sha256.',
-                        type: 'DropDown',
-                        values: ['md5', 'sha1', 'sha256', 'sha512'],
-                        defaultValue: 'sha256',
-                    },
-                    {
-                        name: '--deterministic',
-                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this' +
-                            ' might not make images deterministic in all cases.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--mmap-torch-files',
-                        description: 'Use mmap when loading ckpt/pt files.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-mmap',
-                        description: "Don't use mmap when loading safetensors.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--dont-print-server',
-                        description: "Don't print server output.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--quick-test-for-ci',
-                        description: 'Quick test for CI.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--windows-standalone-build',
-                        description: 'Windows standalone build: Enable convenient things that most people using the' +
-                            ' standalone windows build will probably enjoy (like auto opening the page on startup).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-metadata',
-                        description: 'Disable saving prompt metadata in files.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-all-custom-nodes',
-                        description: 'Disable loading all custom nodes.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--whitelist-custom-nodes',
-                        description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--disable-api-nodes',
-                        description: 'Disable loading all api nodes.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--multi-user',
-                        description: 'Enables per-user storage.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--verbose',
-                        description: 'Set the logging level',
-                        type: 'DropDown',
-                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        defaultValue: 'INFO',
-                    },
-                    {
-                        name: '--log-stdout',
-                        description: 'Send normal process output to stdout instead of stderr (default).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--front-end-version',
-                        description: 'Specifies the version of the frontend to be used. This command needs internet connectivity' +
-                            ' to query and download available frontend implementations from GitHub releases. The version' +
-                            ' string should be in the format of: [repoOwner]/[repoName]@[version]',
-                        type: 'Input',
-                        defaultValue: 'comfyanonymous/ComfyUI@latest',
-                    },
-                    {
-                        name: '--front-end-root',
-                        description: 'The local filesystem path to the directory where the frontend is' +
-                            ' located. Overrides --front-end-version.',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--fast',
-                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
-                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--database-url',
-                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
-                        type: 'Input',
-                    },
-                ],
+                name: 'HSA_OVERRIDE_GFX_VERSION',
+                description: 'Override GFX version for unsupported AMD GPUs. Use "10.3.0" for 6700, 6600 and other RDNA2 or older cards. Use "11.0.0" for 7600 and other RDNA3 cards.',
+                type: 'Input',
+                defaultValue: '11.0.0',
+            },
+            {
+                name: 'TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL',
+                description: 'Enable experimental memory efficient attention on AMD GPUs. Should already be enabled by default on RDNA3.',
+                type: 'Input',
+                defaultValue: '1',
+            },
+            {
+                name: 'PYTORCH_TUNABLEOP_ENABLED',
+                description: 'Enable PyTorch tunable operations which might speed things up at the cost of a very slow initial run.',
+                type: 'Input',
+                defaultValue: '1',
             },
         ],
     },
 ];
 
 const COMFYUI_URL = 'https://github.com/comfyanonymous/ComfyUI';
-function parseArgsToString$a(args) {
+function isEnvironmentVariable(name) {
+    for (const arg of comfyuiArguments) {
+        if (arg.category === 'Environment Variables') {
+            if ('items' in arg) {
+                return arg.items.some(item => item.name === name);
+            }
+        }
+    }
+    return false;
+}
+function parseArgsToString$c(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
+    let envVars = '';
     args.forEach(arg => {
-        const argType = getArgumentType(arg.name, comfyArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
+        if (isEnvironmentVariable(arg.name)) {
+            // Handle environment variables
+            if (getArgumentType(arg.name, comfyuiArguments) === 'CheckBox') {
+                envVars += isWin ? `set ${arg.name}=true\n` : `export ${arg.name}="true"\n`;
+            }
+            else {
+                envVars += isWin ? `set ${arg.name}=${arg.value}\n` : `export ${arg.name}="${arg.value}"\n`;
+            }
         }
         else {
-            argResult += `${arg.name} ${arg.value} `;
+            // Handle command line arguments
+            const argType = getArgumentType(arg.name, comfyuiArguments);
+            if (argType === 'CheckBox') {
+                argResult += `${arg.name} `;
+            }
+            else if (argType === 'File' || argType === 'Directory') {
+                argResult += `${arg.name} "${arg.value}" `;
+            }
+            else {
+                argResult += `${arg.name} ${arg.value} `;
+            }
         }
     });
-    result += lodashExports.isEmpty(argResult) ? 'python main.py' : `python main.py ${argResult}`;
+    // Add environment variables first, then the command
+    result += envVars;
+    if (envVars)
+        result += '\n';
+    const pythonCommand = getPythonCommandByOs().python;
+    result += lodashExports.isEmpty(argResult) ? `${pythonCommand} main.py` : `${pythonCommand} main.py ${argResult}`;
     return result;
 }
-function parseStringToArgs$a(args) {
+function parseStringToArgs$c(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith('python main.py'))
+        // Skip comments
+        if (line.startsWith('#')) {
+            return;
+        }
+        // Check for environment variables (export on Linux, set on Windows)
+        if (line.startsWith('export ') || line.startsWith('set ')) {
+            const prefix = line.startsWith('export ') ? 'export ' : 'set ';
+            let [name, value] = line.replace(prefix, '').split('=');
+            name = removeEscapes(name.trim());
+            value = removeEscapes(value.trim());
+            if (isValidArg(name, comfyuiArguments) && isEnvironmentVariable(name)) {
+                argResult.push({ name, value });
+            }
+            return;
+        }
+        const pythonCommand = getPythonCommandByOs().python;
+        // Check for command line arguments
+        if (!line.startsWith(`${pythonCommand} main.py`))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split('python main.py ')[1];
+        const clArgs = line.split(`${pythonCommand} main.py `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -24292,8 +25602,8 @@ function parseStringToArgs$a(args) {
         // Process each argument
         result.forEach((value) => {
             // Check if the argument exists or valid
-            if (isValidArg(value.name, comfyArguments)) {
-                if (getArgumentType(value.name, comfyArguments) === 'CheckBox') {
+            if (isValidArg(value.name, comfyuiArguments)) {
+                if (getArgumentType(value.name, comfyuiArguments) === 'CheckBox') {
                     argResult.push({ name: value.name, value: '' });
                 }
                 else {
@@ -24304,7 +25614,7 @@ function parseStringToArgs$a(args) {
     });
     return argResult;
 }
-async function fetchExtensionList$4() {
+async function fetchExtensionList$3() {
     try {
         const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
         const extensions = await response.json();
@@ -24319,15 +25629,15 @@ async function fetchExtensionList$4() {
         return [];
     }
 }
-function startInstall$9(stepper) {
+function startInstall$b(stepper) {
     const selectOptions = [
         'NONE',
         'NVIDIA CU130',
         'NVIDIA CU130 Nightly',
         'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)',
         'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)',
-        'RDNA 4 (RX 9000 series)',
-        'AMD GPUs (Linux only) ROCm 6.2',
+        'AMD GPUs (Windows and Linux) RDNA 4 (RX 9000 series)',
+        'AMD GPUs (Linux only) ROCm 6.4',
         'AMD GPUs (Linux only) ROCm 7.1 Nightly',
         'Mac Apple silicon',
         'Mac Apple silicon (Conda)',
@@ -24344,17 +25654,17 @@ function startInstall$9(stepper) {
                 return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
             case 'Mac x86 (Conda)':
                 return 'conda install pytorch torchvision torchaudio -c pytorch-nightly';
-            case 'AMD GPUs (Linux only) ROCm 6.2':
-                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.4';
+            case 'AMD GPUs (Linux only) ROCm 7.1':
+                return 'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm7.1';
             case 'AMD GPUs (Linux only) ROCm 7.1 Nightly':
                 return ('pip install --pre torch torchvision torchaudio --index-url ' +
                     'https://download.pytorch.org/whl/nightly/rocm7.1');
             case 'AMD GPUs (Windows and Linux) RDNA 3 (RX 7000 series)':
                 return ('pip install --pre torch torchvision torchaudio --index-url ' +
-                    'https://rocm.nightlies.amd.com/v2/gfx110X-dgpu/');
+                    'https://rocm.nightlies.amd.com/v2/gfx110X-all/');
             case 'AMD GPUs (Windows and Linux) RDNA 3.5 (Strix halo/Ryzen AI Max+ 365)':
                 return ('pip install --pre torch torchvision torchaudio --index-url ' + 'https://rocm.nightlies.amd.com/v2/gfx1151/');
-            case 'RDNA 4 (RX 9000 series)':
+            case 'AMD GPUs (Windows and Linux) RDNA 4 (RX 9000 series)':
                 return ('pip install --pre torch torchvision torchaudio --index-url ' +
                     'https://rocm.nightlies.amd.com/v2/gfx120X-all/');
             case 'Intel GPUs (Windows and Linux)':
@@ -24467,34 +25777,58 @@ function startInstall$9(stepper) {
             });
         }
         else if (targetDirectory) {
+            // First try git validation
             stepper.utils.validateGitRepository(targetDirectory, COMFYUI_URL).then(isValid => {
                 if (isValid) {
                     stepper.setInstalled(targetDirectory);
                     stepper.showFinalStep('success', 'ComfyUI located successfully!', 'Pre-installed ComfyUI detected. Installation skipped as your existing setup is ready to use.');
                 }
                 else {
-                    stepper.showFinalStep('error', 'Unable to locate ComfyUI!', 'Please ensure you have selected the correct folder containing the ComfyUI repository.');
+                    // Fallback to file-based detection if git validation fails
+                    stepper.utils.verifyFilesExist(targetDirectory, ['comfy', 'main.py']).then(filesExist => {
+                        if (filesExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', `ComfyUI located successfully!`, `Detected a manual installation of ComfyUI. Note: Because this is not a Git repository,` +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', 'Unable to locate ComfyUI!', 'Please ensure you have selected the correct folder containing the ComfyUI installation ');
+                        }
+                    });
                 }
             });
         }
     });
 }
-async function cardInfo$9(api, callback) {
+async function cardInfo$b(api, callback) {
     return CardInfo(COMFYUI_URL, '/custom_nodes', api, callback);
 }
 const COMFYUI_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList: fetchExtensionList$4,
-    parseArgsToString: parseArgsToString$a,
-    parseStringToArgs: parseStringToArgs$a,
-    cardInfo: cardInfo$9,
-    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
+    fetchExtensionList: fetchExtensionList$3,
+    parseArgsToString: parseArgsToString$c,
+    parseStringToArgs: parseStringToArgs$c,
+    cardInfo: cardInfo$b,
+    manager: { startInstall: startInstall$b, updater: { updateType: 'git' } },
 };
 
-const comfyZludaArguments = [
+/* eslint max-len: 0 */
+const comfyuizludaArguments = [
     {
         category: 'Environment Variables',
         items: [
+            {
+                name: 'MIOPEN_FIND_MODE',
+                description: 'MIOpen find mode for AMD GPUs.',
+                type: 'Input',
+                defaultValue: '2',
+            },
+            {
+                name: 'MIOPEN_LOG_LEVEL',
+                description: 'MIOpen log level for AMD GPUs.',
+                type: 'Input',
+                defaultValue: '3',
+            },
             {
                 name: 'PYTHON',
                 description: 'Sets a custom path for Python executable.',
@@ -24502,11 +25836,22 @@ const comfyZludaArguments = [
                 defaultValue: '"%~dp0/venv/Scripts/python.exe"',
             },
             {
+                name: 'GIT',
+                description: 'Sets a custom path for Git executable. Leave empty to use system Git.',
+                type: 'File',
+                defaultValue: '',
+            },
+            {
                 name: 'VENV_DIR',
-                description: 'Specifies the path for the virtual environment. Default is venv.' +
-                    ' Special value - runs the script without creating virtual environment.',
+                description: 'Specifies the path for the virtual environment. Default is venv. Special value - runs the script without creating virtual environment.',
                 type: 'Directory',
                 defaultValue: './venv',
+            },
+            {
+                name: 'TRITON_OVERRIDE_ARCH',
+                description: 'Override GPU architecture for Triton (e.g., gfx1030, gfx1031). Find yours at https://llvm.org/docs/AMDGPUUsage.html#processors',
+                type: 'Input',
+                defaultValue: '',
             },
             {
                 name: 'ZLUDA_COMGR_LOG_LEVEL',
@@ -24524,9 +25869,7 @@ const comfyZludaArguments = [
                 items: [
                     {
                         name: '--listen',
-                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses' +
-                            ' by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an' +
-                            ' argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1). You can give a list of ip addresses by separating them with a comma like: 127.2.2.2,127.3.3.3 If --listen is provided without an argument, it defaults to 0.0.0.0,:: (listens on all ipv4 and ipv6)',
                         type: 'Input',
                         defaultValue: '127.0.0.1',
                     },
@@ -24538,19 +25881,17 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--tls-keyfile',
-                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-certfile to function',
+                        description: 'Path to TLS (SSL) key file. Enables TLS, makes app accessible at https://... requires --tls-certfile to function',
                         type: 'File',
                     },
                     {
                         name: '--tls-certfile',
-                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://...' +
-                            ' requires --tls-keyfile to function',
+                        description: 'Path to TLS (SSL) certificate file. Enables TLS, makes app accessible at https://... requires --tls-keyfile to function',
                         type: 'File',
                     },
                     {
                         name: '--enable-cors-header',
-                        description: "Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default '*'.",
+                        description: 'Enable CORS (Cross-Origin Resource Sharing) with optional origin or allow all with default',
                         type: 'Input',
                     },
                     {
@@ -24560,15 +25901,24 @@ const comfyZludaArguments = [
                         defaultValue: 100,
                     },
                     {
-                        name: '--enable-compress-response-body',
-                        description: 'Enable compressing response body.',
+                        name: '--oneapi-device-selector',
+                        description: 'Sets the oneAPI device(s) this instance will use.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--supports-fp8-compute',
+                        description: 'ComfyUI will act like if the device supports fp8 compute.',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--comfy-api-base',
-                        description: 'Set the base URL for the ComfyUI API. (default: https://api.comfy.org)',
-                        type: 'Input',
-                        defaultValue: 'https://api.comfy.org',
+                        name: '--disable-api-nodes',
+                        description: 'Disable loading all api nodes. Also prevents the frontend from communicating with the internet.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--enable-compress-response-body',
+                        description: 'Enable compressing response body.',
+                        type: 'CheckBox',
                     },
                 ],
             },
@@ -24656,16 +26006,6 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--bf16-unet',
-                        description: 'Run the diffusion model in bf16.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--fp16-unet',
-                        description: 'Run the diffusion model in fp16',
-                        type: 'CheckBox',
-                    },
-                    {
                         name: '--fp32-unet',
                         description: 'Run the diffusion model in fp32.',
                         type: 'CheckBox',
@@ -24673,6 +26013,16 @@ const comfyZludaArguments = [
                     {
                         name: '--fp64-unet',
                         description: 'Run the diffusion model in fp64.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--bf16-unet',
+                        description: 'Run the diffusion model in bf16.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--fp16-unet',
+                        description: 'Run the diffusion model in fp16',
                         type: 'CheckBox',
                     },
                     {
@@ -24751,18 +26101,8 @@ const comfyZludaArguments = [
                         type: 'Input',
                     },
                     {
-                        name: '--oneapi-device-selector',
-                        description: 'Sets the oneAPI device(s) this instance will use.',
-                        type: 'Input',
-                    },
-                    {
                         name: '--disable-ipex-optimize',
-                        description: "Disables ipex.optimize default when loading models with Intel's Extension for Pytorch.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--supports-fp8-compute',
-                        description: 'ComfyUI will act like if the device supports fp8 compute.',
+                        description: 'Disables ipex.optimize default when loading models with Intel',
                         type: 'CheckBox',
                     },
                     {
@@ -24770,7 +26110,7 @@ const comfyZludaArguments = [
                         description: 'Default preview method for sampler nodes.',
                         type: 'DropDown',
                         values: ['none', 'auto', 'latent2rgb', 'taesd'],
-                        defaultValue: 'none',
+                        defaultValue: 'auto',
                     },
                     {
                         name: '--preview-size',
@@ -24793,6 +26133,12 @@ const comfyZludaArguments = [
                         name: '--cache-none',
                         description: 'Reduced RAM/VRAM usage at the expense of executing every node for each run.',
                         type: 'CheckBox',
+                    },
+                    {
+                        name: '--cache-ram',
+                        description: 'Use RAM pressure caching with the specified headroom threshold. If available RAM drops below the threhold the cache remove large items to free RAM. Default 4GB',
+                        type: 'Input',
+                        defaultValue: 0,
                     },
                     {
                         name: '--use-split-cross-attention',
@@ -24836,61 +26182,15 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--force-non-blocking',
-                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve' +
-                            ' performance on some non-Nvidia systems but can cause issues with some workflows.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Memory Management',
-                items: [
-                    {
-                        name: '--gpu-only',
-                        description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
+                        description: 'Force ComfyUI to use non-blocking operations for all applicable tensors. This may improve performance on some non-Nvidia systems but can cause issues with some workflows.',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--highvram',
-                        description: 'By default models will be unloaded to CPU memory after being used.' +
-                            ' This option keeps them in GPU memory.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--normalvram',
-                        description: 'Used to force normal vram use if lowvram gets automatically enabled.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--lowvram',
-                        description: 'Split the unet in parts to use less vram.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--novram',
-                        description: "When lowvram isn't enough.",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cpu',
-                        description: 'To use the CPU for everything (slow).',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--async-offload',
-                        description: 'Use async weight offloading.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable-smart-memory',
-                        description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--reserve-vram',
-                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some' +
-                            ' amount is reserved depending on your OS.',
-                        type: 'Input',
+                        name: '--fast',
+                        description: 'Enable some untested and potentially quality deteriorating optimizations. This is used to test new features so using it might crash your comfyui. --fast with no arguments enables everything. You can pass a list specific optimizations if you only want to enable specific ones. Current valid optimizations: {}',
+                        type: 'DropDown',
+                        values: ['', 'fp16_accumulation', 'fp8_matrix_mult', 'cublas_ops', 'autotune', 'dynamic_vram'],
+                        defaultValue: '',
                     },
                 ],
             },
@@ -24898,17 +26198,30 @@ const comfyZludaArguments = [
                 section: 'Miscellaneous',
                 items: [
                     {
+                        name: '--enable-manager',
+                        description: 'Enable the ComfyUI-Manager feature.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-manager-ui',
+                        description: 'Disables only the ComfyUI-Manager UI and endpoints. Scheduled installations and similar background tasks will still operate.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--enable-manager-legacy-ui',
+                        description: 'Enables the legacy UI of ComfyUI-Manager',
+                        type: 'CheckBox',
+                    },
+                    {
                         name: '--default-hashing-function',
-                        description: 'Allows you to choose the hash function to use for duplicate filename /' +
-                            ' contents comparison. Default is sha256.',
+                        description: 'Allows you to choose the hash function to use for duplicate filename / contents comparison. Default is sha256.',
                         type: 'DropDown',
-                        values: ['md5', 'sha1', 'sha256', 'sha512'],
                         defaultValue: 'sha256',
+                        values: ['md5', 'sha1', 'sha256', 'sha512'],
                     },
                     {
                         name: '--deterministic',
-                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this' +
-                            ' might not make images deterministic in all cases.',
+                        description: 'Make pytorch use slower deterministic algorithms when it can. Note that this might not make images deterministic in all cases.',
                         type: 'CheckBox',
                     },
                     {
@@ -24918,12 +26231,12 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--disable-mmap',
-                        description: "Don't use mmap when loading safetensors.",
+                        description: 'Don',
                         type: 'CheckBox',
                     },
                     {
                         name: '--dont-print-server',
-                        description: "Don't print server output.",
+                        description: 'Don',
                         type: 'CheckBox',
                     },
                     {
@@ -24933,8 +26246,7 @@ const comfyZludaArguments = [
                     },
                     {
                         name: '--windows-standalone-build',
-                        description: 'Windows standalone build: Enable convenient things that most people using the' +
-                            ' standalone windows build will probably enjoy (like auto opening the page on startup).',
+                        description: 'Windows standalone build: Enable convenient things that most people using the standalone windows build will probably enjoy (like auto opening the page on startup).',
                         type: 'CheckBox',
                     },
                     {
@@ -24951,11 +26263,7 @@ const comfyZludaArguments = [
                         name: '--whitelist-custom-nodes',
                         description: 'Specify custom node folders to load even when --disable-all-custom-nodes is enabled.',
                         type: 'Input',
-                    },
-                    {
-                        name: '--disable-api-nodes',
-                        description: 'Disable loading all api nodes.',
-                        type: 'CheckBox',
+                        defaultValue: '[]',
                     },
                     {
                         name: '--multi-user',
@@ -24966,8 +26274,8 @@ const comfyZludaArguments = [
                         name: '--verbose',
                         description: 'Set the logging level',
                         type: 'DropDown',
-                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                         defaultValue: 'INFO',
+                        values: ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                     },
                     {
                         name: '--log-stdout',
@@ -24975,29 +26283,75 @@ const comfyZludaArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--front-end-version',
-                        description: 'Specifies the version of the frontend to be used. This command needs internet' +
-                            ' connectivity to query and download available frontend implementations from' +
-                            ' GitHub releases. The version string should be in the format of: [repoOwner]/[repoName]@[version]',
+                        name: '--disable-assets-autoscan',
+                        description: 'Disable asset scanning on startup for database synchronization.',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Memory Management',
+                items: [
+                    {
+                        name: '--gpu-only',
+                        description: 'Store and run everything (text encoders/CLIP models, etc... on the GPU).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--highvram',
+                        description: 'By default models will be unloaded to CPU memory after being used. This option keeps them in GPU memory.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--normalvram',
+                        description: 'Used to force normal vram use if lowvram gets automatically enabled.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--lowvram',
+                        description: 'Split the unet in parts to use less vram.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--novram',
+                        description: 'When lowvram isn',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--cpu',
+                        description: 'To use the CPU for everything (slow).',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--reserve-vram',
+                        description: 'Set the amount of vram in GB you want to reserve for use by your OS/other software. By default some amount is reserved depending on your OS.',
                         type: 'Input',
-                        defaultValue: 'comfyanonymous/ComfyUI@latest',
                     },
                     {
-                        name: '--front-end-root',
-                        description: 'The local filesystem path to the directory where the frontend is' +
-                            ' located. Overrides --front-end-version.',
-                        type: 'Directory',
+                        name: '--async-offload',
+                        description: 'Use async weight offloading. An optional argument controls the amount of offload streams. Default is 2. Enabled by default on Nvidia.',
+                        type: 'Input',
                     },
                     {
-                        name: '--fast',
-                        description: 'Enable some untested and potentially quality deteriorating optimizations.' +
-                            ' Can enable specific ones like fp16_accumulation, fp8_matrix_mult, cublas_ops.',
+                        name: '--disable-async-offload',
+                        description: 'Disable async weight offloading.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-smart-memory',
+                        description: 'Force ComfyUI to agressively offload to regular ram instead of keeping models in vram when it can.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--disable-pinned-memory',
+                        description: 'Disable pinned memory use.',
                         type: 'CheckBox',
                     },
                     {
                         name: '--database-url',
-                        description: "Specify the database URL, e.g. for an in-memory database you can use 'sqlite:///:memory:'.",
+                        description: 'Specify the database URL, e.g. for an in-memory database you can use',
                         type: 'Input',
+                        defaultValue: 'f"sqlite:///{database_default_path}',
                     },
                 ],
             },
@@ -25005,158 +26359,39 @@ const comfyZludaArguments = [
     },
 ];
 
-const URL$5 = 'https://github.com/patientx/ComfyUI-Zluda';
-function parseArgsToString$9(args) {
-    let result = '@echo off' + '\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        if (arg.name === 'PYTHON' || arg.name === 'VENV_DIR' || arg.name === 'ZLUDA_COMGR_LOG_LEVEL') {
-            result += `set ${arg.name}=${arg.value}` + `\n`;
-            return;
-        }
-        const argType = getArgumentType(arg.name, comfyZludaArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += '\n' + '.\\zluda\\zluda.exe -- ';
-    result += lodashExports.isEmpty(argResult) ? '%PYTHON% main.py' : `%PYTHON% main.py ${argResult}`;
-    result += '\n\n' + 'pause';
-    return result;
-}
-function parseStringToArgs$9(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (line.startsWith('set')) {
-            const argName = line.split('=')[0].split(' ')[1].trim();
-            const argValue = line.split('=')[1].trim();
-            if (argName === 'PYTHON' || argName === 'VENV_DIR' || argName === 'ZLUDA_COMGR_LOG_LEVEL') {
-                argResult.push({ name: argName, value: argValue });
-            }
-        }
-        else if (line.includes('%PYTHON% main.py')) {
-            // Extract the command line arguments and clear falsy values
-            const clArgs = line.split('%PYTHON% main.py ')[1];
-            if (!clArgs)
-                return;
-            const args = clArgs.split('--').filter(Boolean);
-            // Map each argument to an object with id and value
-            const result = args.map((arg) => {
-                const [id, ...value] = arg.trim().split(' ');
-                return {
-                    name: `--${id}`,
-                    value: value.join(' ').replace(/"/g, ''),
-                };
-            });
-            // Process each argument
-            result.forEach((value) => {
-                // Check if the argument exists or valid
-                if (isValidArg(value.name, comfyZludaArguments)) {
-                    if (getArgumentType(value.name, comfyZludaArguments) === 'CheckBox') {
-                        argResult.push({ name: value.name, value: '' });
-                    }
-                    else {
-                        argResult.push({ name: value.name, value: value.value });
-                    }
-                }
-            });
-        }
-    });
-    return argResult;
-}
-async function fetchExtensionList$3() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
-        const extensions = await response.json();
-        return extensions.custom_nodes.map((extension) => ({
-            title: extension.title,
-            description: extension.description,
-            url: extension.reference,
-        }));
-    }
-    catch (e) {
-        console.error(e);
-        return [];
-    }
-}
-const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
-const customArguments = [
-    { name: 'PYTHON', value: '"%~dp0/venv/Scripts/python.exe"' },
-    { name: 'VENV_DIR', value: './venv' },
-    {
-        name: '--use-quad-cross-attention',
-        value: '',
-    },
-];
-function startInstall$8(stepper) {
-    stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep().then(() => {
-                stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
-                    stepper.nextStep().then(() => {
-                        stepper.runTerminalScript(dir, 'install.bat').then(() => {
-                            stepper.setInstalled(dir);
-                            stepper.postInstall.config({
-                                customArguments: {
-                                    presetName: 'Zluda Config',
-                                    customArguments,
-                                },
-                            });
-                            stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
-                        });
-                    });
-                });
-            });
-        }
-        else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_ZLUDA_URL).then(isValid => {
-                if (isValid) {
-                    stepper.setInstalled(targetDirectory);
-                    stepper.postInstall.config({
-                        customArguments: {
-                            presetName: 'Zluda Config',
-                            customArguments,
-                        },
-                    });
-                    stepper.showFinalStep('success', 'ComfyUI-Zluda located successfully!', 'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Unable to locate ComfyUI-Zluda!', 'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.');
-                }
-            });
-        }
-    });
-}
-async function cardInfo$8(api, callback) {
-    return CardInfo(URL$5, '/custom_nodes', api, callback);
-}
-const COMFYUI_ZLUDA_RM = {
-    catchAddress: catchAddress$3,
-    fetchExtensionList: fetchExtensionList$3,
-    parseArgsToString: parseArgsToString$9,
-    parseStringToArgs: parseStringToArgs$9,
-    cardInfo: cardInfo$8,
-    manager: { startInstall: startInstall$8, updater: { updateType: 'git' } },
-};
-
 const Invoke_Command_CreateVenv = 'uv venv --relocatable --prompt invoke --python 3.12 --python-preference only-managed .venv';
 const Invoke_Command_ActivateVenv = isWin ? '.venv\\Scripts\\activate' : 'source .venv/bin/activate';
-const Invoke_Command_InstallPip = 'python -m ensurepip --upgrade';
+const pythonCommand = getPythonCommandByOs().python;
+const Invoke_Command_InstallPip = `${pythonCommand} -m ensurepip --upgrade`;
 const Invoke_Command_InstallUV = isWin
     ? 'powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"'
     : 'wget -qO- https://astral.sh/uv/install.sh | sh';
+// Torch backends by version - see https://invoke-ai.github.io/InvokeAI/installation/manual/
+const getTorchBackendForVersion = (version) => {
+    const [major, minor] = version.split('.').map(Number);
+    // v5.12 and later
+    if (major > 5 || (major === 5 && minor >= 12)) {
+        return { cuda: 'cu128', rocm: 'rocm6.3' };
+    }
+    // v5.10 to v5.11
+    if (major === 5 && minor >= 10 && minor <= 11) {
+        return { cuda: 'cu126', rocm: 'rocm6.2.4' };
+    }
+    // v5.0 to v5.9.1
+    if (major === 5 && minor >= 0 && minor <= 9) {
+        return { cuda: 'cu124', rocm: 'rocm6.1' };
+    }
+    // v4.x
+    if (major === 4) {
+        return { cuda: 'cu124', rocm: 'rocm5.2' };
+    }
+    // Default to latest for unknown versions
+    return { cuda: 'cu128', rocm: 'rocm6.3' };
+};
 const Invoke_PyPI = {
-    cu126: 'cu126: Windows or Linux with an Nvidia GPU',
-    rocm: 'rocm6.2.4: Linux with an AMD GPU',
-    cpu: 'cpu: Linux with no GPU',
+    cuda: 'Windows or Linux with an Nvidia GPU',
+    rocm: 'Linux with an AMD GPU',
+    cpu: 'No GPU',
 };
 const Invoke_PackageSpec = {
     invokeai: 'invokeai: Nvidia 30xx series GPU or newer, or do not have an Nvidia GPU',
@@ -25192,11 +26427,11 @@ const invokeGetInputFields = async (ipc) => {
             isRequired: true,
         },
         {
-            label: 'PyPI',
-            id: 'pypi',
+            label: 'Torch Backend',
+            id: 'torch_backend',
             type: 'select',
-            selectOptions: [Invoke_PyPI.cu126, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'others'],
-            defaultValue: Invoke_PyPI.cu126,
+            selectOptions: [Invoke_PyPI.cuda, Invoke_PyPI.rocm, Invoke_PyPI.cpu, 'Others'],
+            defaultValue: Invoke_PyPI.cuda,
             isRequired: true,
         },
     ];
@@ -25204,8 +26439,10 @@ const invokeGetInputFields = async (ipc) => {
 const invokeGetInputResults = (items) => {
     let installDirResult = '';
     let packageSpecResult = '';
-    let pyPIResult = '';
+    let torchBackendResult = '';
     let version = '';
+    let torchBackendChoice = '';
+    // First pass: extract all values
     items.forEach(item => {
         if (item.id === 'install_dir') {
             installDirResult = item.result;
@@ -25223,34 +26460,41 @@ const invokeGetInputResults = (items) => {
                     packageSpecResult = 'invokeai';
             }
         }
-        else if (item.id === 'pypi') {
-            switch (item.result) {
-                case Invoke_PyPI.rocm:
-                    pyPIResult = 'https://download.pytorch.org/whl/rocm6.3';
-                    break;
-                case Invoke_PyPI.cu126:
-                    pyPIResult = 'https://download.pytorch.org/whl/cu128';
-                    break;
-                case Invoke_PyPI.cpu:
-                    pyPIResult = 'https://download.pytorch.org/whl/cpu';
-                    break;
-                default:
-                case 'others':
-                    pyPIResult = '';
-                    break;
-            }
+        else if (item.id === 'torch_backend') {
+            torchBackendChoice = item.result;
         }
     });
-    return { installDirResult, version, packageSpecResult, pyPIResult };
+    console.log('the invoke version is', version);
+    // Second pass: process torch backend after we have the version
+    if (torchBackendChoice) {
+        const backends = getTorchBackendForVersion(version);
+        switch (torchBackendChoice) {
+            case Invoke_PyPI.rocm:
+                torchBackendResult = backends.rocm;
+                break;
+            case Invoke_PyPI.cuda:
+                torchBackendResult = backends.cuda;
+                break;
+            case Invoke_PyPI.cpu:
+                torchBackendResult = 'cpu';
+                break;
+            default:
+            case 'Others':
+                torchBackendResult = '';
+                break;
+        }
+    }
+    console.log('the torchBackendResult is', torchBackendResult);
+    return { installDirResult, version, packageSpecResult, torchBackendResult };
 };
 const invokeGetInstallCommand = (items) => {
-    const { version, pyPIResult, packageSpecResult } = invokeGetInputResults(items);
-    const index = pyPIResult ? ` --index=${pyPIResult}` : '';
+    const { version, torchBackendResult, packageSpecResult } = invokeGetInputResults(items);
+    const torchBackend = torchBackendResult ? ` --torch-backend=${torchBackendResult}` : '';
     return (`uv pip install ${packageSpecResult}==${version} --python 3.12 ` +
-        `--python-preference only-managed${index} --force-reinstall`);
+        `--python-preference only-managed${torchBackend} --force-reinstall`);
 };
 
-function parseArgsToString$8(args) {
+function parseArgsToString$b(args) {
     let result = 'schema_version: 4.0.2\n\n';
     const argResult = args
         .map(arg => {
@@ -25260,7 +26504,7 @@ function parseArgsToString$8(args) {
     result += argResult;
     return result;
 }
-function parseStringToArgs$8(args) {
+function parseStringToArgs$b(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -25272,7 +26516,7 @@ function parseStringToArgs$8(args) {
     });
     return argResult;
 }
-function startInstall$7(stepper) {
+function startInstall$a(stepper) {
     stepper.initialSteps(['InvokeAI', 'UV', 'Config', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
@@ -25281,7 +26525,7 @@ function startInstall$7(stepper) {
                 stepper.ipc.invoke('is_uv_installed').then(isUvInstalled => {
                     if (!isUvInstalled) {
                         stepper.executeTerminalCommands(Invoke_Command_InstallUV).then(() => {
-                            stepper.showFinalStep('success', 'UV Package Manager Installation Complete.', 'Restart your computer and run the installer again to continue installation.');
+                            stepper.showFinalStep('success', 'UV Package Manager Installation Complete.', 'Restart LynxHub and run the installer again to continue installation.');
                         });
                     }
                     else {
@@ -25315,8 +26559,8 @@ function startInstall$7(stepper) {
             });
         }
         else {
-            stepper.ipc.invoke('validate_install_dir', targetDirectory).then(isValid => {
-                if (isValid) {
+            stepper.ipc.invoke('validate_install_dir', targetDirectory).then((isValid) => {
+                if (isValid === true) {
                     stepper.setInstalled(targetDirectory);
                     const currentDate = new Date();
                     stepper.storage.set(INVOKEAI_INSTALL_TIME_KEY, currentDate.toLocaleString());
@@ -25324,7 +26568,8 @@ function startInstall$7(stepper) {
                     stepper.showFinalStep('success', 'InvokeAI Environment Found.', 'Location validated successfully.');
                 }
                 else {
-                    stepper.showFinalStep('error', 'Invalid Environment!', 'Could not find InvokeAI installation in the selected directory.');
+                    const description = typeof isValid === 'string' ? isValid : 'Could not find InvokeAI installation in the selected directory.';
+                    stepper.showFinalStep('error', 'Invalid Environment!', description);
                 }
             });
         }
@@ -25345,7 +26590,7 @@ function startUpdate$1(stepper, dir) {
         stepper.showFinalStep('success', 'InvokeAI Updated Successfully!', `InvokeAI has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$7(api, callback) {
+async function cardInfo$a(api, callback) {
     const dir = api.installationFolder;
     callback.setOpenFolders(dir ? [dir] : undefined);
     const descManager = new DescriptionManager([
@@ -25374,166 +26619,10 @@ async function cardInfo$7(api, callback) {
 }
 const INVOKE_RM = {
     catchAddress: catchAddress$3,
-    cardInfo: cardInfo$7,
-    parseArgsToString: parseArgsToString$8,
-    parseStringToArgs: parseStringToArgs$8,
-    manager: { startInstall: startInstall$7, updater: { updateType: 'stepper', startUpdate: startUpdate$1 } },
-};
-
-const bmaltaisArguments = [
-    {
-        category: 'Command Line Arguments',
-        items: [
-            {
-                name: '--config',
-                description: 'Path to the toml config file for interface defaults',
-                type: 'File',
-                defaultValue: './config.toml',
-            },
-            {
-                name: '--debug',
-                description: 'Enable debug mode.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--listen',
-                description: 'Specify the IP address to listen on for connections to Gradio.',
-                type: 'Input',
-                defaultValue: '127.0.0.1',
-            },
-            {
-                name: '--username',
-                description: 'Set a username for authentication.',
-                type: 'Input',
-                defaultValue: '',
-            },
-            {
-                name: '--password',
-                description: 'Set a password for authentication.',
-                type: 'Input',
-                defaultValue: '',
-            },
-            {
-                name: '--server_port',
-                description: 'Define the port to run the server listener on.',
-                type: 'Input',
-                defaultValue: '0',
-            },
-            {
-                name: '--inbrowser',
-                description: 'Open the Gradio UI in a web browser.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--share',
-                description: 'Share the Gradio UI.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--headless',
-                description: 'Indicates whether the server is headless.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--language',
-                description: 'Set custom language',
-                type: 'Input',
-            },
-            {
-                name: '--use-ipex',
-                description: 'Use IPEX environment.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--use-rocm',
-                description: 'Use ROCm environment.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--do_not_use_shell',
-                description: 'Enforce not to use shell=True when running external commands.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--do_not_share',
-                description: 'Do not share the Gradio UI.',
-                type: 'CheckBox',
-            },
-            {
-                name: '--root_path',
-                description: '`root_path` for Gradio to enable reverse proxy support. e.g. /kohya_ss',
-                type: 'Input',
-            },
-        ],
-    },
-];
-
-const shellCommand$4 = isWin ? 'call gui.bat' : 'bash ./gui.sh';
-const URL$4 = 'https://github.com/bmaltais/kohya_ss';
-function parseArgsToString$7(args) {
-    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    let argResult = '';
-    args.forEach(arg => {
-        const argType = getArgumentType(arg.name, bmaltaisArguments);
-        if (argType === 'CheckBox') {
-            argResult += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            argResult += `${arg.name} "${arg.value}" `;
-        }
-        else {
-            argResult += `${arg.name} ${arg.value} `;
-        }
-    });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
-    return result;
-}
-function parseStringToArgs$7(args) {
-    const argResult = [];
-    const lines = args.split('\n');
-    lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$4))
-            return;
-        // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$4} `)[1];
-        if (!clArgs)
-            return;
-        const args = clArgs.split('--').filter(Boolean);
-        // Map each argument to an object with id and value
-        const result = args.map((arg) => {
-            const [id, ...value] = arg.trim().split(' ');
-            return {
-                name: `--${id}`,
-                value: value.join(' ').replace(/"/g, ''),
-            };
-        });
-        // Process each argument
-        result.forEach((value) => {
-            // Check if the argument exists or valid
-            if (isValidArg(value.name, bmaltaisArguments)) {
-                if (getArgumentType(value.name, bmaltaisArguments) === 'CheckBox') {
-                    argResult.push({ name: value.name, value: '' });
-                }
-                else {
-                    argResult.push({ name: value.name, value: value.value });
-                }
-            }
-        });
-    });
-    return argResult;
-}
-function startInstall$6(stepper) {
-    GitInstaller("Kohya's GUI", URL$4, stepper);
-}
-async function cardInfo$6(api, callback) {
-    return CardInfo(URL$4, undefined, api, callback);
-}
-const KOHYA_GUI_RM = {
-    catchAddress: catchAddress$3,
-    parseArgsToString: parseArgsToString$7,
-    parseStringToArgs: parseStringToArgs$7,
-    cardInfo: cardInfo$6,
-    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
+    cardInfo: cardInfo$a,
+    parseArgsToString: parseArgsToString$b,
+    parseStringToArgs: parseStringToArgs$b,
+    manager: { startInstall: startInstall$a, updater: { updateType: 'stepper', startUpdate: startUpdate$1 } },
 };
 
 const automatic1111Arguments = [
@@ -26387,7 +27476,7 @@ const linEV = {
                     description: 'Install command for torch',
                     name: 'TORCH_COMMAND',
                     type: 'Input',
-                    defaultValue: 'pip install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113',
+                    defaultValue: `${getPythonCommandByOs().pip} install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113`,
                 },
                 {
                     description: 'Requirements file to use for stable-diffusion-webui',
@@ -26491,7 +27580,7 @@ function getCategoryType$1(name) {
     }
     return undefined;
 }
-function parseArgsToString$6(args) {
+function parseArgsToString$a(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
@@ -26537,7 +27626,7 @@ function checkLinuxArgLine$2(line) {
     }
     return undefined;
 }
-function parseStringToArgs$6(args) {
+function parseStringToArgs$a(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -26634,10 +27723,10 @@ if (commandLineArgsIndex !== -1 && lshqqytigerArguments[commandLineArgsIndex].se
 }
 
 const SdAMD_URL = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
-function startInstall$5(stepper) {
-    GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper);
+function startInstall$9(stepper) {
+    GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper, [isWin ? 'webui-user.bat' : 'webui.sh']);
 }
-async function cardInfo$5(api, callback) {
+async function cardInfo$9(api, callback) {
     return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
 function getTypeByCategoryName(category) {
@@ -26672,7 +27761,7 @@ function getCategoryType(name) {
     }
     return undefined;
 }
-function parseArgsToString$5(args) {
+function parseArgsToString$9(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let clResult = '';
     args.forEach(arg => {
@@ -26718,7 +27807,7 @@ function checkLinuxArgLine$1(line) {
     }
     return undefined;
 }
-function parseStringToArgs$5(args) {
+function parseStringToArgs$9(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -26779,10 +27868,10 @@ function parseStringToArgs$5(args) {
 const SD_AMD_RM = {
     catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$5,
-    parseStringToArgs: parseStringToArgs$5,
-    cardInfo: cardInfo$5,
-    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$9,
+    parseStringToArgs: parseStringToArgs$9,
+    cardInfo: cardInfo$9,
+    manager: { startInstall: startInstall$9, updater: { updateType: 'git' } },
 };
 
 const vladmandicArguments = [
@@ -26836,46 +27925,6 @@ const vladmandicArguments = [
                 ],
             },
             {
-                section: 'Compute Engine',
-                items: [
-                    {
-                        name: '--device-id',
-                        description: 'Select the default CUDA device to use',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--use-directml',
-                        description: 'Use DirectML if no compatible GPU is detected',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-zluda',
-                        description: 'Force use ZLUDA, AMD GPUs only',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-openvino',
-                        description: 'Use Intel OpenVINO backend',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-ipex',
-                        description: 'Force use Intel OneAPI XPU backend',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-cuda',
-                        description: 'Force use nVidia CUDA backend',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use-rocm',
-                        description: 'Force use AMD ROCm backend',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
                 section: 'Paths',
                 items: [
                     {
@@ -26891,11 +27940,6 @@ const vladmandicArguments = [
                     {
                         name: '--models-dir',
                         description: 'Base path where all models are stored',
-                        type: 'Directory',
-                    },
-                    {
-                        name: '--extensions-dir',
-                        description: 'Base path where all extensions are stored',
                         type: 'Directory',
                     },
                     {
@@ -26919,101 +27963,23 @@ const vladmandicArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--profile',
-                        description: 'Run profiler',
+                        name: '--disable-queue',
+                        description: 'Disable queues',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--monitor',
-                        description: 'Run memory monitor',
+                        name: '--device-id',
+                        description: 'Select the default CUDA device to use',
                         type: 'Input',
-                        defaultValue: 0,
-                    },
-                    {
-                        name: '--status',
-                        description: 'Run server is-alive status',
-                        type: 'Input',
-                        defaultValue: 120,
-                    },
-                    {
-                        name: '--experimental',
-                        description: 'Allow unsupported versions of libraries',
-                        type: 'CheckBox',
                     },
                 ],
             },
             {
-                section: 'HTTP Server',
+                section: 'HTTP',
                 items: [
-                    {
-                        name: '--listen',
-                        description: 'Launch web server using public IP address',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--port',
-                        description: 'Launch web server with given server port',
-                        type: 'Input',
-                        defaultValue: 7860,
-                    },
-                    {
-                        name: '--share',
-                        description: 'Enable UI accessible through Gradio site',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--autolaunch',
-                        description: "Open the UI URL in the system's default browser upon launch",
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--subpath',
-                        description: 'Customize the URL subpath for usage with reverse proxy',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--theme',
-                        description: 'Override UI theme',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--locale',
-                        description: 'Override UI locale',
-                        type: 'Input',
-                    },
                     {
                         name: '--server-name',
                         description: 'Sets hostname of server',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--insecure',
-                        description: 'Enable extensions tab regardless of other options',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--auth',
-                        description: 'Set access authentication like "user:pwd,user:pwd"',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--auth-file',
-                        description: 'Set access authentication using file',
-                        type: 'File',
-                    },
-                    {
-                        name: '--docs',
-                        description: 'Mount API docs',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cors-origins',
-                        description: 'Allowed CORS origins as comma-separated list',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--cors-regex',
-                        description: 'Allowed CORS origins as regular expression',
                         type: 'Input',
                     },
                     {
@@ -27031,15 +27997,247 @@ const vladmandicArguments = [
                         description: 'Enable TLS with self-signed certificates',
                         type: 'CheckBox',
                     },
+                    {
+                        name: '--cors-origins',
+                        description: 'Allowed CORS origins as comma-separated list',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--cors-regex',
+                        description: 'Allowed CORS origins as regular expression',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--subpath',
+                        description: 'Customize the URL subpath for usage with reverse proxy',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--autolaunch',
+                        description: "Open the UI URL in the system's default browser upon launch",
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--auth',
+                        description: 'Set access authentication like "user:pwd,user:pwd"',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--auth-file',
+                        description: 'Set access authentication using file',
+                        type: 'File',
+                    },
+                    {
+                        name: '--api-only',
+                        description: 'Run in API only mode without starting UI',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--share',
+                        description: 'Enable UI accessible through Gradio site',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--insecure',
+                        description: 'Enable extensions tab regardless of other options',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--listen',
+                        description: 'Launch web server using public IP address',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Launch web server with given server port',
+                        type: 'Input',
+                        defaultValue: 7860,
+                    },
+                ],
+            },
+            {
+                section: 'Setup',
+                items: [
+                    {
+                        name: '--reset',
+                        description: 'Reset main repository to latest version',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--upgrade',
+                        description: 'Upgrade main repository to latest version',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--requirements',
+                        description: 'Force re-check of requirements',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--reinstall',
+                        description: 'Force reinstallation of all requirements',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--uv',
+                        description: 'Use uv instead of pip to install the packages',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Startup',
+                items: [
+                    {
+                        name: '--quick',
+                        description: 'Bypass version checks',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--skip-requirements',
+                        description: 'Skips checking and installing requirements',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--skip-extensions',
+                        description: 'Skips running individual extension installers',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--skip-git',
+                        description: 'Skips running all GIT operations',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--skip-torch',
+                        description: 'Skips running Torch checks',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--skip-all',
+                        description: 'Skips running all checks',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--skip-env',
+                        description: 'Skips setting of env variables during startup',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Compute Engine',
+                items: [
+                    {
+                        name: '--use-directml',
+                        description: 'Use DirectML if no compatible GPU is detected',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-openvino',
+                        description: 'Use Intel OpenVINO backend',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-ipex',
+                        description: 'Force use Intel OneAPI XPU backend',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-cuda',
+                        description: 'Force use nVidia CUDA backend',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-rocm',
+                        description: 'Force use AMD ROCm backend',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-zluda',
+                        description: 'Force use ZLUDA, AMD GPUs only',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--use-xformers',
+                        description: 'Force use xFormers cross-optimization',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Diagnostics',
+                items: [
+                    {
+                        name: '--safe',
+                        description: 'Run in safe mode with no user extensions',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--experimental',
+                        description: 'Allow unsupported versions of libraries',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--test',
+                        description: 'Run test only and exit',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--version',
+                        description: 'Print version information',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--ignore',
+                        description: 'Ignore any errors and attempt to continue',
+                        type: 'CheckBox',
+                    },
+                ],
+            },
+            {
+                section: 'Logging',
+                items: [
+                    {
+                        name: '--log',
+                        description: 'Set log file',
+                        type: 'File',
+                    },
+                    {
+                        name: '--debug',
+                        description: 'Run installer with debug logging',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--profile',
+                        description: 'Run profiler',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--monitor',
+                        description: 'Monitor load and log in specific periods',
+                        type: 'Input',
+                        defaultValue: 0,
+                    },
+                    {
+                        name: '--docs',
+                        description: 'Mount API docs',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--api-log',
+                        description: 'Enable logging of all API requests',
+                        type: 'CheckBox',
+                    },
                 ],
             },
         ],
     },
 ];
 
-const shellCommand$3 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
-const URL$3 = 'https://github.com/vladmandic/sdnext';
-function parseArgsToString$4(args) {
+const shellCommand$4 = isWin ? 'call webui.bat' : 'bash ./webui.sh';
+const URL$4 = 'https://github.com/vladmandic/sdnext';
+function parseArgsToString$8(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -27054,17 +28252,17 @@ function parseArgsToString$4(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$4 : `${shellCommand$4} ${argResult}`;
     return result;
 }
-function parseStringToArgs$4(args) {
+function parseStringToArgs$8(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$3))
+        if (!line.startsWith(shellCommand$4))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$3} `)[1];
+        const clArgs = line.split(`${shellCommand$4} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -27091,19 +28289,19 @@ function parseStringToArgs$4(args) {
     });
     return argResult;
 }
-function startInstall$4(stepper) {
-    GitInstaller('SD Next', URL$3, stepper);
+function startInstall$8(stepper) {
+    GitInstaller('SD Next', URL$4, stepper, [isWin ? 'webui.bat' : 'webui.sh']);
 }
-async function cardInfo$4(api, callback) {
-    return CardInfo(URL$3, '/extensions', api, callback);
+async function cardInfo$8(api, callback) {
+    return CardInfo(URL$4, '/extensions', api, callback);
 }
 const SD_NEXT_RM = {
     catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$2,
-    parseArgsToString: parseArgsToString$4,
-    parseStringToArgs: parseStringToArgs$4,
-    cardInfo: cardInfo$4,
-    manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$8,
+    parseStringToArgs: parseStringToArgs$8,
+    cardInfo: cardInfo$8,
+    manager: { startInstall: startInstall$8, updater: { updateType: 'git' } },
 };
 
 const mcMonkeyArguments = [
@@ -27211,6 +28409,18 @@ const mcMonkeyArguments = [
                 defaultValue: 'none',
             },
             {
+                name: '--require_control_within',
+                description: 'If specified, give a number of minutes within which a remote API server must send a ' +
+                    '`AdminTakeControl` API request, or presume the launch is bad. This is useful for auto-managed instances.',
+                type: 'Input',
+            },
+            {
+                name: '--no_persist',
+                description: 'If enabled, tells most systems in Swarm to avoid saving data (eg session handler will not save session data). ' +
+                    'Useful for instances with overlapping data storage especially.',
+                type: 'CheckBox',
+            },
+            {
                 name: '--help',
                 description: 'Displays an in-CLI shortlist of CLI args and some usage hints.',
                 type: 'CheckBox',
@@ -27219,9 +28429,9 @@ const mcMonkeyArguments = [
     },
 ];
 
-const shellCommand$2 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
-const URL$2 = 'https://github.com/mcmonkeyprojects/SwarmUI';
-function parseArgsToString$3(args) {
+const shellCommand$3 = isWin ? 'call launch-windows.bat' : 'bash ./launch-linux.sh';
+const URL$3 = 'https://github.com/mcmonkeyprojects/SwarmUI';
+function parseArgsToString$7(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -27236,17 +28446,17 @@ function parseArgsToString$3(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand$2 : `${shellCommand$2} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$3 : `${shellCommand$3} ${argResult}`;
     return result;
 }
-function parseStringToArgs$3(args) {
+function parseStringToArgs$7(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$2))
+        if (!line.startsWith(shellCommand$3))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$2} `)[1];
+        const clArgs = line.split(`${shellCommand$3} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -27302,19 +28512,19 @@ async function fetchExtensionList$1() {
         },
     ];
 }
-function startInstall$3(stepper) {
-    GitInstaller('SwarmUI', URL$2, stepper);
+function startInstall$7(stepper) {
+    GitInstaller('SwarmUI', URL$3, stepper, [isWin ? 'launch-windows.bat' : 'launch-linux.sh']);
 }
-async function cardInfo$3(api, callback) {
-    return CardInfo(URL$2, '/src/Extensions', api, callback);
+async function cardInfo$7(api, callback) {
+    return CardInfo(URL$3, '/src/Extensions', api, callback);
 }
 const SWARM_RM = {
     catchAddress: catchAddress$3,
     fetchExtensionList: fetchExtensionList$1,
-    parseArgsToString: parseArgsToString$3,
-    parseStringToArgs: parseStringToArgs$3,
-    cardInfo: cardInfo$3,
-    manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$7,
+    parseStringToArgs: parseStringToArgs$7,
+    cardInfo: cardInfo$7,
+    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
 };
 
 const INSTALL_TIME_KEY = 'install-time-openwebui';
@@ -27337,7 +28547,7 @@ function checkLinuxArgLine(line) {
     }
     return undefined;
 }
-function parseArgsToString$2(args) {
+function parseArgsToString$6(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let cmArgs = '';
     args.forEach(arg => {
@@ -27359,7 +28569,7 @@ function parseArgsToString$2(args) {
     result += isWin ? `\nopen-webui serve ${cmArgs}` : `open-webui serve ${cmArgs}`;
     return result;
 }
-function parseStringToArgs$2(args) {
+function parseStringToArgs$6(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
@@ -27409,7 +28619,7 @@ function parseStringToArgs$2(args) {
     });
     return argResult;
 }
-function startInstall$2(stepper) {
+function startInstall$6(stepper) {
     stepper.initialSteps(['Getting Started', 'Detect Existing', 'Install Open WebUI', 'All Done!']);
     stepper.starterStep({ disableSelectDir: true }).then(() => {
         stepper.nextStep().then(() => {
@@ -27444,7 +28654,7 @@ function startUpdate(stepper) {
         stepper.showFinalStep('success', 'Open WebUI Updated Successfully!', `Open WebUI has been updated to the latest version. You can now enjoy the new features and improvements.`);
     });
 }
-async function cardInfo$2(api, callback) {
+async function cardInfo$6(api, callback) {
     callback.setOpenFolders(undefined);
     const descManager = new DescriptionManager([
         {
@@ -27491,10 +28701,10 @@ function catchAddress$1(input) {
 }
 const OPEN_WEBUI_RM = {
     catchAddress: catchAddress$1,
-    cardInfo: cardInfo$2,
-    parseStringToArgs: parseStringToArgs$2,
-    parseArgsToString: parseArgsToString$2,
-    manager: { startInstall: startInstall$2, updater: { updateType: 'stepper', startUpdate } },
+    cardInfo: cardInfo$6,
+    parseStringToArgs: parseStringToArgs$6,
+    parseArgsToString: parseArgsToString$6,
+    manager: { startInstall: startInstall$6, updater: { updateType: 'stepper', startUpdate } },
 };
 
 /*! js-yaml 4.1.1 https://github.com/nodeca/js-yaml @license MIT */
@@ -31350,6 +32560,7 @@ const sillyArguments = [
                         name: 'dataRoot',
                         description: 'Root directory for user data storage (standalone mode only)',
                         type: 'Directory',
+                        defaultValue: './data',
                     },
                     {
                         name: 'skipContentCheck',
@@ -31438,10 +32649,16 @@ const sillyArguments = [
                         type: 'File',
                         defaultValue: './certs/cert.pem',
                     },
+                    {
+                        name: 'ssl.keyPassphrase',
+                        description: 'Passphrase for the SSL private key. Leave empty if not required',
+                        type: 'Input',
+                        defaultValue: '',
+                    },
                 ],
             },
             {
-                section: 'Security Configuration',
+                section: 'Security Configuration - IP Whitelisting',
                 items: [
                     { name: 'whitelistMode', description: 'Enable IP whitelist filtering', type: 'CheckBox', defaultValue: true },
                     {
@@ -31455,17 +32672,44 @@ const sillyArguments = [
                         description: 'List of allowed IP addresses',
                         type: 'Input',
                         defaultValue: '["::1", "127.0.0.1"]',
-                    }, // Note: Representing an array as a string for now.
+                    },
                     {
                         name: 'whitelistDockerHosts',
                         description: 'Automatically whitelist Docker host IPs',
                         type: 'CheckBox',
                         defaultValue: true,
                     },
-                    { name: 'enableCorsProxy', description: 'Enable CORS proxy middleware', type: 'CheckBox', defaultValue: false },
+                ],
+            },
+            {
+                section: 'Security Configuration - Host Whitelisting',
+                items: [
+                    {
+                        name: 'hostWhitelist.enabled',
+                        description: 'Enable host whitelisting',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'hostWhitelist.scan',
+                        description: 'Log incoming requests from untrusted hosts',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                    {
+                        name: 'hostWhitelist.hosts',
+                        description: 'List of trusted hostnames',
+                        type: 'Input',
+                        defaultValue: '[]',
+                    },
+                ],
+            },
+            {
+                section: 'Security Configuration - Security Overrides',
+                items: [
                     {
                         name: 'allowKeysExposure',
-                        description: 'Allow API keys exposure in the UI',
+                        description: 'Allow unmasked API key exposure in the UI',
                         type: 'CheckBox',
                         defaultValue: false,
                     },
@@ -31484,6 +32728,12 @@ const sillyArguments = [
                 ],
             },
             {
+                section: 'CORS Proxy Configuration',
+                items: [
+                    { name: 'enableCorsProxy', description: 'Enable CORS proxy middleware', type: 'CheckBox', defaultValue: false },
+                ],
+            },
+            {
                 section: 'User Authentication',
                 items: [
                     { name: 'basicAuthMode', description: 'Enable basic authentication', type: 'CheckBox', defaultValue: false },
@@ -31498,14 +32748,25 @@ const sillyArguments = [
                     },
                     { name: 'sessionTimeout', description: 'User session timeout in seconds', type: 'Input', defaultValue: -1 },
                     {
-                        name: 'autheliaAuth',
-                        description: 'Enable Authelia-based auto login',
+                        name: 'perUserBasicAuth',
+                        description: 'Use account credentials for basic auth',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                ],
+            },
+            {
+                section: 'SSO Auto-Login',
+                items: [
+                    {
+                        name: 'sso.autheliaAuth',
+                        description: 'Enable Authelia-based auto-login',
                         type: 'CheckBox',
                         defaultValue: false,
                     },
                     {
-                        name: 'perUserBasicAuth',
-                        description: 'Use account credentials for basic auth',
+                        name: 'sso.authentikAuth',
+                        description: 'Enable Authentik-based auto-login',
                         type: 'CheckBox',
                         defaultValue: false,
                     },
@@ -31532,7 +32793,12 @@ const sillyArguments = [
                         defaultValue: false,
                     },
                     { name: 'requestProxy.url', description: 'Proxy server URL', type: 'Input' },
-                    { name: 'requestProxy.bypass', description: 'Hosts to bypass proxy', type: 'Input' },
+                    {
+                        name: 'requestProxy.bypass',
+                        description: 'Hosts to bypass proxy',
+                        type: 'Input',
+                        defaultValue: '["localhost", "127.0.0.1"]',
+                    },
                 ],
             },
             {
@@ -31607,6 +32873,7 @@ const sillyArguments = [
                         name: 'cacheBuster.userAgentPattern',
                         description: 'Only clear cache for the specified user agent regex pattern.',
                         type: 'Input',
+                        defaultValue: '',
                     },
                 ],
             },
@@ -31762,7 +33029,12 @@ const sillyArguments = [
                         type: 'CheckBox',
                         defaultValue: false,
                     },
-                    { name: 'openai.captionSystemPrompt', description: 'System message for caption completion', type: 'Input' },
+                    {
+                        name: 'openai.captionSystemPrompt',
+                        description: 'System message for caption completion',
+                        type: 'Input',
+                        defaultValue: '',
+                    },
                     {
                         name: 'mistral.enablePrefix',
                         description: 'Enable reply prefilling. The prefix will be echoed in the response',
@@ -31801,10 +33073,23 @@ const sillyArguments = [
                     },
                     {
                         name: 'gemini.apiVersion',
-                        description: 'API endpoint version',
+                        description: 'API endpoint version (AI Studio only)',
                         type: 'DropDown',
                         defaultValue: 'v1beta',
                         values: ['v1beta', 'v1alpha'],
+                    },
+                    {
+                        name: 'gemini.enableSystemPromptCache',
+                        description: 'Enables caching of the system prompt (OpenRouter only)',
+                        type: 'CheckBox',
+                        defaultValue: false,
+                    },
+                    {
+                        name: 'gemini.image.personGeneration',
+                        description: 'Person generation setting for Imagen',
+                        type: 'DropDown',
+                        defaultValue: 'allow_adult',
+                        values: ['dont_allow', 'allow_adult', 'allow_all'],
                     },
                     {
                         name: 'deepl.formality',
@@ -31819,8 +33104,8 @@ const sillyArguments = [
     },
 ];
 
-const shellCommand$1 = isWin ? 'call start.bat' : 'bash ./start.sh';
-const URL$1 = 'https://github.com/SillyTavern/SillyTavern';
+const shellCommand$2 = isWin ? 'call start.bat' : 'bash ./start.sh';
+const URL$2 = 'https://github.com/SillyTavern/SillyTavern';
 /**
  * Checks if an argument is a configuration-file argument or a command-line argument.
  * @param name The name of the argument.
@@ -31922,7 +33207,7 @@ function parseArgsToFiles(args) {
     });
     // Build the command file content
     let commandResult = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-    commandResult += lodashExports.isEmpty(commandArgs) ? shellCommand$1 : `${shellCommand$1} ${commandArgs.trim()}`;
+    commandResult += lodashExports.isEmpty(commandArgs) ? shellCommand$2 : `${shellCommand$2} ${commandArgs.trim()}`;
     // Build the config file content
     const configResult = lodashExports.isEmpty(configObject) ? '# No configuration options were selected to save.' : dump(configObject);
     return {
@@ -31930,7 +33215,7 @@ function parseArgsToFiles(args) {
         configs: configResult,
     };
 }
-function parseArgsToString$1(args) {
+function parseArgsToString$5(args) {
     const { commands, configs } = parseArgsToFiles(args);
     // Combine both file contents into a single preview string
     let finalResult = '-------------Batch File Preview (.bat)-------------';
@@ -31970,9 +33255,9 @@ function parseFilesToArgs(commands, configs) {
     if (!lodashExports.isEmpty(commands)) {
         const lines = commands.split('\n');
         lines.forEach((line) => {
-            if (!line.startsWith(shellCommand$1))
+            if (!line.startsWith(shellCommand$2))
                 return;
-            const clArgs = line.split(`${shellCommand$1} `)[1];
+            const clArgs = line.split(`${shellCommand$2} `)[1];
             if (!clArgs)
                 return;
             const args = clArgs.split('--').filter(Boolean);
@@ -32006,14 +33291,14 @@ function parseFilesToArgs(commands, configs) {
     // 3. Combine and return both results
     return [...commandArgResult, ...configArgResult];
 }
-function parseStringToArgs$1(args) {
+function parseStringToArgs$5(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand$1))
+        if (!line.startsWith(shellCommand$2))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand$1} `)[1];
+        const clArgs = line.split(`${shellCommand$2} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -32040,20 +33325,21 @@ function parseStringToArgs$1(args) {
     });
     return argResult;
 }
-function startInstall$1(stepper) {
-    GitInstaller('SillyTavern', URL$1, stepper);
+function startInstall$5(stepper) {
+    GitInstaller('SillyTavern', URL$2, stepper, [isWin ? 'start.bat' : 'start.sh']);
 }
-async function cardInfo$1(api, callback) {
-    return CardInfo(URL$1, undefined, api, callback);
+async function cardInfo$5(api, callback) {
+    return CardInfo(URL$2, undefined, api, callback);
 }
 const SILLYTAVERN_RM = {
     catchAddress: catchAddress$3,
-    parseArgsToString: parseArgsToString$1,
-    parseStringToArgs: parseStringToArgs$1,
-    cardInfo: cardInfo$1,
-    manager: { startInstall: startInstall$1, updater: { updateType: 'git' } },
+    parseArgsToString: parseArgsToString$5,
+    parseStringToArgs: parseStringToArgs$5,
+    cardInfo: cardInfo$5,
+    manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
 };
 
+/* eslint max-len: 0 */
 const oobaboogaArguments = [
     {
         category: 'Command Line Arguments',
@@ -32101,8 +33387,8 @@ const oobaboogaArguments = [
                     },
                     {
                         name: '--settings',
-                        description: 'Load the default interface settings from this yaml file. See settings-template.yaml' +
-                            ' for an example. If you create a file called settings.yaml, this file will be loaded' +
+                        description: 'Load the default interface settings from this yaml file. See user_data/settings-template.yaml' +
+                            ' for an example. If you create a file called user_data/settings.yaml, this file will be loaded' +
                             ' by default without the need to use the --settings flag.',
                         type: 'File',
                     },
@@ -32132,9 +33418,60 @@ const oobaboogaArguments = [
                     {
                         name: '--loader',
                         description: 'Choose the model loader manually, otherwise, it will get autodetected. Valid options:' +
-                            ' Transformers, llama.cpp, llamacpp_HF, ExLlamav2_HF, ExLlamav2, AutoGPTQ, AutoAWQ.',
+                            ' Transformers, llama.cpp, ExLlamav3_HF, ExLlamav2_HF, ExLlamav2, TensorRT-LLM.',
                         type: 'DropDown',
-                        values: ['Transformers', 'llama.cpp', 'llamacpp_HF', 'ExLlamav2_HF', 'ExLlamav2', 'AutoGPTQ', 'AutoAWQ'],
+                        values: ['Transformers', 'llama.cpp', 'ExLlamav3_HF', 'ExLlamav2_HF', 'ExLlamav2', 'TensorRT-LLM'],
+                    },
+                ],
+            },
+            {
+                section: 'Context and cache',
+                items: [
+                    {
+                        name: '--ctx-size',
+                        description: 'Context size in tokens.',
+                        type: 'Input',
+                        defaultValue: '8192',
+                    },
+                    {
+                        name: '--cache-type',
+                        description: 'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4;' +
+                            ' ExLlamaV3 - fp16, q2 to q8 (can specify k_bits and v_bits separately, e.g. q4_q8).',
+                        type: 'Input',
+                        defaultValue: 'fp16',
+                    },
+                ],
+            },
+            {
+                section: 'Speculative decoding',
+                items: [
+                    {
+                        name: '--model-draft',
+                        description: 'Path to the draft model for speculative decoding.',
+                        type: 'File',
+                    },
+                    {
+                        name: '--draft-max',
+                        description: 'Number of tokens to draft for speculative decoding.',
+                        type: 'Input',
+                        defaultValue: '4',
+                    },
+                    {
+                        name: '--gpu-layers-draft',
+                        description: 'Number of layers to offload to the GPU for the draft model.',
+                        type: 'Input',
+                        defaultValue: '256',
+                    },
+                    {
+                        name: '--device-draft',
+                        description: 'Comma-separated list of devices to use for offloading the draft model. Example: CUDA0,CUDA1',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--ctx-size-draft',
+                        description: 'Size of the prompt context for the draft model. If 0, uses the same as the main model.',
+                        type: 'Input',
+                        defaultValue: '0',
                     },
                 ],
             },
@@ -32147,19 +33484,8 @@ const oobaboogaArguments = [
                         type: 'CheckBox',
                     },
                     {
-                        name: '--auto-devices',
-                        description: 'Automatically split the model across the available GPU(s) and CPU.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--gpu-memory',
-                        description: 'Maximum GPU memory in GiB to be allocated per GPU. Example: --gpu-memory 10 for a' +
-                            ' single GPU, --gpu-memory 10 5 for two GPUs. You can also set values in MiB like --gpu-memory 3500MiB.',
-                        type: 'Input',
-                    },
-                    {
                         name: '--cpu-memory',
-                        description: 'Maximum CPU memory in GiB to allocate for offloaded weights. Same as above.',
+                        description: 'Maximum CPU memory in GiB. Use this for CPU offloading.',
                         type: 'Input',
                     },
                     {
@@ -32169,9 +33495,9 @@ const oobaboogaArguments = [
                     },
                     {
                         name: '--disk-cache-dir',
-                        description: 'Directory to save the disk cache to. Defaults to "cache".',
+                        description: 'Directory to save the disk cache to. Defaults to "user_data/cache".',
                         type: 'Directory',
-                        defaultValue: 'cache',
+                        defaultValue: 'user_data/cache',
                     },
                     {
                         name: '--load-in-8bit',
@@ -32203,16 +33529,6 @@ const oobaboogaArguments = [
                         name: '--no_use_fast',
                         description: "Set use_fast=False while loading the tokenizer (it's True by default). Use this if you" +
                             ' have any problems related to use_fast.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use_flash_attention_2',
-                        description: 'Set use_flash_attention_2=True while loading the model.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--use_eager_attention',
-                        description: 'Set attn_implementation= eager while loading the model.',
                         type: 'CheckBox',
                     },
                     {
@@ -32257,21 +33573,51 @@ const oobaboogaArguments = [
                 section: 'llama.cpp',
                 items: [
                     {
-                        name: '--flash-attn',
-                        description: 'Use flash-attention.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--tensorcores',
-                        description: 'NVIDIA only: use llama-cpp-python compiled with tensor cores support.' +
-                            ' This may increase performance on newer cards.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--n_ctx',
-                        description: 'Size of the prompt context.',
+                        name: '--gpu-layers',
+                        description: 'Number of layers to offload to the GPU.',
                         type: 'Input',
-                        defaultValue: '2048',
+                        defaultValue: '0',
+                    },
+                    {
+                        name: '--mmproj',
+                        description: 'Path to the mmproj file for vision models.',
+                        type: 'File',
+                    },
+                    {
+                        name: '--streaming-llm',
+                        description: 'Activate StreamingLLM to avoid re-evaluating the entire prompt when old messages are removed.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--tensor-split',
+                        description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 60,40.',
+                        type: 'Input',
+                    },
+                    {
+                        name: '--row-split',
+                        description: 'Split the model by rows across GPUs. This may improve multi-gpu performance.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--no-mmap',
+                        description: 'Prevent mmap from being used.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--mlock',
+                        description: 'Force the system to keep the model in RAM.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--no-kv-offload',
+                        description: 'Do not offload the K, Q, V to the GPU. This saves VRAM but reduces the performance.',
+                        type: 'CheckBox',
+                    },
+                    {
+                        name: '--batch-size',
+                        description: 'Maximum number of prompt tokens to batch together when calling llama_eval.',
+                        type: 'Input',
+                        defaultValue: '512',
                     },
                     {
                         name: '--threads',
@@ -32286,80 +33632,31 @@ const oobaboogaArguments = [
                         defaultValue: '0',
                     },
                     {
-                        name: '--no_mul_mat_q',
-                        description: 'Disable the mulmat kernels.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--n_batch',
-                        description: 'Maximum number of prompt tokens to batch together when calling llama_eval.',
-                        type: 'Input',
-                        defaultValue: '512',
-                    },
-                    {
-                        name: '--no-mmap',
-                        description: 'Prevent mmap from being used.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--mlock',
-                        description: 'Force the system to keep the model in RAM.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--n-gpu-layers',
-                        description: 'Number of layers to offload to the GPU.',
-                        type: 'Input',
-                        defaultValue: '0',
-                    },
-                    {
-                        name: '--tensor_split',
-                        description: 'Split the model across multiple GPUs. Comma-separated list of proportions. Example: 60,40.',
-                        type: 'Input',
-                    },
-                    {
                         name: '--numa',
                         description: 'Activate NUMA task allocation for llama.cpp.',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--logits_all',
-                        description: 'Needs to be set for perplexity evaluation to work. Otherwise, ignore it, as it makes' +
-                            ' prompt processing slower.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--no_offload_kqv',
-                        description: 'Do not offload the K, Q, V to the GPU. This saves VRAM but reduces the performance.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--cache-capacity',
-                        description: 'Maximum cache capacity (llama-cpp-python). Examples: 2000MiB, 2GiB. When provided' +
-                            ' without units, bytes will be assumed.',
+                        name: '--extra-flags',
+                        description: 'Extra flags to pass to llama-server. Format: "flag1=value1,flag2,flag3=value3".',
                         type: 'Input',
                     },
+                ],
+            },
+            {
+                section: 'ExLlamaV3',
+                items: [
                     {
-                        name: '--row_split',
-                        description: 'Split the model by rows across GPUs. This may improve multi-gpu performance.',
+                        name: '--enable-tp',
+                        description: 'Enable Tensor Parallelism (TP) to split the model across GPUs.',
                         type: 'CheckBox',
                     },
                     {
-                        name: '--streaming-llm',
-                        description: 'Activate StreamingLLM to avoid re-evaluating the entire prompt when old messages are removed.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--attention-sink-size',
-                        description: 'StreamingLLM: number of sink tokens. Only used if the trimmed prompt does not share' +
-                            ' a prefix with the old prompt.',
-                        type: 'Input',
-                        defaultValue: '5',
-                    },
-                    {
-                        name: '--tokenizer-dir',
-                        description: 'Load the tokenizer from this folder. Meant to be used with llamacpp_HF through the command-line.',
-                        type: 'Directory',
+                        name: '--tp-backend',
+                        description: 'The backend for tensor parallelism. Valid options: native, nccl. Default: native.',
+                        type: 'DropDown',
+                        values: ['native', 'nccl'],
+                        defaultValue: 'native',
                     },
                 ],
             },
@@ -32375,12 +33672,6 @@ const oobaboogaArguments = [
                         name: '--autosplit',
                         description: 'Autosplit the model tensors across the available GPUs. This causes --gpu-split to be ignored.',
                         type: 'CheckBox',
-                    },
-                    {
-                        name: '--max_seq_len',
-                        description: 'Maximum sequence length.',
-                        type: 'Input',
-                        defaultValue: '2048',
                     },
                     {
                         name: '--cfg-cache',
@@ -32409,72 +33700,6 @@ const oobaboogaArguments = [
                         type: 'Input',
                         defaultValue: '2',
                     },
-                    {
-                        name: '--enable_tp',
-                        description: 'Enable Tensor Parallelism (TP) in ExLlamaV2.',
-                        type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'AutoGPTQ',
-                items: [
-                    {
-                        name: '--triton',
-                        description: 'Use triton.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--no_inject_fused_mlp',
-                        description: 'Triton mode only: disable the use of fused MLP, which will use less' +
-                            ' VRAM at the cost of slower inference.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--no_use_cuda_fp16',
-                        description: 'This can make models faster on some systems.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--desc_act',
-                        description: 'For models that do not have a quantize_config.json, this parameter is used to define' +
-                            ' whether to set desc_act or not in BaseQuantizeConfig.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable_exllama',
-                        description: 'Disable ExLlama kernel, which can improve inference speed on some systems.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--disable_exllamav2',
-                        description: 'Disable ExLlamav2 kernel.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--wbits',
-                        description: 'Load a pre-quantized model with specified precision in bits. 2, 3, 4 and 8 are supported.',
-                        type: 'Input',
-                        defaultValue: '0',
-                    },
-                    {
-                        name: '--groupsize',
-                        description: 'Group size.',
-                        type: 'Input',
-                        defaultValue: '-1',
-                    },
-                ],
-            },
-            {
-                section: 'HQQ',
-                items: [
-                    {
-                        name: '--hqq-backend',
-                        description: 'Backend for the HQQ loader. Valid options: PYTORCH, PYTORCH_COMPILE, ATEN.',
-                        type: 'DropDown',
-                        values: ['PYTORCH', 'PYTORCH_COMPILE', 'ATEN'],
-                        defaultValue: 'PYTORCH_COMPILE',
-                    },
                 ],
             },
             {
@@ -32484,17 +33709,6 @@ const oobaboogaArguments = [
                         name: '--cpp-runner',
                         description: "Use the ModelRunnerCpp runner, which is faster than the default ModelRunner but doesn't support streaming yet.",
                         type: 'CheckBox',
-                    },
-                ],
-            },
-            {
-                section: 'Cache',
-                items: [
-                    {
-                        name: '--cache_type',
-                        description: 'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4.',
-                        type: 'Input',
-                        defaultValue: 'fp16',
                     },
                 ],
             },
@@ -32663,84 +33877,6 @@ const oobaboogaArguments = [
                     },
                 ],
             },
-            {
-                section: 'Multimodal',
-                items: [
-                    {
-                        name: '--multimodal-pipeline',
-                        description: 'The multimodal pipeline to use. Examples: llava-7b, llava-13b.',
-                        type: 'Input',
-                    },
-                ],
-            },
-            {
-                section: 'Context and cache',
-                items: [
-                    {
-                        name: '--ctx-size',
-                        description: 'Context size in tokens.',
-                        type: 'Input',
-                        defaultValue: '8192',
-                    },
-                    {
-                        name: '--cache-type',
-                        description: 'KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0; ExLlamaV2 - fp16, fp8, q8, q6, q4;' +
-                            ' ExLlamaV3 - fp16, q2 to q8 (can specify k_bits and v_bits separately, e.g. q4_q8).',
-                        type: 'Input',
-                        defaultValue: 'fp16',
-                    },
-                ],
-            },
-            {
-                section: 'Speculative decoding',
-                items: [
-                    {
-                        name: '--model-draft',
-                        description: 'Path to the draft model for speculative decoding.',
-                        type: 'File',
-                    },
-                    {
-                        name: '--draft-max',
-                        description: 'Number of tokens to draft for speculative decoding.',
-                        type: 'Input',
-                        defaultValue: '4',
-                    },
-                    {
-                        name: '--gpu-layers-draft',
-                        description: 'Number of layers to offload to the GPU for the draft model.',
-                        type: 'Input',
-                        defaultValue: '256',
-                    },
-                    {
-                        name: '--device-draft',
-                        description: 'Comma-separated list of devices to use for offloading the draft model. Example: CUDA0,CUDA1',
-                        type: 'Input',
-                    },
-                    {
-                        name: '--ctx-size-draft',
-                        description: 'Size of the prompt context for the draft model. If 0, uses the same as the main model.',
-                        type: 'Input',
-                        defaultValue: '0',
-                    },
-                ],
-            },
-            {
-                section: 'ExLlamaV3',
-                items: [
-                    {
-                        name: '--enable-tp',
-                        description: 'Enable Tensor Parallelism (TP) to split the model across GPUs.',
-                        type: 'CheckBox',
-                    },
-                    {
-                        name: '--tp-backend',
-                        description: 'The backend for tensor parallelism. Valid options: native, nccl. Default: native.',
-                        type: 'DropDown',
-                        values: ['native', 'nccl'],
-                        defaultValue: 'native',
-                    },
-                ],
-            },
         ],
     },
 ];
@@ -32748,40 +33884,28 @@ const oobaboogaArguments = [
 async function fetchExtensionList() {
     return [
         {
-            url: 'https://github.com/mamei16/LLM_Web_search',
-            title: 'LLM_Web_search',
-            description: 'Lets your LLM search the web.',
-            stars: 155,
-        },
-        {
-            url: 'https://github.com/erew123/alltalk_tts',
-            title: 'AllTalk TTS',
-            description: 'Advanced TTS engine with many features.',
-            stars: 828,
-        },
-        {
-            url: 'https://github.com/Vasyanator/google_translate_plus',
-            title: 'google_translate_plus',
-            description: 'Improved Google Translate extension.',
-            stars: 2,
+            url: 'https://github.com/altoiddealer/ad_discordbot',
+            title: 'ad_discordbot',
+            description: 'Advanced Discord bot with image generation, TTS, voice channels, and extensive customization.',
+            stars: 0,
         },
         {
             url: 'https://github.com/brucepro/Memoir',
             title: 'Memoir+',
-            description: 'Adds memory and personality to your chatbot.',
-            stars: 164,
+            description: 'Adds short and long term memories, emotional polarity tracking for personas.',
+            stars: 224,
         },
         {
-            url: 'https://github.com/RandomInternetPreson/Lucid_Vision',
-            title: 'Lucid_Vision',
-            description: 'Integrates advanced vision models.',
-            stars: 36,
+            url: 'https://github.com/mistbyte-ai/websearch-mistbyte',
+            title: 'WebSearch API (MistByte)',
+            description: 'Local, explicit web search integration without hallucinations.',
+            stars: 0,
         },
         {
-            url: 'https://github.com/RandomInternetPreson/LucidWebSearch',
-            title: 'LucidWebSearch',
-            description: 'Web search extension with OCR support.',
-            stars: 62,
+            url: 'https://github.com/mamei16/context-progress-bar-text-generation-webui',
+            title: 'context-progress-bar',
+            description: 'Real-time progress bar showing context window usage.',
+            stars: 6,
         },
         {
             url: 'https://github.com/innightwolfsleep/text-generation-webui-telegram_bot',
@@ -32790,268 +33914,310 @@ async function fetchExtensionList() {
             stars: 102,
         },
         {
+            url: 'https://github.com/mamei16/LLM_Web_search',
+            title: 'LLM_Web_search',
+            description: 'Give your LLM the ability to search the web.',
+            stars: 275,
+        },
+        {
+            url: 'https://github.com/ill13/AutoSave/',
+            title: 'AutoSave',
+            description: 'Auto save extension for generated text, 100% local.',
+            stars: 25,
+        },
+        {
             url: 'https://github.com/SicariusSicariiStuff/Diffusion_TTS',
             title: 'Diffusion_TTS',
-            description: 'Realistic and fast local TTS using TorToiSe.',
-            stars: 59,
+            description: 'Realistic TTS using faster TorToiSe autoregressive model.',
+            stars: 69,
+        },
+        {
+            url: 'https://github.com/SkinnyDevi/skdv_comfyui',
+            title: 'SKDV ComfyUI Image Generation',
+            description: 'ComfyUI image generation with custom workflows and character prompts.',
+            stars: 14,
         },
         {
             url: 'https://github.com/SkinnyDevi/webui_tavernai_charas',
-            title: 'Integrated TavernUI Characters',
-            description: 'Search, download, and manage TavernAI characters.',
-            stars: 58,
-        },
-        {
-            url: 'https://github.com/DavG25/text-generation-webui-code_syntax_highlight',
-            title: 'code_syntax_highlight',
-            description: 'Adds syntax highlighting to code snippets.',
-            stars: 62,
-        },
-        {
-            url: 'https://github.com/Anglebrackets/web_rag',
-            title: 'web_rag',
-            description: 'Retrieval-Augmented Generation from web content.',
-            stars: 16,
-        },
-        {
-            url: 'https://github.com/Trojaner/text-generation-webui-stable_diffusion',
-            title: 'stable_diffusion',
-            description: 'Integrates Stable Diffusion image generation.',
-            stars: 51,
-        },
-        {
-            url: 'https://github.com/ill13/SpeakLocal/',
-            title: 'SpeakLocal',
-            description: "Local TTS using your host's native engine.",
-            stars: 26,
-        },
-        {
-            url: 'https://github.com/p-e-w/chatbot_clinic',
-            title: 'Chatbot Clinic',
-            description: 'Develop and compare different chatbot personalities.',
-            stars: 53,
-        },
-        {
-            url: 'https://github.com/GuizzyQC/sd_api_pictures_tag_injection',
-            title: 'sd_api_pictures_tag_injection',
-            description: 'Enhances character image consistency with SD.',
-            stars: 24,
-        },
-        {
-            url: 'https://github.com/theubie/complex_memory',
-            title: 'complex_memory',
-            description: 'KoboldAI-like memory for conversations.',
-            stars: 105,
-        },
-        {
-            url: 'https://github.com/BoredBrownBear/text-generation-webui-model_ducking',
-            title: 'Model Ducking',
-            description: 'Automatically unloads and reloads models to save VRAM.',
-            stars: 15,
-        },
-        {
-            url: 'https://github.com/Touch-Night/more_translators',
-            title: 'More translators',
-            description: 'Adds more translation options.',
-            stars: 6,
-        },
-        {
-            url: 'https://github.com/Hellisotherpeople/llm_steer-oobabooga/tree/main',
-            title: 'llm_steer-oobabooga',
-            description: 'Steer LLM outputs towards specific topics.',
-            stars: 40,
-        },
-        {
-            url: 'https://github.com/FartyPants/VirtualLora',
-            title: 'Virtual Lora',
-            description: 'Advanced LoRA management system.',
-            stars: 13,
-        },
-        {
-            url: 'https://github.com/tijo95/piper_tts',
-            title: 'piper_tts',
-            description: 'Fast and multilingual TTS using Piper.',
-            stars: 11,
-        },
-        {
-            url: 'https://github.com/simbake/web_search',
-            title: 'Web_Search',
-            description: 'Simple Google Search integration.',
-            stars: 91,
-        },
-        {
-            url: 'https://github.com/BuffMcBigHuge/text-generation-webui-edge-tts',
-            title: 'edge_tts',
-            description: 'Microsoft Edge TTS with RVC support.',
-            stars: 38,
-        },
-        {
-            url: 'https://github.com/brucepro/LibreTranslate-extension-for-text-generation-webui',
-            title: 'LibreTranslate',
-            description: 'Offline translation using LibreTranslate.',
-            stars: 1,
-        },
-        {
-            url: 'https://github.com/xr4dsh/CodeRunner',
-            title: 'CodeRunner',
-            description: 'Allows your LLM to execute code.',
-            stars: 25,
+            title: 'SKDV Integrated TavernUI Characters',
+            description: 'Search, download, and manage TavernAI character cards.',
+            stars: 69,
         },
         {
             url: 'https://github.com/FartyPants/Playground',
             title: 'Playground for Writers',
-            description: 'Advanced notebook with extra features.',
-            stars: 128,
+            description: 'Advanced notebook with inline instruct, select and insert, LoRA-Rama.',
+            stars: 146,
         },
         {
-            url: 'https://github.com/TheInvisibleMage/ooba_dieroller',
-            title: 'Ooba_Dieroller',
-            description: 'Dice roller for tabletop RPGs.',
-            stars: 4,
+            url: 'https://github.com/FartyPants/VirtualLora',
+            title: 'Virtual Lora',
+            description: 'State of the art LoRA management with custom collections and checkpoints.',
+            stars: 19,
         },
         {
             url: 'https://github.com/FartyPants/Twinbook',
             title: 'Twinbook',
-            description: 'Combined chat and notebook with advanced controls.',
+            description: 'Combines chat and notebook with dual-side control.',
+            stars: 42,
+        },
+        {
+            url: 'https://github.com/erew123/alltalk_tts',
+            title: 'AllTalk v2 TTS',
+            description: 'Multi-engine TTS with Coqui XTTS, F5 TTS, Piper, Parler, and RVC support.',
+            stars: 2242,
+        },
+        {
+            url: 'https://github.com/rsxdalv/text-to-tts-webui',
+            title: 'Text To TTS WebUI',
+            description: 'Connect to TTS WebUI for Kokoro TTS and ChatterBox TTS.',
+            stars: 2,
+        },
+        {
+            url: 'https://github.com/okazaki10/Emotivoice_RVC_TTS',
+            title: 'Emotivoice_RVC_TTS',
+            description: 'Emotivoice extension with RVC custom voice.',
+            stars: 0,
+        },
+        {
+            url: 'https://github.com/h43lb1t0/KokoroTtsTexGernerationWebui',
+            title: 'Kokoro TTS',
+            description: 'TTS with Kokoro v1, 26 different voices.',
+            stars: 21,
+        },
+        {
+            url: 'https://github.com/marcos33998/GPT-SoVITS_TTS',
+            title: 'GPT-SoVITS_TTS',
+            description: 'TTS using GPT-SoVits api_v2.',
+            stars: 0,
+        },
+        {
+            url: 'https://github.com/FartyPants/FPreloader',
+            title: 'FPreloader',
+            description: 'Reload extensions without rebooting web UI.',
+            stars: 19,
+        },
+        {
+            url: 'https://github.com/brucepro/LibreTranslate-extension-for-text-generation-webui',
+            title: 'LibreTranslate',
+            description: 'Offline translation using LibreTranslate local server.',
+            stars: 3,
+        },
+        {
+            url: 'https://github.com/hallucinate-games/oobabooga-jsonformer-plugin',
+            title: 'jsonformer',
+            description: 'Force model output to conform to JSON schema.',
             stars: 28,
+        },
+        {
+            url: 'https://github.com/theubie/complex_memory',
+            title: 'complex_memory',
+            description: 'KoboldAI-like memory extension with keyword-based injection.',
+            stars: 108,
+        },
+        {
+            url: 'https://github.com/Vasyanator/google_translate_plus',
+            title: 'google_translate_plus',
+            description: 'Improved Google Translate with paragraph preservation and large text support.',
+            stars: 4,
+        },
+        {
+            url: 'https://github.com/RandomInternetPreson/Lucid_Vision',
+            title: 'Lucid_Vision',
+            description: 'Integrates advanced vision models for image conversations.',
+            stars: 57,
+        },
+        {
+            url: 'https://github.com/RandomInternetPreson/LucidWebSearch',
+            title: 'LucidWebSearch',
+            description: 'Web search with Chrome and nouget OCR model support.',
+            stars: 72,
+        },
+        {
+            url: 'https://github.com/DavG25/text-generation-webui-code_syntax_highlight',
+            title: 'code_syntax_highlight',
+            description: 'Syntax highlighting for code snippets with copy-to-clipboard.',
+            stars: 69,
+        },
+        {
+            url: 'https://github.com/Anglebrackets/web_rag',
+            title: 'web_rag',
+            description: 'Retrieval-Augmented Generation from web content using Links browser.',
+            stars: 23,
+        },
+        {
+            url: 'https://github.com/Trojaner/text-generation-webui-stable_diffusion',
+            title: 'stable_diffusion',
+            description: 'Integrates Stable Diffusion with face swapping support.',
+            stars: 58,
+        },
+        {
+            url: 'https://github.com/ill13/SpeakLocal/',
+            title: 'SpeakLocal',
+            description: "TTS using host's native engine, 100% local and low resource.",
+            stars: 32,
+        },
+        {
+            url: 'https://github.com/p-e-w/chatbot_clinic',
+            title: 'Chatbot Clinic',
+            description: 'Develop chatbot characters by testing multiple versions simultaneously.',
+            stars: 61,
+        },
+        {
+            url: 'https://github.com/GuizzyQC/sd_api_pictures_tag_injection',
+            title: 'sd_api_pictures_tag_injection',
+            description: 'Inject character tags into SD prompts for stable character images.',
+            stars: 24,
+        },
+        {
+            url: 'https://github.com/BoredBrownBear/text-generation-webui-model_ducking',
+            title: 'Model Ducking',
+            description: 'Auto-unload models after prompts to free VRAM.',
+            stars: 17,
+        },
+        {
+            url: 'https://github.com/Touch-Night/more_translators',
+            title: 'More translators',
+            description: 'Adds Baidu, Google, Bing, DeepL and more translators.',
+            stars: 11,
+        },
+        {
+            url: 'https://github.com/Hellisotherpeople/llm_steer-oobabooga/tree/main',
+            title: 'llm_steer-oobabooga',
+            description: 'Steer LLM outputs using activation engineering with steering vectors.',
+            stars: 44,
+        },
+        {
+            url: 'https://github.com/tijo95/piper_tts',
+            title: 'piper_tts',
+            description: 'Fast multilingual TTS using Piper model.',
+            stars: 14,
+        },
+        {
+            url: 'https://github.com/BuffMcBigHuge/text-generation-webui-edge-tts',
+            title: 'edge_tts',
+            description: "Microsoft's Edge TTS with RVC support.",
+            stars: 42,
+        },
+        {
+            url: 'https://github.com/xr4dsh/CodeRunner',
+            title: 'CodeRunner',
+            description: 'Code execution environment using thebe and jupyter server.',
+            stars: 30,
+        },
+        {
+            url: 'https://github.com/TheInvisibleMage/ooba_dieroller',
+            title: 'Ooba_Dieroller',
+            description: 'Dice notation roller for tabletop RPGs.',
+            stars: 5,
         },
         {
             url: 'https://github.com/yhyu13/Emotivoice_TTS',
             title: 'Emotivoice_TTS',
-            description: 'Fast Chinese-English TTS by NetEase.',
-            stars: 4,
+            description: 'Fast Chinese-English bilingual TTS by NetEase.',
+            stars: 5,
         },
         {
             url: 'https://github.com/bekkayya/session_manager/',
             title: 'Session_Manager',
-            description: 'Save and load sessions with parameters.',
+            description: 'Save/load data and parameters between sessions with autosaving.',
             stars: 7,
         },
         {
             url: 'https://github.com/kanttouchthis/text_generation_webui_xtts',
             title: 'XTTSv2',
-            description: 'XTTSv2 TTS with narrator feature.',
-            stars: 143,
+            description: 'XTTSv2 TTS with narrator feature for asterisk text.',
+            stars: 156,
         },
         {
             url: 'https://github.com/ThereforeGames/echoproof',
             title: 'Echoproof',
-            description: 'Reduces LLM repetition in conversations.',
+            description: 'Minimizes LLM repetition by injecting history into negative prompt.',
             stars: 33,
         },
         {
             url: 'https://github.com/RandomInternetPreson/text-generation-webui-barktts',
-            title: 'bark_tts (forked and updated)',
-            description: 'Updated Bark TTS with multi-language support.',
+            title: 'bark_tts (updated fork)',
+            description: 'Bark TTS with improved special character recognition.',
             stars: 9,
         },
         {
             url: 'https://github.com/minemo/text-generation-webui-barktts',
             title: 'bark_tts (original)',
-            description: 'Multi-lingual Bark TTS.',
-            stars: 35,
+            description: 'Suno-AI Bark TTS with multi-language and sound effects.',
+            stars: 33,
         },
         {
             url: 'https://github.com/asadfgglie/voicevox_tts',
             title: 'voicevox_tts',
-            description: 'Japanese TTS with optional translation.',
-            stars: 4,
-        },
-        {
-            url: 'https://github.com/sammyf/moztts',
-            title: 'moztts',
-            description: 'Integrates Mozilla TTS engine.',
-            stars: 15,
-        },
-        {
-            url: 'https://github.com/jason-brian-anderson/long_term_memory_with_qdrant',
-            title: 'Long term memory with qdrant vector database',
-            description: 'Long-term memory using qdrant database.',
-            stars: 45,
+            description: 'Japanese TTS using VOICEVOX with auto-translation.',
+            stars: 6,
         },
         {
             url: 'https://github.com/GiusTex/EdgeGPT',
             title: 'EdgeGPT',
-            description: 'Provides internet access for your bot.',
-            stars: 126,
+            description: 'Quick internet access for your bot using EdgeGPT.',
+            stars: 124,
         },
         {
             url: 'https://github.com/xanthousm/text-gen-webui-ui_tweaks',
             title: 'UI Tweaks',
-            description: 'Improves UI with sticky tabs and sidebar.',
-            stars: 21,
-        },
-        {
-            url: 'https://github.com/ill13/AutoSave/',
-            title: 'AutoSave',
-            description: 'Automatically saves generated text.',
-            stars: 21,
+            description: 'Sticky tabs and hidden sidebar to reduce scrolling.',
+            stars: 23,
         },
         {
             url: 'https://github.com/ChobPT/oobaboogas-webui-langchain_agent/',
             title: 'webui_langchain_agent',
-            description: 'Creates a Langchain agent for the WebUI.',
+            description: 'Langchain agent using WebUI API and Wikipedia.',
             stars: 73,
         },
         {
             url: 'https://github.com/SnowMasaya/text-generation-webui/tree/deepl/extensions/deepl_translate',
             title: 'deepl_translator',
-            description: 'DeepL translation for input and output.',
+            description: 'Input and output translation using DeepL.',
             stars: 1,
         },
         {
             url: 'https://github.com/chrisrude/oobabot-plugin',
             title: 'oobabot',
-            description: 'Discord bot with command-line and GUI modes.',
-            stars: 40,
+            description: 'Discord bot with command-line and GUI modes, easy setup.',
+            stars: 44,
         },
         {
             url: 'https://github.com/wawawario2/long_term_memory',
             title: 'long_term_memory',
-            description: 'Sophisticated long-term memory for chatbots.',
+            description: 'Sophisticated long term memory for chat mode bots.',
             stars: 304,
         },
         {
             url: 'https://github.com/dibrale/webui-autonomics',
             title: 'webui-autonomics',
-            description: 'Dynamically adjusts parameters based on emotional tone.',
+            description: 'Dynamically adjust parameters to mirror emotional tone.',
             stars: 32,
         },
         {
             url: 'https://github.com/danikhan632/guidance_api',
             title: 'Guidance API',
-            description: 'Enables guidance for generating schemaful data.',
-            stars: 34,
-        },
-        {
-            url: 'https://github.com/hallucinate-games/oobabooga-jsonformer-plugin',
-            title: 'jsonformer',
-            description: 'Forces model output to conform to JSON schema.',
-            stars: 25,
-        },
-        {
-            url: 'https://github.com/FartyPants/FPreloader',
-            title: 'FPreloader',
-            description: 'Reloads extensions without rebooting the WebUI.',
-            stars: 15,
+            description: 'Enable guidance for generating schemaful data.',
+            stars: 36,
         },
         {
             url: 'https://github.com/elPatrixF/dynamic_context',
             title: 'dynamic_context',
-            description: 'Adds dynamic time and date context.',
+            description: 'Replaces {{time}} and {{date}} with current values.',
             stars: 11,
         },
         {
             url: 'https://github.com/janvarev/api_advanced',
             title: 'api_advanced',
-            description: 'Enhanced API with advanced translation logic.',
+            description: 'Enhanced API with auto-translation and caching.',
             stars: 11,
         },
         {
             url: 'https://github.com/janvarev/multi_translate',
             title: 'multi_translate',
-            description: 'Expanded Google Translate with more options.',
-            stars: 25,
+            description: 'Multiple translation engines with toggle functionality.',
+            stars: 28,
         },
         {
             url: 'https://github.com/ChobPT/text-generation-webui-discord_bot',
@@ -33062,9 +34228,13 @@ async function fetchExtensionList() {
     ];
 }
 
-const shellCommand = isWin ? 'call start_windows.bat' : 'bash ./start_linux.sh';
-const URL = 'https://github.com/oobabooga/text-generation-webui';
-function parseArgsToString(args) {
+const shellCommand$1 = isWin
+    ? 'call start_windows.bat'
+    : window.osPlatform === 'darwin'
+        ? 'bash ./start_macos.sh'
+        : 'bash ./start_linux.sh';
+const URL$1 = 'https://github.com/oobabooga/text-generation-webui';
+function parseArgsToString$4(args) {
     let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
     let argResult = '';
     args.forEach(arg => {
@@ -33079,17 +34249,17 @@ function parseArgsToString(args) {
             argResult += `${arg.name} ${arg.value} `;
         }
     });
-    result += lodashExports.isEmpty(argResult) ? shellCommand : `${shellCommand} ${argResult}`;
+    result += lodashExports.isEmpty(argResult) ? shellCommand$1 : `${shellCommand$1} ${argResult}`;
     return result;
 }
-function parseStringToArgs(args) {
+function parseStringToArgs$4(args) {
     const argResult = [];
     const lines = args.split('\n');
     lines.forEach((line) => {
-        if (!line.startsWith(shellCommand))
+        if (!line.startsWith(shellCommand$1))
             return;
         // Extract the command line arguments and clear falsy values
-        const clArgs = line.split(`${shellCommand} `)[1];
+        const clArgs = line.split(`${shellCommand$1} `)[1];
         if (!clArgs)
             return;
         const args = clArgs.split('--').filter(Boolean);
@@ -33116,11 +34286,13 @@ function parseStringToArgs(args) {
     });
     return argResult;
 }
-function startInstall(stepper) {
-    GitInstaller('Text Generation', URL, stepper);
+function startInstall$4(stepper) {
+    GitInstaller('Text Generation', URL$1, stepper, [
+        isWin ? 'start_windows.bat' : isMac ? 'start_macos.sh' : 'start_linux.sh',
+    ]);
 }
-async function cardInfo(api, callback) {
-    return CardInfo(URL, '/extensions', api, callback);
+async function cardInfo$4(api, callback) {
+    return CardInfo(URL$1, '/extensions', api, callback);
 }
 function catchAddress(input) {
     const webUiPattern = /Running on local URL:\s*(https?:\/\/[^\s]+)/i;
@@ -33133,10 +34305,667 @@ function catchAddress(input) {
 const TG_RM = {
     catchAddress,
     fetchExtensionList,
+    parseArgsToString: parseArgsToString$4,
+    parseStringToArgs: parseStringToArgs$4,
+    cardInfo: cardInfo$4,
+    manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
+};
+
+/* eslint max-len: 0 */
+const aiToolkitArguments = [
+    {
+        category: 'Environment Variables',
+        sections: [
+            {
+                section: 'Security',
+                items: [
+                    {
+                        name: 'AI_TOOLKIT_AUTH',
+                        description: 'Set an authentication token to secure the UI. This token will be required to access the web interface. ' +
+                            'Highly recommended when hosting on cloud providers or any network that is not secure.',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const AITOOLKIT_URL = 'https://github.com/ostris/ai-toolkit';
+function parseArgsToString$3(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let envVars = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, aiToolkitArguments);
+        if (argType === 'Input' && arg.value) {
+            // Environment variables
+            if (isWin) {
+                envVars += `set ${arg.name}=${arg.value}\n`;
+            }
+            else {
+                envVars += `export ${arg.name}="${arg.value}"\n`;
+            }
+        }
+    });
+    if (!lodashExports.isEmpty(envVars)) {
+        result += envVars + '\n';
+    }
+    // Set NODE_ENV to empty to prevent Next.js build issues
+    if (isWin) {
+        result += 'set NODE_ENV=\n\n';
+    }
+    else {
+        result += 'export NODE_ENV=""\n\n';
+    }
+    result += 'cd ui\nnpm run build_and_start';
+    return result;
+}
+function parseStringToArgs$3(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        line = line.trim();
+        // Parse Windows environment variables (set VAR=value)
+        if (line.startsWith('set ')) {
+            const envLine = line.substring(4); // Remove 'set '
+            const [name, ...valueParts] = envLine.split('=');
+            const value = valueParts.join('=').trim();
+            if (name && value) {
+                argResult.push({ name: name.trim(), value });
+            }
+        }
+        // Parse Unix environment variables (export VAR="value" or export VAR=value)
+        if (line.startsWith('export ')) {
+            const envLine = line.substring(7); // Remove 'export '
+            const [name, ...valueParts] = envLine.split('=');
+            let value = valueParts.join('=').trim();
+            // Remove quotes if present
+            if (value.startsWith('"') && value.endsWith('"')) {
+                value = value.slice(1, -1);
+            }
+            if (name && value) {
+                argResult.push({ name: name.trim(), value });
+            }
+        }
+    });
+    return argResult;
+}
+function startInstall$3(stepper) {
+    const pipCommand = getPythonCommandByOs().pip;
+    const installReqs = (dir) => {
+        stepper.executeTerminalCommands(`${pipCommand} install -r requirements.txt`, dir).then(() => {
+            stepper.nextStep().then(() => {
+                stepper
+                    .executeTerminalCommands(['cd ui', 'npm install'], dir)
+                    .then(() => {
+                    stepper.setInstalled(dir);
+                    stepper.showFinalStep('success', 'AI Toolkit installation complete!', 'All installation steps completed successfully. Your AI Toolkit environment is now ready for use. ');
+                })
+                    .catch(() => {
+                    stepper.showFinalStep('error', 'Installation failed', 'Failed to install UI dependencies. Please check the logs and try again.');
+                });
+            });
+        });
+    };
+    stepper.initialSteps([
+        'AI Toolkit',
+        'Checking NodeJS',
+        'Clone',
+        'Install PyTorch',
+        'Install Dependencies',
+        'UI Setup',
+        'Finish',
+    ]);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.progressBar(true, 'Checking if NPM is installed...');
+                stepper.ipc.invoke('is_npm_available_at').then((isNpmInstalled) => {
+                    if (isNpmInstalled) {
+                        stepper.nextStep().then(() => {
+                            stepper.cloneRepository(AITOOLKIT_URL).then(dir => {
+                                stepper.nextStep().then(() => {
+                                    stepper
+                                        .executeTerminalCommands(`${pipCommand} install --no-cache-dir torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0` +
+                                        ' --index-url https://download.pytorch.org/whl/cu126', dir)
+                                        .then(() => {
+                                        stepper.nextStep().then(() => {
+                                            installReqs(dir);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    }
+                    else {
+                        stepper.showFinalStep('error', 'NodeJS is not installed!', 'AI Toolkit needs NPM to run the UI! Please install NodeJS then try again.');
+                    }
+                });
+            });
+        }
+        else if (targetDirectory) {
+            // Validate by checking for key files
+            stepper.utils.verifyFilesExist(targetDirectory, ['ui', 'run.py', 'toolkit']).then(filesExist => {
+                if (filesExist) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'AI Toolkit located successfully!', 'Pre-installed AI Toolkit detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.showFinalStep('error', 'Unable to locate AI Toolkit!', 'Please ensure you have selected the correct folder containing the AI Toolkit installation.');
+                }
+            });
+        }
+    });
+}
+async function cardInfo$3(api, callback) {
+    return CardInfo(AITOOLKIT_URL, undefined, api, callback);
+}
+const AITOOLKIT_RM = {
+    catchAddress: catchAddress$3,
+    parseArgsToString: parseArgsToString$3,
+    parseStringToArgs: parseStringToArgs$3,
+    cardInfo: cardInfo$3,
+    manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
+};
+
+/* eslint max-len: 0 */
+const loraManagerArguments = [
+    {
+        category: 'Command Line Arguments',
+        sections: [
+            {
+                section: 'Network',
+                items: [
+                    {
+                        name: '--host',
+                        description: 'Specify the IP address to listen on (default: 127.0.0.1)',
+                        type: 'Input',
+                        defaultValue: '127.0.0.1',
+                    },
+                    {
+                        name: '--port',
+                        description: 'Set the listen port (default: 8188)',
+                        type: 'Input',
+                        defaultValue: 8188,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        category: 'Settings Configuration',
+        sections: [
+            {
+                section: 'General',
+                items: [
+                    {
+                        name: 'civitai_api_key',
+                        description: 'Your CivitAI API key for downloading models. Get it from your CivitAI profile settings. Required for downloading models from CivitAI.',
+                        type: 'Input',
+                    },
+                    {
+                        name: 'use_portable_settings',
+                        description: 'Enable portable mode to store settings.json in the project directory instead of user settings directory. Recommended for standalone installations.',
+                        type: 'CheckBox',
+                        defaultValue: true,
+                    },
+                ],
+            },
+            {
+                section: 'Folder Paths',
+                items: [
+                    {
+                        name: 'loras_folders',
+                        description: 'Comma-separated list of paths to your LoRA model folders. Example: C:/ComfyUI/models/loras, D:/AI/loras',
+                        type: 'Directory',
+                    },
+                    {
+                        name: 'checkpoints_folders',
+                        description: 'Comma-separated list of paths to your checkpoint model folders. Example: C:/ComfyUI/models/checkpoints, D:/AI/checkpoints',
+                        type: 'Directory',
+                    },
+                    {
+                        name: 'embeddings_folders',
+                        description: 'Comma-separated list of paths to your embeddings folders. Example: C:/ComfyUI/models/embeddings, D:/AI/embeddings',
+                        type: 'Directory',
+                    },
+                ],
+            },
+            {
+                section: 'Advanced',
+                items: [
+                    {
+                        name: 'auto_organize_exclusions',
+                        description: 'Comma-separated (,) list of folder paths to exclude from auto-organization. Models in these folders will not be automatically moved.',
+                        type: 'Input',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const LORA_MANAGER_URL = 'https://github.com/willmiao/ComfyUI-Lora-Manager';
+function parseArgsToString$2(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    // Only include command line arguments (--host, --port), not settings
+    args.forEach(arg => {
+        // Skip settings that go to settings.json
+        if (arg.name === 'civitai_api_key' ||
+            arg.name === 'use_portable_settings' ||
+            arg.name === 'loras_folders' ||
+            arg.name === 'checkpoints_folders' ||
+            arg.name === 'embeddings_folders' ||
+            arg.name === 'auto_organize_exclusions') {
+            return;
+        }
+        const argType = getArgumentType(arg.name, loraManagerArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    const pythonCommand = getPythonCommandByOs().python;
+    result += lodashExports.isEmpty(argResult) ? `${pythonCommand} standalone.py` : `${pythonCommand} standalone.py ${argResult}`;
+    return result;
+}
+function parseStringToArgs$2(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        const pythonCommand = getPythonCommandByOs().python;
+        if (!line.startsWith(`${pythonCommand} standalone.py`))
+            return;
+        const clArgs = line.split(`${pythonCommand} standalone.py `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        result.forEach((value) => {
+            if (isValidArg(value.name, loraManagerArguments)) {
+                if (getArgumentType(value.name, loraManagerArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+function startInstall$2(stepper) {
+    const installReqs = (dir) => {
+        stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
+            stepper.setInstalled(dir);
+            stepper.showFinalStep('success', 'ComfyUI LoRA Manager installation complete!', 'All installation steps completed successfully. Your LoRA Manager is now ready for use. ' +
+                'Configure your CivitAI API key and folder paths in the settings to get started.');
+        });
+    };
+    stepper.initialSteps(['ComfyUI LoRA Manager', 'Clone', 'Install Dependencies', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(LORA_MANAGER_URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        installReqs(dir);
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, LORA_MANAGER_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'ComfyUI LoRA Manager located successfully!', 'Pre-installed LoRA Manager detected. Installation skipped as your existing setup is ready to use. ' +
+                        'Make sure to configure your settings.json with CivitAI API key and folder paths.');
+                }
+                else {
+                    stepper.utils.verifyFilesExist(targetDirectory, ['standalone.py', 'requirements.txt']).then(filesExist => {
+                        if (filesExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', `ComfyUI LoRA Manager located successfully!`, `Detected a manual installation of ComfyUI LoRA Manager. Note: Because this is not a Git repository,` +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', 'Unable to locate ComfyUI LoRA Manager!', 'Please ensure you have selected the correct folder containing the LoRA Manager installation.');
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+async function cardInfo$2(api, callback) {
+    return CardInfo(LORA_MANAGER_URL, '', api, callback);
+}
+const LORA_MANAGER_RM = {
+    catchAddress: catchAddress$3,
+    parseArgsToString: parseArgsToString$2,
+    parseStringToArgs: parseStringToArgs$2,
+    cardInfo: cardInfo$2,
+    manager: { startInstall: startInstall$2, updater: { updateType: 'git' } },
+};
+
+const bmaltaisArguments = [
+    {
+        category: 'Command Line Arguments',
+        items: [
+            {
+                name: '--config',
+                description: 'Path to the toml config file for interface defaults',
+                type: 'File',
+                defaultValue: './config.toml',
+            },
+            {
+                name: '--debug',
+                description: 'Enable debug mode.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--listen',
+                description: 'Specify the IP address to listen on for connections to Gradio.',
+                type: 'Input',
+                defaultValue: '127.0.0.1',
+            },
+            {
+                name: '--username',
+                description: 'Set a username for authentication.',
+                type: 'Input',
+                defaultValue: '',
+            },
+            {
+                name: '--password',
+                description: 'Set a password for authentication.',
+                type: 'Input',
+                defaultValue: '',
+            },
+            {
+                name: '--server_port',
+                description: 'Define the port to run the server listener on.',
+                type: 'Input',
+                defaultValue: '0',
+            },
+            {
+                name: '--inbrowser',
+                description: 'Open the Gradio UI in a web browser.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--share',
+                description: 'Share the Gradio UI.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--headless',
+                description: 'Indicates whether the server is headless.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--language',
+                description: 'Set custom language',
+                type: 'Input',
+            },
+            {
+                name: '--use-ipex',
+                description: 'Use IPEX environment.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--use-rocm',
+                description: 'Use ROCm environment.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--do_not_use_shell',
+                description: 'Enforce not to use shell=True when running external commands.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--do_not_share',
+                description: 'Do not share the Gradio UI.',
+                type: 'CheckBox',
+            },
+            {
+                name: '--root_path',
+                description: '`root_path` for Gradio to enable reverse proxy support. e.g. /kohya_ss',
+                type: 'Input',
+            },
+        ],
+    },
+];
+
+const shellCommand = isWin ? 'call gui.bat' : 'bash ./gui.sh';
+const URL = 'https://github.com/bmaltais/kohya_ss';
+function parseArgsToString$1(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let argResult = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, bmaltaisArguments);
+        if (argType === 'CheckBox') {
+            argResult += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            argResult += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            argResult += `${arg.name} ${arg.value} `;
+        }
+    });
+    result += lodashExports.isEmpty(argResult) ? shellCommand : `${shellCommand} ${argResult}`;
+    return result;
+}
+function parseStringToArgs$1(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (!line.startsWith(shellCommand))
+            return;
+        // Extract the command line arguments and clear falsy values
+        const clArgs = line.split(`${shellCommand} `)[1];
+        if (!clArgs)
+            return;
+        const args = clArgs.split('--').filter(Boolean);
+        // Map each argument to an object with id and value
+        const result = args.map((arg) => {
+            const [id, ...value] = arg.trim().split(' ');
+            return {
+                name: `--${id}`,
+                value: value.join(' ').replace(/"/g, ''),
+            };
+        });
+        // Process each argument
+        result.forEach((value) => {
+            // Check if the argument exists or valid
+            if (isValidArg(value.name, bmaltaisArguments)) {
+                if (getArgumentType(value.name, bmaltaisArguments) === 'CheckBox') {
+                    argResult.push({ name: value.name, value: '' });
+                }
+                else {
+                    argResult.push({ name: value.name, value: value.value });
+                }
+            }
+        });
+    });
+    return argResult;
+}
+function startInstall$1(stepper) {
+    GitInstaller("Kohya's GUI", URL, stepper, [isWin ? 'gui.bat' : 'gui.sh']);
+}
+async function cardInfo$1(api, callback) {
+    return CardInfo(URL, undefined, api, callback);
+}
+const KOHYA_GUI_RM = {
+    catchAddress: catchAddress$3,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
+    cardInfo: cardInfo$1,
+    manager: { startInstall: startInstall$1, updater: { updateType: 'git' } },
+};
+
+const smartGalleryArguments = [
+    {
+        category: 'Configuration',
+        sections: [
+            {
+                section: 'Paths',
+                items: [
+                    {
+                        name: 'BASE_OUTPUT_PATH',
+                        type: 'Directory',
+                        description: 'Path to ComfyUI output folder (e.g., C:/ComfyUI/output)',
+                    },
+                    {
+                        name: 'BASE_INPUT_PATH',
+                        type: 'Directory',
+                        description: 'Path to ComfyUI input folder (e.g., C:/ComfyUI/input)',
+                    },
+                    {
+                        name: 'BASE_SMARTGALLERY_PATH',
+                        type: 'Directory',
+                        description: 'Path to SmartGallery data folder (defaults to output path if not set)',
+                    },
+                ],
+            },
+            {
+                section: 'Optional Settings',
+                items: [
+                    {
+                        name: 'FFPROBE_MANUAL_PATH',
+                        type: 'File',
+                        description: 'Path to ffprobe executable (e.g., C:/ffmpeg/bin/ffprobe.exe). ' +
+                            'Required for extracting workflows from video files.',
+                    },
+                    {
+                        name: 'SERVER_PORT',
+                        type: 'Input',
+                        description: 'Port for SmartGallery server',
+                        defaultValue: '8189',
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const SMARTGALLERY_URL = 'https://github.com/biagiomaf/smart-comfyui-gallery';
+function parseArgsToString(args) {
+    let result = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+    let envVars = '';
+    args.forEach(arg => {
+        const argType = getArgumentType(arg.name, smartGalleryArguments);
+        // Include Input, Directory, and File types
+        if ((argType === 'Input' || argType === 'Directory' || argType === 'File') && arg.value) {
+            // Environment variables
+            if (isWin) {
+                envVars += `set ${arg.name}=${arg.value}\n`;
+            }
+            else {
+                envVars += `export ${arg.name}="${arg.value}"\n`;
+            }
+        }
+    });
+    if (envVars) {
+        result += envVars + '\n';
+    }
+    const pythonCmd = getPythonCommandByOs().python;
+    result += `${pythonCmd} smartgallery.py`;
+    return result;
+}
+function parseStringToArgs(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        line = line.trim();
+        // Parse Windows environment variables (set VAR=value)
+        if (line.startsWith('set ')) {
+            const envLine = line.substring(4);
+            const [name, ...valueParts] = envLine.split('=');
+            const value = valueParts.join('=').trim();
+            if (name && value) {
+                argResult.push({ name: name.trim(), value });
+            }
+        }
+        // Parse Unix environment variables (export VAR="value" or export VAR=value)
+        if (line.startsWith('export ')) {
+            const envLine = line.substring(7);
+            const [name, ...valueParts] = envLine.split('=');
+            let value = valueParts.join('=').trim();
+            if (value.startsWith('"') && value.endsWith('"')) {
+                value = value.slice(1, -1);
+            }
+            if (name && value) {
+                argResult.push({ name: name.trim(), value });
+            }
+        }
+    });
+    return argResult;
+}
+function startInstall(stepper) {
+    const pipCommand = getPythonCommandByOs().pip;
+    stepper.initialSteps(['SmartGallery', 'Clone', 'Dependencies', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(SMARTGALLERY_URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper
+                            .executeTerminalCommands(`${pipCommand} install -r requirements.txt`, dir)
+                            .then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.showFinalStep('success', 'SmartGallery installation complete!', 'SmartGallery is ready to use. Configure your paths in the launch arguments and start the gallery.');
+                        })
+                            .catch(() => {
+                            stepper.showFinalStep('error', 'Installation failed', 'Failed to install dependencies.');
+                        });
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, SMARTGALLERY_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'ComfyUI LoRA Manager located successfully!', 'Pre-installed LoRA Manager detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    // Validate by checking for key files
+                    stepper.utils.verifyFilesExist(targetDirectory, ['smartgallery.py', 'requirements.txt']).then(filesExist => {
+                        if (filesExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', `SmartGallery located successfully!`, `Detected a manual installation of SmartGallery. Note: Because this is not a Git repository,` +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', 'Unable to locate SmartGallery!', 'Please ensure you have selected the correct folder containing the SmartGallery installation.');
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+async function cardInfo(api, callback) {
+    return CardInfo(SMARTGALLERY_URL, undefined, api, callback);
+}
+const SMARTGALLERY_RM = {
+    catchAddress: catchAddress$3,
     parseArgsToString,
     parseStringToArgs,
     cardInfo,
     manager: { startInstall, updater: { updateType: 'git' } },
 };
 
-export { parseArgsToFiles as $, AG_ID as A, parseArgsToString$7 as B, COMFYUI_ID as C, parseStringToArgs$7 as D, ONETRAINER_ID as E, A1_ID as F, parseArgsToString$6 as G, parseStringToArgs$6 as H, INVOKEAI_INSTALL_DIR_KEY as I, parseArgsToString$5 as J, KOHYA_ID as K, parseStringToArgs$5 as L, SD_NEXT_ID as M, parseArgsToString$4 as N, OPEN_WEBUI_ID as O, parseStringToArgs$4 as P, SWARM_ID as Q, parseArgsToString$3 as R, SD_AMD_ID as S, TTS_ID as T, parseStringToArgs$3 as U, BOLT_DIY_ID as V, LoLLMS_ID as W, removeAnsi as X, parseArgsToString$2 as Y, parseStringToArgs$2 as Z, SILLYTAVERN_ID as _, getVenvPythonPath as a, parseFilesToArgs as a0, TG_ID as a1, parseArgsToString as a2, parseStringToArgs as a3, SD_FORGE_ID as a4, SD_FORGE_AMD_ID as a5, SD_UIUX_ID as a6, ALLTALK_ID as a7, FLOWISEAI_ID as a8, N8N_ID as a9, COMFYUI_ZLUDA_RM as aA, comfyZludaArguments as aB, SD_AMD_RM as aC, lshqqytigerArguments as aD, SWARM_RM as aE, mcMonkeyArguments as aF, TG_RM as aG, oobaboogaArguments as aH, openArguments as aI, OPEN_WEBUI_RM as aJ, SILLYTAVERN_RM as aK, sillyArguments as aL, GeminiCli_ID as aa, CLAUDE_CODE_ID as ab, APPLIO_ID as ac, flowiseArguments as ad, Flow_RM as ae, GeminiCli_RM as af, geminiCliArguments as ag, ClaudeCode_RM as ah, claudeCodeArguments as ai, n8nArguments as aj, N8N_RM as ak, CardInfo as al, catchAddress$3 as am, GitInstaller as an, AG_RM as ao, gitmyloArguments as ap, fetchExtensionList$2 as aq, lodashExports as ar, automatic1111Arguments as as, COMFYUI_RM as at, comfyArguments as au, INVOKE_RM as av, SD_NEXT_RM as aw, vladmandicArguments as ax, KOHYA_GUI_RM as ay, bmaltaisArguments as az, parseArgsToFiles$2 as b, commonjsGlobal as c, getCdCommand as d, parseArgsToString$e as e, parseStringToArgs$e as f, getDefaultExportFromCjs as g, parseFilesToArgs$1 as h, isWin as i, parseArgsToFiles$1 as j, parseArgsToString$c as k, parseStringToArgs$c as l, parseArgsToString$b as m, parseStringToArgs$b as n, parseArgsToString$a as o, parseFilesToArgs$2 as p, parseStringToArgs$a as q, COMFYUI_ZLUDA_ID as r, parseArgsToString$9 as s, parseStringToArgs$9 as t, INVOKE_ID as u, extractGitUrl as v, INVOKEAI_UPDATE_AVAILABLE_KEY as w, Invoke_Command_ActivateVenv as x, parseArgsToString$8 as y, parseStringToArgs$8 as z };
+export { parseFilesToArgs as $, ALLTALK_ID as A, parseArgsToString$b as B, COMFYUI_ID as C, parseStringToArgs$b as D, Invoke_Command_ActivateVenv as E, A1_ID as F, parseArgsToString$a as G, parseStringToArgs$a as H, INVOKEAI_INSTALL_DIR_KEY as I, parseArgsToString$9 as J, parseStringToArgs$9 as K, SD_NEXT_ID as L, parseArgsToString$8 as M, parseStringToArgs$8 as N, SWARM_ID as O, parseArgsToString$7 as P, parseStringToArgs$7 as Q, BOLT_DIY_ID as R, SD_AMD_ID as S, TTS_ID as T, LoLLMS_ID as U, removeAnsi as V, OPEN_WEBUI_ID as W, parseStringToArgs$6 as X, parseArgsToString$6 as Y, SILLYTAVERN_ID as Z, parseArgsToFiles as _, getVenvPythonPath as a, SILLYTAVERN_RM as a$, TG_ID as a0, parseArgsToString$4 as a1, parseStringToArgs$4 as a2, isMac as a3, AITOOLKIT_ID as a4, parseArgsToString$3 as a5, parseStringToArgs$3 as a6, LORA_MANAGER_ID as a7, parseArgsToString$2 as a8, parseStringToArgs$2 as a9, AG_RM as aA, gitmyloArguments as aB, fetchExtensionList$2 as aC, lodashExports as aD, automatic1111Arguments as aE, COMFYUI_RM as aF, comfyuiArguments as aG, INVOKE_RM as aH, SD_NEXT_RM as aI, vladmandicArguments as aJ, SD_AMD_RM as aK, lshqqytigerArguments as aL, SWARM_RM as aM, mcMonkeyArguments as aN, isPagesFixed as aO, KOHYA_GUI_RM as aP, bmaltaisArguments as aQ, AITOOLKIT_RM as aR, aiToolkitArguments as aS, SMARTGALLERY_RM as aT, smartGalleryArguments as aU, LORA_MANAGER_RM as aV, loraManagerArguments as aW, TG_RM as aX, oobaboogaArguments as aY, openArguments as aZ, OPEN_WEBUI_RM as a_, KOHYA_ID as aa, parseArgsToString$1 as ab, parseStringToArgs$1 as ac, ONETRAINER_ID as ad, SMARTGALLERY_ID as ae, parseArgsToString as af, parseStringToArgs as ag, SD_FORGE_ID as ah, SD_FORGE_AMD_ID as ai, SD_UIUX_ID as aj, FLOWISEAI_ID as ak, N8N_ID as al, GeminiCli_ID as am, CLAUDE_CODE_ID as an, APPLIO_ID as ao, flowiseArguments as ap, Flow_RM as aq, GeminiCli_RM as ar, geminiCliArguments as as, ClaudeCode_RM as at, claudeCodeArguments as au, n8nArguments as av, N8N_RM as aw, CardInfo as ax, catchAddress$3 as ay, GitInstaller as az, parseArgsToFiles$2 as b, sillyArguments as b0, commonjsGlobal as c, getCdCommand as d, parseStringToArgs$g as e, parseArgsToString$g as f, getDefaultExportFromCjs as g, parseFilesToArgs$1 as h, isWin as i, parseArgsToFiles$1 as j, parseStringToArgs$e as k, parseArgsToString$e as l, AG_ID as m, parseArgsToString$d as n, parseStringToArgs$d as o, parseFilesToArgs$2 as p, getPythonCommandByOs as q, parseArgsToString$c as r, parseStringToArgs$c as s, COMFYUI_ZLUDA_ID as t, getArgumentType as u, isValidArg as v, comfyuizludaArguments as w, INVOKE_ID as x, extractGitUrl as y, INVOKEAI_UPDATE_AVAILABLE_KEY as z };

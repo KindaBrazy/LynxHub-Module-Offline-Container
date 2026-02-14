@@ -1,4 +1,4 @@
-import { ad as flowiseArguments, ae as Flow_RM, a8 as FLOWISEAI_ID, af as GeminiCli_RM, ag as geminiCliArguments, aa as GeminiCli_ID, ah as ClaudeCode_RM, ai as claudeCodeArguments, ab as CLAUDE_CODE_ID, aj as n8nArguments, ak as N8N_RM, a9 as N8N_ID, i as isWin, al as CardInfo, am as catchAddress$3, an as GitInstaller, T as TTS_ID, ao as AG_RM, ap as gitmyloArguments, A as AG_ID, a7 as ALLTALK_ID, ac as APPLIO_ID, H as parseStringToArgs, G as parseArgsToString, aq as fetchExtensionList, ar as lodashExports, as as automatic1111Arguments, at as COMFYUI_RM, au as comfyArguments, C as COMFYUI_ID, a4 as SD_FORGE_ID, av as INVOKE_RM, u as INVOKE_ID, aw as SD_NEXT_RM, ax as vladmandicArguments, M as SD_NEXT_ID, F as A1_ID, E as ONETRAINER_ID, ay as KOHYA_GUI_RM, az as bmaltaisArguments, K as KOHYA_ID, aA as COMFYUI_ZLUDA_RM, aB as comfyZludaArguments, r as COMFYUI_ZLUDA_ID, aC as SD_AMD_RM, aD as lshqqytigerArguments, S as SD_AMD_ID, a5 as SD_FORGE_AMD_ID, aE as SWARM_RM, aF as mcMonkeyArguments, Q as SWARM_ID, a6 as SD_UIUX_ID, aG as TG_RM, aH as oobaboogaArguments, a1 as TG_ID, aI as openArguments, aJ as OPEN_WEBUI_RM, O as OPEN_WEBUI_ID, V as BOLT_DIY_ID, aK as SILLYTAVERN_RM, aL as sillyArguments, _ as SILLYTAVERN_ID, W as LoLLMS_ID } from './RendererMethods_D5F5lq.mjs';
+import { ap as flowiseArguments, aq as Flow_RM, ak as FLOWISEAI_ID, ar as GeminiCli_RM, as as geminiCliArguments, am as GeminiCli_ID, at as ClaudeCode_RM, au as claudeCodeArguments, an as CLAUDE_CODE_ID, av as n8nArguments, aw as N8N_RM, al as N8N_ID, i as isWin, ax as CardInfo, ay as catchAddress$3, az as GitInstaller, T as TTS_ID, aA as AG_RM, aB as gitmyloArguments, m as AG_ID, A as ALLTALK_ID, ao as APPLIO_ID, v as isValidArg, u as getArgumentType, w as comfyuizludaArguments, H as parseStringToArgs$1, G as parseArgsToString$1, aC as fetchExtensionList$1, aD as lodashExports, aE as automatic1111Arguments, aF as COMFYUI_RM, aG as comfyuiArguments, C as COMFYUI_ID, ah as SD_FORGE_ID, aH as INVOKE_RM, x as INVOKE_ID, aI as SD_NEXT_RM, aJ as vladmandicArguments, L as SD_NEXT_ID, F as A1_ID, t as COMFYUI_ZLUDA_ID, aK as SD_AMD_RM, aL as lshqqytigerArguments, S as SD_AMD_ID, ai as SD_FORGE_AMD_ID, aM as SWARM_RM, aN as mcMonkeyArguments, O as SWARM_ID, aj as SD_UIUX_ID, aO as isPagesFixed, ad as ONETRAINER_ID, aP as KOHYA_GUI_RM, aQ as bmaltaisArguments, aa as KOHYA_ID, aR as AITOOLKIT_RM, aS as aiToolkitArguments, a4 as AITOOLKIT_ID, aT as SMARTGALLERY_RM, aU as smartGalleryArguments, ae as SMARTGALLERY_ID, aV as LORA_MANAGER_RM, aW as loraManagerArguments, a7 as LORA_MANAGER_ID, aX as TG_RM, aY as oobaboogaArguments, a0 as TG_ID, aZ as openArguments, a_ as OPEN_WEBUI_RM, W as OPEN_WEBUI_ID, R as BOLT_DIY_ID, a$ as SILLYTAVERN_RM, b0 as sillyArguments, Z as SILLYTAVERN_ID, U as LoLLMS_ID } from './RendererMethods_Bco0AM.mjs';
 
 const agentsPage = {
     routePath: 'agents_page',
@@ -47,13 +47,13 @@ const agentsPage = {
     ],
 };
 
-const URL$3 = 'https://github.com/erew123/alltalk_tts';
-function startInstall$9(stepper) {
+const URL$4 = 'https://github.com/erew123/alltalk_tts';
+function startInstall$a(stepper) {
     stepper.initialSteps(['AllTalk TTS', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
             stepper.nextStep().then(() => {
-                stepper.cloneRepository(URL$3).then(dir => {
+                stepper.cloneRepository(URL$4).then(dir => {
                     stepper.nextStep().then(() => {
                         stepper.runTerminalScript(dir, isWin ? 'atsetup.bat' : 'atsetup.sh').then(() => {
                             stepper.setInstalled(dir);
@@ -64,13 +64,24 @@ function startInstall$9(stepper) {
             });
         }
         else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, URL$3).then(isValid => {
+            stepper.utils.validateGitRepository(targetDirectory, URL$4).then(isValid => {
                 if (isValid) {
                     stepper.setInstalled(targetDirectory);
                     stepper.showFinalStep('success', 'AllTalk TTS located successfully!', 'Pre-installed AllTalk TTS detected. Installation skipped as your existing setup is ready to use.');
                 }
                 else {
-                    stepper.showFinalStep('error', 'Unable to locate AllTalk TTS!', 'Please ensure you have selected the correct folder containing the AllTalk TTS repository.');
+                    stepper.utils
+                        .verifyFilesExist(targetDirectory, [isWin ? 'start_alltalk.bat' : 'start_alltalk.sh'])
+                        .then(isExist => {
+                        if (isExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', 'AllTalk TTS located successfully!', 'Detected a manual installation of AllTalk TTS. Note: Because this is not a Git repository,' +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', 'Unable to locate AllTalk TTS!', 'Please ensure you have selected the correct folder containing the AllTalk TTS repository.');
+                        }
+                    });
                 }
             });
         }
@@ -92,8 +103,8 @@ function startUpdate$2(stepper, dir) {
         stepper.showFinalStep('error', 'Unable to update AllTalk TTS');
     }
 }
-async function cardInfo$9(api, callback) {
-    return CardInfo(URL$3, undefined, api, callback);
+async function cardInfo$a(api, callback) {
+    return CardInfo(URL$4, undefined, api, callback);
 }
 function catchAddress$2(input) {
     const gradioDarkPattern = /Gradio Dark.*?:\s*.*?(https?:\/\/.*?)(?=\s|\u001b|$)/i;
@@ -104,21 +115,21 @@ function catchAddress$2(input) {
     return undefined;
 }
 const ALLTALK_RM = {
-    cardInfo: cardInfo$9,
+    cardInfo: cardInfo$a,
     catchAddress: catchAddress$2,
     manager: {
-        startInstall: startInstall$9,
+        startInstall: startInstall$a,
         updater: { updateType: 'stepper', startUpdate: startUpdate$2 },
     },
 };
 
-const URL$2 = 'https://github.com/IAHispano/Applio';
-function startInstall$8(stepper) {
+const URL$3 = 'https://github.com/IAHispano/Applio';
+function startInstall$9(stepper) {
     stepper.initialSteps(['Applio', 'Clone', 'Install', 'Finish']);
     stepper.starterStep().then(({ targetDirectory, chosen }) => {
         if (chosen === 'install') {
             stepper.nextStep().then(() => {
-                stepper.cloneRepository(URL$2).then(dir => {
+                stepper.cloneRepository(URL$3).then(dir => {
                     stepper.nextStep().then(() => {
                         const installCmd = isWin ? '.\\run-install.bat' : 'sh run-install.sh';
                         stepper.executeTerminalCommands(installCmd, dir).then(() => {
@@ -130,31 +141,42 @@ function startInstall$8(stepper) {
             });
         }
         else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, URL$2).then(isValid => {
+            stepper.utils.validateGitRepository(targetDirectory, URL$3).then(isValid => {
                 if (isValid) {
                     stepper.setInstalled(targetDirectory);
                     stepper.showFinalStep('success', 'Applio Found!', 'Existing Applio installation located.');
                 }
                 else {
-                    stepper.showFinalStep('error', 'Invalid Applio Directory', 'The selected directory does not appear to contain a valid Applio installation.');
+                    stepper.utils
+                        .verifyFilesExist(targetDirectory, [isWin ? 'run-applio.bat' : 'run-applio.sh'])
+                        .then(isExist => {
+                        if (isExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', 'Applio located successfully!', 'Detected a manual installation of Applio. Note: Because this is not a Git repository,' +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', 'Invalid Applio Directory', 'The selected directory does not appear to contain a valid Applio installation.');
+                        }
+                    });
                 }
             });
         }
     });
 }
-async function cardInfo$8(api, callback) {
-    return CardInfo(URL$2, undefined, api, callback);
+async function cardInfo$9(api, callback) {
+    return CardInfo(URL$3, undefined, api, callback);
 }
 const APPLIO_RM = {
     catchAddress: catchAddress$3,
-    cardInfo: cardInfo$8,
+    cardInfo: cardInfo$9,
     manager: {
-        startInstall: startInstall$8,
+        startInstall: startInstall$9,
         updater: { updateType: 'git' },
     },
 };
 
-const URL$1 = 'https://github.com/rsxdalv/TTS-WebUI';
+const URL$2 = 'https://github.com/rsxdalv/TTS-WebUI';
 function catchAddress$1(input) {
     if (input.toLowerCase().includes('Installed Packages'.toLowerCase())) {
         return 'http://127.0.0.1:7770';
@@ -163,16 +185,16 @@ function catchAddress$1(input) {
         return undefined;
     }
 }
-function startInstall$7(stepper) {
-    GitInstaller('Text to Speech', URL$1, stepper);
+function startInstall$8(stepper) {
+    GitInstaller('Text to Speech', URL$2, stepper, [isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh']);
 }
-async function cardInfo$7(api, callback) {
-    return CardInfo(URL$1, '/extensions', api, callback);
+async function cardInfo$8(api, callback) {
+    return CardInfo(URL$2, '/extensions', api, callback);
 }
 const TTS_RM = {
     catchAddress: catchAddress$1,
-    cardInfo: cardInfo$7,
-    manager: { startInstall: startInstall$7, updater: { updateType: 'git' } },
+    cardInfo: cardInfo$8,
+    manager: { startInstall: startInstall$8, updater: { updateType: 'git' } },
 };
 
 const audioPage = {
@@ -222,6 +244,277 @@ const audioPage = {
             installationType: 'git',
         },
     ],
+};
+
+const URL$1 = 'https://github.com/Nerogar/OneTrainer';
+function startInstall$7(stepper) {
+    stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(URL$1).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
+                        });
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            stepper.utils.validateGitRepository(targetDirectory, URL$1).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    stepper.utils.verifyFilesExist(targetDirectory, [isWin ? 'start-ui.bat' : 'start-ui.sh']).then(isExist => {
+                        if (isExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', `OneTrainer located successfully!`, `Detected a manual installation of OneTrainer. Note: Because this is not a Git repository,` +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository.');
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+function startUpdate$1(stepper, dir) {
+    stepper.initialSteps(['Update', 'Finish']);
+    if (dir) {
+        stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
+            stepper.setUpdated();
+            stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
+        });
+    }
+    else {
+        stepper.showFinalStep('error', 'Unable to update OneTrainer');
+    }
+}
+async function cardInfo$7(api, callback) {
+    return CardInfo(URL$1, undefined, api, callback);
+}
+const ONETRAINER_RM = {
+    cardInfo: cardInfo$7,
+    manager: {
+        startInstall: startInstall$7,
+        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
+    },
+};
+
+const URL = 'https://github.com/patientx/ComfyUI-Zluda';
+function parseArgsToString(args) {
+    let result = '';
+    let commandLineArgs = '';
+    const envVars = {};
+    // Separate environment variables from command line arguments
+    args.forEach(arg => {
+        if (arg.name === 'PYTHON' ||
+            arg.name === 'GIT' ||
+            arg.name === 'VENV_DIR' ||
+            arg.name === 'MIOPEN_FIND_MODE' ||
+            arg.name === 'MIOPEN_LOG_LEVEL' ||
+            arg.name === 'ZLUDA_COMGR_LOG_LEVEL' ||
+            arg.name === 'TRITON_OVERRIDE_ARCH') {
+            envVars[arg.name] = arg.value;
+            return;
+        }
+        // Build command line arguments
+        const argType = getArgumentType(arg.name, comfyuizludaArguments);
+        if (argType === 'CheckBox') {
+            commandLineArgs += `${arg.name} `;
+        }
+        else if (argType === 'File' || argType === 'Directory') {
+            commandLineArgs += `${arg.name} "${arg.value}" `;
+        }
+        else {
+            commandLineArgs += `${arg.name} ${arg.value} `;
+        }
+    });
+    // Add environment variables in proper order
+    if (envVars.MIOPEN_FIND_MODE !== undefined) {
+        result += `set "MIOPEN_FIND_MODE=${envVars.MIOPEN_FIND_MODE}"\n`;
+    }
+    if (envVars.MIOPEN_LOG_LEVEL !== undefined) {
+        result += `set "MIOPEN_LOG_LEVEL=${envVars.MIOPEN_LOG_LEVEL}"\n`;
+    }
+    if (Object.keys(envVars).some(k => k === 'MIOPEN_FIND_MODE' || k === 'MIOPEN_LOG_LEVEL')) {
+        result += '\n';
+    }
+    if (envVars.PYTHON !== undefined) {
+        result += `set "PYTHON=${envVars.PYTHON}"\n`;
+    }
+    if (envVars.GIT !== undefined) {
+        result += `set "GIT=${envVars.GIT}"\n`;
+    }
+    if (envVars.VENV_DIR !== undefined) {
+        result += `set "VENV_DIR=${envVars.VENV_DIR}"\n`;
+    }
+    if (Object.keys(envVars).some(k => k === 'PYTHON' || k === 'GIT' || k === 'VENV_DIR')) {
+        result += '\n';
+    }
+    result += `set "COMMANDLINE_ARGS=${commandLineArgs.trim()}"\n\n`;
+    if (envVars.TRITON_OVERRIDE_ARCH !== undefined) {
+        result += `set "TRITON_OVERRIDE_ARCH=${envVars.TRITON_OVERRIDE_ARCH}"\n\n`;
+    }
+    if (envVars.ZLUDA_COMGR_LOG_LEVEL !== undefined) {
+        result += `set "ZLUDA_COMGR_LOG_LEVEL=${envVars.ZLUDA_COMGR_LOG_LEVEL}"\n\n`;
+    }
+    return result;
+}
+function parseStringToArgs(args) {
+    const argResult = [];
+    const lines = args.split('\n');
+    lines.forEach((line) => {
+        if (line.startsWith('set')) {
+            const argName = line.split('=')[0].split(' ')[1].trim();
+            const argValue = line.split('=')[1].trim();
+            if (argName === 'PYTHON' || argName === 'VENV_DIR' || argName === 'ZLUDA_COMGR_LOG_LEVEL') {
+                argResult.push({ name: argName, value: argValue });
+            }
+        }
+        else if (line.includes('%PYTHON% main.py')) {
+            // Extract the command line arguments and clear falsy values
+            const clArgs = line.split('%PYTHON% main.py ')[1];
+            if (!clArgs)
+                return;
+            const args = clArgs.split('--').filter(Boolean);
+            // Map each argument to an object with id and value
+            const result = args.map((arg) => {
+                const [id, ...value] = arg.trim().split(' ');
+                return {
+                    name: `--${id}`,
+                    value: value.join(' ').replace(/"/g, ''),
+                };
+            });
+            // Process each argument
+            result.forEach((value) => {
+                // Check if the argument exists or valid
+                if (isValidArg(value.name, comfyuizludaArguments)) {
+                    if (getArgumentType(value.name, comfyuizludaArguments) === 'CheckBox') {
+                        argResult.push({ name: value.name, value: '' });
+                    }
+                    else {
+                        argResult.push({ name: value.name, value: value.value });
+                    }
+                }
+            });
+        }
+    });
+    return argResult;
+}
+async function fetchExtensionList() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
+        const extensions = await response.json();
+        return extensions.custom_nodes.map((extension) => ({
+            title: extension.title,
+            description: extension.description,
+            url: extension.reference,
+        }));
+    }
+    catch (e) {
+        console.error(e);
+        return [];
+    }
+}
+const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
+const customArguments = [
+    { name: 'PYTHON', value: '%~dp0venv\\Scripts\\python.exe' },
+    { name: 'VENV_DIR', value: './venv' },
+    {
+        name: '--disable-auto-launch',
+        value: '',
+    },
+    {
+        name: '--use-quad-cross-attention',
+        value: '',
+    },
+    {
+        name: '--reserve-vram',
+        value: '0.9',
+    },
+    {
+        name: '--disable-async-offload',
+        value: '',
+    },
+    {
+        name: '--disable-pinned-memory',
+        value: '',
+    },
+];
+function startInstall$6(stepper) {
+    stepper.initialSteps(['ComfyUI Zluda', 'Clone', 'Install', 'Finish']);
+    stepper.starterStep().then(({ targetDirectory, chosen }) => {
+        if (chosen === 'install') {
+            stepper.nextStep().then(() => {
+                stepper.cloneRepository(COMFYUI_ZLUDA_URL).then(dir => {
+                    stepper.nextStep().then(() => {
+                        stepper.runTerminalScript(dir, 'install-n.bat').then(() => {
+                            stepper.setInstalled(dir);
+                            stepper.postInstall.config({
+                                customArguments: {
+                                    presetName: 'Zluda Config',
+                                    customArguments,
+                                },
+                            });
+                            stepper.showFinalStep('success', 'ComfyUI-Zluda installation complete!', 'All installation steps completed successfully. Your ComfyUI-Zluda environment is now ready for use.');
+                        });
+                    });
+                });
+            });
+        }
+        else if (targetDirectory) {
+            // First try git validation
+            stepper.utils.validateGitRepository(targetDirectory, COMFYUI_ZLUDA_URL).then(isValid => {
+                if (isValid) {
+                    stepper.setInstalled(targetDirectory);
+                    stepper.postInstall.config({
+                        customArguments: {
+                            presetName: 'Zluda Config',
+                            customArguments,
+                        },
+                    });
+                    stepper.showFinalStep('success', 'ComfyUI-Zluda located successfully!', 'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.');
+                }
+                else {
+                    // Fallback to file-based detection if git validation fails
+                    stepper.utils.verifyFilesExist(targetDirectory, ['comfyui-n.bat', 'comfyui-user.bat']).then(filesExist => {
+                        if (filesExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.postInstall.config({
+                                customArguments: {
+                                    presetName: 'Zluda Config',
+                                    customArguments,
+                                },
+                            });
+                            stepper.showFinalStep('success', 'ComfyUI-Zluda located successfully!', 'Pre-installed ComfyUI-Zluda detected. Installation skipped as your existing setup is ready to use.' +
+                                ' Note: Git repository not detected - updating may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', 'Unable to locate ComfyUI-Zluda!', 'Please ensure you have selected the correct folder containing the ComfyUI-Zluda repository.');
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+async function cardInfo$6(api, callback) {
+    return CardInfo(URL, '/custom_nodes', api, callback);
+}
+const COMFYUI_ZLUDA_RM = {
+    catchAddress: catchAddress$3,
+    fetchExtensionList,
+    parseArgsToString,
+    parseStringToArgs,
+    cardInfo: cardInfo$6,
+    manager: { startInstall: startInstall$6, updater: { updateType: 'git' } },
 };
 
 const invokeArguments = [
@@ -422,7 +715,8 @@ const invokeArguments = [
                     {
                         name: 'max_cache_vram_gb',
                         description: 'The amount of VRAM to use for model caching in GB. If unset, the limit' +
-                            ' will be configured based on the available VRAM and device_working_mem_gb. It is recommended to leave this unset.',
+                            ' will be configured based on the available VRAM and device_working_mem_gb.' +
+                            ' It is recommended to leave this unset.',
                         type: 'Input',
                     },
                     {
@@ -438,6 +732,14 @@ const invokeArguments = [
                             ' memory snapshots, so it is recommended to only enable this feature if you are actively' +
                             " inspecting the model cache's behaviour.",
                         type: 'CheckBox',
+                    },
+                    {
+                        name: 'model_cache_keep_alive_min',
+                        description: 'How long to keep models in cache after last use, in minutes. A value of 0 (the default)' +
+                            ' means models are kept in cache indefinitely. If no model generations occur within the timeout' +
+                            ' period, the model cache is cleared using the same logic as the "Clear Model Cache" button.',
+                        type: 'Input',
+                        defaultValue: '0',
                     },
                     {
                         name: 'enable_partial_loading',
@@ -575,7 +877,8 @@ const invokeArguments = [
                     },
                     {
                         name: 'scan_models_on_startup',
-                        description: 'Scan models directory on startup to register orphaned models. Typically only used with use_memory_db for testing.',
+                        description: 'Scan models directory on startup to register orphaned models. Typically only used with' +
+                            ' use_memory_db for testing.',
                         type: 'CheckBox',
                     },
                     {
@@ -584,92 +887,47 @@ const invokeArguments = [
                             ' Recommended only for development and testing purposes.',
                         type: 'CheckBox',
                     },
+                    {
+                        name: 'allow_unknown_models',
+                        description: 'Allow installation of models that cannot be identified. If enabled, models will be marked as' +
+                            ' unknown in the database with no metadata. If disabled, unknown models' +
+                            ' will be rejected during installation.',
+                        type: 'CheckBox',
+                    },
                 ],
             },
         ],
     },
 ];
 
-const URL = 'https://github.com/Nerogar/OneTrainer';
-function startInstall$6(stepper) {
-    stepper.initialSteps(['OneTrainer', 'Clone', 'Install', 'Finish']);
-    stepper.starterStep().then(({ targetDirectory, chosen }) => {
-        if (chosen === 'install') {
-            stepper.nextStep().then(() => {
-                stepper.cloneRepository(URL).then(dir => {
-                    stepper.nextStep().then(() => {
-                        stepper.runTerminalScript(dir, isWin ? 'install.bat' : 'install.sh').then(() => {
-                            stepper.setInstalled(dir);
-                            stepper.showFinalStep('success', 'OneTrainer installation complete!', 'All installation steps completed successfully. Your OneTrainer environment is now ready for use.');
-                        });
-                    });
-                });
-            });
-        }
-        else if (targetDirectory) {
-            stepper.utils.validateGitRepository(targetDirectory, URL).then(isValid => {
-                if (isValid) {
-                    stepper.setInstalled(targetDirectory);
-                    stepper.showFinalStep('success', 'OneTrainer located successfully!', 'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.');
-                }
-                else {
-                    stepper.showFinalStep('error', 'Unable to locate OneTrainer!', 'Please ensure you have selected the correct folder containing the OneTrainer repository.');
-                }
-            });
-        }
-    });
-}
-function startUpdate$1(stepper, dir) {
-    stepper.initialSteps(['Update', 'Finish']);
-    if (dir) {
-        stepper.runTerminalScript(dir, isWin ? 'update.bat' : 'update.sh').then(() => {
-            stepper.setUpdated();
-            stepper.showFinalStep('success', 'OneTrainer Updated Successfully!');
-        });
-    }
-    else {
-        stepper.showFinalStep('error', 'Unable to update OneTrainer');
-    }
-}
-async function cardInfo$6(api, callback) {
-    return CardInfo(URL, undefined, api, callback);
-}
-const ONETRAINER_RM = {
-    cardInfo: cardInfo$6,
-    manager: {
-        startInstall: startInstall$6,
-        updater: { updateType: 'stepper', startUpdate: startUpdate$1 },
-    },
-};
-
 const A1_URL = 'https://github.com/AUTOMATIC1111/stable-diffusion-webui';
 function startInstall$5(stepper) {
-    GitInstaller('Automatic1111', A1_URL, stepper);
+    GitInstaller('Automatic1111', A1_URL, stepper, [isWin ? 'webui-user.bat' : 'webui.sh']);
 }
 async function cardInfo$5(api, callback) {
     return CardInfo(A1_URL, '/extensions', api, callback);
 }
 const A1_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList,
-    parseArgsToString,
-    parseStringToArgs,
+    fetchExtensionList: fetchExtensionList$1,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$5,
     manager: { startInstall: startInstall$5, updater: { updateType: 'git' } },
 };
 
 const SD_FORGE_URL = 'https://github.com/lllyasviel/stable-diffusion-webui-forge';
 function startInstall$4(stepper) {
-    GitInstaller('SD Forge', SD_FORGE_URL, stepper);
+    GitInstaller('SD Forge', SD_FORGE_URL, stepper, [isWin ? 'webui-user.bat' : 'webui.sh']);
 }
 async function cardInfo$4(api, callback) {
     return CardInfo(SD_FORGE_URL, '/extensions', api, callback);
 }
 const SD_FORGE_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList,
-    parseArgsToString,
-    parseStringToArgs,
+    fetchExtensionList: fetchExtensionList$1,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$4,
     manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
 };
@@ -708,36 +966,37 @@ if (commandLineArgsIndex !== -1 && lshqqytigerForgeArguments[commandLineArgsInde
 
 const SdAMD_URL$1 = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge';
 function startInstall$3(stepper) {
-    GitInstaller('SD Forge AMDGPU', SdAMD_URL$1, stepper);
+    GitInstaller('SD Forge AMDGPU', SdAMD_URL$1, stepper, [isWin ? 'webui-user.bat' : 'webui.sh']);
 }
 async function cardInfo$3(api, callback) {
     return CardInfo(SdAMD_URL$1, 'RendererMethods', api, callback);
 }
 const SD_FORGE_AMD_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList,
-    parseArgsToString,
-    parseStringToArgs,
+    fetchExtensionList: fetchExtensionList$1,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$3,
     manager: { startInstall: startInstall$3, updater: { updateType: 'git' } },
 };
 
 const SdAMD_URL = 'https://github.com/anapnoe/stable-diffusion-webui-ux';
 function startInstall$2(stepper) {
-    GitInstaller('SD UI-UX', SdAMD_URL, stepper);
+    GitInstaller('SD UI-UX', SdAMD_URL, stepper, [isWin ? 'webui-user.bat' : 'webui.sh']);
 }
 async function cardInfo$2(api, callback) {
     return CardInfo(SdAMD_URL, '/extensions', api, callback);
 }
 const SD_UIUX_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList,
-    parseArgsToString,
-    parseStringToArgs,
+    fetchExtensionList: fetchExtensionList$1,
+    parseArgsToString: parseArgsToString$1,
+    parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$2,
     manager: { startInstall: startInstall$2, updater: { updateType: 'git' } },
 };
 
+/* eslint max-len: 0 */
 const imagePage = {
     routePath: 'imageGen_page',
     cards: [
@@ -749,7 +1008,7 @@ const imagePage = {
             repoUrl: 'https://github.com/comfyanonymous/ComfyUI',
             extensionsDir: '/custom_nodes',
             type: 'image',
-            arguments: comfyArguments,
+            arguments: comfyuiArguments,
             methods: COMFYUI_RM,
             installationType: 'git',
         },
@@ -801,26 +1060,6 @@ const imagePage = {
             installationType: 'git',
         },
         {
-            id: ONETRAINER_ID,
-            title: 'OneTrainer',
-            description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
-            repoUrl: 'https://github.com/Nerogar/OneTrainer',
-            type: 'image',
-            methods: ONETRAINER_RM,
-            installationType: 'git',
-        },
-        {
-            id: KOHYA_ID,
-            title: "Kohya's GUI",
-            description: "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
-                'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
-            repoUrl: 'https://github.com/bmaltais/kohya_ss',
-            type: 'image',
-            arguments: bmaltaisArguments,
-            methods: KOHYA_GUI_RM,
-            installationType: 'git',
-        },
-        {
             id: COMFYUI_ZLUDA_ID,
             title: 'ComfyUI Zluda',
             description: 'The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.' +
@@ -828,7 +1067,7 @@ const imagePage = {
             repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
             extensionsDir: '/custom_nodes',
             type: 'image',
-            arguments: comfyZludaArguments,
+            arguments: comfyuizludaArguments,
             methods: COMFYUI_ZLUDA_RM,
             installationType: 'git',
         },
@@ -884,6 +1123,60 @@ const imagePage = {
         },
     ],
 };
+if (!isPagesFixed) {
+    imagePage.cards.push({
+        id: ONETRAINER_ID,
+        title: 'OneTrainer',
+        description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
+        repoUrl: 'https://github.com/Nerogar/OneTrainer',
+        type: 'image',
+        methods: ONETRAINER_RM,
+        installationType: 'git',
+    }, {
+        id: KOHYA_ID,
+        title: "Kohya's GUI",
+        description: "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
+            'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
+        repoUrl: 'https://github.com/bmaltais/kohya_ss',
+        type: 'image',
+        arguments: bmaltaisArguments,
+        methods: KOHYA_GUI_RM,
+        installationType: 'git',
+    }, {
+        id: AITOOLKIT_ID,
+        title: 'AI Toolkit',
+        description: 'AI Toolkit is an all-in-one training suite for diffusion models. Supports training LoRA models for FLUX.1, ' +
+            'Stable Diffusion, and other diffusion models on consumer-grade hardware. Features a web-based UI for easy ' +
+            'configuration and monitoring of training jobs.',
+        repoUrl: 'https://github.com/ostris/ai-toolkit',
+        type: 'image',
+        arguments: aiToolkitArguments,
+        methods: AITOOLKIT_RM,
+        installationType: 'git',
+    }, {
+        id: SMARTGALLERY_ID,
+        title: 'SmartGallery',
+        description: 'A fast, offline-capable gallery for ComfyUI outputs with workflow extraction. Browse and manage your ' +
+            'generated images and videos with automatic thumbnail generation, workflow metadata extraction, and ' +
+            'advanced filtering. Works independently of ComfyUI.',
+        repoUrl: 'https://github.com/biagiomaf/smart-comfyui-gallery',
+        type: 'image',
+        arguments: smartGalleryArguments,
+        methods: SMARTGALLERY_RM,
+        installationType: 'git',
+    }, {
+        id: LORA_MANAGER_ID,
+        title: 'ComfyUI LoRA Manager',
+        description: 'A comprehensive toolset that streamlines organizing, downloading, and applying LoRA models in ComfyUI. ' +
+            'Features recipe management, checkpoint organization, one-click workflow integration, and a browser extension ' +
+            'for Civitai. Access the interface at http://localhost:8188/loras',
+        repoUrl: 'https://github.com/willmiao/ComfyUI-Lora-Manager',
+        type: 'image',
+        arguments: loraManagerArguments,
+        methods: LORA_MANAGER_RM,
+        installationType: 'git',
+    });
+}
 
 const REPO_URL = 'https://github.com/stackblitz-labs/bolt.diy';
 const StarterSteps = ['Start', 'Check NodeJS', 'Bolt.Diy', 'Packages', 'Done!'];
@@ -925,7 +1218,16 @@ function startInstall$1(stepper) {
                     stepper.showFinalStep('success', `${title} located successfully!`, `Pre-installed ${title} detected. Installation skipped as your existing setup is ready to use.`);
                 }
                 else {
-                    stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                    stepper.utils.verifyFilesExist(targetDirectory, ['package.json']).then(isExist => {
+                        if (isExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', `${title} located successfully!`, `Detected a manual installation of ${title}. Note: Because this is not a Git repository,` +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                        }
+                    });
                 }
             });
         }
@@ -973,11 +1275,15 @@ function startInstall(stepper) {
                 stepper.cloneRepository(url).then(dir => {
                     stepper.nextStep().then(() => {
                         stepper.executeTerminalCommands('git submodule update --init --recursive', dir).then(() => {
-                            stepper.executeTerminalCommands('pip install -e .', `${dir}${isWin ? '\\' : '/'}lollms_core`).then(() => {
-                                stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-                                    stepper.setInstalled(dir);
-                                    stepper.showFinalStep('success', `${title} installation complete!`, `All installation steps completed successfully. Your ${title} environment is now ready for use.`);
-                                });
+                            stepper
+                                .executeTerminalCommands([
+                                'pip install -r requirements.txt',
+                                'pip install -e .',
+                                `${dir}${isWin ? '\\' : '/'}lollms_core`,
+                            ])
+                                .then(() => {
+                                stepper.setInstalled(dir);
+                                stepper.showFinalStep('success', `${title} installation complete!`, `All installation steps completed successfully. Your ${title} environment is now ready for use.`);
                             });
                         });
                     });
@@ -991,7 +1297,16 @@ function startInstall(stepper) {
                     stepper.showFinalStep('success', `${title} located successfully!`, `Pre-installed ${title} detected. Installation skipped as your existing setup is ready to use.`);
                 }
                 else {
-                    stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                    stepper.utils.verifyFilesExist(targetDirectory, ['app.py']).then(isExist => {
+                        if (isExist) {
+                            stepper.setInstalled(targetDirectory);
+                            stepper.showFinalStep('success', `${title} located successfully!`, `Detected a manual installation of ${title}. Note: Because this is not a Git repository,` +
+                                ' automatic updates and certain version-dependent features may not work as expected.');
+                        }
+                        else {
+                            stepper.showFinalStep('error', `Unable to locate ${title}!`, `Please ensure you have selected the correct folder containing the ${title} repository.`);
+                        }
+                    });
                 }
             });
         }
@@ -1068,6 +1383,71 @@ const textPage = {
     ],
 };
 
+/* eslint max-len: 0 */
+const toolsPage = {
+    routePath: 'tools_page',
+    cards: [
+        {
+            id: ONETRAINER_ID,
+            title: 'OneTrainer',
+            description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
+            repoUrl: 'https://github.com/Nerogar/OneTrainer',
+            type: 'image',
+            methods: ONETRAINER_RM,
+            installationType: 'git',
+        },
+        {
+            id: KOHYA_ID,
+            title: "Kohya's GUI",
+            description: "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
+                'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
+            repoUrl: 'https://github.com/bmaltais/kohya_ss',
+            type: 'image',
+            arguments: bmaltaisArguments,
+            methods: KOHYA_GUI_RM,
+            installationType: 'git',
+        },
+        {
+            id: AITOOLKIT_ID,
+            title: 'AI Toolkit',
+            description: 'AI Toolkit is an all-in-one training suite for diffusion models. Supports training LoRA models for FLUX.1, ' +
+                'Stable Diffusion, and other diffusion models on consumer-grade hardware. Features a web-based UI for easy ' +
+                'configuration and monitoring of training jobs.',
+            repoUrl: 'https://github.com/ostris/ai-toolkit',
+            type: 'image',
+            arguments: aiToolkitArguments,
+            methods: AITOOLKIT_RM,
+            installationType: 'git',
+        },
+        {
+            id: SMARTGALLERY_ID,
+            title: 'SmartGallery',
+            description: 'A fast, offline-capable gallery for ComfyUI outputs with workflow extraction. Browse and manage your ' +
+                'generated images and videos with automatic thumbnail generation, workflow metadata extraction, and ' +
+                'advanced filtering. Works independently of ComfyUI.',
+            repoUrl: 'https://github.com/biagiomaf/smart-comfyui-gallery',
+            type: 'image',
+            arguments: smartGalleryArguments,
+            methods: SMARTGALLERY_RM,
+            installationType: 'git',
+        },
+        {
+            id: LORA_MANAGER_ID,
+            title: 'ComfyUI LoRA Manager',
+            description: 'A comprehensive toolset that streamlines organizing, downloading, and applying LoRA models in ComfyUI. ' +
+                'Features recipe management, checkpoint organization, one-click workflow integration, and a browser extension ' +
+                'for Civitai. Access the interface at http://localhost:8188/loras',
+            repoUrl: 'https://github.com/willmiao/ComfyUI-Lora-Manager',
+            type: 'image',
+            arguments: loraManagerArguments,
+            methods: LORA_MANAGER_RM,
+            installationType: 'git',
+        },
+    ],
+};
+
 const rendererModules = [imagePage, textPage, audioPage, agentsPage];
+if (isPagesFixed)
+    rendererModules.push(toolsPage);
 
 export { rendererModules as default };

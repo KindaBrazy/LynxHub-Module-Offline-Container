@@ -183,3 +183,5 @@ export async function CardInfo(
     descManager.updateItem(1, 0, formatSize(result));
   });
 }
+
+export const isPagesFixed = typeof window !== 'undefined' && window.LynxHub && window.LynxHub.buildNumber > 45;

@@ -16,6 +16,7 @@ import {
   SMARTGALLERY_ID,
   SWARM_ID,
 } from '../../Constants';
+import {isPagesFixed} from '../../Utils/RendererUtils';
 import aiToolkitArguments from '../Tools/AI Toolkit (ostris)/Arguments';
 import AITOOLKIT_RM from '../Tools/AI Toolkit (ostris)/RendererMethods';
 import loraManagerArguments from '../Tools/ComfyUI-Lora-Manager (willmiao)/Arguments';
@@ -45,8 +46,6 @@ import mcMonkeyArguments from './SwarmUI (mcmonkeyprojects)/Arguments';
 import SWARM_RM from './SwarmUI (mcmonkeyprojects)/RendererMethods';
 
 /* eslint max-len: 0 */
-
-const isPagesFixed = typeof window !== 'undefined' && window.LynxHub.buildNumber > 45;
 
 const imagePage: PagesData = {
   routePath: 'imageGen_page',

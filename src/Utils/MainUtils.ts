@@ -5,6 +5,7 @@ import path, {join} from 'node:path';
 import axios from 'axios';
 import fs from 'graceful-fs';
 import {existsSync} from 'graceful-fs';
+import {RemoteWithRefs, simpleGit} from 'simple-git';
 import treeKill from 'tree-kill';
 import which from 'which';
 
@@ -271,6 +272,26 @@ export function isVenvDirectory(dirPath: string): boolean {
     return existsSync(libPath);
   } catch (err) {
     console.error(`Error checking if directory is a venv: ${err}`);
+    return false;
+  }
+}
+
+function formatGitUrl(url: string): string | undefined {
+  const githubRegex = /^https:\/\/github\.com\/.+$/;
+
+  if (!githubRegex.test(url)) {
+    console.log(`This url: ${url} isn't a GitHub Repository`);
+    return undefined;
+  }
+
+  return url.endsWith('.git') ? url.slice(0, -4) : url;
+}
+
+export async function isGitRoot(dir: string, repoUrl: string): Promise<boolean> {
+  try {
+    const result: RemoteWithRefs[] = await simpleGit(dir).getRemotes(true);
+    return formatGitUrl(result[0]?.refs.fetch) === formatGitUrl(repoUrl);
+  } catch (_) {
     return false;
   }
 }

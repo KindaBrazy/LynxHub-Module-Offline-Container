@@ -69,7 +69,7 @@ export function removeEscapes(str: string) {
   return str.replace(/\\(.)/gm, '$1');
 }
 
-export function GitInstaller(title: string, url: string, stepper: InstallationStepper) {
+export function GitInstaller(title: string, url: string, stepper: InstallationStepper, locateExisting?: string[]) {
   stepper.initialSteps([title, 'Clone', 'Finish']);
   stepper.starterStep().then(({targetDirectory, chosen}) => {
     if (chosen === 'install') {
@@ -93,11 +93,30 @@ export function GitInstaller(title: string, url: string, stepper: InstallationSt
             `Pre-installed ${title} detected. Installation skipped as your existing setup is ready to use.`,
           );
         } else {
-          stepper.showFinalStep(
-            'error',
-            `Unable to locate ${title}!`,
-            `Please ensure you have selected the correct folder containing the ${title} repository.`,
-          );
+          if (locateExisting) {
+            stepper.utils.verifyFilesExist(targetDirectory, locateExisting).then(isExist => {
+              if (isExist) {
+                stepper.showFinalStep(
+                  'success',
+                  `${title} located successfully!`,
+                  `Detected a manual installation of ${title}. Note: Because this is not a Git repository,` +
+                    ' automatic updates and certain version-dependent features may not work as expected.',
+                );
+              } else {
+                stepper.showFinalStep(
+                  'error',
+                  `Unable to locate ${title}!`,
+                  `Please ensure you have selected the correct folder containing the ${title} repository.`,
+                );
+              }
+            });
+          } else {
+            stepper.showFinalStep(
+              'error',
+              `Unable to locate ${title}!`,
+              `Please ensure you have selected the correct folder containing the ${title} repository.`,
+            );
+          }
         }
       });
     }

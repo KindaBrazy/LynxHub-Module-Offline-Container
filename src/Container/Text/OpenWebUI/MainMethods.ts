@@ -44,7 +44,7 @@ async function readArgs(configDir?: string) {
 }
 
 async function isInstalled(utils: MainModuleUtils): Promise<boolean> {
-  const result = await getPipPackageVersion('open-webui', utils);
+  const result = await getPipPackageVersion('open-webui', utils, OPEN_WEBUI_ID);
   return !!result;
 }
 

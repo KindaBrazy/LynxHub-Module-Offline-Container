@@ -10,7 +10,6 @@ import treeKill from 'tree-kill';
 import which from 'which';
 
 import {ChosenArgument, MainModuleUtils} from '../../../src/common/types/plugins/modules';
-import {OPEN_WEBUI_ID} from '../Constants';
 import {getVenvPythonPath, isWin} from './CrossUtils';
 
 export const LINE_ENDING = isWin ? '\r' : '\n';
@@ -168,7 +167,11 @@ export async function checkWhich(name: string) {
   }
 }
 
-export async function getPipPackageVersion(packageName: string, utils: MainModuleUtils): Promise<string | null> {
+export async function getPipPackageVersion(
+  packageName: string,
+  utils: MainModuleUtils,
+  id?: string,
+): Promise<string | null> {
   return new Promise(resolve => {
     const ptyProcess = utils.pty.spawn(determineShell(), [], {});
 
@@ -193,7 +196,7 @@ export async function getPipPackageVersion(packageName: string, utils: MainModul
       }
     });
 
-    utils.getExtensions_TerminalPreCommands(OPEN_WEBUI_ID).forEach(command => ptyProcess.write(command));
+    if (id) utils.getExtensions_TerminalPreCommands(id).forEach(command => ptyProcess.write(command));
 
     ptyProcess.write(`pip show ${packageName}${LINE_ENDING}`);
     ptyProcess.write(`exit${LINE_ENDING}`);

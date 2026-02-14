@@ -40,8 +40,6 @@ import Rsx_MM from './Container/Audio/Text to Speech (rsxdalv)/MainMethods';
 import Comfy_MM from './Container/Image/ComfyUI (comfyanonymous)/MainMethods';
 import ComfyZluda_MM from './Container/Image/ComfyUI Zluda (patientx)/MainMethods';
 import Invoke_MM from './Container/Image/InvokeAI/MainMethods';
-import Bmaltais_MM from './Container/Image/Kohyas GUI (bmaltais)/MainMethods';
-import Nerogar_MM from './Container/Image/OneTrainer (Nerogar)/MainMethods';
 import A1_MM from './Container/Image/SD (AUTOMATIC1111)/MainMethods';
 import Ls_MM from './Container/Image/SD AMDGPU (lshqqytiger)/MainMethods';
 import Vlad_MM from './Container/Image/SD Next (vladmandic)/MainMethods';
@@ -53,6 +51,8 @@ import Silly_MM from './Container/Text/SillyTavern/MainMethods';
 import Ooba_MM from './Container/Text/Text Generation (oobabooga)/MainMethods';
 import AIToolkit_MM from './Container/Tools/AI Toolkit (ostris)/MainMethods';
 import LoraManager_MM from './Container/Tools/ComfyUI-Lora-Manager (willmiao)/MainMethods';
+import Bmaltais_MM from './Container/Tools/Kohyas GUI (bmaltais)/MainMethods';
+import Nerogar_MM from './Container/Tools/OneTrainer (Nerogar)/MainMethods';
 import SmartGallery_MM from './Container/Tools/SmartGallery (biagiomaf)/MainMethods';
 
 export default async function initialModule(utils: MainModuleUtils): Promise<MainModules[]> {

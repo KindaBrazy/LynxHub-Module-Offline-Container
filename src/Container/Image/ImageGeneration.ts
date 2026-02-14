@@ -21,6 +21,9 @@ import aiToolkitArguments from '../Tools/AI Toolkit (ostris)/Arguments';
 import AITOOLKIT_RM from '../Tools/AI Toolkit (ostris)/RendererMethods';
 import loraManagerArguments from '../Tools/ComfyUI-Lora-Manager (willmiao)/Arguments';
 import LORA_MANAGER_RM from '../Tools/ComfyUI-Lora-Manager (willmiao)/RendererMethods';
+import bmaltaisArguments from '../Tools/Kohyas GUI (bmaltais)/Arguments';
+import KOHYA_GUI_RM from '../Tools/Kohyas GUI (bmaltais)/RendererMethods';
+import ONETRAINER_RM from '../Tools/OneTrainer (Nerogar)/RendererMethods';
 import smartGalleryArguments from '../Tools/SmartGallery (biagiomaf)/Arguments';
 import SMARTGALLERY_RM from '../Tools/SmartGallery (biagiomaf)/RendererMethods';
 import comfyArguments from './ComfyUI (comfyanonymous)/Arguments';
@@ -29,9 +32,6 @@ import comfyZludaArguments from './ComfyUI Zluda (patientx)/Arguments';
 import COMFYUI_ZLUDA_RM from './ComfyUI Zluda (patientx)/RendererMethods';
 import invokeArguments from './InvokeAI/Arguments';
 import INVOKE_RM from './InvokeAI/RendererMethods';
-import bmaltaisArguments from './Kohyas GUI (bmaltais)/Arguments';
-import KOHYA_GUI_RM from './Kohyas GUI (bmaltais)/RendererMethods';
-import ONETRAINER_RM from './OneTrainer (Nerogar)/RendererMethods';
 import automatic1111Arguments from './SD (AUTOMATIC1111)/Arguments';
 import A1_RM from './SD (AUTOMATIC1111)/RendererMethods';
 import lshqqytigerArguments from './SD AMDGPU (lshqqytiger)/Arguments';
@@ -113,27 +113,6 @@ const imagePage: PagesData = {
       installationType: 'git',
     },
     {
-      id: ONETRAINER_ID,
-      title: 'OneTrainer',
-      description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
-      repoUrl: 'https://github.com/Nerogar/OneTrainer',
-      type: 'image',
-      methods: ONETRAINER_RM,
-      installationType: 'git',
-    },
-    {
-      id: KOHYA_ID,
-      title: "Kohya's GUI",
-      description:
-        "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
-        'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
-      repoUrl: 'https://github.com/bmaltais/kohya_ss',
-      type: 'image',
-      arguments: bmaltaisArguments,
-      methods: KOHYA_GUI_RM,
-      installationType: 'git',
-    },
-    {
       id: COMFYUI_ZLUDA_ID,
       title: 'ComfyUI Zluda',
       description:
@@ -204,6 +183,27 @@ const imagePage: PagesData = {
 
 if (!isPagesFixed) {
   imagePage.cards.push(
+    {
+      id: ONETRAINER_ID,
+      title: 'OneTrainer',
+      description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
+      repoUrl: 'https://github.com/Nerogar/OneTrainer',
+      type: 'image',
+      methods: ONETRAINER_RM,
+      installationType: 'git',
+    },
+    {
+      id: KOHYA_ID,
+      title: "Kohya's GUI",
+      description:
+        "This repository primarily provides a Gradio GUI for Kohya's Stable Diffusion trainers." +
+        'The GUI allows you to set the training parameters and generate and run the required CLI commands to train the model.',
+      repoUrl: 'https://github.com/bmaltais/kohya_ss',
+      type: 'image',
+      arguments: bmaltaisArguments,
+      methods: KOHYA_GUI_RM,
+      installationType: 'git',
+    },
     {
       id: AITOOLKIT_ID,
       title: 'AI Toolkit',

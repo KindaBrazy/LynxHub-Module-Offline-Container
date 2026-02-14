@@ -6,10 +6,6 @@
 
 A collection of local AI tools with **full support** for **arguments**, **configurations**, and **extensions**.
 
-[![GitHub Release][github-release-shield]](https://github.com/KindaBrazy/LynxHub-Module-Offline-Container/releases)
-[![GitHub Release Date][github-release-date-shield]](https://github.com/KindaBrazy/LynxHub-Module-Offline-Container/releases)
-[![GitHub Repo stars][github-repo-stars-shield]](https://github.com/KindaBrazy/LynxHub-Module-Offline-Container)
-
 <img src="resources/screenshot.jpg">
 
 </div>
@@ -53,28 +49,16 @@ A collection of local AI tools with **full support** for **arguments**, **config
 
 ### 🤖 Agents
 
-| Developer                                                                                 | Project          | GitHub                                                  |
-| ----------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------- |
-| <img height='20' src="https://avatars.githubusercontent.com/u/128289781?s=20&v=4"> FlowiseAI       | Flowise         | [Link](https://github.com/FlowiseAI/Flowise)               |
-| <img height='20' src="https://avatars.githubusercontent.com/u/161781182?s=20&v=4"> google-gemini   | gemini-cli      | [Link](https://github.com/google-gemini/gemini-cli)        |
-| <img height='20' src="https://avatars.githubusercontent.com/u/45487711?s=20&v=4"> n8n-io           | n8n             | [Link](https://github.com/n8n-io/n8n)                      |
+| Developer                                                                                        | Project    | GitHub                                              |
+| ------------------------------------------------------------------------------------------------ | ---------- | --------------------------------------------------- |
+| <img height='20' src="https://avatars.githubusercontent.com/u/128289781?s=20&v=4"> FlowiseAI     | Flowise    | [Link](https://github.com/FlowiseAI/Flowise)        |
+| <img height='20' src="https://avatars.githubusercontent.com/u/161781182?s=20&v=4"> google-gemini | gemini-cli | [Link](https://github.com/google-gemini/gemini-cli) |
+| <img height='20' src="https://avatars.githubusercontent.com/u/45487711?s=20&v=4"> n8n-io         | n8n        | [Link](https://github.com/n8n-io/n8n)               |
 
+### Tools
 
-## 📊 Module Statistics
-
-| Category         | Number of Modules |
-| ---------------- | ----------------- |
-| **Overall**      | **23**            |
-| Image Generation | 12                |
-| Text Generation  | 8                 |
-| Audio Generation | 3                 |
-
-## 🛠️ Development
-
-Interested in creating a module and published by your own?
-Check out **[Module Development Guide](https://github.com/KindaBrazy/LynxHub-Module-Guide)** for
-detailed instructions and best practices.
-
-[github-release-shield]: https://img.shields.io/github/v/release/KindaBrazy/LynxHub-Module-Offline-Container?include_prereleases&style=flat&labelColor=%23212121&color=%2300A9FF&label=Version&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9IndoaXRlIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNCAyMmgtNGMtMy43NzEgMC01LjY1NyAwLTYuODI4LTEuMTcyQzIgMTkuNjU3IDIgMTcuNzcxIDIgMTR2LTRjMC0zLjc3MSAwLTUuNjU3IDEuMTcyLTYuODI4QzQuMzQzIDIgNi4yMzkgMiAxMC4wMyAyYy42MDYgMCAxLjA5MSAwIDEuNS4wMTdjLS4wMTMuMDgtLjAyLjE2MS0uMDIuMjQ0bC0uMDEgMi44MzRjMCAxLjA5NyAwIDIuMDY3LjEwNSAyLjg0OGMuMTE0Ljg0Ny4zNzUgMS42OTQgMS4wNjcgMi4zODZjLjY5LjY5IDEuNTM4Ljk1MiAyLjM4NSAxLjA2NmMuNzgxLjEwNSAxLjc1MS4xMDUgMi44NDguMTA1aDQuMDUyYy4wNDMuNTM0LjA0MyAxLjE5LjA0MyAyLjA2M1YxNGMwIDMuNzcxIDAgNS42NTctMS4xNzIgNi44MjhDMTkuNjU3IDIyIDE3Ljc3MSAyMiAxNCAyMiIgY2xpcC1ydWxlPSJldmVub2RkIiBvcGFjaXR5PSIwLjUiLz48cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTEwLjU2IDE1LjQ5OGEuNzUuNzUgMCAxIDAtMS4xMi0uOTk2bC0yLjEwNyAyLjM3bC0uNzcyLS44N2EuNzUuNzUgMCAwIDAtMS4xMjIuOTk2bDEuMzM0IDEuNWEuNzUuNzUgMCAwIDAgMS4xMiAwem0uOTUtMTMuMjM4bC0uMDEgMi44MzVjMCAxLjA5NyAwIDIuMDY2LjEwNSAyLjg0OGMuMTE0Ljg0Ny4zNzUgMS42OTQgMS4wNjcgMi4zODVjLjY5LjY5MSAxLjUzOC45NTMgMi4zODUgMS4wNjdjLjc4MS4xMDUgMS43NTEuMTA1IDIuODQ4LjEwNWg0LjA1MmMuMDEzLjE1NS4wMjIuMzIxLjAyOC41SDIyYzAtLjI2OCAwLS40MDItLjAxLS41NmE1LjMyMiA1LjMyMiAwIDAgMC0uOTU4LTIuNjQxYy0uMDk0LS4xMjgtLjE1OC0uMjA0LS4yODUtLjM1N0MxOS45NTQgNy40OTQgMTguOTEgNi4zMTIgMTggNS41Yy0uODEtLjcyNC0xLjkyMS0xLjUxNS0yLjg5LTIuMTYxYy0uODMyLS41NTYtMS4yNDgtLjgzNC0xLjgxOS0xLjA0YTUuNDg4IDUuNDg4IDAgMCAwLS41MDYtLjE1NGMtLjM4NC0uMDk1LS43NTgtLjEyOC0xLjI4NS0uMTR6Ii8+PC9zdmc+
-[github-release-date-shield]: https://img.shields.io/github/release-date-pre/KindaBrazy/LynxHub-Module-Offline-Container?style=flat&labelColor=%23212121&color=%2300A9FF&label=Date&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9IndoaXRlIiBkPSJNNi45NiAyYy40MTggMCAuNzU2LjMxLjc1Ni42OTJWNC4wOWMuNjctLjAxMiAxLjQyMi0uMDEyIDIuMjY4LS4wMTJoNC4wMzJjLjg0NiAwIDEuNTk3IDAgMi4yNjguMDEyVjIuNjkyYzAtLjM4Mi4zMzgtLjY5Mi43NTYtLjY5MnMuNzU2LjMxLjc1Ni42OTJWNC4xNWMxLjQ1LjEwNiAyLjQwMy4zNjggMy4xMDMgMS4wMDhjLjcuNjQxLjk4NSAxLjUxMyAxLjEwMSAyLjg0MnYxSDJWOGMuMTE2LTEuMzI5LjQwMS0yLjIgMS4xMDEtMi44NDJjLjctLjY0IDEuNjUyLS45MDIgMy4xMDMtMS4wMDhWMi42OTJjMC0uMzgyLjMzOS0uNjkyLjc1Ni0uNjkyIi8+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yMiAxNHYtMmMwLS44MzktLjAxMy0yLjMzNS0uMDI2LTNIMi4wMDZjLS4wMTMuNjY1IDAgMi4xNjEgMCAzdjJjMCAzLjc3MSAwIDUuNjU3IDEuMTcgNi44MjhDNC4zNDkgMjIgNi4yMzQgMjIgMTAuMDA0IDIyaDRjMy43NyAwIDUuNjU0IDAgNi44MjYtMS4xNzJDMjIgMTkuNjU3IDIyIDE3Ljc3MSAyMiAxNCIgb3BhY2l0eT0iMC41Ii8+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xOCAxNi41YTEuNSAxLjUgMCAxIDEtMyAwYTEuNSAxLjUgMCAwIDEgMyAwIi8+PC9zdmc+
-[github-repo-stars-shield]: https://img.shields.io/github/stars/KindaBrazy/LynxHub-Module-Offline-Container?style=flat&labelColor=%23212121&color=%2300A9FF&label=Stars&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9IndoaXRlIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAxNmE3IDcgMCAxIDAgMC0xNGE3IDcgMCAwIDAgMCAxNG0wLTEwYy0uMjg0IDAtLjQ3NC4zNC0uODU0IDEuMDIzbC0uMDk4LjE3NmMtLjEwOC4xOTQtLjE2Mi4yOS0uMjQ2LjM1NGMtLjA4NS4wNjQtLjE5LjA4OC0uNC4xMzVsLS4xOS4wNDRjLS43MzguMTY3LTEuMTA3LjI1LTEuMTk1LjUzMmMtLjA4OC4yODMuMTY0LjU3Ny42NjcgMS4xNjVsLjEzLjE1MmMuMTQzLjE2Ny4yMTUuMjUuMjQ3LjM1NGMuMDMyLjEwNC4wMjEuMjE1IDAgLjQzOGwtLjAyLjIwM2MtLjA3Ni43ODUtLjExNCAxLjE3OC4xMTUgMS4zNTJjLjIzLjE3NC41NzYuMDE1IDEuMjY3LS4zMDNsLjE3OC0uMDgyYy4xOTctLjA5LjI5NS0uMTM1LjM5OS0uMTM1Yy4xMDQgMCAuMjAyLjA0NS4zOTkuMTM1bC4xNzguMDgyYy42OTEuMzE5IDEuMDM3LjQ3NyAxLjI2Ny4zMDNjLjIzLS4xNzQuMTkxLS41NjcuMTE1LTEuMzUybC0uMDItLjIwM2MtLjAyMS0uMjIzLS4wMzItLjMzNCAwLS40MzhjLjAzMi0uMTAzLjEwNC0uMTg3LjI0Ny0uMzU0bC4xMy0uMTUyYy41MDMtLjU4OC43NTUtLjg4Mi42NjctMS4xNjVjLS4wODgtLjI4Mi0uNDU3LS4zNjUtMS4xOTUtLjUzMmwtLjE5LS4wNDRjLS4yMS0uMDQ3LS4zMTUtLjA3LS40LS4xMzVjLS4wODQtLjA2NC0uMTM4LS4xNi0uMjQ2LS4zNTRsLS4wOTgtLjE3NkMxMi40NzQgNi4zNCAxMi4yODQgNiAxMiA2IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTYuNzE0IDE3LjMyM0w3LjM1MSAxNUw4IDEzaDhsLjY0OSAybC42MzcgMi4zMjNjLjYyOCAyLjI5Mi45NDIgMy40MzguNTIzIDQuMDY1Yy0uMTQ3LjIyLS4zNDQuMzk2LS41NzMuNTEzYy0uNjUyLjMzMi0xLjY2LS4xOTMtMy42NzUtMS4yNDNjLS42Ny0uMzUtMS4wMDYtLjUyNC0xLjM2Mi0uNTYyYTEuODcgMS44NyAwIDAgMC0uMzk4IDBjLS4zNTYuMDM4LS42OTEuMjEzLTEuMzYyLjU2MmMtMi4wMTUgMS4wNS0zLjAyMyAxLjU3NS0zLjY3NSAxLjI0M2ExLjUyMSAxLjUyMSAwIDAgMS0uNTczLS41MTNjLS40Mi0uNjI3LS4xMDUtMS43NzMuNTIzLTQuMDY1IiBvcGFjaXR5PSIwLjUiLz48L3N2Zz4=
+| Developer                                                                                    | Project                  | GitHub                                              |
+| -------------------------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------- |
+| <img height='20' src="https://avatars.githubusercontent.com/u/33983539?s=20&v=4"> ostris    | AI Toolkit               | [Link](https://github.com/ostris/ai-toolkit)        |
+| <img height='20' src="https://avatars.githubusercontent.com/u/155225940?s=20&v=4"> biagiomaf | SmartGallery for ComfyUI | [Link](https://github.com/biagiomaf/smart-comfyui-gallery) |
+| <img height='20' src="https://avatars.githubusercontent.com/u/11958890?s=20&v=4"> willmiao   | ComfyUI LoRA Manager     | [Link](https://github.com/willmiao/ComfyUI-Lora-Manager)               |

@@ -1,9 +1,9 @@
 import {exec, execSync} from 'node:child_process';
 import {platform} from 'node:os';
-import path, {join} from 'node:path';
+import {join} from 'node:path';
 
 import axios from 'axios';
-import fs from 'graceful-fs';
+import fs, {promises} from 'graceful-fs';
 import {existsSync} from 'graceful-fs';
 import {RemoteWithRefs, simpleGit} from 'simple-git';
 import treeKill from 'tree-kill';
@@ -58,7 +58,7 @@ export async function utilRunCommands(
   defaultData?: string,
 ): Promise<string | string[]> {
   if (dir && defaultData) {
-    const filePath = path.join(dir, batFileName);
+    const filePath = join(dir, batFileName);
     await initBatchFile(filePath, defaultData);
     // Ensure script is executable on Unix
     if (!isWin) {
@@ -77,7 +77,7 @@ export async function utilSaveArgs(
 ) {
   if (!cardDir) return;
   const result = parser(args);
-  const filePath = path.join(cardDir, batFileName);
+  const filePath = join(cardDir, batFileName);
 
   await fs.promises.writeFile(filePath, result);
 
@@ -94,7 +94,7 @@ export async function utilReadArgs(
   cardDir?: string,
 ) {
   if (!cardDir) return [];
-  const filePath = path.join(cardDir, batFileName);
+  const filePath = join(cardDir, batFileName);
 
   await initBatchFile(filePath, defaultData);
 
@@ -292,6 +292,22 @@ export async function isGitRoot(dir: string, repoUrl: string): Promise<boolean> 
     const result: RemoteWithRefs[] = await simpleGit(dir).getRemotes(true);
     return formatGitUrl(result[0]?.refs.fetch) === formatGitUrl(repoUrl);
   } catch (_) {
+    return false;
+  }
+}
+
+export async function checkFilesExist(dir: string, files: string[]) {
+  try {
+    for (const file of files) {
+      const fullPath = join(dir, file);
+      try {
+        await promises.access(fullPath);
+      } catch (error) {
+        return false;
+      }
+    }
+    return true;
+  } catch (error) {
     return false;
   }
 }

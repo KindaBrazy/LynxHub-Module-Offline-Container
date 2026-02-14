@@ -248,7 +248,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('SillyTavern', URL, stepper);
+  GitInstaller('SillyTavern', URL, stepper, [isWin ? 'start.bat' : 'start.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

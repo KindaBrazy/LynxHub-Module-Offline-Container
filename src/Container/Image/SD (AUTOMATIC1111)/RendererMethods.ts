@@ -4,13 +4,14 @@ import {
   CardRendererMethods,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
+import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, GitInstaller} from '../../../Utils/RendererUtils';
 import {fetchExtensionList, parseArgsToString, parseStringToArgs} from './SharedRenderer';
 
 const A1_URL = 'https://github.com/AUTOMATIC1111/stable-diffusion-webui';
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('Automatic1111', A1_URL, stepper);
+  GitInstaller('Automatic1111', A1_URL, stepper, [isWin ? 'webui-user.bat' : 'webui.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

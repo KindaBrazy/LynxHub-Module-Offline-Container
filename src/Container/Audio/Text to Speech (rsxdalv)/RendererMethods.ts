@@ -4,6 +4,7 @@ import {
   CardRendererMethods,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
+import {isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, GitInstaller} from '../../../Utils/RendererUtils';
 
 const URL = 'https://github.com/rsxdalv/TTS-WebUI';
@@ -17,7 +18,7 @@ function catchAddress(input: string): string | undefined {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('Text to Speech', URL, stepper);
+  GitInstaller('Text to Speech', URL, stepper, [isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

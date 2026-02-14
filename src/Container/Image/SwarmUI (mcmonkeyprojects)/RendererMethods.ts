@@ -109,7 +109,7 @@ async function fetchExtensionList(): Promise<ExtensionData[]> {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('SwarmUI', URL, stepper);
+  GitInstaller('SwarmUI', URL, stepper, [isWin ? 'launch-windows.bat' : 'launch-linux.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

@@ -75,7 +75,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('Audio Generation', URL, stepper);
+  GitInstaller('Audio Generation', URL, stepper, [isWin ? 'run.bat' : 'run.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

@@ -25,7 +25,7 @@ import lshqqytigerArguments from './Arguments';
 const SdAMD_URL = 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu';
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper);
+  GitInstaller('Stable Diffusion AMDGPU', SdAMD_URL, stepper, [isWin ? 'webui-user.bat' : 'webui.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

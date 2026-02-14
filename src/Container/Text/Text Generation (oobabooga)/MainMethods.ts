@@ -2,14 +2,14 @@ import {platform} from 'node:os';
 
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {TG_ID} from '../../../Constants';
-import {isWin} from '../../../Utils/CrossUtils';
+import {isMac, isWin} from '../../../Utils/CrossUtils';
 import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
 const DEFAULT_BATCH_DATA: string = isWin
   ? '@echo off\n\ncall start_windows.bat'
-  : platform() === 'darwin'
+  : isMac
     ? '#!/bin/bash\n\nbash ./start_macos.sh'
     : '#!/bin/bash\n\nbash ./start_linux.sh';
 

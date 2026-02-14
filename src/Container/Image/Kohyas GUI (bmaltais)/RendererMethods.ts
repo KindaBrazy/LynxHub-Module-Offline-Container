@@ -75,7 +75,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller("Kohya's GUI", URL, stepper);
+  GitInstaller("Kohya's GUI", URL, stepper, [isWin ? 'gui.bat' : 'gui.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

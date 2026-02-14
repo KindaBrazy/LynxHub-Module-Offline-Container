@@ -76,7 +76,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('SD Next', URL, stepper);
+  GitInstaller('SD Next', URL, stepper, [isWin ? 'webui.bat' : 'webui.sh']);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

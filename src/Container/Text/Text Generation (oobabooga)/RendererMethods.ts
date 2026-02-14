@@ -8,7 +8,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../Utils/CrossUtils';
+import {isMac, isWin} from '../../../Utils/CrossUtils';
 import {CardInfo, getArgumentType, GitInstaller, isValidArg, replaceAddress} from '../../../Utils/RendererUtils';
 import oobaboogaArguments from './Arguments';
 import {fetchExtensionList} from './ExtensionsList';
@@ -80,7 +80,9 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
 }
 
 function startInstall(stepper: InstallationStepper) {
-  GitInstaller('Text Generation', URL, stepper);
+  GitInstaller('Text Generation', URL, stepper, [
+    isWin ? 'start_windows.bat' : isMac ? 'start_macos.sh' : 'start_linux.sh',
+  ]);
 }
 
 async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {

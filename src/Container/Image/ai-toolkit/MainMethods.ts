@@ -1,11 +1,7 @@
-import path from 'node:path';
-
-import fs from 'graceful-fs';
-
 import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {AITOOLKIT_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {checkWhich, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {checkFilesExist, checkWhich, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -28,30 +24,7 @@ export async function readArgs(dir?: string) {
 export async function isInstalled(dir?: string): Promise<boolean> {
   if (!dir) return false;
 
-  try {
-    // Check if the ui folder and run.py file exist
-    const uiFolder = path.join(dir, 'ui');
-    const runPy = path.join(dir, 'run.py');
-    const toolkitFolder = path.join(dir, 'toolkit');
-
-    const uiFolderExists = await fs.promises
-      .access(uiFolder)
-      .then(() => true)
-      .catch(() => false);
-    const runPyExists = await fs.promises
-      .access(runPy)
-      .then(() => true)
-      .catch(() => false);
-    const toolkitFolderExists = await fs.promises
-      .access(toolkitFolder)
-      .then(() => true)
-      .catch(() => false);
-
-    return uiFolderExists && runPyExists && toolkitFolderExists;
-  } catch (error) {
-    console.error('Error checking AI Toolkit installation:', error);
-    return false;
-  }
+  return checkFilesExist(dir, ['run.py', 'toolkit']);
 }
 
 function mainIpc(utils: MainModuleUtils) {

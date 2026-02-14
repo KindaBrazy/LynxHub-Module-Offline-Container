@@ -125,10 +125,9 @@ function startInstall(stepper: InstallationStepper) {
               stepper.setInstalled(targetDirectory);
               stepper.showFinalStep(
                 'success',
-                'ComfyUI LoRA Manager located successfully!',
-                'Pre-installed LoRA Manager detected. Installation skipped as your existing setup is ready to use.' +
-                  ' Note: Git repository not detected - updating may not work as expected. ' +
-                  'Make sure to configure your settings.json with CivitAI API key and folder paths.',
+                `ComfyUI LoRA Manager located successfully!`,
+                `Detected a manual installation of ComfyUI LoRA Manager. Note: Because this is not a Git repository,` +
+                  ' automatic updates and certain version-dependent features may not work as expected.',
               );
             } else {
               stepper.showFinalStep(

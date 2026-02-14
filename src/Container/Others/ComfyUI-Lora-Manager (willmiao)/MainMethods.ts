@@ -5,7 +5,7 @@ import fs from 'graceful-fs';
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {LORA_MANAGER_ID} from '../../../Constants';
 import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -116,29 +116,6 @@ export async function readArgs(dir?: string): Promise<ChosenArgument[]> {
   return [...cmdArgs, ...settingsArgs];
 }
 
-export async function isInstalled(dir?: string): Promise<boolean> {
-  if (!dir) return false;
-
-  try {
-    const standalonePy = path.join(dir, 'standalone.py');
-    const requirementsTxt = path.join(dir, 'requirements.txt');
-
-    const standalonePyExists = await fs.promises
-      .access(standalonePy)
-      .then(() => true)
-      .catch(() => false);
-    const requirementsTxtExists = await fs.promises
-      .access(requirementsTxt)
-      .then(() => true)
-      .catch(() => false);
-
-    return standalonePyExists && requirementsTxtExists;
-  } catch (error) {
-    console.error('Error checking LoRA Manager installation:', error);
-    return false;
-  }
-}
-
 const LoraManager_MM: CardMainMethodsInitial = utils => {
   const installDir = utils.getInstallDir(LORA_MANAGER_ID);
 
@@ -146,7 +123,11 @@ const LoraManager_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
-    isInstalled: () => isInstalled(installDir),
+    isInstalled: () =>
+      isGitTypeInstalled(installDir, 'https://github.com/willmiao/ComfyUI-Lora-Manager', [
+        'standalone.py',
+        'requirements.txt',
+      ]),
   };
 };
 

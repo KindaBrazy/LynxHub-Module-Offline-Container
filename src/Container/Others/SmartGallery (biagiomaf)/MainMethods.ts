@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {SMARTGALLERY_ID} from '../../../Constants';
 import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -29,6 +29,11 @@ const SmartGallery_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
+    isInstalled: () =>
+      isGitTypeInstalled(installDir, 'https://github.com/biagiomaf/smart-comfyui-gallery', [
+        'smartgallery.py',
+        'requirements.txt',
+      ]),
   };
 };
 

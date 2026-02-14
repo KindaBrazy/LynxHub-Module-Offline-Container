@@ -99,21 +99,27 @@ function startInstall(stepper: InstallationStepper) {
         });
       });
     } else if (targetDirectory) {
-      // Validate by checking for key files
-      stepper.utils.verifyFilesExist(targetDirectory, ['smartgallery.py', 'requirements.txt']).then(filesExist => {
-        if (filesExist) {
-          stepper.setInstalled(targetDirectory);
-          stepper.showFinalStep(
-            'success',
-            'SmartGallery located successfully!',
-            'Pre-installed SmartGallery detected. Installation skipped as your existing setup is ready to use.',
-          );
+      stepper.utils.validateGitRepository(targetDirectory, SMARTGALLERY_URL).then(isValid => {
+        if (isValid) {
         } else {
-          stepper.showFinalStep(
-            'error',
-            'Unable to locate SmartGallery!',
-            'Please ensure you have selected the correct folder containing the SmartGallery installation.',
-          );
+          // Validate by checking for key files
+          stepper.utils.verifyFilesExist(targetDirectory, ['smartgallery.py', 'requirements.txt']).then(filesExist => {
+            if (filesExist) {
+              stepper.setInstalled(targetDirectory);
+              stepper.showFinalStep(
+                'success',
+                `SmartGallery located successfully!`,
+                `Detected a manual installation of SmartGallery. Note: Because this is not a Git repository,` +
+                  ' automatic updates and certain version-dependent features may not work as expected.',
+              );
+            } else {
+              stepper.showFinalStep(
+                'error',
+                'Unable to locate SmartGallery!',
+                'Please ensure you have selected the correct folder containing the SmartGallery installation.',
+              );
+            }
+          });
         }
       });
     }

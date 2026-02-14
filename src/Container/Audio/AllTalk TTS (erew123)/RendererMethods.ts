@@ -38,11 +38,24 @@ export function startInstall(stepper: InstallationStepper) {
             'Pre-installed AllTalk TTS detected. Installation skipped as your existing setup is ready to use.',
           );
         } else {
-          stepper.showFinalStep(
-            'error',
-            'Unable to locate AllTalk TTS!',
-            'Please ensure you have selected the correct folder containing the AllTalk TTS repository.',
-          );
+          stepper.utils
+            .verifyFilesExist(targetDirectory, [isWin ? 'start_alltalk.bat' : 'start_alltalk.sh'])
+            .then(isExist => {
+              if (isExist) {
+                stepper.showFinalStep(
+                  'success',
+                  'AllTalk TTS located successfully!',
+                  'Detected a manual installation of AllTalk TTS. Note: Because this is not a Git repository,' +
+                    ' automatic updates and certain version-dependent features may not work as expected.',
+                );
+              } else {
+                stepper.showFinalStep(
+                  'error',
+                  'Unable to locate AllTalk TTS!',
+                  'Please ensure you have selected the correct folder containing the AllTalk TTS repository.',
+                );
+              }
+            });
         }
       });
     }

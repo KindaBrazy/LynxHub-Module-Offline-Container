@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {A1_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './SharedRenderer';
 
 const CONFIG_FILE = isWin ? 'webui-user.bat' : 'webui-user.sh';
@@ -27,6 +27,8 @@ const A1_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
+    isInstalled: () =>
+      isGitTypeInstalled(installDir, 'https://github.com/AUTOMATIC1111/stable-diffusion-webui', [CONFIG_FILE]),
   };
 };
 

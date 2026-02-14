@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial, MainModuleUtils} from '../../../../../src/common/types/plugins/modules';
 import {ONETRAINER_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilRunCommands} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
 
 const BAT_FILE_NAME = isWin ? 'start-ui.bat' : 'start-ui.sh';
 
@@ -17,7 +17,11 @@ async function updateAvailable(utils: MainModuleUtils, dir?: string) {
 const Nerogar_MM: CardMainMethodsInitial = utils => {
   const installDir = utils.getInstallDir(ONETRAINER_ID);
 
-  return {getRunCommands: () => getRunCommands(installDir), updateAvailable: () => updateAvailable(utils, installDir)};
+  return {
+    getRunCommands: () => getRunCommands(installDir),
+    updateAvailable: () => updateAvailable(utils, installDir),
+    isInstalled: () => isGitTypeInstalled(installDir, 'https://github.com/Nerogar/OneTrainer', [BAT_FILE_NAME]),
+  };
 };
 
 export default Nerogar_MM;

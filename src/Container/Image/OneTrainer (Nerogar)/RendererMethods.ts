@@ -38,11 +38,23 @@ export function startInstall(stepper: InstallationStepper) {
             'Pre-installed OneTrainer detected. Installation skipped as your existing setup is ready to use.',
           );
         } else {
-          stepper.showFinalStep(
-            'error',
-            'Unable to locate OneTrainer!',
-            'Please ensure you have selected the correct folder containing the OneTrainer repository.',
-          );
+          stepper.utils.verifyFilesExist(targetDirectory, [isWin ? 'start-ui.bat' : 'start-ui.sh']).then(isExist => {
+            if (isExist) {
+              stepper.setInstalled(targetDirectory);
+              stepper.showFinalStep(
+                'success',
+                `OneTrainer located successfully!`,
+                `Detected a manual installation of OneTrainer. Note: Because this is not a Git repository,` +
+                  ' automatic updates and certain version-dependent features may not work as expected.',
+              );
+            } else {
+              stepper.showFinalStep(
+                'error',
+                'Unable to locate OneTrainer!',
+                'Please ensure you have selected the correct folder containing the OneTrainer repository.',
+              );
+            }
+          });
         }
       });
     }

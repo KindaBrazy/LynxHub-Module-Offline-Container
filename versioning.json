@@ -1,6 +1,19 @@
 {
   "versions": [
     {
+      "version": "14.0.0",
+      "commit": "328c89b",
+      "engines": {
+        "moduleApi": "^2.0.0"
+      },
+      "stage": "early_access",
+      "platforms": [
+        "win32",
+        "linux",
+        "darwin"
+      ]
+    },
+    {
       "version": "13.1.2",
       "commit": "76aa0ed",
       "engines": {
@@ -67,6 +80,43 @@
     }
   ],
   "changes": [
+    {
+      "version": "14.0.0",
+      "date": "2026-02-17",
+      "items": [
+        {
+          "✨ New": [
+            "Integrated AI Toolkit (by ostris).",
+            "Integrated SmartGallery for ComfyUI (by biagiomaf).",
+            "Integrated LoRA Manager for ComfyUI (by willmiao)."
+          ]
+        },
+        {
+          "⚡ Improvements": [
+            "Synchronized all tool arguments with the latest changes.",
+            "Refined tool discovery and installation validation; tools can now be located independently of Git repositories.",
+            "Enhanced Python and Pip command detection for macOS environments."
+          ]
+        },
+        {
+          "🪲 Bug Fixes": [
+            "Fixed an issue where manually locating an existing InvokeAI installation failed to detect it correctly.",
+            "Fixed a bug where InvokeAI was incorrectly detected as uninstalled after a LynxHub restart."
+          ]
+        },
+        {
+          "📌 Minor Changes": [
+            "Updated the default ROCm version for ComfyUI installations.",
+            "Added support for ComfyUI ROCm environment variables within launch arguments.",
+            "Included default post-configuration arguments for ComfyUI ZLUDA.",
+            "Optimized batch file generation and argument parsing for ComfyUI ZLUDA.",
+            "Updated InvokeAI PyPI dependency versions.",
+            "Implemented dynamic Torch backend detection for InvokeAI based on the installation version.",
+            "Refreshed the extension list for Text Generation (oobabooga)."
+          ]
+        }
+      ]
+    },
     {
       "version": "13.1.2",
       "date": "2026-02-07",

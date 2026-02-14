@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial} from '../../../../../src/common/types/plugins/modules';
 import {AG_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilRunCommands} from '../../../Utils/MainUtils';
+import {checkFilesExist, isGitRoot, isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
 
 const BAT_FILE = isWin ? 'run-applio.bat' : 'run-applio.sh';
 
@@ -14,6 +14,7 @@ const Applio_MM: CardMainMethodsInitial = utils => {
 
   return {
     getRunCommands: () => getRunCommands(installDir),
+    isInstalled: () => isGitTypeInstalled(installDir, 'https://github.com/IAHispano/Applio', [BAT_FILE]),
   };
 };
 

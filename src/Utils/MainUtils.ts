@@ -314,3 +314,12 @@ export async function checkFilesExist(dir: string, files: string[]) {
     return false;
   }
 }
+
+export async function isGitTypeInstalled(dir: string | undefined, url: string, files: string[]) {
+  if (!dir) return false;
+
+  const isRepo = await isGitRoot(dir, url);
+  if (isRepo) return true;
+
+  return checkFilesExist(dir, files);
+}

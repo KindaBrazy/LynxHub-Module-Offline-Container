@@ -1,7 +1,14 @@
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {AG_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilReadArgs, utilRunCommands, utilSaveArgs} from '../../../Utils/MainUtils';
+import {
+  checkFilesExist,
+  isGitRoot,
+  isGitTypeInstalled,
+  utilReadArgs,
+  utilRunCommands,
+  utilSaveArgs,
+} from '../../../Utils/MainUtils';
 import {parseArgsToString, parseStringToArgs} from './RendererMethods';
 
 const BAT_FILE_NAME = isWin ? 'lynx-user.bat' : 'lynx-user.sh';
@@ -26,6 +33,7 @@ const Gitmylo_MM: CardMainMethodsInitial = utils => {
     getRunCommands: () => getRunCommands(installDir),
     readArgs: () => readArgs(installDir),
     saveArgs: args => saveArgs(args, installDir),
+    isInstalled: () => isGitTypeInstalled(installDir, 'https://github.com/gitmylo/audio-webui', [BAT_FILE_NAME]),
   };
 };
 

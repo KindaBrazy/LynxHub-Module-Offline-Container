@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial} from '../../../../../src/common/types/plugins/modules';
 import {TTS_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {utilRunCommands} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
 
 const BAT_FILE_NAME = isWin ? 'start_tts_webui.bat' : 'start_tts_webui.sh';
 
@@ -14,6 +14,7 @@ const Rsx_MM: CardMainMethodsInitial = utils => {
 
   return {
     getRunCommands: () => getRunCommands(installDir),
+    isInstalled: () => isGitTypeInstalled(installDir, 'https://github.com/rsxdalv/TTS-WebUI', [BAT_FILE_NAME]),
   };
 };
 

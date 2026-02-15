@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial} from '../../../../../src/common/types/plugins/modules';
 import {AG_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {checkFilesExist, isGitRoot, isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
 
 const BAT_FILE = isWin ? 'run-applio.bat' : 'run-applio.sh';
 

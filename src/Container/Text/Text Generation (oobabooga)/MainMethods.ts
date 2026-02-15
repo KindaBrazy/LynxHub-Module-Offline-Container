@@ -1,5 +1,3 @@
-import {platform} from 'node:os';
-
 import {CardMainMethodsInitial, ChosenArgument} from '../../../../../src/common/types/plugins/modules';
 import {TG_ID} from '../../../Constants';
 import {isMac, isWin} from '../../../Utils/CrossUtils';

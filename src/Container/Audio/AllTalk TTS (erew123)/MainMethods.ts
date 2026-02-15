@@ -1,7 +1,7 @@
 import {CardMainMethodsInitial} from '../../../../../src/common/types/plugins/modules';
 import {ALLTALK_ID} from '../../../Constants';
 import {isWin} from '../../../Utils/CrossUtils';
-import {checkFilesExist, isGitRoot, isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
+import {isGitTypeInstalled, utilRunCommands} from '../../../Utils/MainUtils';
 
 const BAT_FILE_NAME = isWin ? 'start_alltalk.bat' : 'start_alltalk.sh';
 

@@ -1,6 +1,19 @@
 {
   "versions": [
     {
+      "version": "14.1.0",
+      "commit": "9659f7a",
+      "engines": {
+        "moduleApi": "^2.0.0"
+      },
+      "stage": "early_access",
+      "platforms": [
+        "win32",
+        "linux",
+        "darwin"
+      ]
+    },
+    {
       "version": "14.0.0",
       "commit": "c85759e",
       "engines": {
@@ -81,8 +94,24 @@
   ],
   "changes": [
     {
+      "version": "14.1.0",
+      "date": "2026-02-16",
+      "items": [
+        {
+          "⚡ Improvements": [
+            {
+              "ComfyUI": [
+                "Added manager requirements installation and default enabled.",
+                "Added MIOpen environment variable arguments for AMD GPU optimization."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "version": "14.0.0",
-      "date": "2026-02-17",
+      "date": "2026-02-14",
       "items": [
         {
           "✨ New": [
@@ -121,7 +150,11 @@
       "version": "13.1.2",
       "date": "2026-02-07",
       "items": [
-        {"🪲 Bug Fixes": ["Fixed detecting OpenWebUI installation."]}
+        {
+          "🪲 Bug Fixes": [
+            "Fixed detecting OpenWebUI installation."
+          ]
+        }
       ]
     },
     {

@@ -208,14 +208,27 @@ function startInstall(stepper: InstallationStepper) {
   };
 
   const installReqs = (dir: string) => {
-    stepper.executeTerminalCommands('pip install -r requirements.txt', dir).then(() => {
-      stepper.setInstalled(dir);
-      stepper.showFinalStep(
-        'success',
-        'ComfyUI installation complete!',
-        'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.',
-      );
-    });
+    stepper
+      .executeTerminalCommands(['pip install -r requirements.txt', 'pip install -r manager_requirements.txt'], dir)
+      .then(() => {
+        stepper.setInstalled(dir);
+        stepper.postInstall.config({
+          customArguments: {
+            presetName: 'Lynx Config',
+            customArguments: [
+              {
+                name: '--enable-manager',
+                value: '',
+              },
+            ],
+          },
+        });
+        stepper.showFinalStep(
+          'success',
+          'ComfyUI installation complete!',
+          'All installation steps completed successfully. ' + 'Your ComfyUI environment is now ready for use.',
+        );
+      });
   };
 
   const getMacCondaInstallCommand = (selectedOption: string) => {

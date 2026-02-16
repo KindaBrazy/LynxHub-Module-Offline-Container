@@ -392,6 +392,66 @@ const comfyuiArguments: ArgumentsData = [
         type: 'Input',
         defaultValue: '1',
       },
+      {
+        name: 'MIOPEN_FIND_MODE',
+        description:
+          'Set the MIOpen find mode to accelerate find API calls. NORMAL: Full find (benchmarks all solvers). FAST: Uses FindDb or fallback (fast startup, may reduce performance). HYBRID: Uses FindDb or full find on miss (balanced). DYNAMIC_HYBRID: Uses FindDb or find skipping non-dynamic kernels (faster than hybrid, default). TRUST_VERIFY: Uses FindDb with verification and constrained tuning. TRUST_VERIFY_FULL: Same as TRUST_VERIFY with no tuning time limits.',
+        type: 'DropDown',
+        values: ['NORMAL', 'FAST', 'HYBRID', 'DYNAMIC_HYBRID', 'TRUST_VERIFY', 'TRUST_VERIFY_FULL'],
+        defaultValue: 'DYNAMIC_HYBRID',
+      },
+      {
+        name: 'MIOPEN_LOG_LEVEL',
+        description:
+          'Controls verbosity of MIOpen internal operation logging. 0: Default (level 4 for release, level 5 for debug). 1: Quiet (no logging). 3: Errors including fatal errors. 4: All errors and warnings. 5: Info level debugging. 6: Detailed debugging. 7: Trace level with additional details.',
+        type: 'DropDown',
+        values: ['0', '1', '3', '4', '5', '6', '7'],
+        defaultValue: '0',
+      },
+      {
+        name: 'MIOPEN_ENABLE_LOGGING',
+        description:
+          'Prints basic layer-by-layer MIOpen API call information with parameters and configurations.',
+        type: 'DropDown',
+        values: ['0', '1'],
+        defaultValue: '0',
+      },
+      {
+        name: 'MIOPEN_ENABLE_LOGGING_CMD',
+        description: 'Outputs associated MIOpenDriver command lines to console for debugging.',
+        type: 'DropDown',
+        values: ['0', '1'],
+        defaultValue: '0',
+      },
+      {
+        name: 'MIOPEN_FIND_ENFORCE',
+        description:
+          'Controls auto-tune behavior and database updates. NONE: No change in default behavior. DB_UPDATE: Always perform auto-tune and update PerfDb. SEARCH: Auto-tune even if not requested via API. SEARCH_DB_UPDATE: Combination of DB_UPDATE and SEARCH. DB_CLEAN: Remove optimized values from User PerfDb.',
+        type: 'DropDown',
+        values: ['NONE', 'DB_UPDATE', 'SEARCH', 'SEARCH_DB_UPDATE', 'DB_CLEAN'],
+        defaultValue: 'NONE',
+      },
+      {
+        name: 'MIOPEN_DEBUG_DISABLE_FIND_DB',
+        description: 'Disables FindDb functionality. Set to 1 to disable, 0 or unset to enable.',
+        type: 'DropDown',
+        values: ['0', '1'],
+        defaultValue: '0',
+      },
+      {
+        name: 'MIOPEN_COMPILE_PARALLEL_LEVEL',
+        description:
+          'Controls parallel compilation thread count for Find() calls. Default: 1 when using COMGR, otherwise half the number of available hardware threads. Set to 1 to disable multi-threaded compilation.',
+        type: 'Input',
+      },
+      {
+        name: 'MIOPEN_DEBUG_CONVOLUTION_DETERMINISTIC',
+        description:
+          'Controls deterministic convolution behavior. Set to 1 to enable deterministic algorithms (slower but reproducible results).',
+        type: 'DropDown',
+        values: ['0', '1'],
+        defaultValue: '0',
+      },
     ],
   },
 ];

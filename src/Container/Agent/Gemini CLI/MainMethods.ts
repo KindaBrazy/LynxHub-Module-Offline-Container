@@ -72,10 +72,6 @@ async function readArgs(configDir?: string) {
   return parseFilesToArgs(scriptData, '');
 }
 
-async function isInstalled(): Promise<boolean> {
-  return isNpmPackageInstalled(PACKAGE_NAME);
-}
-
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   const available = await checkNpmPackageUpdate(PACKAGE_NAME);
   if (available) {
@@ -92,13 +88,15 @@ function mainIpc(utils: MainModuleUtils) {
   utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(PACKAGE_NAME));
 }
 
+const isInstalled = () => isNpmPackageInstalled(PACKAGE_NAME);
+
 const GeminiCli_MM: CardMainMethodsInitial = utils => {
   const configDir = utils.getConfigDir();
 
   return {
     mainIpc: () => mainIpc(utils),
     getRunCommands: () => getRunCommands(configDir),
-    isInstalled: () => isInstalled(),
+    isInstalled,
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),

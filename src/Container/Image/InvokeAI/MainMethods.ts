@@ -6,6 +6,7 @@ import {CardMainMethodsInitial, ChosenArgument, MainModuleUtils} from '../../../
 import {INVOKE_ID} from '../../../Constants';
 import {extractGitUrl} from '../../../Utils/CrossUtils';
 import {
+  checkDirExist,
   checkWhich,
   getLatestPipPackageVersion,
   isVenvDirectory,
@@ -73,10 +74,11 @@ async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
 async function isInstalled(dir: string | undefined) {
   if (!dir) return false;
 
+  const isFolderExist = await checkDirExist(dir);
+  if (!isFolderExist) return false;
+
   const venvDir = path.join(dir, '.venv');
-
   const isVenvDir = isVenvDirectory(venvDir);
-
   if (!isVenvDir) return false;
 
   return invokeValidateInstallation(dir) === true;

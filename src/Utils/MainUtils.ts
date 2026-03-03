@@ -299,6 +299,18 @@ export async function isGitRoot(dir: string, repoUrl: string): Promise<boolean> 
   }
 }
 
+export async function checkDirExist(dir: string) {
+  if (!dir) return false;
+
+  try {
+    await promises.access(dir);
+  } catch (error) {
+    return false;
+  }
+
+  return true;
+}
+
 export async function checkFilesExist(dir: string, files: string[]) {
   try {
     for (const file of files) {
@@ -317,6 +329,9 @@ export async function checkFilesExist(dir: string, files: string[]) {
 
 export async function isGitTypeInstalled(dir: string | undefined, url: string, files: string[]) {
   if (!dir) return false;
+
+  const isFolderExist = await checkDirExist(dir);
+  if (!isFolderExist) return false;
 
   const isRepo = await isGitRoot(dir, url);
   if (isRepo) return true;

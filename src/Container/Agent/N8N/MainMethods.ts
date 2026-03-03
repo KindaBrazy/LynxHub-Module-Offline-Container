@@ -37,10 +37,6 @@ async function readArgs(configDir?: string) {
   return await utilReadArgs(CONFIG_FILE, DEFAULT_BATCH_DATA, parseStringToArgs, configDir);
 }
 
-async function isInstalled(): Promise<boolean> {
-  return isNpmPackageInstalled(PACKAGE_NAME);
-}
-
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   const available = await checkNpmPackageUpdate(PACKAGE_NAME);
   if (available) {
@@ -57,13 +53,15 @@ function mainIpc(utils: MainModuleUtils) {
   utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(PACKAGE_NAME));
 }
 
+const isInstalled = () => isNpmPackageInstalled(PACKAGE_NAME);
+
 const N8N_MM: CardMainMethodsInitial = utils => {
   const configDir = utils.getConfigDir();
 
   return {
     mainIpc: () => mainIpc(utils),
     getRunCommands: () => getRunCommands(configDir),
-    isInstalled: () => isInstalled(),
+    isInstalled,
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),

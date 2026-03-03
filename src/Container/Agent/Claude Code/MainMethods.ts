@@ -97,10 +97,6 @@ async function readArgs(configDir?: string) {
   return parseFilesToArgs(scriptData, settingsContent);
 }
 
-async function isInstalled(): Promise<boolean> {
-  return checkWhich('claude');
-}
-
 async function updateAvailable(utils: MainModuleUtils): Promise<boolean> {
   void utils;
   return false;
@@ -124,13 +120,15 @@ function getClaudeCodeVersion(): Promise<string> {
   });
 }
 
+const isInstalled = () => checkWhich('claude');
+
 const ClaudeCode_MM: CardMainMethodsInitial = utils => {
   const configDir = utils.getConfigDir();
 
   return {
     mainIpc: () => mainIpc(utils),
     getRunCommands: () => getRunCommands(configDir),
-    isInstalled: () => isInstalled(),
+    isInstalled,
     saveArgs: args => saveArgs(args, configDir),
     readArgs: () => readArgs(configDir),
     updateAvailable: () => updateAvailable(utils),

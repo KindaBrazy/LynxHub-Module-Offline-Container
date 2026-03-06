@@ -6,7 +6,6 @@ import {
   CardInfoCallback,
   CardRendererMethods,
   ChosenArgument,
-  ExtensionData,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
 import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
@@ -118,23 +117,6 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   });
 
   return argResult;
-}
-
-async function fetchExtensionList(): Promise<ExtensionData[]> {
-  try {
-    const response = await fetch(
-      'https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json',
-    );
-    const extensions = await response.json();
-    return extensions.custom_nodes.map((extension: any) => ({
-      title: extension.title,
-      description: extension.description,
-      url: extension.reference,
-    }));
-  } catch (e) {
-    console.error(e);
-    return [];
-  }
 }
 
 function startInstall(stepper: InstallationStepper) {
@@ -361,7 +343,6 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
 
 const COMFYUI_RM: CardRendererMethods = {
   catchAddress,
-  fetchExtensionList,
   parseArgsToString,
   parseStringToArgs,
   cardInfo,

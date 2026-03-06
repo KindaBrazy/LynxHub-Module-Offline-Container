@@ -4,7 +4,6 @@ import {
   CardInfoCallback,
   CardRendererMethods,
   ChosenArgument,
-  ExtensionData,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
 import {CardInfo, catchAddress, getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
@@ -125,23 +124,6 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   return argResult;
 }
 
-async function fetchExtensionList(): Promise<ExtensionData[]> {
-  try {
-    const response = await fetch(
-      'https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json',
-    );
-    const extensions = await response.json();
-    return extensions.custom_nodes.map((extension: any) => ({
-      title: extension.title,
-      description: extension.description,
-      url: extension.reference,
-    }));
-  } catch (e) {
-    console.error(e);
-    return [];
-  }
-}
-
 const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
 const customArguments = [
   {name: 'PYTHON', value: '%~dp0venv\\Scripts\\python.exe'},
@@ -246,7 +228,6 @@ async function cardInfo(api: CardInfoApi, callback: CardInfoCallback) {
 
 const COMFYUI_ZLUDA_RM: CardRendererMethods = {
   catchAddress,
-  fetchExtensionList,
   parseArgsToString,
   parseStringToArgs,
   cardInfo,

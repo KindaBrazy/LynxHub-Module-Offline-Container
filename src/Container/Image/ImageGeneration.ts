@@ -57,7 +57,6 @@ const imagePage: PagesData = {
         'This ui will let you design and execute advanced stable diffusion pipelines' +
         ' using a graph/nodes/flowchart based interface.',
       repoUrl: 'https://github.com/comfyanonymous/ComfyUI',
-      extensionsDir: '/custom_nodes',
       type: 'image',
       arguments: comfyArguments,
       methods: COMFYUI_RM,
@@ -71,7 +70,6 @@ const imagePage: PagesData = {
         ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
         'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
       repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
-      extensionsDir: '/extensions',
       type: 'image',
       arguments: automatic1111Arguments,
       methods: SD_FORGE_RM,

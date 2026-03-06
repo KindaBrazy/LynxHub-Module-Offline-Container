@@ -99,7 +99,7 @@ export function parseArgsToFiles(args: ChosenArgument[]): {commands: string; con
       } else if (typeof definition.defaultValue === 'number') {
         processedValue = Number(arg.value) || definition.defaultValue;
       } else if (definition.defaultValue === 'true' || definition.defaultValue === 'false') {
-        processedValue = arg.value.toLowerCase() === 'true';
+        processedValue = arg.value.toString().toLowerCase() === 'true';
       }
       setNestedValue(configObject, arg.name, processedValue);
     } else if (isConfig === false) {

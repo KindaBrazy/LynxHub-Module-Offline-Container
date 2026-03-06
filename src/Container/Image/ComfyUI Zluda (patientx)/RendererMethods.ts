@@ -14,7 +14,7 @@ const URL = 'https://github.com/patientx/ComfyUI-Zluda';
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result = '';
   let commandLineArgs = '';
-  const envVars: Record<string, string> = {};
+  const envVars: Record<string, string | number> = {};
 
   // Separate environment variables from command line arguments
   args.forEach(arg => {

@@ -41,7 +41,7 @@ async function saveArgs(args: ChosenArgument[], dir?: string) {
 
   // Build command line arguments string
   let commandLineArgs = '';
-  const envVars: Record<string, string> = {};
+  const envVars: Record<string, string | number> = {};
 
   // Collect user-selected arguments
   args.forEach(arg => {

@@ -111,7 +111,7 @@ export function parseArgsToFiles(args: ChosenArgument[]): {scriptData: string; s
     const raw = settingsArgs.find(a => a.name === 'settings.raw');
     if (raw && raw.value) {
       try {
-        const parsed = JSON.parse(raw.value);
+        const parsed = JSON.parse(String(raw.value));
         Object.assign(settingsJson, parsed);
       } catch (e) {
         console.error('Error parsing settings.raw for Claude Code:', e);
@@ -214,7 +214,8 @@ export function parseFilesToArgs(scriptContent: string, settingsContent: string)
     }
   }
 
-  const combinedArgs = new Map<string, string>();
+  const combinedArgs = new Map<string, string | number>();
+
   scriptArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
   settingsArgs.forEach(arg => combinedArgs.set(arg.name, arg.value));
 

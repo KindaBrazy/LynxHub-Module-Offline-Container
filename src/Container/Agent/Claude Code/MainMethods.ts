@@ -31,7 +31,7 @@ async function saveArgs(args: ChosenArgument[], configDir?: string) {
   const {scriptData, settingsData} = parseArgsToFiles(args);
 
   const scriptPath = path.join(configDir, CONFIG_FILE);
-  const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
+  const settingsPath = String(args.find(arg => arg.name === 'Settings File Location')?.value);
 
   let finalScript = scriptData;
   if (settingsPath) {

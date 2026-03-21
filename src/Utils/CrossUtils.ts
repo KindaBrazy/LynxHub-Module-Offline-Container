@@ -1,4 +1,4 @@
-import {CardInfoCallback, CardInfoDescriptions} from '../../../src/common/types/plugins/modules';
+import {CardInfoCallback, CardInfoDescriptions, ChosenArgument} from '../../../src/common/types/plugins/modules';
 
 function detectIsWin(): boolean {
   // Renderer process - use preload-exposed platform
@@ -28,6 +28,8 @@ function detectIsMac(): boolean {
 
 export const isWin: boolean = detectIsWin();
 export const isMac: boolean = detectIsMac();
+
+export const scriptCommentStr = isWin ? 'REM' : '#';
 
 export function getPythonCommandByOs() {
   if (isMac) return {pip: 'pip3', python: 'python3'};
@@ -77,6 +79,7 @@ export function extractGitUrl(url: string): {owner: string; repo: string; platfo
 }
 
 export function removeAnsi(str: string): string {
+  // eslint-disable-next-line no-control-regex
   return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 }
 
@@ -93,4 +96,41 @@ export function getCdCommand(dirPath: string): string {
 
 export function getVenvPythonPath(venvPath: string): string {
   return isWin ? `${venvPath}\\Scripts\\python.exe` : `${venvPath}/bin/python`;
+}
+
+export function parseCustomArg(item: ChosenArgument) {
+  const {custom, value} = item;
+  if (!custom) return undefined;
+
+  let commandArg: string | undefined = undefined;
+  let line: string | undefined = undefined;
+
+  switch (custom.kind) {
+    case 'envVar':
+      if (custom.type === 'CheckBox') {
+        line = isWin ? `set ${item.name}=true\n` : `export ${item.name}="true"\n`;
+      } else {
+        line = isWin ? `set ${item.name}=${item.value}\n` : `export ${item.name}="${item.value}"\n`;
+      }
+      break;
+    case 'commandLine':
+      if (custom.type === 'CheckBox') {
+        commandArg = `${item.name} `;
+      } else if (custom.type === 'File' || custom.type === 'Directory') {
+        commandArg = `${item.name} "${item.value}" `;
+      } else {
+        commandArg = `${item.name} ${item.value} `;
+      }
+      break;
+    case 'custom':
+      line = value as string;
+      break;
+    case 'comment':
+      line = scriptCommentStr + ' ' + value;
+      break;
+    default:
+      return undefined;
+  }
+
+  return {commandArg, line};
 }

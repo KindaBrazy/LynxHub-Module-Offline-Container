@@ -108,18 +108,18 @@ export function parseCustomArg(item: ChosenArgument) {
   switch (custom.kind) {
     case 'envVar':
       if (custom.type === 'CheckBox') {
-        line = isWin ? `set ${item.name}=true\n` : `export ${item.name}="true"\n`;
+        line = isWin ? `set ${item.name}=true` : `export ${item.name}="true"`;
       } else {
-        line = isWin ? `set ${item.name}=${item.value}\n` : `export ${item.name}="${item.value}"\n`;
+        line = isWin ? `set ${item.name}=${item.value}` : `export ${item.name}="${item.value}"`;
       }
       break;
     case 'commandLine':
       if (custom.type === 'CheckBox') {
-        commandArg = `${item.name} `;
+        commandArg = `${item.name}`;
       } else if (custom.type === 'File' || custom.type === 'Directory') {
-        commandArg = `${item.name} "${item.value}" `;
+        commandArg = `${item.name} "${item.value}"`;
       } else {
-        commandArg = `${item.name} ${item.value} `;
+        commandArg = `${item.name} ${item.value}`;
       }
       break;
     case 'custom':

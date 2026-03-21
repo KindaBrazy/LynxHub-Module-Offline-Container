@@ -5,7 +5,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType} from '../../../Utils/RendererUtils';
 import smartGalleryArguments from './Arguments';
 
@@ -13,27 +13,36 @@ const SMARTGALLERY_URL = 'https://github.com/biagiomaf/smart-comfyui-gallery';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-  let envVars: string = '';
+  let lines: string = '';
+  let commandArgs: string = '';
 
   args.forEach(arg => {
-    const argType = getArgumentType(arg.name, smartGalleryArguments);
-    // Include Input, Directory, and File types
-    if ((argType === 'Input' || argType === 'Directory' || argType === 'File') && arg.value) {
-      // Environment variables
-      if (isWin) {
-        envVars += `set ${arg.name}=${arg.value}\n`;
-      } else {
-        envVars += `export ${arg.name}="${arg.value}"\n`;
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
+
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) commandArgs += result.commandArg + ' ';
+    } else {
+      const argType = getArgumentType(arg.name, smartGalleryArguments);
+      // Include Input, Directory, and File types
+      if ((argType === 'Input' || argType === 'Number' || argType === 'Directory' || argType === 'File') && arg.value) {
+        // Environment variables
+        if (isWin) {
+          lines += `set ${arg.name}=${arg.value}\n`;
+        } else {
+          lines += `export ${arg.name}="${arg.value}"\n`;
+        }
       }
     }
   });
 
-  if (envVars) {
-    result += envVars + '\n';
+  if (lines) {
+    result += lines + '\n';
   }
 
   const pythonCmd = getPythonCommandByOs().python;
-  result += `${pythonCmd} smartgallery.py`;
+  result += `${pythonCmd} smartgallery.py ${commandArgs}`;
 
   return result;
 }

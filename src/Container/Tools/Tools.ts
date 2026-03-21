@@ -59,6 +59,7 @@ const toolsPage: PagesData = {
       repoUrl: 'https://github.com/biagiomaf/smart-comfyui-gallery',
       type: 'image',
       arguments: smartGalleryArguments,
+      supportCustomArguments: true,
       methods: SMARTGALLERY_RM,
       installationType: 'git',
     },

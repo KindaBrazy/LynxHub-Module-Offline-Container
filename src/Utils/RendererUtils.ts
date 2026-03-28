@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import {isEmpty} from 'lodash';
 
 import {
   ArgumentsData,
@@ -9,7 +9,7 @@ import {
 import {DescriptionManager, formatSize} from './CrossUtils';
 
 export function isValidArg(name: string, Arguments: ArgumentsData): boolean {
-  if (_.isEmpty(name)) return false;
+  if (isEmpty(name)) return false;
   for (const argument of Arguments) {
     if ('sections' in argument) {
       for (const section of argument.sections) {
@@ -23,7 +23,7 @@ export function isValidArg(name: string, Arguments: ArgumentsData): boolean {
 }
 
 export function getArgumentByName(name: string, Arguments: ArgumentsData) {
-  if (_.isEmpty(name)) return undefined;
+  if (isEmpty(name)) return undefined;
   for (const argument of Arguments) {
     if ('sections' in argument) {
       for (const section of argument.sections) {

@@ -12,7 +12,7 @@ const config = {
     entryFileNames: '[name].mjs',
     chunkFileNames: '[name]_[hash:6].mjs',
   },
-  external: ['electron'],
+  external: ['electron', 'lodash'],
   plugins: [json(), typescript({tsconfig: 'module/tsconfig.json'}), nodeResolve(), commonjs()],
 };
 

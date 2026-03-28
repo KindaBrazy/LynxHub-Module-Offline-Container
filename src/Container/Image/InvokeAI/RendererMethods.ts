@@ -1,4 +1,4 @@
-import lodash from 'lodash';
+import {isEmpty} from 'lodash';
 
 import {
   CardInfoApi,
@@ -42,7 +42,7 @@ export function parseStringToArgs(args: string): ChosenArgument[] {
   const lines: string[] = args.split('\n');
 
   lines.forEach((line: string): void => {
-    if (line.startsWith('schema_version') || line.startsWith('#') || lodash.isEmpty(line.trim())) return;
+    if (line.startsWith('schema_version') || line.startsWith('#') || isEmpty(line.trim())) return;
 
     const clArgs: string[] = line.split(`: `);
 

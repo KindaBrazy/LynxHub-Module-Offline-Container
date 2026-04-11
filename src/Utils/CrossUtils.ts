@@ -30,6 +30,7 @@ export const isWin: boolean = detectIsWin();
 export const isMac: boolean = detectIsMac();
 
 export const scriptCommentStr = isWin ? 'REM' : '#';
+export const scriptEnvStr = isWin ? 'set' : 'export';
 
 export function getPythonCommandByOs() {
   if (isMac) return {pip: 'pip3', python: 'python3'};

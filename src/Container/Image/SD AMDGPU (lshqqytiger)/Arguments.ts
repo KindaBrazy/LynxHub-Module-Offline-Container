@@ -1,4 +1,4 @@
-import {cloneDeep} from 'lodash';
+import {cloneDeep} from 'lodash-es';
 
 import {ArgumentItem, ArgumentSection, DataSection} from '../../../../../src/common/types/plugins/modules';
 import automatic1111Arguments from '../SD (AUTOMATIC1111)/Arguments';

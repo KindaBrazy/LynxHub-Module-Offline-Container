@@ -1,5 +1,5 @@
 import {dump, load} from 'js-yaml';
-import {isEmpty} from 'lodash';
+import {isEmpty} from 'lodash-es';
 
 import {
   ArgType,

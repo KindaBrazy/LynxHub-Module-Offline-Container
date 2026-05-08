@@ -6,7 +6,7 @@
       "engines": {
         "moduleApi": "^2.0.0"
       },
-      "stage": "early_access",
+      "stage": "public",
       "platforms": [
         "win32",
         "linux",
@@ -19,7 +19,7 @@
       "engines": {
         "moduleApi": "^2.0.0"
       },
-      "stage": "early_access",
+      "stage": "public",
       "platforms": [
         "win32",
         "linux",

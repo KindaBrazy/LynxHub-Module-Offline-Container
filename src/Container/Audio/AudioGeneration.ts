@@ -27,6 +27,7 @@ const audioPage: PagesData = {
       description: 'A webui for different audio related Neural Networks',
       repoUrl: 'https://github.com/gitmylo/audio-webui',
       type: 'audio',
+      supportCustomArguments: true,
       arguments: gitmyloArguments,
       extensionsDir: '/extensions',
       methods: AG_RM,

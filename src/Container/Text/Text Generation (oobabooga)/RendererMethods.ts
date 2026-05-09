@@ -8,7 +8,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isMac, isWin} from '../../../Utils/CrossUtils';
+import {isMac, isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {CardInfo, getArgumentType, GitInstaller, isValidArg, replaceAddress} from '../../../Utils/RendererUtils';
 import oobaboogaArguments from './Arguments';
 import {fetchExtensionList} from './ExtensionsList';
@@ -22,18 +22,29 @@ const URL = 'https://github.com/oobabooga/text-generation-webui';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+  let lines: string = '';
   let argResult: string = '';
 
   args.forEach(arg => {
-    const argType = getArgumentType(arg.name, oobaboogaArguments);
-    if (argType === 'CheckBox') {
-      argResult += `${arg.name} `;
-    } else if (argType === 'File' || argType === 'Directory') {
-      argResult += `${arg.name} "${arg.value}" `;
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
+
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) argResult += result.commandArg + ' ';
     } else {
-      argResult += `${arg.name} ${arg.value} `;
+      const argType = getArgumentType(arg.name, oobaboogaArguments);
+      if (argType === 'CheckBox') {
+        argResult += `${arg.name} `;
+      } else if (argType === 'File' || argType === 'Directory') {
+        argResult += `${arg.name} "${arg.value}" `;
+      } else {
+        argResult += `${arg.name} ${arg.value} `;
+      }
     }
   });
+
+  if (lines) result += lines + '\n';
 
   result += isEmpty(argResult) ? shellCommand : `${shellCommand} ${argResult}`;
 

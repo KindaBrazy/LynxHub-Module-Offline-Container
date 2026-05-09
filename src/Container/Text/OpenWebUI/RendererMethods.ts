@@ -7,7 +7,7 @@ import {
   DataSection,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
+import {DescriptionManager, isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes, replaceAddress} from '../../../Utils/RendererUtils';
 import openArguments from './Arguments';
 
@@ -35,24 +35,35 @@ function checkLinuxArgLine(line: string): 'set' | 'export' | 'var' | undefined {
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+  let lines: string = '';
   let cmArgs: string = '';
 
   args.forEach(arg => {
-    if (arg.name === 'PORT') {
-      cmArgs = `--port ${arg.value}`;
-      return;
-    }
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
 
-    if (getArgumentType(arg.name, openArguments) === 'CheckBox') {
-      const eWinResult: string = `set ${arg.name}=true\n`;
-      const eResult: string = `export ${arg.name}="true"\n`;
-      result += isWin ? eWinResult : eResult;
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) cmArgs += result.commandArg + ' ';
     } else {
-      const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
-      const eResult: string = `export ${arg.name}="${arg.value}"\n`;
-      result += isWin ? eWinResult : eResult;
+      if (arg.name === 'PORT') {
+        cmArgs = `--port ${arg.value}`;
+        return;
+      }
+
+      if (getArgumentType(arg.name, openArguments) === 'CheckBox') {
+        const eWinResult: string = `set ${arg.name}=true\n`;
+        const eResult: string = `export ${arg.name}="true"\n`;
+        result += isWin ? eWinResult : eResult;
+      } else {
+        const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
+        const eResult: string = `export ${arg.name}="${arg.value}"\n`;
+        result += isWin ? eWinResult : eResult;
+      }
     }
   });
+
+  if (lines) result += lines + '\n';
 
   result += isWin ? `\nopen-webui serve ${cmArgs}` : `open-webui serve ${cmArgs}`;
 

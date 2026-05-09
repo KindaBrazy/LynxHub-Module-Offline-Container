@@ -9,7 +9,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../Utils/CrossUtils';
+import {isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, GitInstaller, isValidArg} from '../../../Utils/RendererUtils';
 import sillyArguments from './Arguments';
 
@@ -83,39 +83,49 @@ function setNestedValue(obj: Record<string, any>, path: string, value: any) {
  */
 export function parseArgsToFiles(args: ChosenArgument[]): {commands: string; configs: string} {
   let commandArgs: string = '';
+  let lines: string = '';
   const configObject: Record<string, any> = {};
 
   // This logic is identical to parseArgsToString for separating arguments
   args.forEach(arg => {
-    const isConfig = isConfigArg(arg.name);
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
 
-    if (isConfig === true) {
-      const definition = getArgDefinition(arg.name);
-      if (!definition) return;
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) commandArgs += result.commandArg + ' ';
+    } else {
+      const isConfig = isConfigArg(arg.name);
 
-      let processedValue: any = arg.value;
-      if (definition.type === 'CheckBox') {
-        processedValue = true;
-      } else if (typeof definition.defaultValue === 'number') {
-        processedValue = Number(arg.value) || definition.defaultValue;
-      } else if (definition.defaultValue === 'true' || definition.defaultValue === 'false') {
-        processedValue = arg.value.toString().toLowerCase() === 'true';
-      }
-      setNestedValue(configObject, arg.name, processedValue);
-    } else if (isConfig === false) {
-      const argType = getArgumentType(arg.name, sillyArguments);
-      if (argType === 'CheckBox') {
-        commandArgs += `${arg.name} `;
-      } else if (argType === 'File' || argType === 'Directory') {
-        commandArgs += `${arg.name} "${arg.value}" `;
-      } else {
-        commandArgs += `${arg.name} ${arg.value} `;
+      if (isConfig === true) {
+        const definition = getArgDefinition(arg.name);
+        if (!definition) return;
+
+        let processedValue: any = arg.value;
+        if (definition.type === 'CheckBox') {
+          processedValue = true;
+        } else if (typeof definition.defaultValue === 'number') {
+          processedValue = Number(arg.value) || definition.defaultValue;
+        } else if (definition.defaultValue === 'true' || definition.defaultValue === 'false') {
+          processedValue = arg.value.toString().toLowerCase() === 'true';
+        }
+        setNestedValue(configObject, arg.name, processedValue);
+      } else if (isConfig === false) {
+        const argType = getArgumentType(arg.name, sillyArguments);
+        if (argType === 'CheckBox') {
+          commandArgs += `${arg.name} `;
+        } else if (argType === 'File' || argType === 'Directory') {
+          commandArgs += `${arg.name} "${arg.value}" `;
+        } else {
+          commandArgs += `${arg.name} ${arg.value} `;
+        }
       }
     }
   });
 
   // Build the command file content
   let commandResult: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+  if (lines) commandResult += lines + '\n';
   commandResult += isEmpty(commandArgs) ? shellCommand : `${shellCommand} ${commandArgs.trim()}`;
 
   // Build the config file content

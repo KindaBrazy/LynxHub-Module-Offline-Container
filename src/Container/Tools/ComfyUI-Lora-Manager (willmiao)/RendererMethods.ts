@@ -8,7 +8,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
 import loraManagerArguments from './Arguments';
 
@@ -16,31 +16,44 @@ const LORA_MANAGER_URL = 'https://github.com/willmiao/ComfyUI-Lora-Manager';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+  let lines: string = '';
   let argResult: string = '';
 
   // Only include command line arguments (--host, --port), not settings
   args.forEach(arg => {
-    // Skip settings that go to settings.json
-    if (
-      arg.name === 'civitai_api_key' ||
-      arg.name === 'use_portable_settings' ||
-      arg.name === 'loras_folders' ||
-      arg.name === 'checkpoints_folders' ||
-      arg.name === 'embeddings_folders' ||
-      arg.name === 'auto_organize_exclusions'
-    ) {
-      return;
-    }
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
 
-    const argType = getArgumentType(arg.name, loraManagerArguments);
-    if (argType === 'CheckBox') {
-      argResult += `${arg.name} `;
-    } else if (argType === 'File' || argType === 'Directory') {
-      argResult += `${arg.name} "${arg.value}" `;
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) argResult += result.commandArg + ' ';
     } else {
-      argResult += `${arg.name} ${arg.value} `;
+      // Skip settings that go to settings.json
+      if (
+        arg.name === 'civitai_api_key' ||
+        arg.name === 'use_portable_settings' ||
+        arg.name === 'loras_folders' ||
+        arg.name === 'checkpoints_folders' ||
+        arg.name === 'embeddings_folders' ||
+        arg.name === 'auto_organize_exclusions'
+      ) {
+        return;
+      }
+
+      const argType = getArgumentType(arg.name, loraManagerArguments);
+      if (argType === 'CheckBox') {
+        argResult += `${arg.name} `;
+      } else if (argType === 'File' || argType === 'Directory') {
+        argResult += `${arg.name} "${arg.value}" `;
+      } else {
+        argResult += `${arg.name} ${arg.value} `;
+      }
     }
   });
+
+  if (lines) {
+    result += lines + '\n';
+  }
 
   const pythonCommand = getPythonCommandByOs().python;
 

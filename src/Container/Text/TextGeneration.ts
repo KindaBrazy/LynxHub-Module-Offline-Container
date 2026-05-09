@@ -19,6 +19,7 @@ const textPage: PagesData = {
       repoUrl: 'https://github.com/oobabooga/text-generation-webui',
       type: 'text',
       extensionsDir: '/extensions',
+      supportCustomArguments: true,
       arguments: oobaboogaArguments,
       methods: TG_RM,
       installationType: 'git',
@@ -33,6 +34,7 @@ const textPage: PagesData = {
       repoUrl: 'https://github.com/open-webui/open-webui',
       type: 'text',
       methods: OPEN_WEBUI_RM,
+      supportCustomArguments: true,
       installationType: 'others',
       uninstallType: 'others',
       arguments: openArguments,
@@ -51,12 +53,12 @@ const textPage: PagesData = {
       id: SILLYTAVERN_ID,
       title: 'SillyTavern',
       description:
-        'SillyTavern provides a single unified interface for many LLM APIs (KoboldAI/CPP, Horde, NovelAI, Ooba, Tabby, OpenAI,' +
-        ' OpenRouter, Claude, Mistral and more), a mobile-friendly layout, Visual Novel Mode, Automatic1111 & ComfyUI API image' +
-        " generation integration, TTS, WorldInfo (lorebooks), customizable UI, auto-translate, more prompt options than you'd" +
+        'SillyTavern provides a single unified interface for many LLM APIs, a mobile-friendly layout,' +
+        ' Visual Novel Mode, customizable UI, auto-translate, more prompt options than you' +
         ' ever want or need, and endless growth potential via third-party extensions.',
       repoUrl: 'https://github.com/SillyTavern/SillyTavern',
       type: 'text',
+      supportCustomArguments: true,
       arguments: sillyArguments,
       methods: SILLYTAVERN_RM,
       installationType: 'git',

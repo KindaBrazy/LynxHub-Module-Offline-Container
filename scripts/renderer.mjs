@@ -1,4 +1,4 @@
-import { ap as flowiseArguments, aq as Flow_RM, ak as FLOWISEAI_ID, ar as GeminiCli_RM, as as geminiCliArguments, am as GeminiCli_ID, at as ClaudeCode_RM, au as claudeCodeArguments, an as CLAUDE_CODE_ID, av as n8nArguments, aw as N8N_RM, al as N8N_ID, i as isWin, ax as CardInfo, ay as catchAddress$3, az as GitInstaller, T as TTS_ID, aA as AG_RM, aB as gitmyloArguments, m as AG_ID, A as ALLTALK_ID, ao as APPLIO_ID, v as isValidArg, u as getArgumentType, w as comfyuizludaArguments, H as parseStringToArgs$1, G as parseArgsToString$1, aC as fetchExtensionList$1, aD as lodashExports, aE as automatic1111Arguments, aF as COMFYUI_RM, aG as comfyuiArguments, C as COMFYUI_ID, ah as SD_FORGE_ID, aH as INVOKE_RM, x as INVOKE_ID, aI as SD_NEXT_RM, aJ as vladmandicArguments, L as SD_NEXT_ID, F as A1_ID, t as COMFYUI_ZLUDA_ID, aK as SD_AMD_RM, aL as lshqqytigerArguments, S as SD_AMD_ID, ai as SD_FORGE_AMD_ID, aM as SWARM_RM, aN as mcMonkeyArguments, O as SWARM_ID, aj as SD_UIUX_ID, aO as isPagesFixed, ad as ONETRAINER_ID, aP as KOHYA_GUI_RM, aQ as bmaltaisArguments, aa as KOHYA_ID, aR as AITOOLKIT_RM, aS as aiToolkitArguments, a4 as AITOOLKIT_ID, aT as SMARTGALLERY_RM, aU as smartGalleryArguments, ae as SMARTGALLERY_ID, aV as LORA_MANAGER_RM, aW as loraManagerArguments, a7 as LORA_MANAGER_ID, aX as TG_RM, aY as oobaboogaArguments, a0 as TG_ID, aZ as openArguments, a_ as OPEN_WEBUI_RM, W as OPEN_WEBUI_ID, R as BOLT_DIY_ID, a$ as SILLYTAVERN_RM, b0 as sillyArguments, Z as SILLYTAVERN_ID, U as LoLLMS_ID } from './RendererMethods_zfrDft.mjs';
+import { an as flowiseArguments, ao as Flow_RM, ai as FLOWISEAI_ID, ap as GeminiCli_RM, aq as geminiCliArguments, ak as GeminiCli_ID, ar as ClaudeCode_RM, as as claudeCodeArguments, al as CLAUDE_CODE_ID, at as n8nArguments, au as N8N_RM, aj as N8N_ID, i as isWin, av as CardInfo, aw as catchAddress$3, ax as GitInstaller, T as TTS_ID, ay as AG_RM, az as gitmyloArguments, k as AG_ID, A as ALLTALK_ID, am as APPLIO_ID, t as isValidArg, s as getArgumentType, aA as parseCustomArg, u as comfyuizludaArguments, F as parseStringToArgs$1, E as parseArgsToString$1, aB as fetchExtensionList, aC as cloneDeep, aD as automatic1111Arguments, aE as COMFYUI_RM, aF as comfyuiArguments, C as COMFYUI_ID, af as SD_FORGE_ID, aG as INVOKE_RM, v as INVOKE_ID, aH as SD_NEXT_RM, aI as vladmandicArguments, J as SD_NEXT_ID, D as A1_ID, r as COMFYUI_ZLUDA_ID, aJ as SD_AMD_RM, aK as lshqqytigerArguments, S as SD_AMD_ID, ag as SD_FORGE_AMD_ID, aL as SWARM_RM, aM as mcMonkeyArguments, M as SWARM_ID, ah as SD_UIUX_ID, aN as isPagesFixed, ab as ONETRAINER_ID, aO as KOHYA_GUI_RM, aP as bmaltaisArguments, a8 as KOHYA_ID, aQ as AITOOLKIT_RM, aR as aiToolkitArguments, a2 as AITOOLKIT_ID, aS as SMARTGALLERY_RM, aT as smartGalleryArguments, ac as SMARTGALLERY_ID, aU as LORA_MANAGER_RM, aV as loraManagerArguments, a5 as LORA_MANAGER_ID, aW as TG_RM, aX as oobaboogaArguments, _ as TG_ID, aY as openArguments, aZ as OPEN_WEBUI_RM, U as OPEN_WEBUI_ID, P as BOLT_DIY_ID, a_ as SILLYTAVERN_RM, a$ as sillyArguments, X as SILLYTAVERN_ID, Q as LoLLMS_ID } from './RendererMethods_f-O-RY.mjs';
 
 const agentsPage = {
     routePath: 'agents_page',
@@ -9,6 +9,7 @@ const agentsPage = {
             description: 'Drag & drop UI to build your customized LLM flow',
             repoUrl: 'https://github.com/FlowiseAI/Flowise',
             type: 'text',
+            supportCustomArguments: true,
             methods: Flow_RM,
             arguments: flowiseArguments,
             installationType: 'others',
@@ -40,6 +41,7 @@ const agentsPage = {
                 'Combine visual building with custom code, self-host or cloud, 400+ integrations.',
             repoUrl: 'https://github.com/n8n-io/n8n',
             type: 'text',
+            supportCustomArguments: true,
             methods: N8N_RM,
             installationType: 'others',
             arguments: n8nArguments,
@@ -217,6 +219,7 @@ const audioPage = {
             description: 'A webui for different audio related Neural Networks',
             repoUrl: 'https://github.com/gitmylo/audio-webui',
             type: 'audio',
+            supportCustomArguments: true,
             arguments: gitmyloArguments,
             extensionsDir: '/extensions',
             methods: AG_RM,
@@ -310,30 +313,42 @@ const ONETRAINER_RM = {
 const URL = 'https://github.com/patientx/ComfyUI-Zluda';
 function parseArgsToString(args) {
     let result = '';
-    let commandLineArgs = '';
+    let lines = '';
+    let argResult = '';
     const envVars = {};
     // Separate environment variables from command line arguments
     args.forEach(arg => {
-        if (arg.name === 'PYTHON' ||
-            arg.name === 'GIT' ||
-            arg.name === 'VENV_DIR' ||
-            arg.name === 'MIOPEN_FIND_MODE' ||
-            arg.name === 'MIOPEN_LOG_LEVEL' ||
-            arg.name === 'ZLUDA_COMGR_LOG_LEVEL' ||
-            arg.name === 'TRITON_OVERRIDE_ARCH') {
-            envVars[arg.name] = arg.value;
-            return;
-        }
-        // Build command line arguments
-        const argType = getArgumentType(arg.name, comfyuizludaArguments);
-        if (argType === 'CheckBox') {
-            commandLineArgs += `${arg.name} `;
-        }
-        else if (argType === 'File' || argType === 'Directory') {
-            commandLineArgs += `${arg.name} "${arg.value}" `;
+        if (arg.custom) {
+            const result = parseCustomArg(arg);
+            if (!result)
+                return;
+            if (result.line)
+                lines += result.line + '\n';
+            if (result.commandArg)
+                argResult += result.commandArg + ' ';
         }
         else {
-            commandLineArgs += `${arg.name} ${arg.value} `;
+            if (arg.name === 'PYTHON' ||
+                arg.name === 'GIT' ||
+                arg.name === 'VENV_DIR' ||
+                arg.name === 'MIOPEN_FIND_MODE' ||
+                arg.name === 'MIOPEN_LOG_LEVEL' ||
+                arg.name === 'ZLUDA_COMGR_LOG_LEVEL' ||
+                arg.name === 'TRITON_OVERRIDE_ARCH') {
+                envVars[arg.name] = arg.value;
+                return;
+            }
+            // Build command line arguments
+            const argType = getArgumentType(arg.name, comfyuizludaArguments);
+            if (argType === 'CheckBox') {
+                argResult += `${arg.name} `;
+            }
+            else if (argType === 'File' || argType === 'Directory') {
+                argResult += `${arg.name} "${arg.value}" `;
+            }
+            else {
+                argResult += `${arg.name} ${arg.value} `;
+            }
         }
     });
     // Add environment variables in proper order
@@ -358,13 +373,15 @@ function parseArgsToString(args) {
     if (Object.keys(envVars).some(k => k === 'PYTHON' || k === 'GIT' || k === 'VENV_DIR')) {
         result += '\n';
     }
-    result += `set "COMMANDLINE_ARGS=${commandLineArgs.trim()}"\n\n`;
+    result += `set "COMMANDLINE_ARGS=${argResult.trim()}"\n\n`;
     if (envVars.TRITON_OVERRIDE_ARCH !== undefined) {
         result += `set "TRITON_OVERRIDE_ARCH=${envVars.TRITON_OVERRIDE_ARCH}"\n\n`;
     }
     if (envVars.ZLUDA_COMGR_LOG_LEVEL !== undefined) {
         result += `set "ZLUDA_COMGR_LOG_LEVEL=${envVars.ZLUDA_COMGR_LOG_LEVEL}"\n\n`;
     }
+    if (lines)
+        result += lines + '\n';
     return result;
 }
 function parseStringToArgs(args) {
@@ -407,21 +424,6 @@ function parseStringToArgs(args) {
         }
     });
     return argResult;
-}
-async function fetchExtensionList() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json');
-        const extensions = await response.json();
-        return extensions.custom_nodes.map((extension) => ({
-            title: extension.title,
-            description: extension.description,
-            url: extension.reference,
-        }));
-    }
-    catch (e) {
-        console.error(e);
-        return [];
-    }
 }
 const COMFYUI_ZLUDA_URL = 'https://github.com/patientx/ComfyUI-Zluda';
 const customArguments = [
@@ -510,7 +512,6 @@ async function cardInfo$6(api, callback) {
 }
 const COMFYUI_ZLUDA_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList,
     parseArgsToString,
     parseStringToArgs,
     cardInfo: cardInfo$6,
@@ -909,7 +910,7 @@ async function cardInfo$5(api, callback) {
 }
 const A1_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList: fetchExtensionList$1,
+    fetchExtensionList,
     parseArgsToString: parseArgsToString$1,
     parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$5,
@@ -925,14 +926,14 @@ async function cardInfo$4(api, callback) {
 }
 const SD_FORGE_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList: fetchExtensionList$1,
+    fetchExtensionList,
     parseArgsToString: parseArgsToString$1,
     parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$4,
     manager: { startInstall: startInstall$4, updater: { updateType: 'git' } },
 };
 
-const lshqqytigerForgeArguments = lodashExports.cloneDeep(automatic1111Arguments);
+const lshqqytigerForgeArguments = cloneDeep(automatic1111Arguments);
 const lsSpecifArgs = [
     {
         description: 'Skip installation of onnxruntime; ONNX and Olive will be unavailable',
@@ -973,7 +974,7 @@ async function cardInfo$3(api, callback) {
 }
 const SD_FORGE_AMD_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList: fetchExtensionList$1,
+    fetchExtensionList,
     parseArgsToString: parseArgsToString$1,
     parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$3,
@@ -989,7 +990,7 @@ async function cardInfo$2(api, callback) {
 }
 const SD_UIUX_RM = {
     catchAddress: catchAddress$3,
-    fetchExtensionList: fetchExtensionList$1,
+    fetchExtensionList,
     parseArgsToString: parseArgsToString$1,
     parseStringToArgs: parseStringToArgs$1,
     cardInfo: cardInfo$2,
@@ -1006,8 +1007,8 @@ const imagePage = {
             description: 'This ui will let you design and execute advanced stable diffusion pipelines' +
                 ' using a graph/nodes/flowchart based interface.',
             repoUrl: 'https://github.com/comfyanonymous/ComfyUI',
-            extensionsDir: '/custom_nodes',
             type: 'image',
+            supportCustomArguments: true,
             arguments: comfyuiArguments,
             methods: COMFYUI_RM,
             installationType: 'git',
@@ -1019,8 +1020,8 @@ const imagePage = {
                 ' to make development easier, optimize resource management, speed up inference, and study experimental features.' +
                 'The name "Forge" is inspired from "Minecraft Forge". This project is aimed at becoming SD WebUI\'s Forge.',
             repoUrl: 'https://github.com/lllyasviel/stable-diffusion-webui-forge',
-            extensionsDir: '/extensions',
             type: 'image',
+            supportCustomArguments: true,
             arguments: automatic1111Arguments,
             methods: SD_FORGE_RM,
             installationType: 'git',
@@ -1044,6 +1045,7 @@ const imagePage = {
             repoUrl: 'https://github.com/vladmandic/sdnext',
             extensionsDir: '/extensions',
             type: 'image',
+            supportCustomArguments: true,
             arguments: vladmandicArguments,
             methods: SD_NEXT_RM,
             installationType: 'git',
@@ -1055,6 +1057,7 @@ const imagePage = {
             repoUrl: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
             extensionsDir: '/extensions',
             type: 'image',
+            supportCustomArguments: true,
             arguments: automatic1111Arguments,
             methods: A1_RM,
             installationType: 'git',
@@ -1067,6 +1070,7 @@ const imagePage = {
             repoUrl: 'https://github.com/patientx/ComfyUI-Zluda',
             extensionsDir: '/custom_nodes',
             type: 'image',
+            supportCustomArguments: true,
             arguments: comfyuizludaArguments,
             methods: COMFYUI_ZLUDA_RM,
             installationType: 'git',
@@ -1078,6 +1082,7 @@ const imagePage = {
             repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu',
             extensionsDir: '/extensions',
             type: 'image',
+            supportCustomArguments: true,
             arguments: lshqqytigerArguments,
             methods: SD_AMD_RM,
             installationType: 'git',
@@ -1091,6 +1096,7 @@ const imagePage = {
             repoUrl: 'https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu-forge',
             extensionsDir: '/extensions',
             type: 'image',
+            supportCustomArguments: true,
             arguments: lshqqytigerForgeArguments,
             methods: SD_FORGE_AMD_RM,
             installationType: 'git',
@@ -1104,6 +1110,7 @@ const imagePage = {
             repoUrl: 'https://github.com/mcmonkeyprojects/SwarmUI',
             type: 'image',
             extensionsDir: '/src/Extensions',
+            supportCustomArguments: true,
             arguments: mcMonkeyArguments,
             methods: SWARM_RM,
             installationType: 'git',
@@ -1117,6 +1124,7 @@ const imagePage = {
             repoUrl: 'https://github.com/anapnoe/stable-diffusion-webui-ux',
             type: 'image',
             extensionsDir: '/extensions',
+            supportCustomArguments: true,
             arguments: automatic1111Arguments,
             methods: SD_UIUX_RM,
             installationType: 'git',
@@ -1130,6 +1138,7 @@ if (!isPagesFixed) {
         description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
         repoUrl: 'https://github.com/Nerogar/OneTrainer',
         type: 'image',
+        supportCustomArguments: true,
         methods: ONETRAINER_RM,
         installationType: 'git',
     }, {
@@ -1150,6 +1159,7 @@ if (!isPagesFixed) {
             'configuration and monitoring of training jobs.',
         repoUrl: 'https://github.com/ostris/ai-toolkit',
         type: 'image',
+        supportCustomArguments: true,
         arguments: aiToolkitArguments,
         methods: AITOOLKIT_RM,
         installationType: 'git',
@@ -1162,6 +1172,7 @@ if (!isPagesFixed) {
         repoUrl: 'https://github.com/biagiomaf/smart-comfyui-gallery',
         type: 'image',
         arguments: smartGalleryArguments,
+        supportCustomArguments: true,
         methods: SMARTGALLERY_RM,
         installationType: 'git',
     }, {
@@ -1172,6 +1183,7 @@ if (!isPagesFixed) {
             'for Civitai. Access the interface at http://localhost:8188/loras',
         repoUrl: 'https://github.com/willmiao/ComfyUI-Lora-Manager',
         type: 'image',
+        supportCustomArguments: true,
         arguments: loraManagerArguments,
         methods: LORA_MANAGER_RM,
         installationType: 'git',
@@ -1331,6 +1343,7 @@ const textPage = {
             repoUrl: 'https://github.com/oobabooga/text-generation-webui',
             type: 'text',
             extensionsDir: '/extensions',
+            supportCustomArguments: true,
             arguments: oobaboogaArguments,
             methods: TG_RM,
             installationType: 'git',
@@ -1344,6 +1357,7 @@ const textPage = {
             repoUrl: 'https://github.com/open-webui/open-webui',
             type: 'text',
             methods: OPEN_WEBUI_RM,
+            supportCustomArguments: true,
             installationType: 'others',
             uninstallType: 'others',
             arguments: openArguments,
@@ -1361,12 +1375,12 @@ const textPage = {
         {
             id: SILLYTAVERN_ID,
             title: 'SillyTavern',
-            description: 'SillyTavern provides a single unified interface for many LLM APIs (KoboldAI/CPP, Horde, NovelAI, Ooba, Tabby, OpenAI,' +
-                ' OpenRouter, Claude, Mistral and more), a mobile-friendly layout, Visual Novel Mode, Automatic1111 & ComfyUI API image' +
-                " generation integration, TTS, WorldInfo (lorebooks), customizable UI, auto-translate, more prompt options than you'd" +
+            description: 'SillyTavern provides a single unified interface for many LLM APIs, a mobile-friendly layout,' +
+                ' Visual Novel Mode, customizable UI, auto-translate, more prompt options than you' +
                 ' ever want or need, and endless growth potential via third-party extensions.',
             repoUrl: 'https://github.com/SillyTavern/SillyTavern',
             type: 'text',
+            supportCustomArguments: true,
             arguments: sillyArguments,
             methods: SILLYTAVERN_RM,
             installationType: 'git',
@@ -1393,6 +1407,7 @@ const toolsPage = {
             description: 'OneTrainer is a one-stop solution for all your stable diffusion training needs.',
             repoUrl: 'https://github.com/Nerogar/OneTrainer',
             type: 'image',
+            supportCustomArguments: true,
             methods: ONETRAINER_RM,
             installationType: 'git',
         },
@@ -1415,6 +1430,7 @@ const toolsPage = {
                 'configuration and monitoring of training jobs.',
             repoUrl: 'https://github.com/ostris/ai-toolkit',
             type: 'image',
+            supportCustomArguments: true,
             arguments: aiToolkitArguments,
             methods: AITOOLKIT_RM,
             installationType: 'git',
@@ -1428,6 +1444,7 @@ const toolsPage = {
             repoUrl: 'https://github.com/biagiomaf/smart-comfyui-gallery',
             type: 'image',
             arguments: smartGalleryArguments,
+            supportCustomArguments: true,
             methods: SMARTGALLERY_RM,
             installationType: 'git',
         },
@@ -1439,6 +1456,7 @@ const toolsPage = {
                 'for Civitai. Access the interface at http://localhost:8188/loras',
             repoUrl: 'https://github.com/willmiao/ComfyUI-Lora-Manager',
             type: 'image',
+            supportCustomArguments: true,
             arguments: loraManagerArguments,
             methods: LORA_MANAGER_RM,
             installationType: 'git',

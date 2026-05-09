@@ -1,4 +1,4 @@
-import { c as commonjsGlobal, g as getDefaultExportFromCjs, i as isWin, a as getVenvPythonPath, p as parseFilesToArgs, b as parseArgsToFiles, d as getCdCommand, e as parseStringToArgs, f as parseArgsToString, h as parseFilesToArgs$1, j as parseArgsToFiles$1, k as parseStringToArgs$1, l as parseArgsToString$1, A as ALLTALK_ID, m as AG_ID, n as parseArgsToString$2, o as parseStringToArgs$2, T as TTS_ID, q as getPythonCommandByOs, C as COMFYUI_ID, r as parseArgsToString$3, s as parseStringToArgs$3, t as COMFYUI_ZLUDA_ID, u as getArgumentType, v as isValidArg, w as comfyuizludaArguments, I as INVOKEAI_INSTALL_DIR_KEY, x as INVOKE_ID, y as extractGitUrl, z as INVOKEAI_UPDATE_AVAILABLE_KEY, B as parseArgsToString$4, D as parseStringToArgs$4, E as Invoke_Command_ActivateVenv, F as A1_ID, G as parseArgsToString$5, H as parseStringToArgs$5, S as SD_AMD_ID, J as parseArgsToString$6, K as parseStringToArgs$6, L as SD_NEXT_ID, M as parseArgsToString$7, N as parseStringToArgs$7, O as SWARM_ID, P as parseArgsToString$8, Q as parseStringToArgs$8, R as BOLT_DIY_ID, U as LoLLMS_ID, V as removeAnsi, W as OPEN_WEBUI_ID, X as parseStringToArgs$9, Y as parseArgsToString$9, Z as SILLYTAVERN_ID, _ as parseArgsToFiles$2, $ as parseFilesToArgs$2, a0 as TG_ID, a1 as parseArgsToString$a, a2 as parseStringToArgs$a, a3 as isMac, a4 as AITOOLKIT_ID, a5 as parseArgsToString$b, a6 as parseStringToArgs$b, a7 as LORA_MANAGER_ID, a8 as parseArgsToString$c, a9 as parseStringToArgs$c, aa as KOHYA_ID, ab as parseArgsToString$d, ac as parseStringToArgs$d, ad as ONETRAINER_ID, ae as SMARTGALLERY_ID, af as parseArgsToString$e, ag as parseStringToArgs$e, ah as SD_FORGE_ID, ai as SD_FORGE_AMD_ID, aj as SD_UIUX_ID, ak as FLOWISEAI_ID, al as N8N_ID, am as GeminiCli_ID, an as CLAUDE_CODE_ID, ao as APPLIO_ID } from './RendererMethods_zfrDft.mjs';
+import { i as isWin, g as getVenvPythonPath, p as parseFilesToArgs, a as parseArgsToFiles, b as getCdCommand, c as parseStringToArgs, d as parseArgsToString, e as parseFilesToArgs$1, f as parseArgsToFiles$1, h as parseStringToArgs$1, j as parseArgsToString$1, A as ALLTALK_ID, k as AG_ID, l as parseArgsToString$2, m as parseStringToArgs$2, T as TTS_ID, n as getPythonCommandByOs, C as COMFYUI_ID, o as parseArgsToString$3, q as parseStringToArgs$3, r as COMFYUI_ZLUDA_ID, s as getArgumentType, t as isValidArg, u as comfyuizludaArguments, I as INVOKEAI_INSTALL_DIR_KEY, v as INVOKE_ID, w as extractGitUrl, x as INVOKEAI_UPDATE_AVAILABLE_KEY, y as parseArgsToString$4, z as parseStringToArgs$4, B as Invoke_Command_ActivateVenv, D as A1_ID, E as parseArgsToString$5, F as parseStringToArgs$5, S as SD_AMD_ID, G as parseArgsToString$6, H as parseStringToArgs$6, J as SD_NEXT_ID, K as parseArgsToString$7, L as parseStringToArgs$7, M as SWARM_ID, N as parseArgsToString$8, O as parseStringToArgs$8, P as BOLT_DIY_ID, Q as LoLLMS_ID, R as removeAnsi, U as OPEN_WEBUI_ID, V as parseStringToArgs$9, W as parseArgsToString$9, X as SILLYTAVERN_ID, Y as parseArgsToFiles$2, Z as parseFilesToArgs$2, _ as TG_ID, $ as parseArgsToString$a, a0 as parseStringToArgs$a, a1 as isMac, a2 as AITOOLKIT_ID, a3 as parseArgsToString$b, a4 as parseStringToArgs$b, a5 as LORA_MANAGER_ID, a6 as parseArgsToString$c, a7 as parseStringToArgs$c, a8 as KOHYA_ID, a9 as parseArgsToString$d, aa as parseStringToArgs$d, ab as ONETRAINER_ID, ac as SMARTGALLERY_ID, ad as parseArgsToString$e, ae as parseStringToArgs$e, af as SD_FORGE_ID, ag as SD_FORGE_AMD_ID, ah as SD_UIUX_ID, ai as FLOWISEAI_ID, aj as N8N_ID, ak as GeminiCli_ID, al as CLAUDE_CODE_ID, am as APPLIO_ID } from './RendererMethods_f-O-RY.mjs';
 import { exec, execSync } from 'node:child_process';
 import path, { normalize, join, resolve } from 'node:path';
 import require$$0$2 from 'fs';
@@ -23,6 +23,12 @@ import { EventEmitter as EventEmitter$1 } from 'node:events';
 import require$$0$6 from 'node:fs';
 import require$$1$3 from 'node:fs/promises';
 import { promisify } from 'node:util';
+
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
 
 var polyfills;
 var hasRequiredPolyfills;
@@ -1021,30 +1027,30 @@ function bind(fn, thisArg) {
 
 // utils is a library of generic helper functions non-specific to axios
 
-const {toString} = Object.prototype;
-const {getPrototypeOf} = Object;
-const {iterator, toStringTag} = Symbol;
+const { toString } = Object.prototype;
+const { getPrototypeOf } = Object;
+const { iterator, toStringTag } = Symbol;
 
-const kindOf = (cache => thing => {
-    const str = toString.call(thing);
-    return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+const kindOf = ((cache) => (thing) => {
+  const str = toString.call(thing);
+  return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
 })(Object.create(null));
 
 const kindOfTest = (type) => {
   type = type.toLowerCase();
-  return (thing) => kindOf(thing) === type
+  return (thing) => kindOf(thing) === type;
 };
 
-const typeOfTest = type => thing => typeof thing === type;
+const typeOfTest = (type) => (thing) => typeof thing === type;
 
 /**
- * Determine if a value is an Array
+ * Determine if a value is a non-null object
  *
  * @param {Object} val The value to test
  *
  * @returns {boolean} True if value is an Array, otherwise false
  */
-const {isArray} = Array;
+const { isArray } = Array;
 
 /**
  * Determine if a value is undefined
@@ -1053,7 +1059,7 @@ const {isArray} = Array;
  *
  * @returns {boolean} True if the value is undefined, otherwise false
  */
-const isUndefined = typeOfTest('undefined');
+const isUndefined = typeOfTest("undefined");
 
 /**
  * Determine if a value is a Buffer
@@ -1063,8 +1069,14 @@ const isUndefined = typeOfTest('undefined');
  * @returns {boolean} True if value is a Buffer, otherwise false
  */
 function isBuffer(val) {
-  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
-    && isFunction$1(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+  return (
+    val !== null &&
+    !isUndefined(val) &&
+    val.constructor !== null &&
+    !isUndefined(val.constructor) &&
+    isFunction$1(val.constructor.isBuffer) &&
+    val.constructor.isBuffer(val)
+  );
 }
 
 /**
@@ -1074,8 +1086,7 @@ function isBuffer(val) {
  *
  * @returns {boolean} True if value is an ArrayBuffer, otherwise false
  */
-const isArrayBuffer = kindOfTest('ArrayBuffer');
-
+const isArrayBuffer = kindOfTest("ArrayBuffer");
 
 /**
  * Determine if a value is a view on an ArrayBuffer
@@ -1086,10 +1097,10 @@ const isArrayBuffer = kindOfTest('ArrayBuffer');
  */
 function isArrayBufferView(val) {
   let result;
-  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+  if (typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView) {
     result = ArrayBuffer.isView(val);
   } else {
-    result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
+    result = val && val.buffer && isArrayBuffer(val.buffer);
   }
   return result;
 }
@@ -1101,7 +1112,7 @@ function isArrayBufferView(val) {
  *
  * @returns {boolean} True if value is a String, otherwise false
  */
-const isString = typeOfTest('string');
+const isString = typeOfTest("string");
 
 /**
  * Determine if a value is a Function
@@ -1109,7 +1120,7 @@ const isString = typeOfTest('string');
  * @param {*} val The value to test
  * @returns {boolean} True if value is a Function, otherwise false
  */
-const isFunction$1 = typeOfTest('function');
+const isFunction$1 = typeOfTest("function");
 
 /**
  * Determine if a value is a Number
@@ -1118,7 +1129,7 @@ const isFunction$1 = typeOfTest('function');
  *
  * @returns {boolean} True if value is a Number, otherwise false
  */
-const isNumber = typeOfTest('number');
+const isNumber = typeOfTest("number");
 
 /**
  * Determine if a value is an Object
@@ -1127,7 +1138,7 @@ const isNumber = typeOfTest('number');
  *
  * @returns {boolean} True if value is an Object, otherwise false
  */
-const isObject = (thing) => thing !== null && typeof thing === 'object';
+const isObject = (thing) => thing !== null && typeof thing === "object";
 
 /**
  * Determine if a value is a Boolean
@@ -1135,7 +1146,7 @@ const isObject = (thing) => thing !== null && typeof thing === 'object';
  * @param {*} thing The value to test
  * @returns {boolean} True if value is a Boolean, otherwise false
  */
-const isBoolean = thing => thing === true || thing === false;
+const isBoolean = (thing) => thing === true || thing === false;
 
 /**
  * Determine if a value is a plain Object
@@ -1145,12 +1156,18 @@ const isBoolean = thing => thing === true || thing === false;
  * @returns {boolean} True if value is a plain Object, otherwise false
  */
 const isPlainObject = (val) => {
-  if (kindOf(val) !== 'object') {
+  if (kindOf(val) !== "object") {
     return false;
   }
 
   const prototype = getPrototypeOf(val);
-  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(toStringTag in val) && !(iterator in val);
+  return (
+    (prototype === null ||
+      prototype === Object.prototype ||
+      Object.getPrototypeOf(prototype) === null) &&
+    !(toStringTag in val) &&
+    !(iterator in val)
+  );
 };
 
 /**
@@ -1167,7 +1184,10 @@ const isEmptyObject = (val) => {
   }
 
   try {
-    return Object.keys(val).length === 0 && Object.getPrototypeOf(val) === Object.prototype;
+    return (
+      Object.keys(val).length === 0 &&
+      Object.getPrototypeOf(val) === Object.prototype
+    );
   } catch (e) {
     // Fallback for any other objects that might cause RangeError with Object.keys()
     return false;
@@ -1181,7 +1201,7 @@ const isEmptyObject = (val) => {
  *
  * @returns {boolean} True if value is a Date, otherwise false
  */
-const isDate = kindOfTest('Date');
+const isDate = kindOfTest("Date");
 
 /**
  * Determine if a value is a File
@@ -1190,7 +1210,7 @@ const isDate = kindOfTest('Date');
  *
  * @returns {boolean} True if value is a File, otherwise false
  */
-const isFile = kindOfTest('File');
+const isFile = kindOfTest("File");
 
 /**
  * Determine if a value is a Blob
@@ -1199,7 +1219,7 @@ const isFile = kindOfTest('File');
  *
  * @returns {boolean} True if value is a Blob, otherwise false
  */
-const isBlob = kindOfTest('Blob');
+const isBlob = kindOfTest("Blob");
 
 /**
  * Determine if a value is a FileList
@@ -1208,7 +1228,7 @@ const isBlob = kindOfTest('Blob');
  *
  * @returns {boolean} True if value is a File, otherwise false
  */
-const isFileList = kindOfTest('FileList');
+const isFileList = kindOfTest("FileList");
 
 /**
  * Determine if a value is a Stream
@@ -1228,15 +1248,16 @@ const isStream = (val) => isObject(val) && isFunction$1(val.pipe);
  */
 const isFormData = (thing) => {
   let kind;
-  return thing && (
-    (typeof FormData === 'function' && thing instanceof FormData) || (
-      isFunction$1(thing.append) && (
-        (kind = kindOf(thing)) === 'formdata' ||
-        // detect form-data instance
-        (kind === 'object' && isFunction$1(thing.toString) && thing.toString() === '[object FormData]')
-      )
-    )
-  )
+  return (
+    thing &&
+    ((typeof FormData === "function" && thing instanceof FormData) ||
+      (isFunction$1(thing.append) &&
+        ((kind = kindOf(thing)) === "formdata" ||
+          // detect form-data instance
+          (kind === "object" &&
+            isFunction$1(thing.toString) &&
+            thing.toString() === "[object FormData]"))))
+  );
 };
 
 /**
@@ -1246,9 +1267,14 @@ const isFormData = (thing) => {
  *
  * @returns {boolean} True if value is a URLSearchParams object, otherwise false
  */
-const isURLSearchParams = kindOfTest('URLSearchParams');
+const isURLSearchParams = kindOfTest("URLSearchParams");
 
-const [isReadableStream, isRequest, isResponse, isHeaders] = ['ReadableStream', 'Request', 'Response', 'Headers'].map(kindOfTest);
+const [isReadableStream, isRequest, isResponse, isHeaders] = [
+  "ReadableStream",
+  "Request",
+  "Response",
+  "Headers",
+].map(kindOfTest);
 
 /**
  * Trim excess whitespace off the beginning and end of a string
@@ -1257,8 +1283,8 @@ const [isReadableStream, isRequest, isResponse, isHeaders] = ['ReadableStream', 
  *
  * @returns {String} The String freed of excess whitespace
  */
-const trim = (str) => str.trim ?
-  str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+const trim = (str) =>
+  str.trim ? str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
 
 /**
  * Iterate over an Array or an Object invoking a function for each item.
@@ -1276,9 +1302,9 @@ const trim = (str) => str.trim ?
  * @param {Boolean} [options.allOwnKeys = false]
  * @returns {any}
  */
-function forEach$1(obj, fn, {allOwnKeys = false} = {}) {
+function forEach$1(obj, fn, { allOwnKeys = false } = {}) {
   // Don't bother if no value provided
-  if (obj === null || typeof obj === 'undefined') {
+  if (obj === null || typeof obj === "undefined") {
     return;
   }
 
@@ -1286,7 +1312,7 @@ function forEach$1(obj, fn, {allOwnKeys = false} = {}) {
   let l;
 
   // Force an array if not already something iterable
-  if (typeof obj !== 'object') {
+  if (typeof obj !== "object") {
     /*eslint no-param-reassign:0*/
     obj = [obj];
   }
@@ -1303,7 +1329,9 @@ function forEach$1(obj, fn, {allOwnKeys = false} = {}) {
     }
 
     // Iterate over object keys
-    const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
+    const keys = allOwnKeys
+      ? Object.getOwnPropertyNames(obj)
+      : Object.keys(obj);
     const len = keys.length;
     let key;
 
@@ -1315,7 +1343,7 @@ function forEach$1(obj, fn, {allOwnKeys = false} = {}) {
 }
 
 function findKey(obj, key) {
-  if (isBuffer(obj)){
+  if (isBuffer(obj)) {
     return null;
   }
 
@@ -1335,10 +1363,15 @@ function findKey(obj, key) {
 const _global = (() => {
   /*eslint no-undef:0*/
   if (typeof globalThis !== "undefined") return globalThis;
-  return typeof self !== "undefined" ? self : (typeof window !== 'undefined' ? window : global)
+  return typeof self !== "undefined"
+    ? self
+    : typeof window !== "undefined"
+      ? window
+      : global;
 })();
 
-const isContextDefined = (context) => !isUndefined(context) && context !== _global;
+const isContextDefined = (context) =>
+  !isUndefined(context) && context !== _global;
 
 /**
  * Accepts varargs expecting each argument to be an object, then
@@ -1359,10 +1392,15 @@ const isContextDefined = (context) => !isUndefined(context) && context !== _glob
  * @returns {Object} Result of all merge properties
  */
 function merge(/* obj1, obj2, obj3, ... */) {
-  const {caseless, skipUndefined} = isContextDefined(this) && this || {};
+  const { caseless, skipUndefined } = (isContextDefined(this) && this) || {};
   const result = {};
   const assignValue = (val, key) => {
-    const targetKey = caseless && findKey(result, key) || key;
+    // Skip dangerous property names to prevent prototype pollution
+    if (key === "__proto__" || key === "constructor" || key === "prototype") {
+      return;
+    }
+
+    const targetKey = (caseless && findKey(result, key)) || key;
     if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
       result[targetKey] = merge(result[targetKey], val);
     } else if (isPlainObject(val)) {
@@ -1391,24 +1429,28 @@ function merge(/* obj1, obj2, obj3, ... */) {
  * @param {Boolean} [options.allOwnKeys]
  * @returns {Object} The resulting value of object a
  */
-const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
-  forEach$1(b, (val, key) => {
-    if (thisArg && isFunction$1(val)) {
-      Object.defineProperty(a, key, {
-        value: bind(val, thisArg),
-        writable: true,
-        enumerable: true,
-        configurable: true
-      });
-    } else {
-      Object.defineProperty(a, key, {
-        value: val,
-        writable: true,
-        enumerable: true,
-        configurable: true
-      });
-    }
-  }, {allOwnKeys});
+const extend = (a, b, thisArg, { allOwnKeys } = {}) => {
+  forEach$1(
+    b,
+    (val, key) => {
+      if (thisArg && isFunction$1(val)) {
+        Object.defineProperty(a, key, {
+          value: bind(val, thisArg),
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        });
+      } else {
+        Object.defineProperty(a, key, {
+          value: val,
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        });
+      }
+    },
+    { allOwnKeys },
+  );
   return a;
 };
 
@@ -1420,7 +1462,7 @@ const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
  * @returns {string} content value without BOM
  */
 const stripBOM = (content) => {
-  if (content.charCodeAt(0) === 0xFEFF) {
+  if (content.charCodeAt(0) === 0xfeff) {
     content = content.slice(1);
   }
   return content;
@@ -1436,15 +1478,18 @@ const stripBOM = (content) => {
  * @returns {void}
  */
 const inherits = (constructor, superConstructor, props, descriptors) => {
-  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
-  Object.defineProperty(constructor.prototype, 'constructor', {
+  constructor.prototype = Object.create(
+    superConstructor.prototype,
+    descriptors,
+  );
+  Object.defineProperty(constructor.prototype, "constructor", {
     value: constructor,
     writable: true,
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(constructor, 'super', {
-    value: superConstructor.prototype
+  Object.defineProperty(constructor, "super", {
+    value: superConstructor.prototype,
   });
   props && Object.assign(constructor.prototype, props);
 };
@@ -1473,13 +1518,20 @@ const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
     i = props.length;
     while (i-- > 0) {
       prop = props[i];
-      if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
+      if (
+        (!propFilter || propFilter(prop, sourceObj, destObj)) &&
+        !merged[prop]
+      ) {
         destObj[prop] = sourceObj[prop];
         merged[prop] = true;
       }
     }
     sourceObj = filter !== false && getPrototypeOf(sourceObj);
-  } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+  } while (
+    sourceObj &&
+    (!filter || filter(sourceObj, destObj)) &&
+    sourceObj !== Object.prototype
+  );
 
   return destObj;
 };
@@ -1502,7 +1554,6 @@ const endsWith = (str, searchString, position) => {
   const lastIndex = str.indexOf(searchString, position);
   return lastIndex !== -1 && lastIndex === position;
 };
-
 
 /**
  * Returns new array from array like object or null if failed
@@ -1532,12 +1583,12 @@ const toArray = (thing) => {
  * @returns {Array}
  */
 // eslint-disable-next-line func-names
-const isTypedArray = (TypedArray => {
+const isTypedArray = ((TypedArray) => {
   // eslint-disable-next-line func-names
-  return thing => {
+  return (thing) => {
     return TypedArray && thing instanceof TypedArray;
   };
-})(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
+})(typeof Uint8Array !== "undefined" && getPrototypeOf(Uint8Array));
 
 /**
  * For each entry in the object, call the function with the key and value.
@@ -1580,18 +1631,22 @@ const matchAll = (regExp, str) => {
 };
 
 /* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
-const isHTMLForm = kindOfTest('HTMLFormElement');
+const isHTMLForm = kindOfTest("HTMLFormElement");
 
-const toCamelCase = str => {
-  return str.toLowerCase().replace(/[-_\s]([a-z\d])(\w*)/g,
-    function replacer(m, p1, p2) {
+const toCamelCase = (str) => {
+  return str
+    .toLowerCase()
+    .replace(/[-_\s]([a-z\d])(\w*)/g, function replacer(m, p1, p2) {
       return p1.toUpperCase() + p2;
-    }
-  );
+    });
 };
 
 /* Creating a function that will check if an object has a property. */
-const hasOwnProperty = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call(obj, prop))(Object.prototype);
+const hasOwnProperty = (
+  ({ hasOwnProperty }) =>
+  (obj, prop) =>
+    hasOwnProperty.call(obj, prop)
+)(Object.prototype);
 
 /**
  * Determine if a value is a RegExp object
@@ -1600,7 +1655,7 @@ const hasOwnProperty = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call
  *
  * @returns {boolean} True if value is a RegExp object, otherwise false
  */
-const isRegExp = kindOfTest('RegExp');
+const isRegExp = kindOfTest("RegExp");
 
 const reduceDescriptors = (obj, reducer) => {
   const descriptors = Object.getOwnPropertyDescriptors(obj);
@@ -1624,7 +1679,10 @@ const reduceDescriptors = (obj, reducer) => {
 const freezeMethods = (obj) => {
   reduceDescriptors(obj, (descriptor, name) => {
     // skip restricted props in strict mode
-    if (isFunction$1(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
+    if (
+      isFunction$1(obj) &&
+      ["arguments", "caller", "callee"].indexOf(name) !== -1
+    ) {
       return false;
     }
 
@@ -1634,14 +1692,14 @@ const freezeMethods = (obj) => {
 
     descriptor.enumerable = false;
 
-    if ('writable' in descriptor) {
+    if ("writable" in descriptor) {
       descriptor.writable = false;
       return;
     }
 
     if (!descriptor.set) {
       descriptor.set = () => {
-        throw Error('Can not rewrite read-only method \'' + name + '\'');
+        throw Error("Can not rewrite read-only method '" + name + "'");
       };
     }
   });
@@ -1651,12 +1709,14 @@ const toObjectSet = (arrayOrString, delimiter) => {
   const obj = {};
 
   const define = (arr) => {
-    arr.forEach(value => {
+    arr.forEach((value) => {
       obj[value] = true;
     });
   };
 
-  isArray(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter));
+  isArray(arrayOrString)
+    ? define(arrayOrString)
+    : define(String(arrayOrString).split(delimiter));
 
   return obj;
 };
@@ -1664,10 +1724,10 @@ const toObjectSet = (arrayOrString, delimiter) => {
 const noop = () => {};
 
 const toFiniteNumber = (value, defaultValue) => {
-  return value != null && Number.isFinite(value = +value) ? value : defaultValue;
+  return value != null && Number.isFinite((value = +value))
+    ? value
+    : defaultValue;
 };
-
-
 
 /**
  * If the thing is a FormData object, return true, otherwise return false.
@@ -1677,14 +1737,18 @@ const toFiniteNumber = (value, defaultValue) => {
  * @returns {boolean}
  */
 function isSpecCompliantForm(thing) {
-  return !!(thing && isFunction$1(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
+  return !!(
+    thing &&
+    isFunction$1(thing.append) &&
+    thing[toStringTag] === "FormData" &&
+    thing[iterator]
+  );
 }
 
 const toJSONObject = (obj) => {
   const stack = new Array(10);
 
   const visit = (source, i) => {
-
     if (isObject(source)) {
       if (stack.indexOf(source) >= 0) {
         return;
@@ -1695,7 +1759,7 @@ const toJSONObject = (obj) => {
         return source;
       }
 
-      if(!('toJSON' in source)) {
+      if (!("toJSON" in source)) {
         stack[i] = source;
         const target = isArray(source) ? [] : {};
 
@@ -1716,10 +1780,13 @@ const toJSONObject = (obj) => {
   return visit(obj, 0);
 };
 
-const isAsyncFn = kindOfTest('AsyncFunction');
+const isAsyncFn = kindOfTest("AsyncFunction");
 
 const isThenable = (thing) =>
-  thing && (isObject(thing) || isFunction$1(thing)) && isFunction$1(thing.then) && isFunction$1(thing.catch);
+  thing &&
+  (isObject(thing) || isFunction$1(thing)) &&
+  isFunction$1(thing.then) &&
+  isFunction$1(thing.catch);
 
 // original code
 // https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
@@ -1729,31 +1796,34 @@ const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
     return setImmediate;
   }
 
-  return postMessageSupported ? ((token, callbacks) => {
-    _global.addEventListener("message", ({source, data}) => {
-      if (source === _global && data === token) {
-        callbacks.length && callbacks.shift()();
-      }
-    }, false);
+  return postMessageSupported
+    ? ((token, callbacks) => {
+        _global.addEventListener(
+          "message",
+          ({ source, data }) => {
+            if (source === _global && data === token) {
+              callbacks.length && callbacks.shift()();
+            }
+          },
+          false,
+        );
 
-    return (cb) => {
-      callbacks.push(cb);
-      _global.postMessage(token, "*");
-    }
-  })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
-})(
-  typeof setImmediate === 'function',
-  isFunction$1(_global.postMessage)
-);
+        return (cb) => {
+          callbacks.push(cb);
+          _global.postMessage(token, "*");
+        };
+      })(`axios@${Math.random()}`, [])
+    : (cb) => setTimeout(cb);
+})(typeof setImmediate === "function", isFunction$1(_global.postMessage));
 
-const asap = typeof queueMicrotask !== 'undefined' ?
-  queueMicrotask.bind(_global) : ( typeof process !== 'undefined' && process.nextTick || _setImmediate);
+const asap =
+  typeof queueMicrotask !== "undefined"
+    ? queueMicrotask.bind(_global)
+    : (typeof process !== "undefined" && process.nextTick) || _setImmediate;
 
 // *********************
 
-
 const isIterable = (thing) => thing != null && isFunction$1(thing[iterator]);
-
 
 var utils$1 = {
   isArray,
@@ -1812,7 +1882,7 @@ var utils$1 = {
   isThenable,
   setImmediate: _setImmediate,
   asap,
-  isIterable
+  isIterable,
 };
 
 let AxiosError$1 = class AxiosError extends Error {
@@ -15597,7 +15667,8 @@ class InterceptorManager {
 var transitionalDefaults = {
   silentJSONParsing: true,
   forcedJSONParsing: true,
-  clarifyTimeoutError: false
+  clarifyTimeoutError: false,
+  legacyInterceptorReqResOrdering: true
 };
 
 var URLSearchParams = require$$0$3.URLSearchParams;
@@ -15682,12 +15753,12 @@ const hasStandardBrowserWebWorkerEnv = (() => {
 const origin = hasBrowserEnv && window.location.href || 'http://localhost';
 
 var utils = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  hasBrowserEnv: hasBrowserEnv,
-  hasStandardBrowserEnv: hasStandardBrowserEnv,
-  hasStandardBrowserWebWorkerEnv: hasStandardBrowserWebWorkerEnv,
-  navigator: _navigator,
-  origin: origin
+	__proto__: null,
+	hasBrowserEnv: hasBrowserEnv,
+	hasStandardBrowserEnv: hasStandardBrowserEnv,
+	hasStandardBrowserWebWorkerEnv: hasStandardBrowserWebWorkerEnv,
+	navigator: _navigator,
+	origin: origin
 });
 
 var platform = {
@@ -16388,6 +16459,10 @@ function isAbsoluteURL(url) {
   // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
   // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
   // by any combination of letters, digits, plus, period, or hyphen.
+  if (typeof url !== 'string') {
+    return false;
+  }
+
   return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
 }
 
@@ -18475,7 +18550,7 @@ function requireFollowRedirects () {
 var followRedirectsExports = requireFollowRedirects();
 var followRedirects = /*@__PURE__*/getDefaultExportFromCjs(followRedirectsExports);
 
-const VERSION$1 = "1.13.4";
+const VERSION$1 = "1.13.5";
 
 function parseProtocol(url) {
   const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
@@ -19962,7 +20037,8 @@ var cookies = platform.hasStandardBrowserEnv ?
     remove() {}
   };
 
-const headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
+const headersToObject = (thing) =>
+  thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
 
 /**
  * Config-specific merge-function which creates a new config-object
@@ -20051,14 +20127,27 @@ function mergeConfig$1(config1, config2) {
     socketPath: defaultToConfig2,
     responseEncoding: defaultToConfig2,
     validateStatus: mergeDirectKeys,
-    headers: (a, b, prop) => mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true)
+    headers: (a, b, prop) =>
+      mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true),
   };
 
-  utils$1.forEach(Object.keys({ ...config1, ...config2 }), function computeConfigValue(prop) {
-    const merge = mergeMap[prop] || mergeDeepProperties;
-    const configValue = merge(config1[prop], config2[prop], prop);
-    (utils$1.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
-  });
+  utils$1.forEach(
+    Object.keys({ ...config1, ...config2 }),
+    function computeConfigValue(prop) {
+      if (
+        prop === "__proto__" ||
+        prop === "constructor" ||
+        prop === "prototype"
+      )
+        return;
+      const merge = utils$1.hasOwnProp(mergeMap, prop)
+        ? mergeMap[prop]
+        : mergeDeepProperties;
+      const configValue = merge(config1[prop], config2[prop], prop);
+      (utils$1.isUndefined(configValue) && merge !== mergeDirectKeys) ||
+        (config[prop] = configValue);
+    },
+  );
 
   return config;
 }
@@ -20674,14 +20763,14 @@ const factory = (env) => {
 
       if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
         throw Object.assign(
-          new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request),
+          new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request, err && err.response),
           {
             cause: err.cause || err
           }
         )
       }
 
-      throw AxiosError$1.from(err, err && err.code, config, request);
+      throw AxiosError$1.from(err, err && err.code, config, request, err && err.response);
     }
   }
 };
@@ -21072,7 +21161,8 @@ let Axios$1 = class Axios {
       validator.assertOptions(transitional, {
         silentJSONParsing: validators.transitional(validators.boolean),
         forcedJSONParsing: validators.transitional(validators.boolean),
-        clarifyTimeoutError: validators.transitional(validators.boolean)
+        clarifyTimeoutError: validators.transitional(validators.boolean),
+        legacyInterceptorReqResOrdering: validators.transitional(validators.boolean)
       }, false);
     }
 
@@ -21129,7 +21219,14 @@ let Axios$1 = class Axios {
 
       synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
 
-      requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+      const transitional = config.transitional || transitionalDefaults;
+      const legacyInterceptorReqResOrdering = transitional && transitional.legacyInterceptorReqResOrdering;
+
+      if (legacyInterceptorReqResOrdering) {
+        requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+      } else {
+        requestInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+      }
     });
 
     const responseInterceptorChain = [];
@@ -24322,15 +24419,15 @@ function parser3(indexX, indexY, handler) {
   return [`${indexX}${indexY}`, handler];
 }
 function conflicts(indexX, ...indexY) {
-  return indexY.map((y) => parser3(indexX, y, (result, file) => append(result.conflicted, file)));
+  return indexY.map((y) => parser3(indexX, y, (result, file) => result.conflicted.push(file)));
 }
 function splitLine(result, lineStr) {
   const trimmed2 = lineStr.trim();
   switch (" ") {
     case trimmed2.charAt(2):
-      return data(trimmed2.charAt(0), trimmed2.charAt(1), trimmed2.substr(3));
+      return data(trimmed2.charAt(0), trimmed2.charAt(1), trimmed2.slice(3));
     case trimmed2.charAt(1):
-      return data(" " /* NONE */, trimmed2.charAt(0), trimmed2.substr(2));
+      return data(" " /* NONE */, trimmed2.charAt(0), trimmed2.slice(2));
     default:
       return;
   }
@@ -24375,58 +24472,54 @@ var init_StatusSummary = __esm({
       parser3(
         " " /* NONE */,
         "A" /* ADDED */,
-        (result, file) => append(result.created, file)
+        (result, file) => result.created.push(file)
       ),
       parser3(
         " " /* NONE */,
         "D" /* DELETED */,
-        (result, file) => append(result.deleted, file)
+        (result, file) => result.deleted.push(file)
       ),
       parser3(
         " " /* NONE */,
         "M" /* MODIFIED */,
-        (result, file) => append(result.modified, file)
+        (result, file) => result.modified.push(file)
       ),
-      parser3(
-        "A" /* ADDED */,
-        " " /* NONE */,
-        (result, file) => append(result.created, file) && append(result.staged, file)
-      ),
-      parser3(
-        "A" /* ADDED */,
-        "M" /* MODIFIED */,
-        (result, file) => append(result.created, file) && append(result.staged, file) && append(result.modified, file)
-      ),
-      parser3(
-        "D" /* DELETED */,
-        " " /* NONE */,
-        (result, file) => append(result.deleted, file) && append(result.staged, file)
-      ),
-      parser3(
-        "M" /* MODIFIED */,
-        " " /* NONE */,
-        (result, file) => append(result.modified, file) && append(result.staged, file)
-      ),
-      parser3(
-        "M" /* MODIFIED */,
-        "M" /* MODIFIED */,
-        (result, file) => append(result.modified, file) && append(result.staged, file)
-      ),
+      parser3("A" /* ADDED */, " " /* NONE */, (result, file) => {
+        result.created.push(file);
+        result.staged.push(file);
+      }),
+      parser3("A" /* ADDED */, "M" /* MODIFIED */, (result, file) => {
+        result.created.push(file);
+        result.staged.push(file);
+        result.modified.push(file);
+      }),
+      parser3("D" /* DELETED */, " " /* NONE */, (result, file) => {
+        result.deleted.push(file);
+        result.staged.push(file);
+      }),
+      parser3("M" /* MODIFIED */, " " /* NONE */, (result, file) => {
+        result.modified.push(file);
+        result.staged.push(file);
+      }),
+      parser3("M" /* MODIFIED */, "M" /* MODIFIED */, (result, file) => {
+        result.modified.push(file);
+        result.staged.push(file);
+      }),
       parser3("R" /* RENAMED */, " " /* NONE */, (result, file) => {
-        append(result.renamed, renamedFile(file));
+        result.renamed.push(renamedFile(file));
       }),
       parser3("R" /* RENAMED */, "M" /* MODIFIED */, (result, file) => {
         const renamed = renamedFile(file);
-        append(result.renamed, renamed);
-        append(result.modified, renamed.to);
+        result.renamed.push(renamed);
+        result.modified.push(renamed.to);
       }),
       parser3("!" /* IGNORED */, "!" /* IGNORED */, (_result, _file) => {
-        append(_result.ignored = _result.ignored || [], _file);
+        (_result.ignored = _result.ignored || []).push(_file);
       }),
       parser3(
         "?" /* UNTRACKED */,
         "?" /* UNTRACKED */,
-        (result, file) => append(result.not_added, file)
+        (result, file) => result.not_added.push(file)
       ),
       ...conflicts("A" /* ADDED */, "A" /* ADDED */, "U" /* UNMERGED */),
       ...conflicts(
@@ -26027,7 +26120,7 @@ init_utils();
 var WRONG_NUMBER_ERR = `Invalid value supplied for custom binary, requires a single string or an array containing either one or two strings`;
 var WRONG_CHARS_ERR = `Invalid value supplied for custom binary, restricted characters must be removed or supply the unsafe.allowUnsafeCustomBinary option`;
 function isBadArgument(arg) {
-  return !arg || !/^([a-z]:)?([a-z0-9/.\\_-]+)$/i.test(arg);
+  return !arg || !/^([a-z]:)?([a-z0-9/.\\_~-]+)$/i.test(arg);
 }
 function toBinaryConfig(input, allowUnsafe) {
   if (input.length < 1 || input.length > 2) {
@@ -26792,6 +26885,17 @@ async function isGitRoot(dir, repoUrl) {
         return false;
     }
 }
+async function checkDirExist(dir) {
+    if (!dir)
+        return false;
+    try {
+        await gracefulFsExports.promises.access(dir);
+    }
+    catch (error) {
+        return false;
+    }
+    return true;
+}
 async function checkFilesExist(dir, files) {
     try {
         for (const file of files) {
@@ -26811,6 +26915,9 @@ async function checkFilesExist(dir, files) {
 }
 async function isGitTypeInstalled(dir, url, files) {
     if (!dir)
+        return false;
+    const isFolderExist = await checkDirExist(dir);
+    if (!isFolderExist)
         return false;
     const isRepo = await isGitRoot(dir, url);
     if (isRepo)
@@ -26836,7 +26943,7 @@ async function saveArgs$i(args, configDir) {
         return;
     const { scriptData, settingsData } = parseArgsToFiles(args);
     const scriptPath = path.join(configDir, CONFIG_FILE$7);
-    const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
+    const settingsPath = String(args.find(arg => arg.name === 'Settings File Location')?.value);
     let finalScript = scriptData;
     if (settingsPath) {
         const marker = isWin ? `REM SETTINGS_FILE="${settingsPath}"\n` : `# SETTINGS_FILE="${settingsPath}"\n`;
@@ -26891,9 +26998,6 @@ async function readArgs$i(configDir) {
     }
     return parseFilesToArgs(scriptData, settingsContent);
 }
-async function isInstalled$5() {
-    return checkWhich('claude');
-}
 async function updateAvailable$8(utils) {
     return false;
 }
@@ -26913,12 +27017,13 @@ function getClaudeCodeVersion() {
         });
     });
 }
+const isInstalled$5 = () => checkWhich('claude');
 const ClaudeCode_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
         mainIpc: () => mainIpc$8(utils),
         getRunCommands: () => getRunCommands$o(configDir),
-        isInstalled: () => isInstalled$5(),
+        isInstalled: isInstalled$5,
         saveArgs: args => saveArgs$i(args, configDir),
         readArgs: () => readArgs$i(configDir),
         updateAvailable: () => updateAvailable$8(),
@@ -27039,21 +27144,19 @@ async function updateAvailable$7(utils) {
     utils.storage.set('update-available-version-flowise', undefined);
     return false;
 }
-async function isInstalled$4() {
-    return isNpmPackageInstalled(PACKAGE_NAME$2);
-}
 function mainIpc$7(utils) {
     utils.ipc.handle('is_flowise_installed', () => isNpmPackageInstalled(PACKAGE_NAME$2));
     utils.ipc.handle('current_flowise_version', () => getNpmPackageVersion(PACKAGE_NAME$2));
     utils.ipc.handle('is_npm_available', () => checkWhich('npm'));
 }
+const isInstalled$4 = () => isNpmPackageInstalled(PACKAGE_NAME$2);
 const Flow_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
         updateAvailable: () => updateAvailable$7(utils),
         getRunCommands: () => getRunCommands$n(configDir),
         mainIpc: () => mainIpc$7(utils),
-        isInstalled: () => isInstalled$4(),
+        isInstalled: isInstalled$4,
         saveArgs: args => saveArgs$h(args, configDir),
         readArgs: () => readArgs$h(configDir),
         uninstall: () => uninstallNpmPackage(PACKAGE_NAME$2),
@@ -27079,7 +27182,7 @@ async function saveArgs$g(args, configDir) {
         return;
     const { scriptData, settingsData } = parseArgsToFiles$1(args);
     const scriptPath = path.join(configDir, CONFIG_FILE$5);
-    const settingsPath = args.find(arg => arg.name === 'Settings File Location')?.value;
+    const settingsPath = String(args.find(arg => arg.name === 'Settings File Location')?.value);
     await fs.promises.writeFile(scriptPath, scriptData);
     // Ensure script is executable on Unix
     if (!isWin) {
@@ -27106,9 +27209,6 @@ async function readArgs$g(configDir) {
     const scriptData = await fs.promises.readFile(scriptPath, 'utf-8');
     return parseFilesToArgs$1(scriptData);
 }
-async function isInstalled$3() {
-    return isNpmPackageInstalled(PACKAGE_NAME$1);
-}
 async function updateAvailable$6(utils) {
     const available = await checkNpmPackageUpdate(PACKAGE_NAME$1);
     if (available) {
@@ -27122,12 +27222,13 @@ function mainIpc$6(utils) {
     utils.ipc.handle('is_geminiCli_installed', () => isNpmPackageInstalled(PACKAGE_NAME$1));
     utils.ipc.handle('current_geminiCli_version', () => getNpmPackageVersion(PACKAGE_NAME$1));
 }
+const isInstalled$3 = () => isNpmPackageInstalled(PACKAGE_NAME$1);
 const GeminiCli_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
         mainIpc: () => mainIpc$6(utils),
         getRunCommands: () => getRunCommands$m(configDir),
-        isInstalled: () => isInstalled$3(),
+        isInstalled: isInstalled$3,
         saveArgs: args => saveArgs$g(args, configDir),
         readArgs: () => readArgs$g(configDir),
         updateAvailable: () => updateAvailable$6(utils),
@@ -27155,9 +27256,6 @@ async function saveArgs$f(args, configDir) {
 async function readArgs$f(configDir) {
     return await utilReadArgs(CONFIG_FILE$4, DEFAULT_BATCH_DATA$e, parseStringToArgs$1, configDir);
 }
-async function isInstalled$2() {
-    return isNpmPackageInstalled(PACKAGE_NAME);
-}
 async function updateAvailable$5(utils) {
     const available = await checkNpmPackageUpdate(PACKAGE_NAME);
     if (available) {
@@ -27171,12 +27269,13 @@ function mainIpc$5(utils) {
     utils.ipc.handle('is_n8n_installed', () => isNpmPackageInstalled(PACKAGE_NAME));
     utils.ipc.handle('current_n8n_version', () => getNpmPackageVersion(PACKAGE_NAME));
 }
+const isInstalled$2 = () => isNpmPackageInstalled(PACKAGE_NAME);
 const N8N_MM = utils => {
     const configDir = utils.getConfigDir();
     return {
         mainIpc: () => mainIpc$5(utils),
         getRunCommands: () => getRunCommands$l(configDir),
-        isInstalled: () => isInstalled$2(),
+        isInstalled: isInstalled$2,
         saveArgs: args => saveArgs$f(args, configDir),
         readArgs: () => readArgs$f(configDir),
         updateAvailable: () => updateAvailable$5(utils),
@@ -30323,6 +30422,9 @@ async function updateAvailable$4(utils) {
 }
 async function isInstalled$1(dir) {
     if (!dir)
+        return false;
+    const isFolderExist = await checkDirExist(dir);
+    if (!isFolderExist)
         return false;
     const venvDir = path.join(dir, '.venv');
     const isVenvDir = isVenvDirectory(venvDir);

@@ -6,6 +6,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
+import {parseCustomArg} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, isValidArg} from '../../../Utils/RendererUtils';
 import comfyZludaArguments from './Arguments';
 
@@ -13,32 +14,41 @@ const URL = 'https://github.com/patientx/ComfyUI-Zluda';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result = '';
-  let commandLineArgs = '';
+  let lines: string = '';
+  let argResult = '';
   const envVars: Record<string, string | number> = {};
 
   // Separate environment variables from command line arguments
   args.forEach(arg => {
-    if (
-      arg.name === 'PYTHON' ||
-      arg.name === 'GIT' ||
-      arg.name === 'VENV_DIR' ||
-      arg.name === 'MIOPEN_FIND_MODE' ||
-      arg.name === 'MIOPEN_LOG_LEVEL' ||
-      arg.name === 'ZLUDA_COMGR_LOG_LEVEL' ||
-      arg.name === 'TRITON_OVERRIDE_ARCH'
-    ) {
-      envVars[arg.name] = arg.value;
-      return;
-    }
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
 
-    // Build command line arguments
-    const argType = getArgumentType(arg.name, comfyZludaArguments);
-    if (argType === 'CheckBox') {
-      commandLineArgs += `${arg.name} `;
-    } else if (argType === 'File' || argType === 'Directory') {
-      commandLineArgs += `${arg.name} "${arg.value}" `;
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) argResult += result.commandArg + ' ';
     } else {
-      commandLineArgs += `${arg.name} ${arg.value} `;
+      if (
+        arg.name === 'PYTHON' ||
+        arg.name === 'GIT' ||
+        arg.name === 'VENV_DIR' ||
+        arg.name === 'MIOPEN_FIND_MODE' ||
+        arg.name === 'MIOPEN_LOG_LEVEL' ||
+        arg.name === 'ZLUDA_COMGR_LOG_LEVEL' ||
+        arg.name === 'TRITON_OVERRIDE_ARCH'
+      ) {
+        envVars[arg.name] = arg.value;
+        return;
+      }
+
+      // Build command line arguments
+      const argType = getArgumentType(arg.name, comfyZludaArguments);
+      if (argType === 'CheckBox') {
+        argResult += `${arg.name} `;
+      } else if (argType === 'File' || argType === 'Directory') {
+        argResult += `${arg.name} "${arg.value}" `;
+      } else {
+        argResult += `${arg.name} ${arg.value} `;
+      }
     }
   });
 
@@ -66,7 +76,7 @@ export function parseArgsToString(args: ChosenArgument[]): string {
     result += '\n';
   }
 
-  result += `set "COMMANDLINE_ARGS=${commandLineArgs.trim()}"\n\n`;
+  result += `set "COMMANDLINE_ARGS=${argResult.trim()}"\n\n`;
 
   if (envVars.TRITON_OVERRIDE_ARCH !== undefined) {
     result += `set "TRITON_OVERRIDE_ARCH=${envVars.TRITON_OVERRIDE_ARCH}"\n\n`;
@@ -75,6 +85,8 @@ export function parseArgsToString(args: ChosenArgument[]): string {
   if (envVars.ZLUDA_COMGR_LOG_LEVEL !== undefined) {
     result += `set "ZLUDA_COMGR_LOG_LEVEL=${envVars.ZLUDA_COMGR_LOG_LEVEL}"\n\n`;
   }
+
+  if (lines) result += lines + '\n';
 
   return result;
 }

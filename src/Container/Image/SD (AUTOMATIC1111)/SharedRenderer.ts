@@ -7,7 +7,7 @@ import {
   DataSection,
   ExtensionData,
 } from '../../../../../src/common/types/plugins/modules';
-import {isWin} from '../../../Utils/CrossUtils';
+import {isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import automatic1111Arguments from './Arguments';
 
@@ -64,25 +64,36 @@ function getCategoryType(name: string): Category {
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+  let lines: string = '';
   let clResult: string = '';
 
   args.forEach(arg => {
-    const cat = getCategoryType(arg.name);
-    if (cat !== 'cl') {
-      const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
-      const eResult: string = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
-      if (arg.name !== 'COMMANDLINE_ARGS') result += isWin ? eWinResult : eResult;
-    } else if (cat === 'cl') {
-      const argType = getArgumentType(arg.name, automatic1111Arguments);
-      if (argType === 'CheckBox') {
-        clResult += `${arg.name} `;
-      } else if (argType === 'File' || argType === 'Directory') {
-        clResult += isWin ? `${arg.name} "${arg.value}" ` : `${arg.name} ${arg.value} `;
-      } else {
-        clResult += `${arg.name} ${arg.value} `;
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
+
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) clResult += result.commandArg + ' ';
+    } else {
+      const cat = getCategoryType(arg.name);
+      if (cat !== 'cl') {
+        const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
+        const eResult: string = cat === 'env' ? `export ${arg.name}="${arg.value}"\n` : `${arg.name}="${arg.value}"\n`;
+        if (arg.name !== 'COMMANDLINE_ARGS') result += isWin ? eWinResult : eResult;
+      } else if (cat === 'cl') {
+        const argType = getArgumentType(arg.name, automatic1111Arguments);
+        if (argType === 'CheckBox') {
+          clResult += `${arg.name} `;
+        } else if (argType === 'File' || argType === 'Directory') {
+          clResult += isWin ? `${arg.name} "${arg.value}" ` : `${arg.name} ${arg.value} `;
+        } else {
+          clResult += `${arg.name} ${arg.value} `;
+        }
       }
     }
   });
+
+  if (lines) result += lines + '\n';
 
   if (!isEmpty(clResult))
     result += isWin ? `set COMMANDLINE_ARGS=${clResult}\n` : `export COMMANDLINE_ARGS=${clResult}\n`;

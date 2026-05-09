@@ -7,7 +7,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType} from '../../../Utils/RendererUtils';
 import aiToolkitArguments from './Arguments';
 
@@ -15,22 +15,31 @@ const AITOOLKIT_URL = 'https://github.com/ostris/ai-toolkit';
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
-  let envVars: string = '';
+  let lines: string = '';
+  let argResult: string = '';
 
   args.forEach(arg => {
-    const argType = getArgumentType(arg.name, aiToolkitArguments);
-    if (argType === 'Input' && arg.value) {
-      // Environment variables
-      if (isWin) {
-        envVars += `set ${arg.name}=${arg.value}\n`;
-      } else {
-        envVars += `export ${arg.name}="${arg.value}"\n`;
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
+
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) argResult += result.commandArg + ' ';
+    } else {
+      const argType = getArgumentType(arg.name, aiToolkitArguments);
+      if (argType === 'Input' && arg.value) {
+        // Environment variables
+        if (isWin) {
+          lines += `set ${arg.name}=${arg.value}\n`;
+        } else {
+          lines += `export ${arg.name}="${arg.value}"\n`;
+        }
       }
     }
   });
 
-  if (!isEmpty(envVars)) {
-    result += envVars + '\n';
+  if (!isEmpty(lines)) {
+    result += lines + '\n';
   }
 
   // Set NODE_ENV to empty to prevent Next.js build issues
@@ -40,7 +49,7 @@ export function parseArgsToString(args: ChosenArgument[]): string {
     result += 'export NODE_ENV=""\n\n';
   }
 
-  result += 'cd ui\nnpm run build_and_start';
+  result += isEmpty(argResult) ? 'cd ui\nnpm run build_and_start' : `cd ui\nnpm run build_and_start ${argResult}`;
 
   return result;
 }

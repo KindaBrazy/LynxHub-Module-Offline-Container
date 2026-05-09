@@ -8,7 +8,7 @@ import {
   ChosenArgument,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {getPythonCommandByOs, isWin} from '../../../Utils/CrossUtils';
+import {getPythonCommandByOs, isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {CardInfo, catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import comfyArguments from './Arguments';
 
@@ -28,32 +28,39 @@ function isEnvironmentVariable(name: string): boolean {
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
   let argResult: string = '';
-  let envVars: string = '';
+  let lines: string = '';
 
   args.forEach(arg => {
-    if (isEnvironmentVariable(arg.name)) {
-      // Handle environment variables
-      if (getArgumentType(arg.name, comfyArguments) === 'CheckBox') {
-        envVars += isWin ? `set ${arg.name}=true\n` : `export ${arg.name}="true"\n`;
-      } else {
-        envVars += isWin ? `set ${arg.name}=${arg.value}\n` : `export ${arg.name}="${arg.value}"\n`;
-      }
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
+
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) argResult += result.commandArg + ' ';
     } else {
-      // Handle command line arguments
-      const argType = getArgumentType(arg.name, comfyArguments);
-      if (argType === 'CheckBox') {
-        argResult += `${arg.name} `;
-      } else if (argType === 'File' || argType === 'Directory') {
-        argResult += `${arg.name} "${arg.value}" `;
+      if (isEnvironmentVariable(arg.name)) {
+        // Handle environment variables
+        if (getArgumentType(arg.name, comfyArguments) === 'CheckBox') {
+          lines += isWin ? `set ${arg.name}=true\n` : `export ${arg.name}="true"\n`;
+        } else {
+          lines += isWin ? `set ${arg.name}=${arg.value}\n` : `export ${arg.name}="${arg.value}"\n`;
+        }
       } else {
-        argResult += `${arg.name} ${arg.value} `;
+        // Handle command line arguments
+        const argType = getArgumentType(arg.name, comfyArguments);
+        if (argType === 'CheckBox') {
+          argResult += `${arg.name} `;
+        } else if (argType === 'File' || argType === 'Directory') {
+          argResult += `${arg.name} "${arg.value}" `;
+        } else {
+          argResult += `${arg.name} ${arg.value} `;
+        }
       }
     }
   });
 
-  // Add environment variables first, then the command
-  result += envVars;
-  if (envVars) result += '\n';
+  if (lines) result += lines + '\n';
+
   const pythonCommand = getPythonCommandByOs().python;
   result += isEmpty(argResult) ? `${pythonCommand} main.py` : `${pythonCommand} main.py ${argResult}`;
 

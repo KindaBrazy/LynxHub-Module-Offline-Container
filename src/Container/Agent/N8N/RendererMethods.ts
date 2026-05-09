@@ -1,3 +1,5 @@
+import {isEmpty} from 'lodash-es';
+
 import {
   CardInfoApi,
   CardInfoCallback,
@@ -6,7 +8,7 @@ import {
   DataSection,
   InstallationStepper,
 } from '../../../../../src/common/types/plugins/modules';
-import {DescriptionManager, isWin} from '../../../Utils/CrossUtils';
+import {DescriptionManager, isWin, parseCustomArg} from '../../../Utils/CrossUtils';
 import {catchAddress, getArgumentType, isValidArg, removeEscapes} from '../../../Utils/RendererUtils';
 import n8nArguments from './Arguments';
 
@@ -34,20 +36,32 @@ function checkLinuxArgLine(line: string): 'set' | 'export' | 'var' | undefined {
 
 export function parseArgsToString(args: ChosenArgument[]): string {
   let result: string = isWin ? '@echo off\n\n' : '#!/bin/bash\n\n';
+  let lines: string = '';
+  let argResult: string = '';
 
   args.forEach(arg => {
-    if (getArgumentType(arg.name, n8nArguments) === 'CheckBox') {
-      const eWinResult: string = `set ${arg.name}=true\n`;
-      const eResult: string = `export ${arg.name}="true"\n`;
-      result += isWin ? eWinResult : eResult;
+    if (arg.custom) {
+      const result = parseCustomArg(arg);
+      if (!result) return;
+
+      if (result.line) lines += result.line + '\n';
+      if (result.commandArg) argResult += result.commandArg + ' ';
     } else {
-      const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
-      const eResult: string = `export ${arg.name}="${arg.value}"\n`;
-      result += isWin ? eWinResult : eResult;
+      if (getArgumentType(arg.name, n8nArguments) === 'CheckBox') {
+        const eWinResult: string = `set ${arg.name}=true\n`;
+        const eResult: string = `export ${arg.name}="true"\n`;
+        result += isWin ? eWinResult : eResult;
+      } else {
+        const eWinResult: string = `set ${arg.name}=${arg.value}\n`;
+        const eResult: string = `export ${arg.name}="${arg.value}"\n`;
+        result += isWin ? eWinResult : eResult;
+      }
     }
   });
 
-  result += isWin ? `\nn8n start` : `n8n start`;
+  if (lines) result += lines + '\n';
+
+  result += isEmpty(argResult) ? `\nn8n start` : `\nn8n start ${argResult}`;
 
   return result;
 }

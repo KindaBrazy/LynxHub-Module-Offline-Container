@@ -15,7 +15,7 @@ import {fetchExtensionList} from './ExtensionsList';
 
 const shellCommand = isWin
   ? 'call start_windows.bat'
-  : window.osPlatform === 'darwin'
+  : isMac
     ? 'bash ./start_macos.sh'
     : 'bash ./start_linux.sh';
 const URL = 'https://github.com/oobabooga/text-generation-webui';

@@ -1,6 +1,15 @@
 {
   "versions": [
     {
+      "version": "14.2.1",
+      "commit": "4085897",
+      "engines": {
+        "moduleApi": "^2.1.0"
+      },
+      "stage": "public",
+      "platforms": ["win32", "linux", "darwin"]
+    },
+    {
       "version": "14.2.0",
       "commit": "ad33350",
       "engines": {
@@ -74,6 +83,15 @@
     }
   ],
   "changes": [
+    {
+      "version": "14.2.1",
+      "date": "2026-06-28",
+      "items": [
+        {
+          "🪲 Bug Fixes": ["Fixed an issue where the backend script failed to load on Linux and macOS."]
+        }
+      ]
+    },
     {
       "version": "14.2.0",
       "date": "2026-05-09",
